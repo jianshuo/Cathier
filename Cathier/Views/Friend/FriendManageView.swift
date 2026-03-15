@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FriendManageView: View {
     @Environment(FriendViewModel.self) private var vm
+    @Environment(LanguageManager.self) private var lm
     @State private var showInviteView = false
     @State private var removingFriend: UserProfile?
     @State private var showRemoveAlert = false
@@ -10,13 +11,13 @@ struct FriendManageView: View {
         List {
             Section {
                 Button(action: { showInviteView = true }) {
-                    Label("邀请好友 / 输入邀请码", systemImage: "person.badge.plus")
+                    Label(lm.manageInviteAction, systemImage: "person.badge.plus")
                         .foregroundColor(.orange)
                 }
             }
 
             if !vm.friends.isEmpty {
-                Section("已连接的好友 (\(vm.friends.count))") {
+                Section(lm.manageConnectedFriends(vm.friends.count)) {
                     ForEach(vm.friends) { friend in
                         HStack(spacing: 12) {
                             Text(friend.avatarEmoji)
@@ -29,7 +30,7 @@ struct FriendManageView: View {
                                     .font(.subheadline)
                                     .fontWeight(.medium)
                                 if let fs = vm.friendship(with: friend) {
-                                    Text("连接于 \(fs.createdAt.formatted(date: .abbreviated, time: .omitted))")
+                                    Text(lm.manageConnectedOn(fs.createdAt.formatted(date: .abbreviated, time: .omitted)))
                                         .font(.caption)
                                         .foregroundColor(.secondary)
                                 }
@@ -40,33 +41,33 @@ struct FriendManageView: View {
                                 removingFriend = friend
                                 showRemoveAlert = true
                             } label: {
-                                Label("断开连接", systemImage: "person.fill.xmark")
+                                Label(lm.manageDisconnect, systemImage: "person.fill.xmark")
                             }
                         }
                     }
                 }
             } else {
                 Section {
-                    Text("还没有好友，发送邀请链接来连接吧")
+                    Text(lm.manageNoFriends)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
             }
         }
-        .navigationTitle("好友管理")
+        .navigationTitle(lm.manageNavTitle)
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showInviteView) {
             NavigationStack { InviteView() }
         }
-        .alert("断开与「\(removingFriend?.displayName ?? "")」的连接？", isPresented: $showRemoveAlert) {
-            Button("断开连接", role: .destructive) {
+        .alert(lm.manageDisconnectAlert(removingFriend?.displayName ?? ""), isPresented: $showRemoveAlert) {
+            Button(lm.manageDisconnect, role: .destructive) {
                 if let friend = removingFriend {
                     Task { await vm.removeFriend(friend) }
                 }
             }
-            Button("取消", role: .cancel) {}
+            Button(lm.manageCancel, role: .cancel) {}
         } message: {
-            Text("双方将不再能看到彼此分享的情绪记录")
+            Text(lm.manageDisconnectMessage)
         }
     }
 }

@@ -10,6 +10,7 @@ struct Emotion: Identifiable {
     let id: String
     let nameZh: String
     let nameEn: String
+    let nameJa: String
     let emoji: String
     let intensity: Int  // 1–5
 }
@@ -18,6 +19,7 @@ struct EmotionCategory: Identifiable {
     let id: String
     let nameZh: String
     let nameEn: String
+    let nameJa: String
     let color: Color
     let icon: String
     let valence: EmotionValence

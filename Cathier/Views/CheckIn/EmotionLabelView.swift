@@ -3,6 +3,7 @@ import SwiftUI
 struct EmotionLabelView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -14,18 +15,19 @@ struct EmotionLabelView: View {
                 }
 
                 // Category grid
-                sectionLabel("这种感受，更接近哪种情绪？")
+                sectionLabel(lm.emotionQuestion)
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                     ForEach(config.categories) { category in
                         CategoryButton(
                             category: category,
-                            isSelected: viewModel.selectedCategory == category.name
+                            displayName: lm.display(category.nameZh),
+                            isSelected: viewModel.selectedCategory == category.nameZh
                         ) {
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                if viewModel.selectedCategory == category.name {
+                                if viewModel.selectedCategory == category.nameZh {
                                     viewModel.selectedCategory = nil
                                 } else {
-                                    viewModel.selectedCategory = category.name
+                                    viewModel.selectedCategory = category.nameZh
                                 }
                             }
                         }
@@ -34,17 +36,17 @@ struct EmotionLabelView: View {
 
                 // Sub-emotion chips
                 if let categoryName = viewModel.selectedCategory,
-                   let category = config.categories.first(where: { $0.name == categoryName }) {
+                   let category = config.categories.first(where: { $0.nameZh == categoryName }) {
                     VStack(alignment: .leading, spacing: 12) {
-                        sectionLabel("更具体是…")
+                        sectionLabel(lm.emotionSpecific)
                         FlowLayout(spacing: 10) {
-                            ForEach(category.children, id: \.self) { emotion in
+                            ForEach(category.emotions) { emotion in
                                 ChipView(
-                                    label: emotion,
-                                    isSelected: viewModel.selectedEmotions.contains(emotion),
+                                    label: lm.display(emotion.nameZh),
+                                    isSelected: viewModel.selectedEmotions.contains(emotion.nameZh),
                                     color: category.color
                                 ) {
-                                    toggleEmotion(emotion)
+                                    toggleEmotion(emotion.nameZh)
                                 }
                             }
                         }
@@ -56,8 +58,8 @@ struct EmotionLabelView: View {
 
                 // Custom emotion input
                 VStack(alignment: .leading, spacing: 8) {
-                    sectionLabel("或者，你想用自己的词描述")
-                    TextField("输入情绪词…", text: $vm.customEmotion)
+                    sectionLabel(lm.emotionCustomPrompt)
+                    TextField(lm.emotionCustomPlaceholder, text: $vm.customEmotion)
                         .textFieldStyle(.plain)
                         .padding(12)
                         .background(Color(.systemGray6))
@@ -68,7 +70,7 @@ struct EmotionLabelView: View {
                 Button(action: {
                     withAnimation { viewModel.currentStep = .aiFeedback }
                 }) {
-                    Text("生成 AI 反馈")
+                    Text(lm.emotionGenAI)
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -83,7 +85,7 @@ struct EmotionLabelView: View {
                 Button(action: {
                     withAnimation { viewModel.currentStep = .aiFeedback }
                 }) {
-                    Text("跳过，直接保存")
+                    Text(lm.emotionSkip)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                         .frame(maxWidth: .infinity)
@@ -97,14 +99,14 @@ struct EmotionLabelView: View {
     @ViewBuilder
     private var selectedEmotionsView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("已选择")
+            Text(lm.emotionSelected)
                 .font(.caption)
                 .foregroundColor(.secondary)
             FlowLayout(spacing: 8) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
                     let color = EmotionData.category(for: emotion)?.color ?? .orange
                     HStack(spacing: 4) {
-                        Text(emotion)
+                        Text(lm.display(emotion))
                             .font(.subheadline)
                             .fontWeight(.medium)
                         Button {
@@ -148,6 +150,7 @@ struct EmotionLabelView: View {
 
 private struct CategoryButton: View {
     let category: EmotionCategory
+    let displayName: String
     let isSelected: Bool
     let action: () -> Void
 
@@ -157,7 +160,7 @@ private struct CategoryButton: View {
                 Image(systemName: category.icon)
                     .font(.title3)
                     .foregroundColor(isSelected ? .white : category.color)
-                Text(category.name)
+                Text(displayName)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(isSelected ? .white : .primary)

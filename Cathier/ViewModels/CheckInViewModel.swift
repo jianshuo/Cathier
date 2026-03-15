@@ -55,7 +55,8 @@ final class CheckInViewModel {
                 sensations: Array(selectedSensations),
                 intensity: Int(intensity),
                 emotions: allEmotions,
-                recentHistory: recentHistory
+                recentHistory: recentHistory,
+                language: LanguageManager.shared.currentLanguage
             )
         } catch {
             aiError = error.localizedDescription

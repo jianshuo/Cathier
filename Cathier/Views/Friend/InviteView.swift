@@ -3,6 +3,7 @@ import SwiftUI
 struct InviteView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(\.dismiss) private var dismiss
+    @Environment(LanguageManager.self) private var lm
 
     @State private var inviteLink: String?
     @State private var isGenerating = false
@@ -18,10 +19,10 @@ struct InviteView: View {
             VStack(spacing: 32) {
                 // ── Send invite ──────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("邀请好友", systemImage: "link")
+                    Label(lm.inviteSendTitle, systemImage: "link")
                         .font(.headline)
 
-                    Text("生成一个邀请链接，发给对方。对方点击后即可互相添加。")
+                    Text(lm.inviteSendHint)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
@@ -53,7 +54,7 @@ struct InviteView: View {
                         if isGenerating {
                             ProgressView().tint(.white)
                         } else {
-                            Text(inviteLink == nil ? "生成邀请链接" : "重新生成")
+                            Text(inviteLink == nil ? lm.inviteGenerate : lm.inviteRegenerate)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(.white)
@@ -71,10 +72,10 @@ struct InviteView: View {
 
                 // ── Accept invite ────────────────────────────────────────
                 VStack(alignment: .leading, spacing: 12) {
-                    Label("输入邀请码", systemImage: "keyboard")
+                    Label(lm.inviteEnterTitle, systemImage: "keyboard")
                         .font(.headline)
 
-                    Text("如果朋友把邀请码发给了你，在这里输入。")
+                    Text(lm.inviteEnterHint)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
 
@@ -82,13 +83,13 @@ struct InviteView: View {
                         HStack(spacing: 8) {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundColor(.green)
-                            Text("添加成功！")
+                            Text(lm.inviteSuccess)
                                 .font(.subheadline)
                                 .foregroundColor(.green)
                         }
                     }
 
-                    TextField("输入8位邀请码…", text: $manualCode)
+                    TextField(lm.invitePlaceholder, text: $manualCode)
                         .textFieldStyle(.plain)
                         .textInputAutocapitalization(.characters)
                         .padding(12)
@@ -106,7 +107,7 @@ struct InviteView: View {
                         if isAccepting {
                             ProgressView().tint(.white)
                         } else {
-                            Text("确认添加")
+                            Text(lm.inviteConfirm)
                                 .font(.subheadline)
                                 .fontWeight(.medium)
                                 .foregroundColor(.white)
@@ -124,7 +125,7 @@ struct InviteView: View {
             }
             .padding(20)
         }
-        .navigationTitle("邀请 / 添加好友")
+        .navigationTitle(lm.inviteNavTitle)
         .navigationBarTitleDisplayMode(.inline)
     }
 

@@ -6,10 +6,28 @@ struct SettingsView: View {
     @State private var reminderTimes: [ReminderTime] = NotificationService.defaultTimes
     @State private var isAuthorized = false
     @State private var showApiKeySaved = false
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         NavigationStack {
             List {
+                // MARK: - Language Settings
+                Section {
+                    Picker(lm.settingsLanguageSection, selection: Binding(
+                        get: { lm.currentLanguage },
+                        set: { lm.set($0) }
+                    )) {
+                        ForEach(AppLanguage.allCases) { lang in
+                            Text(lang.displayName).tag(lang)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                } header: {
+                    Text(lm.settingsLanguageSection)
+                }
+
                 // MARK: - AI Settings
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
@@ -21,20 +39,20 @@ struct SettingsView: View {
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
                         if showApiKeySaved {
-                            Text("已保存")
+                            Text(lm.settingsSaved)
                                 .font(.caption)
                                 .foregroundColor(.green)
                         }
                     }
                     .padding(.vertical, 4)
 
-                    Link("获取 API Key →", destination: URL(string: "https://console.anthropic.com")!)
+                    Link(lm.settingsGetKey, destination: URL(string: "https://console.anthropic.com")!)
                         .font(.caption)
                         .foregroundColor(.orange)
                 } header: {
-                    Text("AI 设置")
+                    Text(lm.settingsAISection)
                 } footer: {
-                    Text("API Key 仅存储在本机，不会上传到任何服务器。")
+                    Text(lm.settingsKeyFooter)
                         .font(.caption)
                 }
                 .onChange(of: apiKey) { _, _ in
@@ -46,7 +64,7 @@ struct SettingsView: View {
 
                 // MARK: - Notification Settings
                 Section {
-                    Toggle("开启提醒", isOn: $notificationsEnabled)
+                    Toggle(lm.settingsEnableReminder, isOn: $notificationsEnabled)
                         .tint(.orange)
                         .onChange(of: notificationsEnabled) { _, enabled in
                             handleNotificationToggle(enabled)
@@ -77,37 +95,37 @@ struct SettingsView: View {
                             }
                         }
 
-                        Button("保存提醒设置") {
+                        Button(lm.settingsSaveReminder) {
                             saveReminderSettings()
                         }
                         .foregroundColor(.orange)
                     }
                 } header: {
-                    Text("定时提醒")
+                    Text(lm.settingsRemindersSection)
                 } footer: {
                     Text(isAuthorized
-                         ? "提醒会在设定时间以本地通知推送。"
-                         : "请在系统设置中允许通知权限，以便接收提醒。")
+                         ? lm.settingsReminderFooterOn
+                         : lm.settingsReminderFooterOff)
                         .font(.caption)
                 }
 
                 // MARK: - About
-                Section("关于") {
+                Section(lm.settingsAboutSection) {
                     HStack {
-                        Text("版本")
+                        Text(lm.settingsVersion)
                         Spacer()
                         Text("1.0.0")
                             .foregroundColor(.secondary)
                     }
                     HStack {
-                        Text("数据存储")
+                        Text(lm.settingsDataStorage)
                         Spacer()
-                        Text("仅限本机")
+                        Text(lm.settingsLocalOnly)
                             .foregroundColor(.secondary)
                     }
                 }
             }
-            .navigationTitle("设置")
+            .navigationTitle(lm.settingsNavTitle)
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
