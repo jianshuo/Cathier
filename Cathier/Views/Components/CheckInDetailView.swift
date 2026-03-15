@@ -132,9 +132,7 @@ struct CheckInDetailView: View {
     }
 
     private func markdownText(_ raw: String) -> AttributedString {
-        (try? AttributedString(markdown: raw,
-            options: .init(interpretedSyntax: .inlinesOnlyPreservingWhitespace)))
-        ?? AttributedString(raw)
+        (try? AttributedString(markdown: raw)) ?? AttributedString(raw)
     }
 
     private var dateString: String {
