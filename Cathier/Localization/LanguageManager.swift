@@ -95,8 +95,6 @@ final class LanguageManager {
         // Emotions – Surprise
         "震惊": "Shocked", "受惊": "Startled", "惊叹": "Amazed", "震撼": "Astonished",
         "惊喜": "Pleasantly Surprised", "困惑": "Confused", "好奇": "Curious", "意外": "Unexpected",
-        // Warm (both body sensation and emotion)
-        "温暖": "Warm",
     ]
 
     private let jaTerms: [String: String] = [
@@ -146,8 +144,6 @@ final class LanguageManager {
         // Emotions – Surprise
         "震惊": "衝撃", "受惊": "びっくり", "惊叹": "感嘆", "震撼": "驚愕",
         "惊喜": "嬉しい驚き", "困惑": "困惑", "好奇": "好奇心", "意外": "予想外",
-        // Warm (both sensation and emotion)
-        "温暖": "温かい",
     ]
 }
 
