@@ -26,7 +26,7 @@ jobs:
       - name: Build & Upload to TestFlight
         env:
           MATCH_PASSWORD:        ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_BASIC_AUTH:  ${{ secrets.GITHUB_TOKEN }}
+          MATCH_GIT_BASIC_AUTH:  ${{ secrets.MATCH_GIT_BASIC_AUTH }}
           ASC_API_KEY_ID:        ${{ secrets.ASC_API_KEY_ID }}
           ASC_API_ISSUER_ID:     ${{ secrets.ASC_API_ISSUER_ID }}
           ASC_API_KEY_CONTENT:   ${{ secrets.ASC_API_KEY_CONTENT }}

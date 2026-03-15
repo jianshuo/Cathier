@@ -24,6 +24,7 @@ default_platform(:ios)
       match(
         type: "appstore",
         readonly: true,
+        git_basic_authorization: Base64.strict_encode64(ENV["MATCH_GIT_BASIC_AUTH"]),
         api_key: app_store_connect_api_key(
           key_id:        ENV["ASC_API_KEY_ID"],
           issuer_id:     ENV["ASC_API_ISSUER_ID"],
