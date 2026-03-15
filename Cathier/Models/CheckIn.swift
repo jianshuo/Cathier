@@ -3,16 +3,16 @@ import SwiftData
 
 @Model
 final class CheckIn {
-    var id: UUID
-    var date: Date
-    var bodyParts: [String]
-    var sensations: [String]
-    var intensity: Int
-    var emotions: [String]
-    var note: String
-    var aiFeedback: String
+    var id: UUID = UUID()
+    var date: Date = Date()
+    var bodyParts: [String] = [String]()
+    var sensations: [String] = [String]()
+    var intensity: Int = 5
+    var emotions: [String] = [String]()
+    var note: String = ""
+    var aiFeedback: String = ""
     /// Mirrors FriendCheckIn.PrivacyTier.rawValue when shared; nil = private.
-    var shareLevel: String?
+    var shareLevel: String? = nil
 
     init(
         date: Date = Date(),
