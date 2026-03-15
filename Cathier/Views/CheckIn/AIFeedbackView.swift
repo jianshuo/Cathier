@@ -5,6 +5,7 @@ struct AIFeedbackView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(FriendViewModel.self) private var friendVM
     @Environment(\.modelContext) private var modelContext
+    @Environment(LanguageManager.self) private var lm
     let onDismiss: () -> Void
 
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
@@ -20,10 +21,10 @@ struct AIFeedbackView: View {
 
                 // Note input
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("添加备注（可选）")
+                    Text(lm.aiNoteLabel)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
-                    TextField("记录一些额外的想法…", text: $vm.note, axis: .vertical)
+                    TextField(lm.aiNotePlaceholder, text: $vm.note, axis: .vertical)
                         .textFieldStyle(.plain)
                         .lineLimit(3...6)
                         .padding(12)
@@ -38,7 +39,7 @@ struct AIFeedbackView: View {
 
                 // Save button
                 Button(action: saveAction) {
-                    Text("保存记录")
+                    Text(lm.aiSave)
                         .font(.headline)
                         .foregroundColor(.white)
                 }
@@ -67,17 +68,17 @@ struct AIFeedbackView: View {
                 Image(systemName: "person.2.fill")
                     .font(.caption)
                     .foregroundColor(.orange)
-                Text("分享给好友？")
+                Text(lm.aiShareTitle)
                     .font(.subheadline)
                     .fontWeight(.medium)
             }
 
             VStack(spacing: 8) {
                 // Not sharing option
-                tierRow(label: "不分享", description: "仅自己可见", icon: "lock.fill", tier: nil)
+                tierRow(label: lm.aiDontShare, description: lm.aiOnlySelf, icon: "lock.fill", tier: nil)
                 Divider()
                 ForEach(FriendCheckIn.PrivacyTier.allCases) { tier in
-                    tierRow(label: tier.displayName, description: tier.description,
+                    tierRow(label: tierDisplayName(tier), description: tierDescription(tier),
                             icon: tierIcon(tier), tier: tier)
                     if tier != FriendCheckIn.PrivacyTier.allCases.last {
                         Divider()
@@ -87,6 +88,22 @@ struct AIFeedbackView: View {
             .padding(12)
             .background(Color(.secondarySystemBackground))
             .cornerRadius(12)
+        }
+    }
+
+    private func tierDisplayName(_ tier: FriendCheckIn.PrivacyTier) -> String {
+        switch tier {
+        case .category: return lm.tierCategoryName
+        case .emotions: return lm.tierEmotionsName
+        case .full:     return lm.tierFullName
+        }
+    }
+
+    private func tierDescription(_ tier: FriendCheckIn.PrivacyTier) -> String {
+        switch tier {
+        case .category: return lm.tierCategoryDesc
+        case .emotions: return lm.tierEmotionsDesc
+        case .full:     return lm.tierFullDesc
         }
     }
 
@@ -148,21 +165,21 @@ struct AIFeedbackView: View {
     private var summaryCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("此刻的感受")
+                Text(lm.aiFeelingsSummary)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
-                IntensityBadge(intensity: Int(viewModel.intensity))
+                IntensityBadge(intensity: Int(viewModel.intensity), label: lm.aiIntensityBadge(Int(viewModel.intensity)))
             }
 
             if !viewModel.selectedBodyParts.isEmpty {
                 labelRow(icon: "figure.mind.and.body",
-                         items: Array(viewModel.selectedBodyParts))
+                         items: viewModel.selectedBodyParts.map { lm.display($0) })
             }
 
             if !viewModel.selectedSensations.isEmpty {
                 labelRow(icon: "waveform",
-                         items: Array(viewModel.selectedSensations))
+                         items: viewModel.selectedSensations.map { lm.display($0) })
             }
 
             if !viewModel.allEmotions.isEmpty {
@@ -196,7 +213,7 @@ struct AIFeedbackView: View {
             FlowLayout(spacing: 6) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
                     let color = EmotionData.category(for: emotion)?.color ?? .orange
-                    Text(emotion)
+                    Text(lm.display(emotion))
                         .font(.caption)
                         .fontWeight(.medium)
                         .padding(.horizontal, 10)
@@ -216,7 +233,7 @@ struct AIFeedbackView: View {
             HStack(spacing: 6) {
                 Image(systemName: "sparkles")
                     .foregroundColor(.orange)
-                Text("AI 陪伴")
+                Text(lm.aiCompanion)
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
@@ -254,7 +271,7 @@ struct AIFeedbackView: View {
         HStack(spacing: 12) {
             ProgressView()
                 .tint(.orange)
-            Text("正在感受你的感受…")
+            Text(lm.aiLoading)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -269,7 +286,7 @@ struct AIFeedbackView: View {
             Button(action: {
                 Task { await viewModel.fetchAIFeedback() }
             }) {
-                Text("重试")
+                Text(lm.aiRetry)
                     .font(.subheadline)
                     .foregroundColor(.orange)
             }
@@ -281,9 +298,10 @@ struct AIFeedbackView: View {
 
 struct IntensityBadge: View {
     let intensity: Int
+    var label: String? = nil
 
     var body: some View {
-        Text("强度 \(intensity)/10")
+        Text(label ?? "强度 \(intensity)/10")
             .font(.caption)
             .fontWeight(.medium)
             .padding(.horizontal, 10)

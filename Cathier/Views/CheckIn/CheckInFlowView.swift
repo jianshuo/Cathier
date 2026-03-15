@@ -4,6 +4,7 @@ import SwiftData
 struct CheckInFlowView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(LanguageManager.self) private var lm
     @State private var viewModel = CheckInViewModel()
 
     var body: some View {
@@ -34,7 +35,7 @@ struct CheckInFlowView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("取消") { dismiss() }
+                    Button(lm.checkInCancel) { dismiss() }
                 }
             }
         }
@@ -42,9 +43,9 @@ struct CheckInFlowView: View {
 
     private var navigationTitle: String {
         switch viewModel.currentStep {
-        case .bodyScan:    return "身体扫描"
-        case .emotionLabel: return "情绪识别"
-        case .aiFeedback:  return "AI 陪伴"
+        case .bodyScan:    return lm.checkInStepBodyScan
+        case .emotionLabel: return lm.checkInStepEmotion
+        case .aiFeedback:  return lm.checkInStepAI
         }
     }
 }

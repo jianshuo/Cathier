@@ -4,6 +4,7 @@ import SwiftData
 struct TodayView: View {
     @Query(sort: \CheckIn.date, order: .reverse) private var checkIns: [CheckIn]
     @State private var showingCheckIn = false
+    @Environment(LanguageManager.self) private var lm
 
     private var todayCheckIns: [CheckIn] {
         checkIns.filter { Calendar.current.isDateInToday($0.date) }
@@ -24,7 +25,7 @@ struct TodayView: View {
                     // Today's check-ins
                     if !todayCheckIns.isEmpty {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("今日记录")
+                            Text(lm.todayRecords)
                                 .font(.headline)
                                 .padding(.horizontal, 20)
 
@@ -39,7 +40,7 @@ struct TodayView: View {
                 }
                 .padding(.top, 8)
             }
-            .navigationTitle("此刻")
+            .navigationTitle(lm.todayNavTitle)
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
             }
@@ -54,8 +55,8 @@ struct TodayView: View {
                 .font(.title2)
                 .fontWeight(.semibold)
             Text(todayCheckIns.isEmpty
-                 ? "你今天还没有签到，花一分钟感受一下身体吧。"
-                 : "今天已签到 \(todayCheckIns.count) 次，继续保持。")
+                 ? lm.todayNoCheckIn()
+                 : lm.todayCheckedIn(todayCheckIns.count))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -75,10 +76,10 @@ struct TodayView: View {
                         .font(.system(size: 40))
                         .foregroundColor(.white)
                 }
-                Text("开始身体扫描")
+                Text(lm.todayStartScan)
                     .font(.headline)
                     .foregroundColor(.white)
-                Text("此刻，你的身体在说什么？")
+                Text(lm.todayBodySaying)
                     .font(.subheadline)
                     .foregroundColor(.white.opacity(0.85))
             }
@@ -99,9 +100,9 @@ struct TodayView: View {
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 5..<12: return "早上好"
-        case 12..<18: return "下午好"
-        default:      return "晚上好"
+        case 5..<12: return lm.greetingMorning
+        case 12..<18: return lm.greetingAfternoon
+        default:      return lm.greetingEvening
         }
     }
 }

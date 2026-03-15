@@ -4,6 +4,7 @@ import SwiftUI
 /// Entry point for the Friend tab. Switches on account state.
 struct FriendFeedView: View {
     @Environment(FriendViewModel.self) private var vm
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         NavigationStack {
@@ -23,7 +24,7 @@ struct FriendFeedView: View {
                     FriendHomeView()
                 }
             }
-            .navigationTitle("好友")
+            .navigationTitle(lm.friendNavTitle)
             .navigationBarTitleDisplayMode(.large)
         }
         .task { await vm.initialize() }
@@ -62,6 +63,7 @@ struct FriendFeedView: View {
 
 private struct FriendHomeView: View {
     @Environment(FriendViewModel.self) private var vm
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         Group {
@@ -132,13 +134,13 @@ private struct FriendHomeView: View {
         VStack(spacing: 20) {
             Text("🤝")
                 .font(.system(size: 56))
-            Text("还没有好友")
+            Text(lm.friendNoFriends)
                 .font(.headline)
-            Text("邀请朋友互相分享情绪吧")
+            Text(lm.friendInviteHint)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
             NavigationLink(destination: InviteView()) {
-                Text("邀请好友")
+                Text(lm.friendInvite)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
@@ -155,7 +157,7 @@ private struct FriendHomeView: View {
         VStack(spacing: 16) {
             Text("💤")
                 .font(.system(size: 48))
-            Text("好友还没有分享任何情绪")
+            Text(lm.friendEmptyFeed)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
         }
@@ -170,6 +172,7 @@ struct FriendCheckInCard: View {
     let owner: UserProfile?
 
     @State private var expanded = false
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         Button(action: { withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() } }) {
@@ -198,7 +201,7 @@ struct FriendCheckInCard: View {
                 .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 2) {
-                Text(owner?.displayName ?? "朋友")
+                Text(owner?.displayName ?? lm.friendDefaultName)
                     .font(.subheadline)
                     .fontWeight(.medium)
 
@@ -219,7 +222,7 @@ struct FriendCheckInCard: View {
     @ViewBuilder
     private var categoryChip: some View {
         if let category = item.emotions.first.flatMap({ EmotionData.category(for: $0) }) {
-            Text(category.nameZh)
+            Text(lm.display(category.nameZh))
                 .font(.caption)
                 .fontWeight(.medium)
                 .padding(.horizontal, 8)
@@ -235,7 +238,7 @@ struct FriendCheckInCard: View {
         VStack(alignment: .leading, spacing: 10) {
             // Intensity
             HStack {
-                IntensityBadge(intensity: item.intensity)
+                IntensityBadge(intensity: item.intensity, label: lm.aiIntensityBadge(item.intensity))
                 Spacer()
             }
 
@@ -244,7 +247,7 @@ struct FriendCheckInCard: View {
                 FlowLayout(spacing: 6) {
                     ForEach(item.emotions, id: \.self) { emotion in
                         let color = EmotionData.category(for: emotion)?.color ?? .orange
-                        Text(emotion)
+                        Text(lm.display(emotion))
                             .font(.caption)
                             .padding(.horizontal, 10)
                             .padding(.vertical, 4)
@@ -258,7 +261,7 @@ struct FriendCheckInCard: View {
             // Full tier extras
             if item.privacyTier == .full {
                 if !item.bodyParts.isEmpty {
-                    Text(item.bodyParts.joined(separator: " · "))
+                    Text(item.bodyParts.map { lm.display($0) }.joined(separator: " · "))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -281,6 +284,7 @@ private struct InviteAcceptSheet: View {
     let code: String
     @Environment(FriendViewModel.self) private var vm
     @Environment(\.dismiss) private var dismiss
+    @Environment(LanguageManager.self) private var lm
 
     @State private var isLoading = false
     @State private var error: String?
@@ -293,7 +297,7 @@ private struct InviteAcceptSheet: View {
                     VStack(spacing: 12) {
                         Text("🎉")
                             .font(.system(size: 56))
-                        Text("已成功添加好友！")
+                        Text(lm.acceptSuccess)
                             .font(.title3)
                             .fontWeight(.semibold)
                     }
@@ -302,10 +306,10 @@ private struct InviteAcceptSheet: View {
                     VStack(spacing: 12) {
                         Text("🤝")
                             .font(.system(size: 48))
-                        Text("收到一个好友邀请")
+                        Text(lm.acceptTitle)
                             .font(.title3)
                             .fontWeight(.semibold)
-                        Text("邀请码：\(code)")
+                        Text(lm.acceptCode(code))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .fontDesign(.monospaced)
@@ -323,7 +327,7 @@ private struct InviteAcceptSheet: View {
                         if isLoading {
                             ProgressView().tint(.white)
                         } else {
-                            Text("接受邀请")
+                            Text(lm.acceptButton)
                                 .font(.headline)
                                 .foregroundColor(.white)
                         }
@@ -337,11 +341,11 @@ private struct InviteAcceptSheet: View {
                 }
             }
             .padding()
-            .navigationTitle("好友邀请")
+            .navigationTitle(lm.acceptNavTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("稍后再说") { dismiss() }
+                    Button(lm.acceptLater) { dismiss() }
                 }
             }
         }

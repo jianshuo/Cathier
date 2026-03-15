@@ -3,6 +3,7 @@ import SwiftUI
 struct CheckInCard: View {
     let checkIn: CheckIn
     @State private var showDetail = false
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         Button(action: { showDetail = true }) {
@@ -13,13 +14,14 @@ struct CheckInCard: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     Spacer()
-                    IntensityBadge(intensity: checkIn.intensity)
+                    IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
                 }
 
                 // Body parts + sensations
                 if !checkIn.bodyParts.isEmpty || !checkIn.sensations.isEmpty {
                     let bodyText = [checkIn.bodyParts, checkIn.sensations]
                         .flatMap { $0 }
+                        .map { lm.display($0) }
                         .joined(separator: " · ")
                     Text(bodyText)
                         .font(.subheadline)
