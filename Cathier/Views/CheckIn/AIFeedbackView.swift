@@ -53,7 +53,8 @@ struct AIFeedbackView: View {
         }
         .task {
             if viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
-                await viewModel.fetchAIFeedback()
+                let history = fetchRecentHistory()
+                await viewModel.fetchAIFeedback(recentHistory: history)
             }
         }
     }
@@ -120,6 +121,16 @@ struct AIFeedbackView: View {
         case .emotions: return "heart.fill"
         case .full: return "doc.text.fill"
         }
+    }
+
+    // MARK: - History
+
+    private func fetchRecentHistory() -> [CheckIn] {
+        var descriptor = FetchDescriptor<CheckIn>(
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        descriptor.fetchLimit = 5
+        return (try? modelContext.fetch(descriptor)) ?? []
     }
 
     // MARK: - Save action

@@ -46,7 +46,7 @@ final class CheckInViewModel {
     }
 
     // MARK: - Actions
-    func fetchAIFeedback() async {
+    func fetchAIFeedback(recentHistory: [CheckIn] = []) async {
         isLoadingAI = true
         aiError = nil
         do {
@@ -54,7 +54,8 @@ final class CheckInViewModel {
                 bodyParts: Array(selectedBodyParts),
                 sensations: Array(selectedSensations),
                 intensity: Int(intensity),
-                emotions: allEmotions
+                emotions: allEmotions,
+                recentHistory: recentHistory
             )
         } catch {
             aiError = error.localizedDescription
