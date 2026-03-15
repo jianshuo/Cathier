@@ -38,13 +38,13 @@ struct EmotionLabelView: View {
                     VStack(alignment: .leading, spacing: 12) {
                         sectionLabel("更具体是…")
                         FlowLayout(spacing: 10) {
-                            ForEach(category.children, id: \.self) { emotion in
+                            ForEach(category.emotions) { emotion in
                                 ChipView(
-                                    label: emotion,
-                                    isSelected: viewModel.selectedEmotions.contains(emotion),
+                                    label: "\(emotion.emoji) \(emotion.nameZh)",
+                                    isSelected: viewModel.selectedEmotions.contains(emotion.nameZh),
                                     color: category.color
                                 ) {
-                                    toggleEmotion(emotion)
+                                    toggleEmotion(emotion.nameZh)
                                 }
                             }
                         }
@@ -103,8 +103,9 @@ struct EmotionLabelView: View {
             FlowLayout(spacing: 8) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
                     let color = EmotionData.category(for: emotion)?.color ?? .orange
+                    let emoji = EmotionData.emoji(for: emotion)
                     HStack(spacing: 4) {
-                        Text(emotion)
+                        Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")
                             .font(.subheadline)
                             .fontWeight(.medium)
                         Button {
