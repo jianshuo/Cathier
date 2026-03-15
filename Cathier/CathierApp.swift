@@ -1,17 +1,37 @@
-//
-//  CathierApp.swift
-//  Cathier
-//
-//  Created by Jianshuo Wang on 2026/3/13.
-//
-
 import SwiftUI
+import SwiftData
 
 @main
 struct CathierApp: App {
+    let container: ModelContainer = {
+        let config = ModelConfiguration(cloudKitDatabase: .none)
+        return try! ModelContainer(for: CheckIn.self, configurations: config)
+    }()
+
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onOpenURL(perform: handleDeepLink)
         }
+        .modelContainer(container)
     }
+
+    /// Handles cathier://invite?code=XXXXXXXX
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme == "cathier",
+              url.host == "invite",
+              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let code = components.queryItems?.first(where: { $0.name == "code" })?.value
+        else { return }
+
+        NotificationCenter.default.post(
+            name: .cathierInviteReceived,
+            object: nil,
+            userInfo: ["code": code]
+        )
+    }
+}
+
+extension Notification.Name {
+    static let cathierInviteReceived = Notification.Name("cathierInviteReceived")
 }
