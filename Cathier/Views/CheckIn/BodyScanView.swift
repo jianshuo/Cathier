@@ -2,6 +2,7 @@ import SwiftUI
 
 struct BodyScanView: View {
     @Environment(CheckInViewModel.self) private var viewModel
+    @Environment(ConfigService.self) private var config
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -10,7 +11,7 @@ struct BodyScanView: View {
                 // Body Parts
                 sectionHeader(title: "哪里有感受？", subtitle: "可多选")
                 FlowLayout(spacing: 10) {
-                    ForEach(EmotionData.bodyParts, id: \.self) { part in
+                    ForEach(config.bodyParts, id: \.self) { part in
                         ChipView(
                             label: part,
                             isSelected: viewModel.selectedBodyParts.contains(part)
@@ -25,7 +26,7 @@ struct BodyScanView: View {
                 // Sensations
                 sectionHeader(title: "是什么样的感受？", subtitle: "可多选")
                 FlowLayout(spacing: 10) {
-                    ForEach(EmotionData.sensations, id: \.self) { sensation in
+                    ForEach(config.sensations, id: \.self) { sensation in
                         ChipView(
                             label: sensation,
                             isSelected: viewModel.selectedSensations.contains(sensation)

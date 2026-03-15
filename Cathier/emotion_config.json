@@ -1,0 +1,181 @@
+{
+  "version": 1,
+  "bodyParts": ["头部", "胸口", "腹部", "肩颈", "手脚", "全身"],
+  "sensations": [
+    "紧绷", "沉重", "发热", "空洞",
+    "酸胀", "轻盈", "颤抖", "麻木",
+    "刺痛", "收缩", "压迫", "温暖",
+    "冰冷", "放松", "震动", "膨胀"
+  ],
+  "categories": [
+    {
+      "id": "impassioned",
+      "nameZh": "激情",
+      "nameEn": "Impassioned",
+      "colorHex": "#FF5933",
+      "icon": "bolt.fill",
+      "valence": "positive",
+      "emotions": [
+        {"id": "enthusiastic",  "nameZh": "热情",     "nameEn": "Enthusiastic", "emoji": "🔥", "intensity": 4},
+        {"id": "excited",       "nameZh": "兴奋",     "nameEn": "Excited",      "emoji": "⚡", "intensity": 4},
+        {"id": "aroused",       "nameZh": "激动",     "nameEn": "Aroused",      "emoji": "💥", "intensity": 4},
+        {"id": "delirious",     "nameZh": "狂喜",     "nameEn": "Delirious",    "emoji": "🤯", "intensity": 5},
+        {"id": "passionate",    "nameZh": "充满激情", "nameEn": "Passionate",   "emoji": "❤️‍🔥", "intensity": 4},
+        {"id": "euphoric",      "nameZh": "欣喜若狂", "nameEn": "Euphoric",     "emoji": "🌟", "intensity": 5},
+        {"id": "thrilled",      "nameZh": "激动万分", "nameEn": "Thrilled",     "emoji": "🎉", "intensity": 4},
+        {"id": "determined",    "nameZh": "坚定",     "nameEn": "Determined",   "emoji": "💪", "intensity": 3},
+        {"id": "confident",     "nameZh": "自信",     "nameEn": "Confident",    "emoji": "😎", "intensity": 3},
+        {"id": "optimistic",    "nameZh": "乐观",     "nameEn": "Optimistic",   "emoji": "🌞", "intensity": 3},
+        {"id": "anticipating",  "nameZh": "期待",     "nameEn": "Anticipating", "emoji": "🤩", "intensity": 3}
+      ]
+    },
+    {
+      "id": "happy",
+      "nameZh": "快乐",
+      "nameEn": "Happy",
+      "colorHex": "#FFBF00",
+      "icon": "sun.max.fill",
+      "valence": "positive",
+      "emotions": [
+        {"id": "joyful",    "nameZh": "喜悦",     "nameEn": "Joyful",    "emoji": "😄", "intensity": 4},
+        {"id": "blissful",  "nameZh": "幸福",     "nameEn": "Blissful",  "emoji": "😊", "intensity": 4},
+        {"id": "amused",    "nameZh": "被逗乐",   "nameEn": "Amused",    "emoji": "😆", "intensity": 3},
+        {"id": "delighted", "nameZh": "高兴",     "nameEn": "Delighted", "emoji": "🥰", "intensity": 4},
+        {"id": "lucky",     "nameZh": "幸运",     "nameEn": "Lucky",     "emoji": "🍀", "intensity": 3},
+        {"id": "grateful",  "nameZh": "感恩",     "nameEn": "Grateful",  "emoji": "🙏", "intensity": 3},
+        {"id": "hopeful",   "nameZh": "充满希望", "nameEn": "Hopeful",   "emoji": "🌈", "intensity": 3},
+        {"id": "alive",     "nameZh": "充满活力", "nameEn": "Alive",     "emoji": "✨", "intensity": 3},
+        {"id": "pleasant",  "nameZh": "愉悦",     "nameEn": "Pleasant",  "emoji": "😁", "intensity": 3},
+        {"id": "warm",      "nameZh": "温暖",     "nameEn": "Warm",      "emoji": "🌤", "intensity": 2}
+      ]
+    },
+    {
+      "id": "calm",
+      "nameZh": "平静",
+      "nameEn": "Calm",
+      "colorHex": "#33ADE6",
+      "icon": "leaf.fill",
+      "valence": "positive",
+      "emotions": [
+        {"id": "peaceful",    "nameZh": "平和", "nameEn": "Peaceful",    "emoji": "🕊",  "intensity": 2},
+        {"id": "relaxed",     "nameZh": "放松", "nameEn": "Relaxed",     "emoji": "😌", "intensity": 2},
+        {"id": "contented",   "nameZh": "满足", "nameEn": "Contented",   "emoji": "🙂",  "intensity": 2},
+        {"id": "serene",      "nameZh": "宁静", "nameEn": "Serene",      "emoji": "🌿", "intensity": 2},
+        {"id": "comfortable", "nameZh": "舒适", "nameEn": "Comfortable", "emoji": "🛋",  "intensity": 2},
+        {"id": "focused",     "nameZh": "专注", "nameEn": "Focused",     "emoji": "🎯", "intensity": 2},
+        {"id": "composed",    "nameZh": "从容", "nameEn": "Composed",    "emoji": "🌅", "intensity": 2},
+        {"id": "detached",    "nameZh": "淡然", "nameEn": "Detached",    "emoji": "🌫",  "intensity": 1},
+        {"id": "at_ease",     "nameZh": "安然", "nameEn": "At Ease",     "emoji": "🌙", "intensity": 1}
+      ]
+    },
+    {
+      "id": "regard",
+      "nameZh": "爱与关怀",
+      "nameEn": "Love / Regard",
+      "colorHex": "#F272A5",
+      "icon": "heart.fill",
+      "valence": "positive",
+      "emotions": [
+        {"id": "loving",       "nameZh": "充满爱",   "nameEn": "Loving",      "emoji": "❤️",  "intensity": 4},
+        {"id": "affectionate", "nameZh": "充满柔情", "nameEn": "Affectionate","emoji": "💕", "intensity": 4},
+        {"id": "admiration",   "nameZh": "钦佩",     "nameEn": "Admiration",  "emoji": "👏", "intensity": 3},
+        {"id": "compassion",   "nameZh": "同情",     "nameEn": "Compassion",  "emoji": "🤲", "intensity": 3},
+        {"id": "friendly",     "nameZh": "友好",     "nameEn": "Friendly",    "emoji": "🙂",  "intensity": 2}
+      ]
+    },
+    {
+      "id": "anger",
+      "nameZh": "愤怒",
+      "nameEn": "Anger",
+      "colorHex": "#F54538",
+      "icon": "flame.fill",
+      "valence": "negative",
+      "emotions": [
+        {"id": "fury",       "nameZh": "狂怒", "nameEn": "Fury",       "emoji": "😡", "intensity": 5},
+        {"id": "outrage",    "nameZh": "愤慨", "nameEn": "Outrage",    "emoji": "🤬", "intensity": 5},
+        {"id": "irritated",  "nameZh": "烦躁", "nameEn": "Irritated",  "emoji": "😤", "intensity": 3},
+        {"id": "annoyed",    "nameZh": "恼火", "nameEn": "Annoyed",    "emoji": "😠", "intensity": 3},
+        {"id": "resentful",  "nameZh": "怨恨", "nameEn": "Resentful",  "emoji": "😒", "intensity": 4},
+        {"id": "discontent", "nameZh": "不满", "nameEn": "Discontent", "emoji": "😑", "intensity": 2},
+        {"id": "jealous",    "nameZh": "嫉妒", "nameEn": "Jealous",    "emoji": "💢", "intensity": 3},
+        {"id": "frustrated", "nameZh": "挫败", "nameEn": "Frustrated", "emoji": "🤦", "intensity": 3}
+      ]
+    },
+    {
+      "id": "fear",
+      "nameZh": "恐惧",
+      "nameEn": "Fear",
+      "colorHex": "#AD52DE",
+      "icon": "exclamationmark.triangle.fill",
+      "valence": "negative",
+      "emotions": [
+        {"id": "nervous",   "nameZh": "紧张",   "nameEn": "Nervous",   "emoji": "😬", "intensity": 3},
+        {"id": "worried",   "nameZh": "担心",   "nameEn": "Worried",   "emoji": "😟", "intensity": 3},
+        {"id": "afraid",    "nameZh": "害怕",   "nameEn": "Afraid",    "emoji": "😨", "intensity": 4},
+        {"id": "anxious",   "nameZh": "焦虑",   "nameEn": "Anxious",   "emoji": "😰", "intensity": 4},
+        {"id": "stressed",  "nameZh": "压力大", "nameEn": "Stressed",  "emoji": "😫", "intensity": 4},
+        {"id": "uneasy",    "nameZh": "不安",   "nameEn": "Uneasy",    "emoji": "😧", "intensity": 3},
+        {"id": "panicked",  "nameZh": "慌乱",   "nameEn": "Panicked",  "emoji": "😱", "intensity": 5},
+        {"id": "terrified", "nameZh": "惶恐",   "nameEn": "Terrified", "emoji": "🫨", "intensity": 5}
+      ]
+    },
+    {
+      "id": "sad",
+      "nameZh": "悲伤",
+      "nameEn": "Disheartened",
+      "colorHex": "#5C8ABF",
+      "icon": "cloud.drizzle.fill",
+      "valence": "negative",
+      "emotions": [
+        {"id": "sad",        "nameZh": "难过",     "nameEn": "Sad",        "emoji": "😢", "intensity": 3},
+        {"id": "lonely",     "nameZh": "孤独",     "nameEn": "Lonely",     "emoji": "🥀", "intensity": 4},
+        {"id": "hurt",       "nameZh": "受伤",     "nameEn": "Hurt",       "emoji": "💔", "intensity": 4},
+        {"id": "depressed",  "nameZh": "抑郁",     "nameEn": "Depressed",  "emoji": "😞", "intensity": 5},
+        {"id": "exhausted",  "nameZh": "精疲力尽", "nameEn": "Exhausted",  "emoji": "😩", "intensity": 4},
+        {"id": "lost",       "nameZh": "失落",     "nameEn": "Lost",       "emoji": "🌧",  "intensity": 3},
+        {"id": "aggrieved",  "nameZh": "委屈",     "nameEn": "Aggrieved",  "emoji": "😿", "intensity": 3},
+        {"id": "dejected",   "nameZh": "沮丧",     "nameEn": "Dejected",   "emoji": "😔", "intensity": 4},
+        {"id": "sorrowful",  "nameZh": "哀伤",     "nameEn": "Sorrowful",  "emoji": "😭", "intensity": 4},
+        {"id": "regret",     "nameZh": "遗憾",     "nameEn": "Regretful",  "emoji": "🫤", "intensity": 3},
+        {"id": "helpless",   "nameZh": "无助",     "nameEn": "Helpless",   "emoji": "🤷", "intensity": 4},
+        {"id": "desperate",  "nameZh": "绝望",     "nameEn": "Desperate",  "emoji": "🖤", "intensity": 5}
+      ]
+    },
+    {
+      "id": "shame",
+      "nameZh": "羞愧",
+      "nameEn": "Shame",
+      "colorHex": "#8C6647",
+      "icon": "eye.slash.fill",
+      "valence": "negative",
+      "emotions": [
+        {"id": "ashamed",      "nameZh": "羞愧", "nameEn": "Ashamed",      "emoji": "😳", "intensity": 4},
+        {"id": "embarrassed",  "nameZh": "尴尬", "nameEn": "Embarrassed",  "emoji": "😳", "intensity": 3},
+        {"id": "guilty",       "nameZh": "内疚", "nameEn": "Guilty",       "emoji": "😔", "intensity": 4},
+        {"id": "remorseful",   "nameZh": "后悔", "nameEn": "Remorseful",   "emoji": "😞", "intensity": 3},
+        {"id": "shameful",     "nameZh": "羞耻", "nameEn": "Shameful",     "emoji": "🙈", "intensity": 4},
+        {"id": "self_blaming", "nameZh": "自责", "nameEn": "Self-blaming", "emoji": "😣", "intensity": 4},
+        {"id": "disgusted",    "nameZh": "厌恶", "nameEn": "Disgusted",    "emoji": "🤢", "intensity": 3},
+        {"id": "repulsed",     "nameZh": "反感", "nameEn": "Repulsed",     "emoji": "😖", "intensity": 3}
+      ]
+    },
+    {
+      "id": "surprise",
+      "nameZh": "惊讶",
+      "nameEn": "Surprise",
+      "colorHex": "#FF9400",
+      "icon": "sparkles",
+      "valence": "neutral",
+      "emotions": [
+        {"id": "shocked",              "nameZh": "震惊", "nameEn": "Shocked",              "emoji": "😲", "intensity": 4},
+        {"id": "startled",             "nameZh": "受惊", "nameEn": "Startled",             "emoji": "😯", "intensity": 3},
+        {"id": "amazed",               "nameZh": "惊叹", "nameEn": "Amazed",               "emoji": "🤩", "intensity": 4},
+        {"id": "astonished",           "nameZh": "震撼", "nameEn": "Astonished",           "emoji": "😲", "intensity": 4},
+        {"id": "pleasantly_surprised", "nameZh": "惊喜", "nameEn": "Pleasantly Surprised", "emoji": "🎊", "intensity": 4},
+        {"id": "confused",             "nameZh": "困惑", "nameEn": "Confused",             "emoji": "🤔", "intensity": 2},
+        {"id": "curious",              "nameZh": "好奇", "nameEn": "Curious",              "emoji": "🧐", "intensity": 2},
+        {"id": "unexpected",           "nameZh": "意外", "nameEn": "Unexpected",           "emoji": "😮", "intensity": 3}
+      ]
+    }
+  ]
+}

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct EmotionLabelView: View {
     @Environment(CheckInViewModel.self) private var viewModel
+    @Environment(ConfigService.self) private var config
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -15,7 +16,7 @@ struct EmotionLabelView: View {
                 // Category grid
                 sectionLabel("这种感受，更接近哪种情绪？")
                 LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-                    ForEach(EmotionData.categories) { category in
+                    ForEach(config.categories) { category in
                         CategoryButton(
                             category: category,
                             isSelected: viewModel.selectedCategory == category.name
@@ -33,7 +34,7 @@ struct EmotionLabelView: View {
 
                 // Sub-emotion chips
                 if let categoryName = viewModel.selectedCategory,
-                   let category = EmotionData.categories.first(where: { $0.name == categoryName }) {
+                   let category = config.categories.first(where: { $0.name == categoryName }) {
                     VStack(alignment: .leading, spacing: 12) {
                         sectionLabel("更具体是…")
                         FlowLayout(spacing: 10) {

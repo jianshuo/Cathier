@@ -12,6 +12,8 @@ struct CathierApp: App {
         WindowGroup {
             ContentView()
                 .onOpenURL(perform: handleDeepLink)
+                .environment(ConfigService.shared)
+                .task { await ConfigService.shared.refreshFromGitHub() }
         }
         .modelContainer(container)
     }
