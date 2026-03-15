@@ -52,7 +52,7 @@ struct CheckInCard: View {
                             .font(.caption2)
                             .foregroundColor(.orange)
                             .padding(.top, 2)
-                        Text(checkIn.aiFeedback)
+                        Text(markdownText(checkIn.aiFeedback))
                             .font(.subheadline)
                             .foregroundColor(.primary)
                             .lineLimit(3)
@@ -85,6 +85,12 @@ struct CheckInCard: View {
         .sheet(isPresented: $showDetail) {
             CheckInDetailView(checkIn: checkIn)
         }
+    }
+
+    private func markdownText(_ raw: String) -> AttributedString {
+        (try? AttributedString(markdown: raw,
+            options: .init(interpretedSyntax: .inlinesOnlyPreservingWhitespace)))
+        ?? AttributedString(raw)
     }
 
     private var timeString: String {

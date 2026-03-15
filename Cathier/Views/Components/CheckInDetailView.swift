@@ -63,14 +63,14 @@ struct CheckInDetailView: View {
                         }
                     }
 
-                    // AI feedback — full, no line limit
+                    // AI feedback — full, no line limit, Markdown rendered
                     if !checkIn.aiFeedback.isEmpty {
                         sectionCard {
                             Label("AI 陪伴", systemImage: "sparkles")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.orange)
-                            Text(checkIn.aiFeedback)
+                            Text(markdownText(checkIn.aiFeedback))
                                 .font(.body)
                                 .foregroundColor(.primary)
                                 .lineSpacing(6)
@@ -129,6 +129,12 @@ struct CheckInDetailView: View {
             .background(color.opacity(0.12))
             .foregroundColor(color)
             .clipShape(Capsule())
+    }
+
+    private func markdownText(_ raw: String) -> AttributedString {
+        (try? AttributedString(markdown: raw,
+            options: .init(interpretedSyntax: .inlinesOnlyPreservingWhitespace)))
+        ?? AttributedString(raw)
     }
 
     private var dateString: String {
