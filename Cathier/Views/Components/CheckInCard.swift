@@ -34,7 +34,8 @@ struct CheckInCard: View {
                     FlowLayout(spacing: 6) {
                         ForEach(checkIn.emotions, id: \.self) { emotion in
                             let color = EmotionData.category(for: emotion)?.color ?? .orange
-                            Text(lm.display(emotion))
+                            let emoji = EmotionData.emoji(for: emotion)
+                            Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")
                                 .font(.caption)
                                 .fontWeight(.medium)
                                 .padding(.horizontal, 10)

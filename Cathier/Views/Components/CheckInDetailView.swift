@@ -58,7 +58,8 @@ struct CheckInDetailView: View {
                             FlowLayout(spacing: 8) {
                                 ForEach(checkIn.emotions, id: \.self) { emotion in
                                     let color = EmotionData.category(for: emotion)?.color ?? .orange
-                                    chip(lm.display(emotion), color: color)
+                                    let emoji = EmotionData.emoji(for: emotion)
+                                    chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)", color: color)
                                 }
                             }
                         }

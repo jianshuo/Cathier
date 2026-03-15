@@ -42,7 +42,7 @@ struct EmotionLabelView: View {
                         FlowLayout(spacing: 10) {
                             ForEach(category.emotions) { emotion in
                                 ChipView(
-                                    label: lm.display(emotion.nameZh),
+                                    label: "\(emotion.emoji) \(emotion.nameZh)",
                                     isSelected: viewModel.selectedEmotions.contains(emotion.nameZh),
                                     color: category.color
                                 ) {
@@ -105,8 +105,9 @@ struct EmotionLabelView: View {
             FlowLayout(spacing: 8) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
                     let color = EmotionData.category(for: emotion)?.color ?? .orange
+                    let emoji = EmotionData.emoji(for: emotion)
                     HStack(spacing: 4) {
-                        Text(lm.display(emotion))
+                        Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")
                             .font(.subheadline)
                             .fontWeight(.medium)
                         Button {
