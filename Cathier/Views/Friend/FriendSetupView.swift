@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FriendSetupView: View {
     @Environment(FriendViewModel.self) private var vm
+    @Environment(LanguageManager.self) private var lm
 
     @State private var displayName = ""
     @State private var avatarEmoji = "🙂"
@@ -20,10 +21,10 @@ struct FriendSetupView: View {
                 VStack(spacing: 8) {
                     Text(avatarEmoji)
                         .font(.system(size: 72))
-                    Text("设置你的好友档案")
+                    Text(lm.setupTitle)
                         .font(.title2)
                         .fontWeight(.semibold)
-                    Text("好友看到的就是这个名字和头像")
+                    Text(lm.setupSubtitle)
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -31,7 +32,7 @@ struct FriendSetupView: View {
 
                 // Emoji picker
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("选一个头像 emoji")
+                    Text(lm.setupChooseEmoji)
                         .font(.subheadline)
                         .fontWeight(.medium)
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 8), spacing: 12) {
@@ -55,10 +56,10 @@ struct FriendSetupView: View {
 
                 // Name input
                 VStack(alignment: .leading, spacing: 8) {
-                    Text("你的昵称")
+                    Text(lm.setupNicknameLabel)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                    TextField("输入昵称…", text: $displayName)
+                    TextField(lm.setupNicknamePlaceholder, text: $displayName)
                         .textFieldStyle(.plain)
                         .padding(12)
                         .background(Color(.systemGray6))
@@ -77,7 +78,7 @@ struct FriendSetupView: View {
                     if isLoading {
                         ProgressView().tint(.white)
                     } else {
-                        Text("完成")
+                        Text(lm.setupDone)
                             .font(.headline)
                             .foregroundColor(.white)
                     }

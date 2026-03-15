@@ -3,6 +3,7 @@ import SwiftUI
 struct CheckInDetailView: View {
     let checkIn: CheckIn
     @Environment(\.dismiss) private var dismiss
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         NavigationStack {
@@ -20,27 +21,27 @@ struct CheckInDetailView: View {
                                 .fontWeight(.semibold)
                         }
                         Spacer()
-                        IntensityBadge(intensity: checkIn.intensity)
+                        IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
                     }
 
                     // Body parts & sensations
                     if !checkIn.bodyParts.isEmpty || !checkIn.sensations.isEmpty {
                         sectionCard {
-                            Label("身体感受", systemImage: "figure.mind.and.body")
+                            Label(lm.detailBodySection, systemImage: "figure.mind.and.body")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.secondary)
                             if !checkIn.bodyParts.isEmpty {
                                 FlowLayout(spacing: 8) {
                                     ForEach(checkIn.bodyParts, id: \.self) { part in
-                                        chip(part, color: .blue)
+                                        chip(lm.display(part), color: .blue)
                                     }
                                 }
                             }
                             if !checkIn.sensations.isEmpty {
                                 FlowLayout(spacing: 8) {
                                     ForEach(checkIn.sensations, id: \.self) { s in
-                                        chip(s, color: .teal)
+                                        chip(lm.display(s), color: .teal)
                                     }
                                 }
                             }
@@ -50,14 +51,14 @@ struct CheckInDetailView: View {
                     // Emotions
                     if !checkIn.emotions.isEmpty {
                         sectionCard {
-                            Label("情绪", systemImage: "heart.fill")
+                            Label(lm.detailEmotionsSection, systemImage: "heart.fill")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.secondary)
                             FlowLayout(spacing: 8) {
                                 ForEach(checkIn.emotions, id: \.self) { emotion in
                                     let color = EmotionData.category(for: emotion)?.color ?? .orange
-                                    chip(emotion, color: color)
+                                    chip(lm.display(emotion), color: color)
                                 }
                             }
                         }
@@ -66,7 +67,7 @@ struct CheckInDetailView: View {
                     // AI feedback — full, no line limit, Markdown rendered
                     if !checkIn.aiFeedback.isEmpty {
                         sectionCard {
-                            Label("AI 陪伴", systemImage: "sparkles")
+                            Label(lm.aiCompanion, systemImage: "sparkles")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.orange)
@@ -84,7 +85,7 @@ struct CheckInDetailView: View {
                     // Note — full, no line limit
                     if !checkIn.note.isEmpty {
                         sectionCard {
-                            Label("备注", systemImage: "pencil")
+                            Label(lm.detailNoteSection, systemImage: "pencil")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.secondary)
@@ -98,11 +99,11 @@ struct CheckInDetailView: View {
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
             }
-            .navigationTitle("记录详情")
+            .navigationTitle(lm.detailNavTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("完成") { dismiss() }
+                    Button(lm.detailDone) { dismiss() }
                 }
             }
         }
@@ -133,7 +134,7 @@ struct CheckInDetailView: View {
 
     private var dateString: String {
         let f = DateFormatter()
-        f.dateFormat = "yyyy年M月d日"
+        f.dateFormat = lm.detailDateFormat
         return f.string(from: checkIn.date)
     }
 

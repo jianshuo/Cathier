@@ -13,6 +13,7 @@ struct EmotionCategoryDTO: Codable {
     var id: String
     var nameZh: String
     var nameEn: String
+    var nameJa: String?
     var colorHex: String
     var icon: String
     var valence: String
@@ -23,11 +24,13 @@ struct EmotionCategoryDTO: Codable {
             id: id,
             nameZh: nameZh,
             nameEn: nameEn,
+            nameJa: nameJa ?? nameEn,
             color: Color(hex: colorHex),
             icon: icon,
             valence: EmotionValence(rawValue: valence) ?? .neutral,
             emotions: emotions.map {
                 Emotion(id: $0.id, nameZh: $0.nameZh, nameEn: $0.nameEn,
+                        nameJa: $0.nameJa ?? $0.nameEn,
                         emoji: $0.emoji, intensity: $0.intensity)
             }
         )
@@ -38,6 +41,7 @@ struct EmotionDTO: Codable {
     var id: String
     var nameZh: String
     var nameEn: String
+    var nameJa: String?
     var emoji: String
     var intensity: Int
 }
@@ -96,10 +100,15 @@ final class ConfigService {
         categories = config.categories.map { $0.toEmotionCategory() }
     }
 
-    // MARK: - Lookup
+    // MARK: - Lookup (searches across all languages for robust color/category resolution)
 
     func category(for emotion: String) -> EmotionCategory? {
-        categories.first { $0.nameZh == emotion || $0.children.contains(emotion) }
+        categories.first { cat in
+            cat.nameZh == emotion || cat.nameEn == emotion || cat.nameJa == emotion ||
+            cat.emotions.contains { e in
+                e.nameZh == emotion || e.nameEn == emotion || e.nameJa == emotion
+            }
+        }
     }
 }
 

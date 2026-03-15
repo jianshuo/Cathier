@@ -4,6 +4,7 @@ import SwiftData
 struct JournalView: View {
     @Query(sort: \CheckIn.date, order: .reverse) private var checkIns: [CheckIn]
     @Environment(\.modelContext) private var modelContext
+    @Environment(LanguageManager.self) private var lm
 
     private var groupedCheckIns: [(String, [CheckIn])] {
         let calendar = Calendar.current
@@ -37,7 +38,7 @@ struct JournalView: View {
                                             Button(role: .destructive) {
                                                 delete(checkIn)
                                             } label: {
-                                                Label("删除", systemImage: "trash")
+                                                Label(lm.journalDelete, systemImage: "trash")
                                             }
                                         }
                                 }
@@ -47,7 +48,7 @@ struct JournalView: View {
                     .listStyle(.plain)
                 }
             }
-            .navigationTitle("日记")
+            .navigationTitle(lm.journalNavTitle)
         }
     }
 
@@ -56,10 +57,10 @@ struct JournalView: View {
             Image(systemName: "book.closed")
                 .font(.system(size: 52))
                 .foregroundColor(.secondary.opacity(0.4))
-            Text("还没有记录")
+            Text(lm.journalEmpty)
                 .font(.headline)
                 .foregroundColor(.secondary)
-            Text("完成第一次签到后，记录会出现在这里。")
+            Text(lm.journalEmptyHint)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -73,10 +74,10 @@ struct JournalView: View {
     }
 
     private func sectionTitle(for date: Date, calendar: Calendar) -> String {
-        if calendar.isDateInToday(date) { return "今天" }
-        if calendar.isDateInYesterday(date) { return "昨天" }
+        if calendar.isDateInToday(date) { return lm.journalToday }
+        if calendar.isDateInYesterday(date) { return lm.journalYesterday }
         let formatter = DateFormatter()
-        formatter.dateFormat = "M月d日"
+        formatter.dateFormat = lm.journalDateFormat
         return formatter.string(from: date)
     }
 }

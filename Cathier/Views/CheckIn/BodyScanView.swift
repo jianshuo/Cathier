@@ -3,17 +3,18 @@ import SwiftUI
 struct BodyScanView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         @Bindable var vm = viewModel
         ScrollView {
             VStack(alignment: .leading, spacing: 28) {
                 // Body Parts
-                sectionHeader(title: "哪里有感受？", subtitle: "可多选")
+                sectionHeader(title: lm.bodyScanWhereTitle, subtitle: lm.bodyScanMultiple)
                 FlowLayout(spacing: 10) {
                     ForEach(config.bodyParts, id: \.self) { part in
                         ChipView(
-                            label: part,
+                            label: lm.display(part),
                             isSelected: viewModel.selectedBodyParts.contains(part)
                         ) {
                             toggleBodyPart(part)
@@ -24,11 +25,11 @@ struct BodyScanView: View {
                 Divider()
 
                 // Sensations
-                sectionHeader(title: "是什么样的感受？", subtitle: "可多选")
+                sectionHeader(title: lm.bodyScanWhatTitle, subtitle: lm.bodyScanMultiple)
                 FlowLayout(spacing: 10) {
                     ForEach(config.sensations, id: \.self) { sensation in
                         ChipView(
-                            label: sensation,
+                            label: lm.display(sensation),
                             isSelected: viewModel.selectedSensations.contains(sensation)
                         ) {
                             toggleSensation(sensation)
@@ -41,17 +42,17 @@ struct BodyScanView: View {
                 // Intensity Slider
                 VStack(alignment: .leading, spacing: 12) {
                     sectionHeader(
-                        title: "感受的强度",
+                        title: lm.bodyScanIntensity,
                         subtitle: "\(Int(viewModel.intensity)) / 10"
                     )
-                    IntensitySlider(value: $vm.intensity)
+                    IntensitySlider(value: $vm.intensity, mildLabel: lm.bodyScanMild, intenseLabel: lm.bodyScanIntense)
                 }
 
                 // Next Button
                 Button(action: {
                     withAnimation { viewModel.currentStep = .emotionLabel }
                 }) {
-                    Text("下一步：识别情绪")
+                    Text(lm.bodyScanNext)
                         .font(.headline)
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
@@ -99,6 +100,8 @@ struct BodyScanView: View {
 
 private struct IntensitySlider: View {
     @Binding var value: Double
+    let mildLabel: String
+    let intenseLabel: String
 
     private let gradient = LinearGradient(
         colors: [.green, .yellow, .orange, .red],
@@ -111,9 +114,9 @@ private struct IntensitySlider: View {
             Slider(value: $value, in: 1...10, step: 1)
                 .tint(intensityColor)
             HStack {
-                Text("轻微").font(.caption2).foregroundColor(.secondary)
+                Text(mildLabel).font(.caption2).foregroundColor(.secondary)
                 Spacer()
-                Text("强烈").font(.caption2).foregroundColor(.secondary)
+                Text(intenseLabel).font(.caption2).foregroundColor(.secondary)
             }
         }
     }

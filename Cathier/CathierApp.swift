@@ -13,6 +13,7 @@ struct CathierApp: App {
             ContentView()
                 .onOpenURL(perform: handleDeepLink)
                 .environment(ConfigService.shared)
+                .environment(LanguageManager.shared)
                 .task { await ConfigService.shared.refreshFromGitHub() }
         }
         .modelContainer(container)

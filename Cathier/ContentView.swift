@@ -3,19 +3,20 @@ import SwiftData
 
 struct ContentView: View {
     @State private var friendVM = FriendViewModel()
+    @Environment(LanguageManager.self) private var lm
 
     var body: some View {
         TabView {
-            Tab("此刻", systemImage: "heart.fill") {
+            Tab(lm.tabToday, systemImage: "heart.fill") {
                 TodayView()
             }
-            Tab("日记", systemImage: "calendar") {
+            Tab(lm.tabJournal, systemImage: "calendar") {
                 JournalView()
             }
-            Tab("好友", systemImage: "person.2.fill") {
+            Tab(lm.tabFriends, systemImage: "person.2.fill") {
                 FriendFeedView()
             }
-            Tab("设置", systemImage: "gearshape.fill") {
+            Tab(lm.tabSettings, systemImage: "gearshape.fill") {
                 SettingsView()
             }
         }
@@ -27,4 +28,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .modelContainer(for: CheckIn.self, inMemory: true)
+        .environment(LanguageManager.shared)
 }
