@@ -70,10 +70,10 @@ struct CheckInDetailView: View {
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.orange)
-                            Text(markdownText(checkIn.aiFeedback))
-                                .font(.body)
-                                .foregroundColor(.primary)
-                                .lineSpacing(6)
+                            MarkdownText(raw: checkIn.aiFeedback,
+                                         font: .body,
+                                         paragraphSpacing: 8,
+                                         lineSpacing: 5)
                         }
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
@@ -129,10 +129,6 @@ struct CheckInDetailView: View {
             .background(color.opacity(0.12))
             .foregroundColor(color)
             .clipShape(Capsule())
-    }
-
-    private func markdownText(_ raw: String) -> AttributedString {
-        (try? AttributedString(markdown: raw)) ?? AttributedString(raw)
     }
 
     private var dateString: String {
