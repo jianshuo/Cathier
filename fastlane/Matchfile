@@ -1,4 +1,4 @@
-git_url("jianshuo/Cathier-certs")
+git_url("https://github.com/jianshuo/Cathier-certs.git")
 
 storage_mode("git")
 

@@ -62,7 +62,7 @@ final class LanguageManager {
         "冰冷": "Cold", "放松": "Relaxed", "震动": "Vibrating", "膨胀": "Expanding",
         // Emotion categories
         "激情": "Impassioned", "快乐": "Happy", "平静": "Calm", "爱与关怀": "Love & Care",
-        "愤怒": "Anger", "恐惧": "Fear", "悲伤": "Disheartened", "羞愧": "Shame",
+        "愤怒": "Anger", "恐惧": "Fear", "悲伤": "Disheartened", 
         "惊讶": "Surprise",
         // Emotions – Impassioned
         "热情": "Enthusiastic", "兴奋": "Excited", "激动": "Aroused", "狂喜": "Delirious",
@@ -113,7 +113,7 @@ final class LanguageManager {
         "冰冷": "冷たい", "放松": "リラックス", "震动": "振動", "膨胀": "膨張",
         // Emotion categories
         "激情": "情熱", "快乐": "幸福", "平静": "平静", "爱与关怀": "愛と思いやり",
-        "愤怒": "怒り", "恐惧": "恐れ", "悲伤": "悲しみ", "羞愧": "恥",
+        "愤怒": "怒り", "恐惧": "恐れ", "悲伤": "悲しみ", 
         "惊讶": "驚き",
         // Emotions – Impassioned
         "热情": "情熱的", "兴奋": "興奮", "激动": "激動", "狂喜": "狂喜",
