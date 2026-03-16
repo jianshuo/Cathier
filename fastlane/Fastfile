@@ -40,7 +40,12 @@ default_platform(:ios)
       # Build
       build_app(
         scheme: "Cathier",
-        export_method: "app-store"
+        export_method: "app-store",
+        export_options: {
+          provisioningProfiles: {
+            "com.wangjianshuo.cathier.Cathier" => "match AppStore com.wangjianshuo.cathier.Cathier"
+          }
+        }
       )
 
       # Upload to TestFlight
