@@ -19,7 +19,10 @@ struct CheckInFlowView: View {
                     case .bodyScan:
                         BodyScanView()
                     case .emotionLabel:
-                        EmotionLabelView()
+                        EmotionLabelView(onSkip: {
+                            _ = viewModel.save(context: modelContext)
+                            dismiss()
+                        })
                     case .aiFeedback:
                         AIFeedbackView(onDismiss: { dismiss() })
                     }

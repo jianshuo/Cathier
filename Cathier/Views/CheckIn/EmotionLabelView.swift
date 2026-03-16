@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct EmotionLabelView: View {
+    var onSkip: () -> Void = {}
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
@@ -83,7 +84,7 @@ struct EmotionLabelView: View {
 
                 // Skip to save without AI
                 Button(action: {
-                    withAnimation { viewModel.currentStep = .aiFeedback }
+                    onSkip()
                 }) {
                     Text(lm.emotionSkip)
                         .font(.subheadline)
