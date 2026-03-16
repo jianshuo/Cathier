@@ -2,17 +2,22 @@ name: Build & TestFlight
 
 on:
   push:
-    branches: [main]       # triggers on every merge to main
+    branches: [main]
 
 jobs:
   build:
-    runs-on: macos-15      # must be macOS for Xcode
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+        run: sudo xcode-select -s /Applications/Xcode_16.4.app
+
+      - name: Show Xcode info
+        run: |
+          xcodebuild -version
+          xcode-select -p
 
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
@@ -20,14 +25,11 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Build & Upload to TestFlight
+      - name: Run fastlane beta
         env:
-          MATCH_PASSWORD:        ${{ secrets.MATCH_PASSWORD }}
-          MATCH_GIT_BASIC_AUTH:  ${{ secrets.MATCH_GIT_BASIC_AUTH }}
-          ASC_API_KEY_ID:        ${{ secrets.ASC_API_KEY_ID }}
-          ASC_API_ISSUER_ID:     ${{ secrets.ASC_API_ISSUER_ID }}
-          ASC_API_KEY_CONTENT:   ${{ secrets.ASC_API_KEY_CONTENT }}
-        run: fastlane beta
+          MATCH_PASSWORD:       ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+          ASC_API_KEY_ID:       ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID:    ${{ secrets.ASC_API_ISSUER_ID }}
+          ASC_API_KEY_CONTENT:  ${{ secrets.ASC_API_KEY_CONTENT }}
+        run: bundle exec fastlane beta
