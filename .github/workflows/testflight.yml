@@ -26,9 +26,9 @@ jobs:
           bundler-cache: true
 
       - name: Inject GitHub PAT into Info.plist
-        run: /usr/libexec/PlistBuddy -c "Set :GitHubFeedbackPAT $GITHUB_FEEDBACK_PAT" Cathier/Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :GitHubFeedbackPAT $FEEDBACK_PAT" Cathier/Info.plist
         env:
-          GITHUB_FEEDBACK_PAT: ${{ secrets.GITHUB_FEEDBACK_PAT }}
+          FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
       - name: Run fastlane beta
         env:
