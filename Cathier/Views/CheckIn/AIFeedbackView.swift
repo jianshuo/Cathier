@@ -177,9 +177,9 @@ struct AIFeedbackView: View {
                          items: viewModel.selectedBodyParts.map { lm.display($0) })
             }
 
-            if !viewModel.selectedSensations.isEmpty {
+            if !viewModel.allSelectedSensations.isEmpty {
                 labelRow(icon: "waveform",
-                         items: viewModel.selectedSensations.map { lm.display($0) })
+                         items: viewModel.allSelectedSensations.map { lm.display($0) })
             }
 
             if !viewModel.allEmotions.isEmpty {

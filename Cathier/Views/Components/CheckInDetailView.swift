@@ -31,17 +31,43 @@ struct CheckInDetailView: View {
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
                                 .foregroundColor(.secondary)
-                            if !checkIn.bodyParts.isEmpty {
-                                FlowLayout(spacing: 8) {
-                                    ForEach(checkIn.bodyParts, id: \.self) { part in
-                                        chip(lm.display(part), color: .blue)
+                            let parsed = parsedSensations(checkIn.sensations)
+                            if parsed.perPart.isEmpty {
+                                // Legacy: flat sensation list with body parts shown separately
+                                if !checkIn.bodyParts.isEmpty {
+                                    FlowLayout(spacing: 8) {
+                                        ForEach(checkIn.bodyParts, id: \.self) { part in
+                                            chip(lm.display(part), color: .blue)
+                                        }
                                     }
                                 }
-                            }
-                            if !checkIn.sensations.isEmpty {
-                                FlowLayout(spacing: 8) {
-                                    ForEach(checkIn.sensations, id: \.self) { s in
-                                        chip(lm.display(s), color: .teal)
+                                if !parsed.global.isEmpty {
+                                    FlowLayout(spacing: 8) {
+                                        ForEach(parsed.global, id: \.self) { s in
+                                            chip(lm.display(s), color: .teal)
+                                        }
+                                    }
+                                }
+                            } else {
+                                // New format: per-body-part sensations
+                                ForEach(parsed.perPart, id: \.part) { entry in
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        Text(lm.display(entry.part))
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                            .foregroundColor(.blue)
+                                        FlowLayout(spacing: 6) {
+                                            ForEach(entry.sensations, id: \.self) { s in
+                                                chip(lm.display(s), color: .teal)
+                                            }
+                                        }
+                                    }
+                                }
+                                if !parsed.global.isEmpty {
+                                    FlowLayout(spacing: 8) {
+                                        ForEach(parsed.global, id: \.self) { s in
+                                            chip(lm.display(s), color: .teal)
+                                        }
                                     }
                                 }
                             }
@@ -111,6 +137,30 @@ struct CheckInDetailView: View {
     }
 
     // MARK: - Helpers
+
+    struct ParsedSensations {
+        var perPart: [(part: String, sensations: [String])]
+        var global: [String]
+    }
+
+    private func parsedSensations(_ sensations: [String]) -> ParsedSensations {
+        var perPartDict: [(part: String, sensations: [String])] = []
+        var global: [String] = []
+        for s in sensations {
+            let components = s.split(separator: ":", maxSplits: 1).map(String.init)
+            if components.count == 2 {
+                let part = components[0], sensation = components[1]
+                if let idx = perPartDict.firstIndex(where: { $0.part == part }) {
+                    perPartDict[idx].sensations.append(sensation)
+                } else {
+                    perPartDict.append((part: part, sensations: [sensation]))
+                }
+            } else {
+                global.append(s)
+            }
+        }
+        return ParsedSensations(perPart: perPartDict, global: global)
+    }
 
     @ViewBuilder
     private func sectionCard<Content: View>(@ViewBuilder content: () -> Content) -> some View {

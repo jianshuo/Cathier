@@ -158,6 +158,26 @@ enum ClaudeService {
         return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
     }
 
+    /// Parses "bodypart:sensation" encoded strings into grouped entries.
+    private static func parseBodySensations(_ sensations: [String]) -> (perPart: [(part: String, sensations: [String])], global: [String]) {
+        var perPartDict: [(part: String, sensations: [String])] = []
+        var global: [String] = []
+        for s in sensations {
+            let components = s.split(separator: ":", maxSplits: 1).map(String.init)
+            if components.count == 2 {
+                let part = components[0], sensation = components[1]
+                if let idx = perPartDict.firstIndex(where: { $0.part == part }) {
+                    perPartDict[idx].sensations.append(sensation)
+                } else {
+                    perPartDict.append((part: part, sensations: [sensation]))
+                }
+            } else {
+                global.append(s)
+            }
+        }
+        return (perPartDict, global)
+    }
+
     private static func buildPrompt(
         bodyParts: [String],
         sensations: [String],
@@ -167,17 +187,28 @@ enum ClaudeService {
         language: AppLanguage
     ) -> String {
         let lm = LanguageManager.shared
+        let parsed = parseBodySensations(sensations)
 
         switch language {
         case .zh:
             let parts  = bodyParts.isEmpty  ? "未指定" : bodyParts.joined(separator: "、")
-            let senses = sensations.isEmpty ? "未指定" : sensations.joined(separator: "、")
             let emos   = emotions.isEmpty   ? "说不清楚" : emotions.joined(separator: "、")
+
+            var sensesStr = ""
+            if parsed.perPart.isEmpty && parsed.global.isEmpty {
+                sensesStr = "未指定"
+            } else if parsed.perPart.isEmpty {
+                sensesStr = parsed.global.joined(separator: "、")
+            } else {
+                let parts2 = parsed.perPart.map { "\($0.part)：\($0.sensations.joined(separator: "、"))" }
+                sensesStr = parts2.joined(separator: "；")
+                if !parsed.global.isEmpty { sensesStr += "；" + parsed.global.joined(separator: "、") }
+            }
 
             var prompt = """
             【本次身体扫描】
             身体部位：\(parts)
-            身体感受：\(senses)（强度：\(intensity)/10）
+            身体感受：\(sensesStr)（强度：\(intensity)/10）
             情绪：\(emos)
 
             """
@@ -202,17 +233,26 @@ enum ClaudeService {
 
         case .en:
             let parts  = bodyParts.map { lm.display($0) }
-            let senses = sensations.map { lm.display($0) }
             let emos   = emotions.map { lm.display($0) }
 
             let partsStr  = parts.isEmpty  ? "unspecified" : parts.joined(separator: ", ")
-            let sensesStr = senses.isEmpty ? "unspecified" : senses.joined(separator: ", ")
             let emosStr   = emos.isEmpty   ? "unclear" : emos.joined(separator: ", ")
+
+            var enSensesStr = ""
+            if parsed.perPart.isEmpty && parsed.global.isEmpty {
+                enSensesStr = "unspecified"
+            } else if parsed.perPart.isEmpty {
+                enSensesStr = parsed.global.map { lm.display($0) }.joined(separator: ", ")
+            } else {
+                let parts2 = parsed.perPart.map { "\(lm.display($0.part)): \($0.sensations.map { lm.display($0) }.joined(separator: ", "))" }
+                enSensesStr = parts2.joined(separator: "; ")
+                if !parsed.global.isEmpty { enSensesStr += "; " + parsed.global.map { lm.display($0) }.joined(separator: ", ") }
+            }
 
             var prompt = """
             [Current Body Scan]
             Body areas: \(partsStr)
-            Sensations: \(sensesStr) (Intensity: \(intensity)/10)
+            Sensations: \(enSensesStr) (Intensity: \(intensity)/10)
             Emotions: \(emosStr)
 
             """
@@ -237,17 +277,26 @@ enum ClaudeService {
 
         case .ja:
             let parts  = bodyParts.map { lm.display($0) }
-            let senses = sensations.map { lm.display($0) }
             let emos   = emotions.map { lm.display($0) }
 
             let partsStr  = parts.isEmpty  ? "未指定" : parts.joined(separator: "、")
-            let sensesStr = senses.isEmpty ? "未指定" : senses.joined(separator: "、")
             let emosStr   = emos.isEmpty   ? "不明" : emos.joined(separator: "、")
+
+            var jaSensesStr = ""
+            if parsed.perPart.isEmpty && parsed.global.isEmpty {
+                jaSensesStr = "未指定"
+            } else if parsed.perPart.isEmpty {
+                jaSensesStr = parsed.global.map { lm.display($0) }.joined(separator: "、")
+            } else {
+                let parts2 = parsed.perPart.map { "\(lm.display($0.part))：\($0.sensations.map { lm.display($0) }.joined(separator: "、"))" }
+                jaSensesStr = parts2.joined(separator: "；")
+                if !parsed.global.isEmpty { jaSensesStr += "；" + parsed.global.map { lm.display($0) }.joined(separator: "、") }
+            }
 
             var prompt = """
             【今回のボディスキャン】
             身体の部位：\(partsStr)
-            感覚：\(sensesStr)（強度：\(intensity)/10）
+            感覚：\(jaSensesStr)（強度：\(intensity)/10）
             感情：\(emosStr)
 
             """
