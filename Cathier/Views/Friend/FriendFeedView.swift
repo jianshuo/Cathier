@@ -207,7 +207,7 @@ struct FriendCheckInCard: View {
 
                 HStack(spacing: 6) {
                     categoryChip
-                    Text(item.date.relativeString)
+                    Text(item.date.absoluteString)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -374,9 +374,11 @@ private struct InviteAcceptSheet: View {
 // MARK: - Date helper
 
 private extension Date {
-    var relativeString: String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .short
-        return formatter.localizedString(for: self, relativeTo: Date())
+    var absoluteString: String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+        formatter.doesRelativeDateFormatting = true
+        return formatter.string(from: self)
     }
 }
