@@ -91,6 +91,20 @@ struct CheckInDetailView: View {
                         }
                     }
 
+                    // Trigger event
+                    if !checkIn.triggerEvent.isEmpty {
+                        sectionCard {
+                            Label(lm.detailTriggerSection, systemImage: "bolt.fill")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.secondary)
+                            Text(checkIn.triggerEvent)
+                                .font(.body)
+                                .foregroundColor(.primary)
+                                .lineSpacing(4)
+                        }
+                    }
+
                     // AI feedback — full, no line limit, Markdown rendered
                     if !checkIn.aiFeedback.isEmpty {
                         sectionCard {

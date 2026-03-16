@@ -118,6 +118,7 @@ enum ClaudeService {
         sensations: [String],
         intensity: Int,
         emotions: [String],
+        triggerEvent: String = "",
         recentHistory: [CheckIn] = [],
         language: AppLanguage = LanguageManager.shared.currentLanguage
     ) async throws -> String {
@@ -126,6 +127,7 @@ enum ClaudeService {
 
         let userMessage = buildPrompt(bodyParts: bodyParts, sensations: sensations,
                                       intensity: intensity, emotions: emotions,
+                                      triggerEvent: triggerEvent,
                                       recentHistory: recentHistory,
                                       language: language)
 
@@ -183,6 +185,7 @@ enum ClaudeService {
         sensations: [String],
         intensity: Int,
         emotions: [String],
+        triggerEvent: String,
         recentHistory: [CheckIn],
         language: AppLanguage
     ) -> String {
@@ -205,12 +208,13 @@ enum ClaudeService {
                 if !parsed.global.isEmpty { sensesStr += "；" + parsed.global.joined(separator: "、") }
             }
 
+            let triggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
             【本次身体扫描】
             身体部位：\(parts)
             身体感受：\(sensesStr)（强度：\(intensity)/10）
             情绪：\(emos)
-
+            \(triggerStr.isEmpty ? "" : "触发事件/场景：\(triggerStr)\n")
             """
 
             let history = recentHistory.prefix(5)
@@ -249,12 +253,13 @@ enum ClaudeService {
                 if !parsed.global.isEmpty { enSensesStr += "; " + parsed.global.map { lm.display($0) }.joined(separator: ", ") }
             }
 
+            let enTriggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
             [Current Body Scan]
             Body areas: \(partsStr)
             Sensations: \(enSensesStr) (Intensity: \(intensity)/10)
             Emotions: \(emosStr)
-
+            \(enTriggerStr.isEmpty ? "" : "Triggering event/scene: \(enTriggerStr)\n")
             """
 
             let history = recentHistory.prefix(5)
@@ -293,12 +298,13 @@ enum ClaudeService {
                 if !parsed.global.isEmpty { jaSensesStr += "；" + parsed.global.map { lm.display($0) }.joined(separator: "、") }
             }
 
+            let jaTriggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
             【今回のボディスキャン】
             身体の部位：\(partsStr)
             感覚：\(jaSensesStr)（強度：\(intensity)/10）
             感情：\(emosStr)
-
+            \(jaTriggerStr.isEmpty ? "" : "きっかけとなった出来事/場面：\(jaTriggerStr)\n")
             """
 
             let history = recentHistory.prefix(5)
