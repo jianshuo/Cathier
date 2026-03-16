@@ -25,6 +25,11 @@ jobs:
           ruby-version: '3.2'
           bundler-cache: true
 
+      - name: Inject GitHub PAT into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :GitHubFeedbackPAT $GITHUB_FEEDBACK_PAT" Cathier/Info.plist
+        env:
+          GITHUB_FEEDBACK_PAT: ${{ secrets.GITHUB_FEEDBACK_PAT }}
+
       - name: Run fastlane beta
         env:
           MATCH_PASSWORD:       ${{ secrets.MATCH_PASSWORD }}

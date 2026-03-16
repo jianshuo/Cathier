@@ -18,8 +18,13 @@ struct GitHubService {
         }
     }
 
-    static func createFeedbackIssue(title: String, body: String, token: String) async throws -> URL {
-        guard !token.isEmpty else { throw GitHubError.noToken }
+    static var bundleToken: String {
+        Bundle.main.infoDictionary?["GitHubFeedbackPAT"] as? String ?? ""
+    }
+
+    static func createFeedbackIssue(title: String, body: String, token: String? = nil) async throws -> URL {
+        let resolvedToken = token ?? bundleToken
+        guard !resolvedToken.isEmpty else { throw GitHubError.noToken }
 
         let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/issues"
         guard let url = URL(string: urlString) else { throw GitHubError.decodeFailed }
@@ -39,7 +44,7 @@ struct GitHubService {
 
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(resolvedToken)", forHTTPHeaderField: "Authorization")
         request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
         request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct FeedbackView: View {
-    @AppStorage("githubToken") private var githubToken = ""
     @Environment(LanguageManager.self) private var lm
     @Environment(\.dismiss) private var dismiss
 
@@ -48,24 +47,6 @@ struct FeedbackView: View {
                             .font(.caption)
                     }
                 }
-
-                Section {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("GitHub Personal Access Token")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        SecureField("github_pat_…", text: $githubToken)
-                            .textFieldStyle(.plain)
-                            .autocorrectionDisabled()
-                            .textInputAutocapitalization(.never)
-                    }
-                    .padding(.vertical, 4)
-                } header: {
-                    Text(lm.feedbackTokenSection)
-                } footer: {
-                    Text(lm.feedbackTokenFooter)
-                        .font(.caption)
-                }
             }
             .navigationTitle(lm.feedbackNavTitle)
             .navigationBarTitleDisplayMode(.inline)
@@ -86,7 +67,6 @@ struct FeedbackView: View {
                     }
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty ||
                               bodyText.trimmingCharacters(in: .whitespaces).isEmpty ||
-                              githubToken.isEmpty ||
                               isSubmitting)
                 }
             }
@@ -103,8 +83,7 @@ struct FeedbackView: View {
             do {
                 let url = try await GitHubService.createFeedbackIssue(
                     title: trimmedTitle,
-                    body: trimmedBody,
-                    token: githubToken
+                    body: trimmedBody
                 )
                 await MainActor.run {
                     submittedURL = url
