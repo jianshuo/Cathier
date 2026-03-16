@@ -11,6 +11,7 @@ final class CheckIn {
     var emotions: [String] = [String]()
     var note: String = ""
     var aiFeedback: String = ""
+    var triggerEvent: String = ""
     /// Mirrors FriendCheckIn.PrivacyTier.rawValue when shared; nil = private.
     var shareLevel: String? = nil
 
@@ -21,7 +22,8 @@ final class CheckIn {
         intensity: Int = 5,
         emotions: [String] = [],
         note: String = "",
-        aiFeedback: String = ""
+        aiFeedback: String = "",
+        triggerEvent: String = ""
     ) {
         self.id = UUID()
         self.date = date
@@ -31,5 +33,6 @@ final class CheckIn {
         self.emotions = emotions
         self.note = note
         self.aiFeedback = aiFeedback
+        self.triggerEvent = triggerEvent
     }
 }

@@ -49,6 +49,19 @@ struct BodyScanView: View {
 
                 Divider()
 
+                // Trigger Event
+                VStack(alignment: .leading, spacing: 8) {
+                    sectionHeader(title: lm.bodyScanTriggerTitle, subtitle: lm.bodyScanTriggerSubtitle)
+                    TextField(lm.bodyScanTriggerPlaceholder, text: $vm.triggerEvent, axis: .vertical)
+                        .lineLimit(3...5)
+                        .textFieldStyle(.plain)
+                        .padding(12)
+                        .background(Color(.systemGray6))
+                        .cornerRadius(10)
+                }
+
+                Divider()
+
                 // Intensity Slider
                 VStack(alignment: .leading, spacing: 12) {
                     sectionHeader(

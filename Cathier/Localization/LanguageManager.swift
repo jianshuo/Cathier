@@ -199,6 +199,9 @@ extension LanguageManager {
     var bodyScanWhereTitle: String    { s("哪里有感受？",   "Where do you feel it?",    "どこに感じますか？") }
     var bodyScanMultiple: String      { s("可多选",        "Multiple allowed",          "複数選択可") }
     var bodyScanWhatTitle: String     { s("是什么样的感受？", "What does it feel like?", "どんな感覚ですか？") }
+    var bodyScanTriggerTitle: String  { s("是什么引发了这个感受？", "What triggered this feeling?", "この感覚は何がきっかけでしたか？") }
+    var bodyScanTriggerSubtitle: String { s("可选", "Optional", "任意") }
+    var bodyScanTriggerPlaceholder: String { s("描述一个事件、场景或想法…", "Describe an event, scene, or thought…", "出来事、場面、または考えを描写してください…") }
     var bodyScanIntensity: String     { s("感受的强度",     "Intensity",                "感覚の強度") }
     var bodyScanNext: String          { s("下一步：识别情绪", "Next: Identify Emotions", "次へ：感情の識別") }
     var bodyScanMild: String          { s("轻微", "Mild",   "軽度") }
@@ -345,6 +348,7 @@ extension LanguageManager {
     var detailDone: String           { s("完成",       "Done",            "完了") }
     var detailBodySection: String    { s("身体感受",   "Body Sensations", "身体の感覚") }
     var detailEmotionsSection: String { s("情绪",      "Emotions",        "感情") }
+    var detailTriggerSection: String { s("触发事件",   "Trigger Event",   "トリガーイベント") }
     var detailNoteSection: String    { s("备注",       "Note",            "メモ") }
     var detailDateFormat: String     { s("yyyy年M月d日", "MMM d, yyyy",   "yyyy年M月d日") }
 

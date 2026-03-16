@@ -18,6 +18,7 @@ final class CheckInViewModel {
     /// Maps each selected body part to its chosen sensations.
     var bodySensations: [String: Set<String>] = [:]
     var intensity: Double = 5
+    var triggerEvent: String = ""
 
     /// Flat list of unique sensation names selected across all body parts.
     var allSelectedSensations: [String] {
@@ -68,6 +69,7 @@ final class CheckInViewModel {
                 sensations: encodedSensations,
                 intensity: Int(intensity),
                 emotions: allEmotions,
+                triggerEvent: triggerEvent,
                 recentHistory: recentHistory,
                 language: LanguageManager.shared.currentLanguage
             )
@@ -86,7 +88,8 @@ final class CheckInViewModel {
             intensity: Int(intensity),
             emotions: allEmotions,
             note: note,
-            aiFeedback: aiFeedback
+            aiFeedback: aiFeedback,
+            triggerEvent: triggerEvent
         )
         context.insert(checkIn)
         try? context.save()
@@ -98,6 +101,7 @@ final class CheckInViewModel {
         selectedBodyParts = []
         bodySensations = [:]
         intensity = 5
+        triggerEvent = ""
         selectedCategory = nil
         selectedEmotions = []
         customEmotion = ""

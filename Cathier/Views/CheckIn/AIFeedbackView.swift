@@ -185,6 +185,11 @@ struct AIFeedbackView: View {
             if !viewModel.allEmotions.isEmpty {
                 emotionRow
             }
+
+            if !viewModel.triggerEvent.trimmingCharacters(in: .whitespaces).isEmpty {
+                labelRow(icon: "bolt.fill",
+                         items: [viewModel.triggerEvent.trimmingCharacters(in: .whitespaces)])
+            }
         }
         .padding(16)
         .background(Color(.secondarySystemBackground))
