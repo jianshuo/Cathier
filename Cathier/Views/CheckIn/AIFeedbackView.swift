@@ -9,6 +9,7 @@ struct AIFeedbackView: View {
     let onDismiss: () -> Void
 
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
+    @State private var shareAIFeedback: Bool = false
 
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
 
@@ -84,6 +85,12 @@ struct AIFeedbackView: View {
                         Divider()
                     }
                 }
+
+                // AI feedback toggle (shown when sharing at non-full tier with AI feedback available)
+                if let tier = selectedTier, tier != .full, !viewModel.aiFeedback.isEmpty {
+                    Divider()
+                    aiFeedbackToggleRow
+                }
             }
             .padding(12)
             .background(Color(.secondarySystemBackground))
@@ -140,6 +147,25 @@ struct AIFeedbackView: View {
         }
     }
 
+    private var aiFeedbackToggleRow: some View {
+        Toggle(isOn: $shareAIFeedback) {
+            HStack(spacing: 12) {
+                Image(systemName: "sparkles")
+                    .foregroundColor(.orange)
+                    .frame(width: 16)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(lm.aiShareAIFeedbackToggle)
+                        .font(.subheadline)
+                        .foregroundColor(.primary)
+                    Text(lm.aiShareAIFeedbackDesc)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+        }
+        .tint(.orange)
+    }
+
     // MARK: - History
 
     private func fetchRecentHistory() -> [CheckIn] {
@@ -155,7 +181,8 @@ struct AIFeedbackView: View {
     private func saveAction() {
         let checkIn = viewModel.save(context: modelContext)
         if let tier = selectedTier {
-            Task { try? await friendVM.shareCheckIn(checkIn, tier: tier) }
+            let includeAI = tier == .full ? false : shareAIFeedback
+            Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: includeAI) }
         }
         onDismiss()
     }

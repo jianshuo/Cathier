@@ -240,6 +240,8 @@ extension LanguageManager {
     var tierEmotionsDesc: String    { s("好友看到具体情绪词", "Friend sees specific emotion words", "友達には具体的な感情の言葉が表示") }
     var tierFullName: String        { s("完整分享",         "Full share",               "完全シェア") }
     var tierFullDesc: String        { s("好友看到全部内容含笔记", "Friend sees everything including notes", "友達にはメモを含む全内容が表示") }
+    var aiShareAIFeedbackToggle: String { s("也分享 AI 反馈", "Also share AI feedback", "AIフィードバックもシェア") }
+    var aiShareAIFeedbackDesc: String   { s("好友也能看到 AI 给你的回应", "Friends can also see the AI's response to you", "友達もAIからのフィードバックを見られます") }
 
     // MARK: FriendFeedView
     var friendNavTitle: String       { s("好友",            "Friends",                  "友達") }

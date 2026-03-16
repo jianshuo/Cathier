@@ -129,9 +129,9 @@ final class FriendViewModel {
 
     // MARK: - Shared check-ins (Phase 2)
 
-    func shareCheckIn(_ checkIn: CheckIn, tier: FriendCheckIn.PrivacyTier) async throws {
+    func shareCheckIn(_ checkIn: CheckIn, tier: FriendCheckIn.PrivacyTier, shareAIFeedback: Bool = false) async throws {
         guard let profile = currentProfile else { return }
-        let shared = FriendCheckIn(ownerRef: profile.reference, checkIn: checkIn, privacyTier: tier)
+        let shared = FriendCheckIn(ownerRef: profile.reference, checkIn: checkIn, privacyTier: tier, shareAIFeedback: shareAIFeedback)
         try await ck.saveSharedCheckIn(shared)
         checkIn.shareLevel = tier.rawValue
     }

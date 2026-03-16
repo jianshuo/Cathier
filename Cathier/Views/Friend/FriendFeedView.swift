@@ -274,6 +274,38 @@ struct FriendCheckInCard: View {
                         .cornerRadius(8)
                 }
             }
+
+            // AI feedback (shown whenever available)
+            if !item.aiFeedback.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "sparkles")
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                        Text(lm.aiCompanion)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.orange)
+                    }
+                    Text(item.aiFeedback)
+                        .font(.subheadline)
+                        .foregroundColor(.primary)
+                        .lineSpacing(3)
+                }
+                .padding(10)
+                .background(
+                    LinearGradient(
+                        colors: [Color.orange.opacity(0.08), Color.orange.opacity(0.03)],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                )
+                .cornerRadius(8)
+            }
         }
     }
 }
