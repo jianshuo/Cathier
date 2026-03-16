@@ -20,17 +20,16 @@ default_platform(:ios)
     lane :beta do
       setup_ci  # configures keychain in CI environment
 
-      # Write the API key to a temp file to avoid newline corruption in env vars
-      key_path = File.join(Dir.tmpdir, "asc_key.p8")
-      File.write(key_path, ENV["ASC_API_KEY_CONTENT"].gsub('\n', "\n"))
-
       # Create API key once and reuse for all steps
+      # ASC_API_KEY_CONTENT must be stored as base64 in GitHub Secrets:
+      #   base64 -i AuthKey_XXXX.p8 | tr -d '\n' | pbcopy
       api_key = app_store_connect_api_key(
-        key_id:        ENV["ASC_API_KEY_ID"],
-        issuer_id:     ENV["ASC_API_ISSUER_ID"],
-        key_filepath:  key_path,
-        duration:      1200,
-        in_house:      false
+        key_id:                ENV["ASC_API_KEY_ID"],
+        issuer_id:             ENV["ASC_API_ISSUER_ID"],
+        key_content:           ENV["ASC_API_KEY_CONTENT"],
+        is_key_content_base64: true,
+        duration:              1200,
+        in_house:              false
       )
 
       # Code signing via Match
