@@ -74,8 +74,8 @@ final class FriendViewModel {
         do {
             friendships = try await ck.fetchFriendships(profileRef: profile.reference)
             friends = try await ck.fetchFriendProfiles(friendships: friendships, myProfileRef: profile.reference)
-            let friendRefs = friends.map { $0.reference }
-            friendCheckIns = try await ck.fetchFriendCheckIns(friendProfileRefs: friendRefs)
+            let allRefs = friends.map { $0.reference } + [profile.reference]
+            friendCheckIns = try await ck.fetchFriendCheckIns(friendProfileRefs: allRefs)
         } catch {
             self.error = error.localizedDescription
         }
@@ -144,7 +144,10 @@ final class FriendViewModel {
     // MARK: - Helpers
 
     func profile(for ownerRef: CKRecord.Reference) -> UserProfile? {
-        friends.first { $0.id == ownerRef.recordID }
+        if let currentProfile, ownerRef.recordID == currentProfile.id {
+            return currentProfile
+        }
+        return friends.first { $0.id == ownerRef.recordID }
     }
 
     func friendship(with friend: UserProfile) -> FriendshipRecord? {
