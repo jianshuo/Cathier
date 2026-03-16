@@ -6,8 +6,8 @@ on:
 
 jobs:
   auto-merge:
-    # Only run for PRs created by the Claude bot
-    if: github.actor == 'claude[bot]'
+    # Only run for PRs on branches created by Claude (branch name starts with 'claude/')
+    if: startsWith(github.head_ref, 'claude/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
