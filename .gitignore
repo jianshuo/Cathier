@@ -46,3 +46,9 @@ secrets.plist
 
 # iCloud sync artifacts
 *.icloud
+
+# gstack — binary and deps are gitignored; teammates run: cd .claude/skills/gstack && ./setup
+.claude/skills/gstack/node_modules/
+.claude/skills/gstack/browse/dist/
+.claude/skills/gstack/browse/.version
+.gstack/
