@@ -6,6 +6,7 @@ struct SettingsView: View {
     @State private var reminderTimes: [ReminderTime] = NotificationService.defaultTimes
     @State private var isAuthorized = false
     @State private var showApiKeySaved = false
+    @State private var showFeedback = false
     @Environment(LanguageManager.self) private var lm
 
     var body: some View {
@@ -109,6 +110,16 @@ struct SettingsView: View {
                         .font(.caption)
                 }
 
+                // MARK: - Feedback
+                Section(lm.feedbackSectionTitle) {
+                    Button {
+                        showFeedback = true
+                    } label: {
+                        Label(lm.feedbackButton, systemImage: "lightbulb")
+                            .foregroundColor(.orange)
+                    }
+                }
+
                 // MARK: - About
                 Section(lm.settingsAboutSection) {
                     HStack {
@@ -126,6 +137,10 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle(lm.settingsNavTitle)
+            .sheet(isPresented: $showFeedback) {
+                FeedbackView()
+                    .environment(lm)
+            }
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
