@@ -6,7 +6,7 @@ struct FeedbackView: View {
     @Environment(\.dismiss) private var dismiss
 
     @State private var title = ""
-    @State private var body = ""
+    @State private var bodyText = ""
     @State private var isSubmitting = false
     @State private var submittedURL: URL?
     @State private var errorMessage: String?
@@ -22,7 +22,7 @@ struct FeedbackView: View {
                 }
 
                 Section {
-                    TextEditor(text: $self.body)
+                    TextEditor(text: $bodyText)
                         .frame(minHeight: 120)
                 } header: {
                     Text(lm.feedbackBodyLabel)
@@ -85,7 +85,7 @@ struct FeedbackView: View {
                         }
                     }
                     .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty ||
-                              self.body.trimmingCharacters(in: .whitespaces).isEmpty ||
+                              bodyText.trimmingCharacters(in: .whitespaces).isEmpty ||
                               githubToken.isEmpty ||
                               isSubmitting)
                 }
@@ -97,7 +97,7 @@ struct FeedbackView: View {
         isSubmitting = true
         errorMessage = nil
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
-        let trimmedBody = self.body.trimmingCharacters(in: .whitespaces)
+        let trimmedBody = bodyText.trimmingCharacters(in: .whitespaces)
 
         Task {
             do {
@@ -109,7 +109,7 @@ struct FeedbackView: View {
                 await MainActor.run {
                     submittedURL = url
                     title = ""
-                    self.body = ""
+                    bodyText = ""
                     isSubmitting = false
                 }
             } catch {
