@@ -5,26 +5,23 @@ struct GitHubService {
     static let repoName = "Cathier"
 
     enum GitHubError: LocalizedError {
-        case noToken
         case httpError(Int)
         case decodeFailed
 
         var errorDescription: String? {
             switch self {
-            case .noToken: return "Please enter a GitHub Personal Access Token in Settings."
             case .httpError(let code): return "GitHub API request failed (HTTP \(code))."
             case .decodeFailed: return "Failed to parse GitHub response."
             }
         }
     }
 
-    static var bundleToken: String {
+    private static var bundleToken: String {
         Bundle.main.infoDictionary?["GitHubFeedbackPAT"] as? String ?? ""
     }
 
-    static func createFeedbackIssue(title: String, body: String, token: String? = nil) async throws -> URL {
-        let resolvedToken = token ?? bundleToken
-        guard !resolvedToken.isEmpty else { throw GitHubError.noToken }
+    static func createFeedbackIssue(title: String, body: String) async throws -> URL {
+        let resolvedToken = bundleToken
 
         let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/issues"
         guard let url = URL(string: urlString) else { throw GitHubError.decodeFailed }
