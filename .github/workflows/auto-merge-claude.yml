@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Auto-merge Claude PR
-        run: gh pr merge "${{ github.event.pull_request.number }}" --squash --auto --delete-branch
+        run: gh pr merge "${{ github.event.pull_request.number }}" --squash --delete-branch
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
