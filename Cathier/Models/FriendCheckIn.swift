@@ -42,7 +42,7 @@ struct FriendCheckIn: Identifiable {
     }
 
     /// Build from a local CheckIn before uploading.
-    init(ownerRef: CKRecord.Reference, checkIn: CheckIn, privacyTier: PrivacyTier) {
+    init(ownerRef: CKRecord.Reference, checkIn: CheckIn, privacyTier: PrivacyTier, shareAIFeedback: Bool = false) {
         self.id = CKRecord.ID(recordName: checkIn.id.uuidString)
         self.ownerRef = ownerRef
         self.localID = checkIn.id.uuidString
@@ -52,7 +52,7 @@ struct FriendCheckIn: Identifiable {
         self.sensations = checkIn.sensations
         self.intensity = checkIn.intensity
         self.note = privacyTier == .full ? checkIn.note : ""
-        self.aiFeedback = privacyTier == .full ? checkIn.aiFeedback : ""
+        self.aiFeedback = (privacyTier == .full || shareAIFeedback) ? checkIn.aiFeedback : ""
         self.privacyTier = privacyTier
     }
 
