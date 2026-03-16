@@ -5,7 +5,7 @@ import SwiftData
 struct CathierApp: App {
     let container: ModelContainer = {
         let config = ModelConfiguration(cloudKitDatabase: .private("iCloud.com.wangjianshuo.Cathier"))
-        return try! ModelContainer(for: CheckIn.self, configurations: config)
+        return try! ModelContainer(for: CheckIn.self, DailyJournal.self, configurations: config)
     }()
 
     var body: some Scene {

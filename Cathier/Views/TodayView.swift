@@ -3,11 +3,18 @@ import SwiftData
 
 struct TodayView: View {
     @Query(sort: \CheckIn.date, order: .reverse) private var checkIns: [CheckIn]
+    @Query(sort: \DailyJournal.date, order: .reverse) private var journals: [DailyJournal]
     @State private var showingCheckIn = false
+    @State private var showingJournalEntry = false
+    @State private var journalToEdit: DailyJournal? = nil
     @Environment(LanguageManager.self) private var lm
 
     private var todayCheckIns: [CheckIn] {
         checkIns.filter { Calendar.current.isDateInToday($0.date) }
+    }
+
+    private var todayJournal: DailyJournal? {
+        journals.first { Calendar.current.isDateInToday($0.date) }
     }
 
     var body: some View {
@@ -36,6 +43,10 @@ struct TodayView: View {
                         }
                     }
 
+                    // Daily journal section
+                    dailyJournalSection
+                        .padding(.horizontal, 20)
+
                     Spacer(minLength: 40)
                 }
                 .padding(.top, 8)
@@ -44,7 +55,66 @@ struct TodayView: View {
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
             }
+            .sheet(isPresented: $showingJournalEntry) {
+                DailyJournalEntryView(existing: journalToEdit) {
+                    journalToEdit = nil
+                }
+            }
         }
+    }
+
+    // MARK: - Daily Journal Section
+
+    @ViewBuilder
+    private var dailyJournalSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(lm.journalEntryTodayTitle)
+                .font(.headline)
+
+            if let journal = todayJournal {
+                DailyJournalCard(journal: journal) {
+                    journalToEdit = journal
+                    showingJournalEntry = true
+                }
+            } else {
+                journalWritePrompt
+            }
+        }
+    }
+
+    private var journalWritePrompt: some View {
+        Button(action: {
+            journalToEdit = nil
+            showingJournalEntry = true
+        }) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(Color(red: 0.4, green: 0.6, blue: 1.0).opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    Image(systemName: "book.fill")
+                        .font(.system(size: 22))
+                        .foregroundColor(Color(red: 0.4, green: 0.6, blue: 1.0))
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(lm.journalEntryWritePrompt)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    Text(lm.journalEntryWriteHint)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(16)
+            .background(Color(.secondarySystemBackground))
+            .cornerRadius(16)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Header
