@@ -22,17 +22,27 @@ struct BodyScanView: View {
                     }
                 }
 
-                Divider()
+                // Per-body-part sensations (shown only when body parts are selected)
+                if !viewModel.selectedBodyParts.isEmpty {
+                    Divider()
 
-                // Sensations
-                sectionHeader(title: lm.bodyScanWhatTitle, subtitle: lm.bodyScanMultiple)
-                FlowLayout(spacing: 10) {
-                    ForEach(config.sensations, id: \.self) { sensation in
-                        ChipView(
-                            label: lm.display(sensation),
-                            isSelected: viewModel.selectedSensations.contains(sensation)
-                        ) {
-                            toggleSensation(sensation)
+                    sectionHeader(title: lm.bodyScanWhatTitle, subtitle: lm.bodyScanMultiple)
+                    ForEach(config.bodyParts.filter { viewModel.selectedBodyParts.contains($0) }, id: \.self) { part in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(lm.display(part))
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .foregroundColor(.secondary)
+                            FlowLayout(spacing: 10) {
+                                ForEach(config.sensations, id: \.self) { sensation in
+                                    ChipView(
+                                        label: lm.display(sensation),
+                                        isSelected: viewModel.bodySensations[part]?.contains(sensation) ?? false
+                                    ) {
+                                        toggleSensation(sensation, for: part)
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -82,16 +92,23 @@ struct BodyScanView: View {
     private func toggleBodyPart(_ part: String) {
         if viewModel.selectedBodyParts.contains(part) {
             viewModel.selectedBodyParts.remove(part)
+            viewModel.bodySensations.removeValue(forKey: part)
         } else {
             viewModel.selectedBodyParts.insert(part)
         }
     }
 
-    private func toggleSensation(_ sensation: String) {
-        if viewModel.selectedSensations.contains(sensation) {
-            viewModel.selectedSensations.remove(sensation)
+    private func toggleSensation(_ sensation: String, for part: String) {
+        if viewModel.bodySensations[part]?.contains(sensation) == true {
+            viewModel.bodySensations[part]?.remove(sensation)
+            if viewModel.bodySensations[part]?.isEmpty == true {
+                viewModel.bodySensations.removeValue(forKey: part)
+            }
         } else {
-            viewModel.selectedSensations.insert(sensation)
+            if viewModel.bodySensations[part] == nil {
+                viewModel.bodySensations[part] = []
+            }
+            viewModel.bodySensations[part]?.insert(sensation)
         }
     }
 }

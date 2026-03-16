@@ -15,8 +15,21 @@ final class CheckInViewModel {
 
     // MARK: - Step 1: Body Scan
     var selectedBodyParts: Set<String> = []
-    var selectedSensations: Set<String> = []
+    /// Maps each selected body part to its chosen sensations.
+    var bodySensations: [String: Set<String>] = [:]
     var intensity: Double = 5
+
+    /// Flat list of unique sensation names selected across all body parts.
+    var allSelectedSensations: [String] {
+        Array(Set(bodySensations.values.flatMap { $0 })).sorted()
+    }
+
+    /// Encodes per-body-part sensations as "bodypart:sensation" strings for storage.
+    var encodedSensations: [String] {
+        bodySensations.keys.sorted().flatMap { part in
+            (bodySensations[part] ?? []).sorted().map { "\(part):\($0)" }
+        }
+    }
 
     // MARK: - Step 2: Emotion Label
     var selectedCategory: String? = nil
@@ -38,7 +51,7 @@ final class CheckInViewModel {
     }
 
     var canProceedFromBodyScan: Bool {
-        !selectedBodyParts.isEmpty || !selectedSensations.isEmpty
+        !selectedBodyParts.isEmpty
     }
 
     var canProceedFromEmotionLabel: Bool {
@@ -52,7 +65,7 @@ final class CheckInViewModel {
         do {
             aiFeedback = try await ClaudeService.generateFeedback(
                 bodyParts: Array(selectedBodyParts),
-                sensations: Array(selectedSensations),
+                sensations: encodedSensations,
                 intensity: Int(intensity),
                 emotions: allEmotions,
                 recentHistory: recentHistory,
@@ -69,7 +82,7 @@ final class CheckInViewModel {
         let checkIn = CheckIn(
             date: Date(),
             bodyParts: Array(selectedBodyParts),
-            sensations: Array(selectedSensations),
+            sensations: encodedSensations,
             intensity: Int(intensity),
             emotions: allEmotions,
             note: note,
@@ -83,7 +96,7 @@ final class CheckInViewModel {
     func reset() {
         currentStep = .bodyScan
         selectedBodyParts = []
-        selectedSensations = []
+        bodySensations = [:]
         intensity = 5
         selectedCategory = nil
         selectedEmotions = []
