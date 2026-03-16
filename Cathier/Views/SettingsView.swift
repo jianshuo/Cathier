@@ -125,7 +125,7 @@ struct SettingsView: View {
                     HStack {
                         Text(lm.settingsVersion)
                         Spacer()
-                        Text("1.0.0")
+                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
                             .foregroundColor(.secondary)
                     }
                     HStack {

@@ -324,7 +324,7 @@ extension LanguageManager {
     var settingsAboutSection: String     { s("关于",        "About",                "このアプリについて") }
     var settingsVersion: String          { s("版本",        "Version",              "バージョン") }
     var settingsDataStorage: String      { s("数据存储",    "Data Storage",         "データ保存") }
-    var settingsLocalOnly: String        { s("仅限本机",    "Local only",           "ローカルのみ") }
+    var settingsLocalOnly: String        { s("iCloud 同步", "iCloud sync",          "iCloud同期") }
     var settingsLanguageSection: String  { s("语言",        "Language",             "言語") }
 
     // MARK: FeedbackView
