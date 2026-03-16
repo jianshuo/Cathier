@@ -1,4 +1,5 @@
 import Combine
+import SwiftData
 import SwiftUI
 
 /// Entry point for the Friend tab. Switches on account state.
@@ -64,15 +65,21 @@ struct FriendFeedView: View {
 private struct FriendHomeView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
+    @Query(filter: #Predicate<DailyJournal> { $0.isShared }, sort: \DailyJournal.date, order: .reverse)
+    private var sharedJournals: [DailyJournal]
+
+    private var hasFeedContent: Bool {
+        !vm.friendCheckIns.isEmpty || !sharedJournals.isEmpty
+    }
 
     var body: some View {
         Group {
-            if vm.isLoadingFeed && vm.friendCheckIns.isEmpty {
+            if vm.isLoadingFeed && vm.friendCheckIns.isEmpty && sharedJournals.isEmpty {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if vm.friends.isEmpty {
                 emptyFriendsView
-            } else if vm.friendCheckIns.isEmpty {
+            } else if !hasFeedContent {
                 emptyFeedView
             } else {
                 feedList
@@ -98,6 +105,13 @@ private struct FriendHomeView: View {
 
                 Divider()
                     .padding(.horizontal, 20)
+
+                // Shared journal entries (mine, local SwiftData)
+                ForEach(sharedJournals) { journal in
+                    SharedJournalFeedRow(journal: journal, profile: vm.currentProfile)
+                    Divider()
+                        .padding(.leading, 72)
+                }
 
                 // Check-in feed
                 ForEach(vm.friendCheckIns) { item in
@@ -306,6 +320,73 @@ struct FriendCheckInCard: View {
                 )
                 .cornerRadius(8)
             }
+        }
+    }
+}
+
+// MARK: - Shared journal feed row
+
+struct SharedJournalFeedRow: View {
+    let journal: DailyJournal
+    let profile: UserProfile?
+
+    @State private var expanded = false
+    @Environment(LanguageManager.self) private var lm
+
+    var body: some View {
+        Button(action: { withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() } }) {
+            VStack(alignment: .leading, spacing: 0) {
+                headerRow
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 14)
+
+                if expanded, !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    Text(journal.gains)
+                        .font(.subheadline)
+                        .foregroundColor(.primary)
+                        .lineSpacing(3)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 16)
+                        .transition(.opacity.combined(with: .move(edge: .top)))
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var headerRow: some View {
+        HStack(spacing: 12) {
+            Text(profile?.avatarEmoji ?? "🙂")
+                .font(.system(size: 28))
+                .frame(width: 44, height: 44)
+                .background(Color(.systemGray5))
+                .clipShape(Circle())
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(profile?.displayName ?? lm.friendDefaultName)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+
+                HStack(spacing: 6) {
+                    if let mood = journal.dailyMood {
+                        Text("\(mood.emoji) \(mood.label(for: lm.currentLanguage))")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color.blue.opacity(0.12))
+                            .foregroundColor(Color.blue)
+                            .clipShape(Capsule())
+                    }
+                    Text(journal.date.absoluteString)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            Spacer()
+            Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                .font(.caption)
+                .foregroundColor(.secondary)
         }
     }
 }
