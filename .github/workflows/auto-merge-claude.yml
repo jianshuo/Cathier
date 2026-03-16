@@ -12,10 +12,17 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: write
 
     steps:
       - name: Auto-merge Claude PR
         run: gh pr merge "${{ github.event.pull_request.number }}" --squash --delete-branch
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}
+          GH_REPO: ${{ github.repository }}
+
+      - name: Trigger TestFlight build
+        run: gh workflow run testflight.yml --ref main
+        env:
+          GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}
           GH_REPO: ${{ github.repository }}
