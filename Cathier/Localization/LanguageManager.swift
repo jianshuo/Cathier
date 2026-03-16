@@ -322,6 +322,24 @@ extension LanguageManager {
     var settingsLocalOnly: String        { s("仅限本机",    "Local only",           "ローカルのみ") }
     var settingsLanguageSection: String  { s("语言",        "Language",             "言語") }
 
+    // MARK: FeedbackView
+    var feedbackNavTitle: String        { s("功能建议",             "Feature Feedback",         "機能フィードバック") }
+    var feedbackSectionTitle: String    { s("反馈与建议",            "Feedback",                 "フィードバック") }
+    var feedbackButton: String          { s("提交功能建议",          "Submit Feedback",           "フィードバックを送る") }
+    var feedbackTitleLabel: String      { s("标题",                 "Title",                    "タイトル") }
+    var feedbackTitlePlaceholder: String { s("简短描述你的建议…",   "Brief description of your suggestion…", "提案を簡単に説明...") }
+    var feedbackBodyLabel: String       { s("详细描述",             "Details",                  "詳細") }
+    var feedbackBodyFooter: String      { s("你的建议会以 GitHub Issue 形式提交，并由 AI 自动实现。",
+                                           "Your suggestion will be submitted as a GitHub Issue and automatically implemented by AI.",
+                                           "提案はGitHub Issueとして提出され、AIによって自動実装されます。") }
+    var feedbackTokenSection: String    { s("GitHub 设置",          "GitHub Settings",          "GitHub設定") }
+    var feedbackTokenFooter: String     { s("需要有 repo 权限的 GitHub Personal Access Token 才能提交 Issue。Token 仅存储在本机。",
+                                           "A GitHub Personal Access Token with 'repo' scope is required to submit issues. Stored locally only.",
+                                           "Issueを提出するにはrepoスコープのGitHub Personal Access Tokenが必要です。ローカルにのみ保存されます。") }
+    var feedbackSubmit: String          { s("提交",                 "Submit",                   "送信") }
+    var feedbackSuccess: String         { s("提交成功！",            "Submitted successfully!",  "送信成功！") }
+    var feedbackViewIssue: String       { s("查看 GitHub Issue →",  "View GitHub Issue →",      "GitHub Issueを見る →") }
+
     // MARK: CheckInDetailView
     var detailNavTitle: String       { s("记录详情",   "Record Detail",   "記録の詳細") }
     var detailDone: String           { s("完成",       "Done",            "完了") }
