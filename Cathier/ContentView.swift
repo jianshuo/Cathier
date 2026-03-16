@@ -27,6 +27,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: CheckIn.self, inMemory: true)
+        .modelContainer(for: [CheckIn.self, DailyJournal.self], inMemory: true)
         .environment(LanguageManager.shared)
 }

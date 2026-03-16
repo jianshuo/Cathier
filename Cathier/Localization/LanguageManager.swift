@@ -327,6 +327,26 @@ extension LanguageManager {
     var settingsLocalOnly: String        { s("iCloud 同步", "iCloud sync",          "iCloud同期") }
     var settingsLanguageSection: String  { s("语言",        "Language",             "言語") }
 
+    // MARK: DailyJournalEntryView
+    var journalEntryNavTitle: String        { s("今日心情与收获",   "Today's Journal",              "今日の気持ちと収穫") }
+    var journalEntryMoodLabel: String       { s("今天心情怎么样？",  "How are you feeling today?",   "今日の気分は？") }
+    var journalEntryGainsLabel: String      { s("今日收获",        "Today's Gains",                "今日の収穫") }
+    var journalEntryGainsPlaceholder: String { s("记录今天的收获、感悟或想说的话…",
+                                                  "Record today's gains, insights, or thoughts…",
+                                                  "今日の収穫、気づき、伝えたいことを記録しよう…") }
+    var journalEntryShareLabel: String      { s("分享给好友",       "Share with Friends",           "友達とシェア") }
+    var journalEntryShareDesc: String       { s("好友可以看到你的心情和收获", "Friends can see your mood and gains", "友達があなたの気分と収穫を見られます") }
+    var journalEntrySave: String            { s("保存今日日记",      "Save Today's Journal",         "今日の日記を保存") }
+    var journalEntryEdit: String            { s("编辑",             "Edit",                         "編集") }
+    var journalEntryOnceADay: String        { s("每天只能记录一次",   "One entry per day",            "1日1回のみ記録できます") }
+    var journalEntryTodayTitle: String      { s("今日日记",          "Today's Journal",              "今日の日記") }
+    var journalEntrySharedBadge: String     { s("已分享",            "Shared",                       "シェア済み") }
+    var journalEntryPrivateBadge: String    { s("仅自己",            "Private",                      "非公開") }
+    var journalEntryWritePrompt: String     { s("记录今天的心情与收获", "Record today's mood & gains", "今日の気分と収穫を記録") }
+    var journalEntryWriteHint: String       { s("每天一次，留下属于今天的印记",
+                                                 "Once a day — leave a mark for today",
+                                                 "1日1回、今日の足跡を残しましょう") }
+
     // MARK: FeedbackView
     var feedbackNavTitle: String        { s("功能建议",             "Feature Feedback",         "機能フィードバック") }
     var feedbackSectionTitle: String    { s("反馈与建议",            "Feedback",                 "フィードバック") }
