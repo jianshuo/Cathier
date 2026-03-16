@@ -33,8 +33,9 @@ default_platform(:ios)
       )
 
       # Increment build number automatically
+      # RUN_NUMBER * 10 + RUN_ATTEMPT ensures re-runs also get a unique, increasing number
       increment_build_number(
-        build_number: ENV["GITHUB_RUN_NUMBER"]
+        build_number: ENV["GITHUB_RUN_NUMBER"].to_i * 10 + (ENV["GITHUB_RUN_ATTEMPT"] || "1").to_i
       )
 
       # Build
