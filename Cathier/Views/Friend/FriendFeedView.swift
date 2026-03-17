@@ -333,14 +333,21 @@ struct SharedJournalFeedRow: View {
     @State private var expanded = false
     @Environment(LanguageManager.self) private var lm
 
+    private var hasExpandableContent: Bool {
+        journal.shareGains && !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var body: some View {
-        Button(action: { withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() } }) {
+        Button(action: {
+            guard hasExpandableContent else { return }
+            withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() }
+        }) {
             VStack(alignment: .leading, spacing: 0) {
                 headerRow
                     .padding(.horizontal, 20)
                     .padding(.vertical, 14)
 
-                if expanded, !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                if expanded, hasExpandableContent {
                     Text(journal.gains)
                         .font(.subheadline)
                         .foregroundColor(.primary)
@@ -368,7 +375,7 @@ struct SharedJournalFeedRow: View {
                     .fontWeight(.medium)
 
                 HStack(spacing: 6) {
-                    if let mood = journal.dailyMood {
+                    if journal.shareMood, let mood = journal.dailyMood {
                         Text("\(mood.emoji) \(mood.label(for: lm.currentLanguage))")
                             .font(.caption)
                             .fontWeight(.medium)
@@ -384,9 +391,11 @@ struct SharedJournalFeedRow: View {
                 }
             }
             Spacer()
-            Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                .font(.caption)
-                .foregroundColor(.secondary)
+            if hasExpandableContent {
+                Image(systemName: expanded ? "chevron.up" : "chevron.down")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
         }
     }
 }

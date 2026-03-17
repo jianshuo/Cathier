@@ -336,6 +336,9 @@ extension LanguageManager {
                                                   "今日の収穫、気づき、伝えたいことを記録しよう…") }
     var journalEntryShareLabel: String      { s("分享给好友",       "Share with Friends",           "友達とシェア") }
     var journalEntryShareDesc: String       { s("好友可以看到你的心情和收获", "Friends can see your mood and gains", "友達があなたの気分と収穫を見られます") }
+    var journalEntryShareFieldsTitle: String { s("分享内容",         "Share fields",                 "シェア内容") }
+    var journalEntryShareMoodLabel: String  { s("心情",             "Mood",                         "気分") }
+    var journalEntryShareGainsLabel: String { s("收获",             "Gains",                        "収穫") }
     var journalEntrySave: String            { s("保存今日日记",      "Save Today's Journal",         "今日の日記を保存") }
     var journalEntryEdit: String            { s("编辑",             "Edit",                         "編集") }
     var journalEntryOnceADay: String        { s("每天只能记录一次",   "One entry per day",            "1日1回のみ記録できます") }

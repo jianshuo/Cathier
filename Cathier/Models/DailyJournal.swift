@@ -74,18 +74,26 @@ final class DailyJournal {
     var gains: String = ""
     /// Whether the entry is shared with friends.
     var isShared: Bool = false
+    /// Whether the mood field is included when sharing.
+    var shareMood: Bool = true
+    /// Whether the gains field is included when sharing.
+    var shareGains: Bool = true
 
     init(
         date: Date = Date(),
         mood: String,
         gains: String,
-        isShared: Bool = false
+        isShared: Bool = false,
+        shareMood: Bool = true,
+        shareGains: Bool = true
     ) {
         self.id = UUID()
         self.date = date
         self.mood = mood
         self.gains = gains
         self.isShared = isShared
+        self.shareMood = shareMood
+        self.shareGains = shareGains
     }
 
     var dailyMood: DailyMood? {

@@ -15,6 +15,8 @@ struct DailyJournalEntryView: View {
     @State private var selectedMood: DailyMood? = nil
     @State private var gains: String = ""
     @State private var isShared: Bool = false
+    @State private var shareMood: Bool = true
+    @State private var shareGains: Bool = true
 
     private var hasFriends: Bool {
         friendVM.currentProfile != nil && !friendVM.friends.isEmpty
@@ -47,6 +49,8 @@ struct DailyJournalEntryView: View {
                 selectedMood = entry.dailyMood
                 gains = entry.gains
                 isShared = entry.isShared
+                shareMood = entry.shareMood
+                shareGains = entry.shareGains
             }
         }
     }
@@ -122,26 +126,67 @@ struct DailyJournalEntryView: View {
     // MARK: - Share Toggle
 
     private var shareSection: some View {
-        Toggle(isOn: $isShared) {
-            HStack(spacing: 10) {
-                Image(systemName: "person.2.fill")
-                    .foregroundColor(.orange)
-                    .frame(width: 20)
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(lm.journalEntryShareLabel)
-                        .font(.subheadline)
-                        .fontWeight(.medium)
-                        .foregroundColor(.primary)
-                    Text(lm.journalEntryShareDesc)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+        VStack(spacing: 0) {
+            Toggle(isOn: $isShared) {
+                HStack(spacing: 10) {
+                    Image(systemName: "person.2.fill")
+                        .foregroundColor(.orange)
+                        .frame(width: 20)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(lm.journalEntryShareLabel)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.primary)
+                        Text(lm.journalEntryShareDesc)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
                 }
+            }
+            .tint(.orange)
+            .padding(14)
+
+            if isShared {
+                Divider()
+                    .padding(.horizontal, 14)
+
+                VStack(spacing: 0) {
+                    shareFieldRow(
+                        label: lm.journalEntryShareMoodLabel,
+                        icon: "face.smiling",
+                        isOn: $shareMood
+                    )
+                    Divider()
+                        .padding(.leading, 52)
+                    shareFieldRow(
+                        label: lm.journalEntryShareGainsLabel,
+                        icon: "text.bubble",
+                        isOn: $shareGains
+                    )
+                }
+                .padding(.horizontal, 14)
+                .padding(.bottom, 4)
+                .transition(.opacity.combined(with: .move(edge: .top)))
+            }
+        }
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(12)
+        .animation(.easeInOut(duration: 0.2), value: isShared)
+    }
+
+    private func shareFieldRow(label: String, icon: String, isOn: Binding<Bool>) -> some View {
+        Toggle(isOn: isOn) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .foregroundColor(.secondary)
+                    .frame(width: 20)
+                Text(label)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
             }
         }
         .tint(.orange)
-        .padding(14)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(12)
+        .padding(.vertical, 10)
     }
 
     // MARK: - Save
@@ -171,12 +216,16 @@ struct DailyJournalEntryView: View {
             entry.mood = mood.rawValue
             entry.gains = gains
             entry.isShared = isShared
+            entry.shareMood = shareMood
+            entry.shareGains = shareGains
         } else {
             let journal = DailyJournal(
                 date: Date(),
                 mood: mood.rawValue,
                 gains: gains,
-                isShared: isShared
+                isShared: isShared,
+                shareMood: shareMood,
+                shareGains: shareGains
             )
             modelContext.insert(journal)
         }
