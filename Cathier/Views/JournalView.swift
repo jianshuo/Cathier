@@ -5,6 +5,7 @@ struct JournalView: View {
     @Query(sort: \CheckIn.date, order: .reverse) private var checkIns: [CheckIn]
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
+    @Environment(FriendViewModel.self) private var friendVM
 
     private var groupedCheckIns: [(String, [CheckIn])] {
         let calendar = Calendar.current
@@ -69,6 +70,9 @@ struct JournalView: View {
     }
 
     private func delete(_ checkIn: CheckIn) {
+        if checkIn.shareLevel != nil {
+            Task { try? await friendVM.unshareCheckIn(checkIn) }
+        }
         modelContext.delete(checkIn)
         try? modelContext.save()
     }

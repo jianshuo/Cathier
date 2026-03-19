@@ -4,6 +4,9 @@ struct CheckInDetailView: View {
     let checkIn: CheckIn
     @Environment(\.dismiss) private var dismiss
     @Environment(LanguageManager.self) private var lm
+    @Environment(FriendViewModel.self) private var friendVM
+    @State private var isBusy = false
+    @State private var shareError: String?
 
     var body: some View {
         NavigationStack {
@@ -136,6 +139,9 @@ struct CheckInDetailView: View {
                                 .lineSpacing(4)
                         }
                     }
+
+                    // Share settings
+                    shareSection
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
@@ -148,6 +154,129 @@ struct CheckInDetailView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Share section
+
+    private var currentTier: FriendCheckIn.PrivacyTier? {
+        checkIn.shareLevel.flatMap { FriendCheckIn.PrivacyTier(rawValue: $0) }
+    }
+
+    @ViewBuilder
+    private var shareSection: some View {
+        let isShared = currentTier != nil
+        sectionCard {
+            Label("分享给好友", systemImage: "person.2.fill")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+
+            if isShared, let tier = currentTier {
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.green)
+                    Text(tier.displayName)
+                        .font(.subheadline)
+                    Text("·")
+                        .foregroundColor(.secondary)
+                    Text(tier.description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+
+                HStack(spacing: 10) {
+                    Menu {
+                        ForEach(FriendCheckIn.PrivacyTier.allCases) { t in
+                            Button {
+                                Task { await doShare(tier: t) }
+                            } label: {
+                                Label(t.displayName, systemImage: t == tier ? "checkmark" : "")
+                            }
+                        }
+                    } label: {
+                        Label("修改级别", systemImage: "slider.horizontal.3")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(isBusy)
+
+                    Button(role: .destructive) {
+                        Task { await doUnshare() }
+                    } label: {
+                        Label("取消分享", systemImage: "xmark.circle")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(isBusy)
+                }
+            } else {
+                HStack(spacing: 6) {
+                    Image(systemName: "lock.fill")
+                        .foregroundColor(.secondary)
+                    Text("仅自己可见")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+
+                if friendVM.currentProfile != nil {
+                    Menu {
+                        ForEach(FriendCheckIn.PrivacyTier.allCases) { t in
+                            Button {
+                                Task { await doShare(tier: t) }
+                            } label: {
+                                VStack(alignment: .leading) {
+                                    Text(t.displayName)
+                                    Text(t.description)
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                }
+                            }
+                        }
+                    } label: {
+                        Label(isBusy ? "处理中…" : "分享给好友", systemImage: "square.and.arrow.up")
+                            .font(.subheadline)
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(isBusy)
+                } else {
+                    Text("在「好友」页面设置账号后可分享")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            if let err = shareError {
+                Text(err)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+        }
+        .overlay(
+            RoundedRectangle(cornerRadius: 14)
+                .stroke(isShared ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
+        )
+    }
+
+    private func doShare(tier: FriendCheckIn.PrivacyTier) async {
+        isBusy = true
+        shareError = nil
+        do {
+            try await friendVM.shareCheckIn(checkIn, tier: tier)
+        } catch {
+            shareError = error.localizedDescription
+        }
+        isBusy = false
+    }
+
+    private func doUnshare() async {
+        isBusy = true
+        shareError = nil
+        do {
+            try await friendVM.unshareCheckIn(checkIn)
+        } catch {
+            shareError = error.localizedDescription
+        }
+        isBusy = false
     }
 
     // MARK: - Helpers

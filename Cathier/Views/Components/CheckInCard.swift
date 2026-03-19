@@ -8,11 +8,16 @@ struct CheckInCard: View {
     var body: some View {
         Button(action: { showDetail = true }) {
             VStack(alignment: .leading, spacing: 10) {
-                // Top row: time + intensity badge
+                // Top row: time + share indicator + intensity badge
                 HStack {
                     Text(timeString)
                         .font(.caption)
                         .foregroundColor(.secondary)
+                    if checkIn.shareLevel != nil {
+                        Image(systemName: "person.2.fill")
+                            .font(.caption2)
+                            .foregroundColor(.green.opacity(0.8))
+                    }
                     Spacer()
                     IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
                 }
