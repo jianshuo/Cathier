@@ -110,6 +110,7 @@ default_platform(:ios)
         skip_screenshots:                    true,
         submit_for_review:                   true,
         automatic_release:                   false,
+        run_precheck_before_submit:          false,
         submission_information: {
           add_id_info_uses_idfa:             false,
           export_compliance_uses_encryption: false,
