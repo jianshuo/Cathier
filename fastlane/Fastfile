@@ -89,9 +89,8 @@ default_platform(:ios)
       )
 
       # Use 10000 offset so release build numbers never collide with TestFlight builds
-      increment_build_number(
-        build_number: 10000 + ENV["GITHUB_RUN_NUMBER"].to_i * 10 + (ENV["GITHUB_RUN_ATTEMPT"] || "1").to_i
-      )
+      build_num = 10000 + ENV["GITHUB_RUN_NUMBER"].to_i * 10 + (ENV["GITHUB_RUN_ATTEMPT"] || "1").to_i
+      increment_build_number(build_number: build_num)
 
       build_app(
         scheme: "Cathier",
@@ -104,14 +103,25 @@ default_platform(:ios)
         }
       )
 
-      # Upload and submit for App Store review
+      # Step 1: Upload IPA and wait for Apple to finish processing
+      upload_to_testflight(
+        api_key:                           api_key,
+        skip_waiting_for_build_processing: false,
+        distribute_external:               false,
+        notify_external_testers:           false,
+        changelog:                         "Release build #{build_num}"
+      )
+
+      # Step 2: Submit the now-processed build for App Store review
       upload_to_app_store(
-        api_key:                             api_key,
-        skip_metadata:                       true,
-        skip_screenshots:                    true,
-        submit_for_review:                   true,
-        automatic_release:                   false,
-        run_precheck_before_submit:          false,
+        api_key:                    api_key,
+        skip_metadata:              true,
+        skip_screenshots:           true,
+        skip_binary_upload:         true,
+        build_number:               build_num.to_s,
+        submit_for_review:          true,
+        automatic_release:          false,
+        run_precheck_before_submit: false,
         submission_information: {
           add_id_info_uses_idfa:             false,
           export_compliance_uses_encryption: false,
