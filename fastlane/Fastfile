@@ -88,8 +88,9 @@ default_platform(:ios)
         api_key: api_key
       )
 
+      # Use 10000 offset so release build numbers never collide with TestFlight builds
       increment_build_number(
-        build_number: ENV["GITHUB_RUN_NUMBER"].to_i * 10 + (ENV["GITHUB_RUN_ATTEMPT"] || "1").to_i
+        build_number: 10000 + ENV["GITHUB_RUN_NUMBER"].to_i * 10 + (ENV["GITHUB_RUN_ATTEMPT"] || "1").to_i
       )
 
       build_app(
