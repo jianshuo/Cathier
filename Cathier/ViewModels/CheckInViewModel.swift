@@ -93,6 +93,11 @@ final class CheckInViewModel {
         )
         context.insert(checkIn)
         try? context.save()
+
+        // Update running count for insights staleness and milestone nudge
+        let key = "totalCheckInCount"
+        UserDefaults.standard.set(UserDefaults.standard.integer(forKey: key) + 1, forKey: key)
+
         return checkIn
     }
 

@@ -69,6 +69,27 @@ final class NotificationService {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
+    /// One-time nudge delivered when the user reaches 30 check-ins.
+    /// Guards against re-delivery via UserDefaults flag "insightNudgeSent".
+    func scheduleInsightNudge() {
+        guard !UserDefaults.standard.bool(forKey: "insightNudgeSent") else { return }
+        UserDefaults.standard.set(true, forKey: "insightNudgeSent")
+
+        let content = UNMutableNotificationContent()
+        content.title = "🌟 模式分析已就绪"
+        content.body = "你已完成30次签到！打开日记，分析你的情绪模式。"
+        content.sound = .default
+
+        // Deliver 2 seconds from now (app is in background or user may have just locked)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "insightMilestone30",
+            content: content,
+            trigger: trigger
+        )
+        UNUserNotificationCenter.current().add(request)
+    }
+
     // MARK: - Persistence
 
     static let defaultTimes: [ReminderTime] = [

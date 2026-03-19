@@ -15,8 +15,16 @@ struct CathierApp: App {
                 .environment(ConfigService.shared)
                 .environment(LanguageManager.shared)
                 .task { await ConfigService.shared.refreshFromGitHub() }
+                .task { checkMilestoneNudge() }
         }
         .modelContainer(container)
+    }
+
+    /// Fires the insight milestone nudge if the user has ≥30 check-ins and hasn't been nudged yet.
+    private func checkMilestoneNudge() {
+        let count = UserDefaults.standard.integer(forKey: "totalCheckInCount")
+        guard count >= 30 else { return }
+        NotificationService.shared.scheduleInsightNudge()
     }
 
     /// Handles cathier://invite?code=XXXXXXXX

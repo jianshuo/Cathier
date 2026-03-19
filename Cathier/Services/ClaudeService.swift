@@ -25,6 +25,230 @@ private struct ClaudeResponse: Decodable {
 
 enum ClaudeService {
 
+    private static let feedbackModel  = "claude-haiku-4-5-20251001"
+    private static let insightsModel  = "claude-sonnet-4-6"
+
+    // MARK: - Shared network helper
+
+    private static func call(model: String, system: String, user: String, maxTokens: Int) async throws -> String {
+        let apiKey = UserDefaults.standard.string(forKey: "claudeApiKey") ?? ""
+        guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
+
+        let url = URL(string: "https://api.anthropic.com/v1/messages")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+        request.setValue("application/json", forHTTPHeaderField: "content-type")
+
+        let body: [String: Any] = [
+            "model": model,
+            "max_tokens": maxTokens,
+            "system": system,
+            "messages": [["role": "user", "content": user]],
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if let body = String(data: data, encoding: .utf8) {
+                print("[ClaudeService] HTTP \(statusCode): \(body)")
+            }
+            throw ClaudeError.apiError(statusCode)
+        }
+
+        let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
+        return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
+    }
+
+    // MARK: - Pattern Insights
+
+    /// Returns a deduplicated sample of check-ins for pattern analysis.
+    /// Priority: (1) entries with trigger events, (2) most recent 10, (3) evenly spaced from remainder.
+    static func sampleCheckIns(_ checkIns: [CheckIn], max: Int = 30) -> [CheckIn] {
+        guard checkIns.count > max else { return checkIns }
+
+        let sorted = checkIns.sorted { $0.date > $1.date }
+        var selected: [UUID: CheckIn] = [:]
+
+        // Priority 1: entries with trigger events (up to max/3)
+        let triggerLimit = max / 3
+        for c in sorted where !c.triggerEvent.trimmingCharacters(in: .whitespaces).isEmpty {
+            if selected.count >= triggerLimit { break }
+            selected[c.id] = c
+        }
+
+        // Priority 2: most recent 10
+        for c in sorted.prefix(10) { selected[c.id] = c }
+
+        // Priority 3: evenly spaced from remainder
+        let remaining = sorted.filter { selected[$0.id] == nil }
+        let step = max(1, remaining.count / (max - selected.count))
+        for (i, c) in remaining.enumerated() {
+            if selected.count >= max { break }
+            if i % step == 0 { selected[c.id] = c }
+        }
+
+        return selected.values.sorted { $0.date < $1.date }
+    }
+
+    static func generatePatternInsights(
+        allCheckIns: [CheckIn],
+        focus: InsightFocusMode,
+        contextBrief: String = "",
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let sample = sampleCheckIns(allCheckIns)
+        let prompt = buildPatternPrompt(checkIns: sample, focus: focus,
+                                       contextBrief: contextBrief, language: language)
+        let system = patternSystemPrompt(focus: focus, language: language)
+        return try await call(model: insightsModel, system: system, user: prompt, maxTokens: 1200)
+    }
+
+    private static func patternSystemPrompt(focus: InsightFocusMode, language: AppLanguage) -> String {
+        let focusInstruction: String
+        switch focus {
+        case .triggers:
+            focusInstruction = language == .zh
+                ? "重点分析：情绪与触发事件之间的关联。"
+                : language == .en ? "Focus on: correlations between emotions and trigger events."
+                : "重点：感情とトリガーイベントの関連性。"
+        case .growth:
+            focusInstruction = language == .zh
+                ? "重点分析：情绪强度和情绪类型随时间的变化趋势，是否有向好的方向发展？"
+                : language == .en ? "Focus on: trends over time — is the emotional trajectory improving?"
+                : "重点：時間とともに感情の軌跡が改善されているか。"
+        case .body:
+            focusInstruction = language == .zh
+                ? "重点分析：身体部位与情绪之间的关联，身体信号有什么规律？"
+                : language == .en ? "Focus on: patterns between body areas and emotional states."
+                : "重点：身体の部位と感情状態のパターン。"
+        case .surprise:
+            focusInstruction = language == .zh
+                ? "找出最意想不到、最有洞察力的模式——让用户感到「没想到自己是这样的人」。"
+                : language == .en ? "Find the most surprising, insight-revealing patterns — the ones that make the user think 'I didn't know that about myself.'"
+                : "最も驚くべき洞察に満ちたパターンを見つけてください。"
+        }
+
+        switch language {
+        case .zh:
+            return """
+            你是一位拥有丰富临床经验的心理健康分析师，擅长从长期情绪数据中识别有意义的模式。
+
+            用户提供了一段时间内的情绪签到记录。你的任务是分析这些数据，找出3-5个最有意义的模式。
+
+            \(focusInstruction)
+
+            回应格式要求：
+            - 每个模式用一段话描述，语气温暖而直接
+            - 每个模式必须引用具体的例子（日期、情绪词、触发事件等），不能只说泛泛的概括
+            - 避免"你可能感到压力"这类无意义的废话——要说具体的、有证据支撑的洞察
+            - 最后加一句鼓励的话
+            - 请用中文回应
+            """
+        case .en:
+            return """
+            You are an experienced emotional pattern analyst with deep background in somatic and cognitive psychology.
+
+            The user has provided a series of emotional check-ins over time. Your task: identify 3-5 meaningful patterns in their data.
+
+            \(focusInstruction)
+
+            Format requirements:
+            - Each pattern: one paragraph, warm and direct tone
+            - Each pattern MUST reference specific evidence (a date, an emotion word, a trigger event) — no vague generalizations
+            - Avoid platitudes like "you seem to experience stress" — give specific, evidence-backed insights
+            - End with one encouraging sentence
+            - Respond in English
+            """
+        case .ja:
+            return """
+            あなたは豊富な臨床経験を持つ感情パターンアナリストです。
+
+            ユーザーが一定期間の感情チェックインデータを提供しました。3〜5つの意味のあるパターンを特定してください。
+
+            \(focusInstruction)
+
+            フォーマット要件：
+            - 各パターン：温かく直接的なトーンで一段落
+            - 各パターンは具体的な証拠（日付、感情の言葉、トリガーイベント）を引用すること
+            - 「ストレスを感じているようです」のような曖昧な表現は避け、具体的な洞察を提供すること
+            - 最後に励ましの一文を添えること
+            - 日本語で回答してください
+            """
+        }
+    }
+
+    static func buildPatternPrompt(
+        checkIns: [CheckIn],
+        focus: InsightFocusMode,
+        contextBrief: String,
+        language: AppLanguage
+    ) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .short
+        dateFormatter.timeStyle = .none
+        dateFormatter.locale = Locale(identifier: language == .zh ? "zh_CN" : language == .ja ? "ja_JP" : "en_US")
+
+        let weekdayFormatter = DateFormatter()
+        weekdayFormatter.dateFormat = "EEEE"
+        weekdayFormatter.locale = Locale(identifier: language == .zh ? "zh_CN" : language == .ja ? "ja_JP" : "en_US")
+
+        let header: String
+        switch language {
+        case .zh:
+            header = "以下是用户过去 \(checkIns.count) 条情绪签到记录（时间从早到晚排列）：\n"
+        case .en:
+            header = "Below are \(checkIns.count) emotional check-ins from the user (chronological order):\n"
+        case .ja:
+            header = "以下はユーザーの\(checkIns.count)件の感情チェックイン記録です（時系列順）：\n"
+        }
+
+        var lines = [header]
+        for c in checkIns {
+            let dateStr = dateFormatter.string(from: c.date)
+            let weekday = weekdayFormatter.string(from: c.date)
+            let emotions = c.emotions.isEmpty ? (language == .zh ? "未标记" : language == .en ? "unlabeled" : "未ラベル") : c.emotions.joined(separator: "、")
+            let trigger = c.triggerEvent.trimmingCharacters(in: .whitespaces)
+            var line = "[\(dateStr) \(weekday)] 强度\(c.intensity)/10 情绪：\(emotions)"
+            if language == .en {
+                line = "[\(dateStr) \(weekday)] Intensity \(c.intensity)/10 Emotions: \(emotions)"
+            } else if language == .ja {
+                line = "[\(dateStr) \(weekday)] 強度\(c.intensity)/10 感情：\(emotions)"
+            }
+            if !trigger.isEmpty { line += " | \(language == .zh ? "触发" : language == .en ? "Trigger" : "トリガー"): \(trigger)" }
+            if !c.bodyParts.isEmpty {
+                let parts = c.bodyParts.prefix(2).joined(separator: "、")
+                line += " | \(language == .zh ? "身体" : language == .en ? "Body" : "身体"): \(parts)"
+            }
+            lines.append(line)
+        }
+
+        if !contextBrief.trimmingCharacters(in: .whitespaces).isEmpty {
+            let contextLabel: String
+            switch language {
+            case .zh: contextLabel = "\n【用户背景信息】\n\(contextBrief)\n"
+            case .en: contextLabel = "\n[User Context]\n\(contextBrief)\n"
+            case .ja: contextLabel = "\n【ユーザー背景情報】\n\(contextBrief)\n"
+            }
+            lines.append(contextLabel)
+        }
+
+        let closing: String
+        switch language {
+        case .zh: closing = "\n请根据以上记录，给出你的分析。"
+        case .en: closing = "\nPlease provide your analysis based on the records above."
+        case .ja: closing = "\n上記の記録に基づいて分析を提供してください。"
+        }
+        lines.append(closing)
+
+        return lines.joined(separator: "\n")
+    }
+
+    // MARK: - Per-session feedback
+
     private static func systemPrompt(for language: AppLanguage) -> String {
         switch language {
         case .zh:
@@ -122,42 +346,15 @@ enum ClaudeService {
         recentHistory: [CheckIn] = [],
         language: AppLanguage = LanguageManager.shared.currentLanguage
     ) async throws -> String {
-        let apiKey = UserDefaults.standard.string(forKey: "claudeApiKey") ?? ""
-        guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
-
         let userMessage = buildPrompt(bodyParts: bodyParts, sensations: sensations,
                                       intensity: intensity, emotions: emotions,
                                       triggerEvent: triggerEvent,
                                       recentHistory: recentHistory,
                                       language: language)
-
-        let url = URL(string: "https://api.anthropic.com/v1/messages")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
-
-        let body: [String: Any] = [
-            "model": "claude-haiku-4-5-20251001",
-            "max_tokens": 800,
-            "system": systemPrompt(for: language),
-            "messages": [["role": "user", "content": userMessage]],
-        ]
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            if let body = String(data: data, encoding: .utf8) {
-                print("[ClaudeService] HTTP \(statusCode): \(body)")
-            }
-            throw ClaudeError.apiError(statusCode)
-        }
-
-        let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
-        return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
+        return try await call(model: feedbackModel,
+                              system: systemPrompt(for: language),
+                              user: userMessage,
+                              maxTokens: 800)
     }
 
     /// Parses "bodypart:sensation" encoded strings into grouped entries.

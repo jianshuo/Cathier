@@ -6,7 +6,18 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXContainerItemProxy section */
+		D41915302F6C604900594512 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4B61DB82F63B0140074205F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4B61DBF2F63B0140074205F;
+			remoteInfo = Cathier;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
+		D419152C2F6C604900594512 /* CathierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CathierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4B61DC02F63B0140074205F /* Cathier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cathier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -21,6 +32,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		D419152D2F6C604900594512 /* CathierTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CathierTests;
+			sourceTree = "<group>";
+		};
 		D4B61DC22F63B0140074205F /* Cathier */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -32,6 +48,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		D41915292F6C604900594512 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4B61DBD2F63B0140074205F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,6 +69,7 @@
 			isa = PBXGroup;
 			children = (
 				D4B61DC22F63B0140074205F /* Cathier */,
+				D419152D2F6C604900594512 /* CathierTests */,
 				D4B61DC12F63B0140074205F /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,6 +78,7 @@
 			isa = PBXGroup;
 			children = (
 				D4B61DC02F63B0140074205F /* Cathier.app */,
+				D419152C2F6C604900594512 /* CathierTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -61,6 +86,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		D419152B2F6C604900594512 /* CathierTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D41915342F6C604900594512 /* Build configuration list for PBXNativeTarget "CathierTests" */;
+			buildPhases = (
+				D41915282F6C604900594512 /* Sources */,
+				D41915292F6C604900594512 /* Frameworks */,
+				D419152A2F6C604900594512 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D41915312F6C604900594512 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				D419152D2F6C604900594512 /* CathierTests */,
+			);
+			name = CathierTests;
+			packageProductDependencies = (
+			);
+			productName = CathierTests;
+			productReference = D419152C2F6C604900594512 /* CathierTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		D4B61DBF2F63B0140074205F /* Cathier */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D4B61DCB2F63B0140074205F /* Build configuration list for PBXNativeTarget "Cathier" */;
@@ -93,6 +141,10 @@
 				LastSwiftUpdateCheck = 2630;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
+					D419152B2F6C604900594512 = {
+						CreatedOnToolsVersion = 26.3;
+						TestTargetID = D4B61DBF2F63B0140074205F;
+					};
 					D4B61DBF2F63B0140074205F = {
 						CreatedOnToolsVersion = 26.3;
 					};
@@ -113,11 +165,19 @@
 			projectRoot = "";
 			targets = (
 				D4B61DBF2F63B0140074205F /* Cathier */,
+				D419152B2F6C604900594512 /* CathierTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		D419152A2F6C604900594512 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4B61DBE2F63B0140074205F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -128,6 +188,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		D41915282F6C604900594512 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D4B61DBC2F63B0140074205F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -137,7 +204,59 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		D41915312F6C604900594512 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4B61DBF2F63B0140074205F /* Cathier */;
+			targetProxy = D41915302F6C604900594512 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		D41915322F6C604900594512 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 97XBW2A43H;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wangjianshuo.cathier.CathierTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cathier.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Cathier";
+			};
+			name = Debug;
+		};
+		D41915332F6C604900594512 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 97XBW2A43H;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wangjianshuo.cathier.CathierTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Cathier.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Cathier";
+			};
+			name = Release;
+		};
 		D4B61DC92F63B0140074205F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -330,6 +449,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		D41915342F6C604900594512 /* Build configuration list for PBXNativeTarget "CathierTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D41915322F6C604900594512 /* Debug */,
+				D41915332F6C604900594512 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		D4B61DBB2F63B0140074205F /* Build configuration list for PBXProject "Cathier" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
