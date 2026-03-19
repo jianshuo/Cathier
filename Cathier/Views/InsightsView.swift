@@ -6,14 +6,11 @@ struct InsightsView: View {
     @Environment(LanguageManager.self) private var lm
     @Query(sort: \CheckIn.date, order: .forward) private var checkIns: [CheckIn]
     @State private var vm = InsightsViewModel()
-    @State private var fetchError: String?
 
     var body: some View {
         NavigationStack {
             Group {
-                if let err = fetchError {
-                    fetchErrorState(err)
-                } else if checkIns.count < 7 {
+                if checkIns.count < 7 {
                     emptyState
                 } else {
                     mainContent
@@ -222,21 +219,7 @@ struct InsightsView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    // MARK: - Fetch error state
 
-    private func fetchErrorState(_ message: String) -> some View {
-        VStack(spacing: 16) {
-            Image(systemName: "exclamationmark.icloud")
-                .font(.system(size: 52))
-                .foregroundStyle(.orange.opacity(0.7))
-            Text(lm.insightsLoadError)
-                .font(.subheadline)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 40)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
 }
 
 // MARK: - Focus chip
