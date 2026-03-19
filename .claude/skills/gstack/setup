@@ -2,6 +2,12 @@
 # gstack setup — build browser binary + register all skills with Claude Code
 set -e
 
+if ! command -v bun >/dev/null 2>&1; then
+  echo "Error: bun is required but not installed." >&2
+  echo "Install it: curl -fsSL https://bun.sh/install | bash" >&2
+  exit 1
+fi
+
 GSTACK_DIR="$(cd "$(dirname "$0")" && pwd)"
 SKILLS_DIR="$(dirname "$GSTACK_DIR")"
 BROWSE_BIN="$GSTACK_DIR/browse/dist/browse"

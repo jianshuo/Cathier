@@ -22,9 +22,11 @@ bin/dev-teardown               # deactivate — back to your global install
 
 ## Contributor mode
 
-Contributor mode is for people who want to fix gstack when it annoys them. Enable it
-and Claude Code will automatically log issues to `~/.gstack/contributor-logs/` as you
-work — what you were doing, what went wrong, repro steps, raw output.
+Contributor mode turns gstack into a self-improving tool. Enable it and Claude Code
+will periodically reflect on its gstack experience — rating it 0-10 at the end of
+each major workflow step. When something isn't a 10, it thinks about why and files
+a report to `~/.gstack/contributor-logs/` with what happened, repro steps, and what
+would make it better.
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-config set gstack_contributor true
@@ -36,7 +38,7 @@ the issue, fix it, and open a PR.
 
 ### The contributor workflow
 
-1. **Hit friction while using gstack** — contributor mode logs it automatically
+1. **Use gstack normally** — contributor mode reflects and logs issues automatically
 2. **Check your logs:** `ls ~/.gstack/contributor-logs/`
 3. **Fork and clone gstack** (if you haven't already)
 4. **Symlink your fork into the project where you hit the bug:**
@@ -51,6 +53,10 @@ the issue, fix it, and open a PR.
 
 This is the best way to contribute: fix gstack while doing your real work, in the
 project where you actually felt the pain.
+
+### Session awareness
+
+When you have 3+ gstack sessions open simultaneously, every question tells you which project, which branch, and what's happening. No more staring at a question thinking "wait, which window is this?" The format is consistent across all 15 skills.
 
 ## Working on gstack inside the gstack repo
 
@@ -216,6 +222,8 @@ bun run skill:check
 # Or use watch mode — auto-regenerates on save
 bun run dev:skill
 ```
+
+For template authoring best practices (natural language over bash-isms, dynamic branch detection, `{{BASE_BRANCH_DETECT}}` usage), see CLAUDE.md's "Writing SKILL templates" section.
 
 To add a browse command, add it to `browse/src/commands.ts`. To add a snapshot flag, add it to `SNAPSHOT_FLAGS` in `browse/src/snapshot.ts`. Then rebuild.
 

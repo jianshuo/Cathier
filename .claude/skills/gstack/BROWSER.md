@@ -17,6 +17,7 @@ This document covers the command reference and internals of gstack's headless br
 | Tabs | `tabs`, `tab`, `newtab`, `closetab` | Multi-page workflows |
 | Cookies | `cookie-import`, `cookie-import-browser` | Import cookies from file or real browser |
 | Multi-step | `chain` (JSON from stdin) | Batch commands in one call |
+| Handoff | `handoff [reason]`, `resume` | Switch to visible Chrome for user takeover |
 
 All selector arguments accept CSS selectors, `@e` refs after `snapshot`, or `@c` refs after `snapshot -C`. 50+ commands total plus cookie import.
 
@@ -123,9 +124,33 @@ The server hooks into Playwright's `page.on('console')`, `page.on('response')`, 
 
 The `console`, `network`, and `dialog` commands read from the in-memory buffers, not disk.
 
+### User handoff
+
+When the headless browser can't proceed (CAPTCHA, MFA, complex auth), `handoff` opens a visible Chrome window at the exact same page with all cookies, localStorage, and tabs preserved. The user solves the problem manually, then `resume` returns control to the agent with a fresh snapshot.
+
+```bash
+$B handoff "Stuck on CAPTCHA at login page"   # opens visible Chrome
+# User solves CAPTCHA...
+$B resume                                       # returns to headless with fresh snapshot
+```
+
+The browser auto-suggests `handoff` after 3 consecutive failures. State is fully preserved across the switch — no re-login needed.
+
 ### Dialog handling
 
 Dialogs (alert, confirm, prompt) are auto-accepted by default to prevent browser lockup. The `dialog-accept` and `dialog-dismiss` commands control this behavior. For prompts, `dialog-accept <text>` provides the response text. All dialogs are logged to the dialog buffer with type, message, and action taken.
+
+### JavaScript execution (`js` and `eval`)
+
+`js` runs a single expression, `eval` runs a JS file. Both support `await` — expressions containing `await` are automatically wrapped in an async context:
+
+```bash
+$B js "await fetch('/api/data').then(r => r.json())"  # works
+$B js "document.title"                                  # also works (no wrapping needed)
+$B eval my-script.js                                    # file with await works too
+```
+
+For `eval` files, single-line files return the expression value directly. Multi-line files need explicit `return` when using `await`. Comments containing "await" don't trigger wrapping.
 
 ### Multi-workspace support
 

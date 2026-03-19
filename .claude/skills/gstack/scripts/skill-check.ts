@@ -27,6 +27,10 @@ const SKILL_FILES = [
   'plan-ceo-review/SKILL.md',
   'plan-eng-review/SKILL.md',
   'setup-browser-cookies/SKILL.md',
+  'plan-design-review/SKILL.md',
+  'design-review/SKILL.md',
+  'gstack-upgrade/SKILL.md',
+  'document-release/SKILL.md',
 ].filter(f => fs.existsSync(path.join(ROOT, f)));
 
 let hasErrors = false;

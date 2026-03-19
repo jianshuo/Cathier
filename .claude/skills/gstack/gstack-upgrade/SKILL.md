@@ -3,7 +3,8 @@ name: gstack-upgrade
 version: 1.1.0
 description: |
   Upgrade gstack to the latest version. Detects global vs vendored install,
-  runs the upgrade, and shows what's new.
+  runs the upgrade, and shows what's new. Use when asked to "upgrade gstack",
+  "update gstack", or "get latest version".
 allowed-tools:
   - Bash
   - Read
@@ -94,13 +95,19 @@ fi
 echo "Install type: $INSTALL_TYPE at $INSTALL_DIR"
 ```
 
+The install type and directory path printed above will be used in all subsequent steps.
+
 ### Step 3: Save old version
+
+Use the install directory from Step 2's output below:
 
 ```bash
 OLD_VERSION=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "unknown")
 ```
 
 ### Step 4: Upgrade
+
+Use the install type and directory detected in Step 2:
 
 **For git installs** (global-git, local-git):
 ```bash
@@ -125,7 +132,7 @@ rm -rf "$INSTALL_DIR.bak" "$TMP_DIR"
 
 ### Step 4.5: Sync local vendored copy
 
-After upgrading the primary install, check if there's also a local copy in the current project that needs updating:
+Use the install directory from Step 2. Check if there's also a local vendored copy that needs updating:
 
 ```bash
 _ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
@@ -149,6 +156,13 @@ cd "$LOCAL_GSTACK" && ./setup
 rm -rf "$LOCAL_GSTACK.bak"
 ```
 Tell user: "Also updated vendored copy at `$LOCAL_GSTACK` — commit `.claude/skills/gstack/` when you're ready."
+
+If `./setup` fails, restore from backup and warn the user:
+```bash
+rm -rf "$LOCAL_GSTACK"
+mv "$LOCAL_GSTACK.bak" "$LOCAL_GSTACK"
+```
+Tell user: "Sync failed — restored previous version at `$LOCAL_GSTACK`. Run `/gstack-upgrade` manually to retry."
 
 ### Step 5: Write marker + clear cache
 
@@ -183,4 +197,30 @@ After showing What's New, continue with whatever skill the user originally invok
 
 ## Standalone usage
 
-When invoked directly as `/gstack-upgrade` (not from a preamble), follow Steps 2-6 above. If already on the latest version, tell the user: "You're already on the latest version (v{version})."
+When invoked directly as `/gstack-upgrade` (not from a preamble):
+
+1. Force a fresh update check (bypass cache):
+```bash
+~/.claude/skills/gstack/bin/gstack-update-check --force 2>/dev/null || \
+.claude/skills/gstack/bin/gstack-update-check --force 2>/dev/null || true
+```
+Use the output to determine if an upgrade is available.
+
+2. If `UPGRADE_AVAILABLE <old> <new>`: follow Steps 2-6 above.
+
+3. If no output (primary is up to date): check for a stale local vendored copy.
+
+Run the Step 2 bash block above to detect the primary install type and directory (`INSTALL_TYPE` and `INSTALL_DIR`). Then run the Step 4.5 detection bash block above to check for a local vendored copy (`LOCAL_GSTACK`).
+
+**If `LOCAL_GSTACK` is empty** (no local vendored copy): tell the user "You're already on the latest version (v{version})."
+
+**If `LOCAL_GSTACK` is non-empty**, compare versions:
+```bash
+PRIMARY_VER=$(cat "$INSTALL_DIR/VERSION" 2>/dev/null || echo "unknown")
+LOCAL_VER=$(cat "$LOCAL_GSTACK/VERSION" 2>/dev/null || echo "unknown")
+echo "PRIMARY=$PRIMARY_VER LOCAL=$LOCAL_VER"
+```
+
+**If versions differ:** follow the Step 4.5 sync bash block above to update the local copy from the primary. Tell user: "Global v{PRIMARY_VER} is up to date. Updated local vendored copy from v{LOCAL_VER} → v{PRIMARY_VER}. Commit `.claude/skills/gstack/` when you're ready."
+
+**If versions match:** tell the user "You're on the latest version (v{PRIMARY_VER}). Global and local vendored copy are both up to date."

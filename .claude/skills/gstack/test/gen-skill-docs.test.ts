@@ -69,6 +69,14 @@ describe('gen-skill-docs', () => {
     { dir: 'retro', name: 'retro' },
     { dir: 'setup-browser-cookies', name: 'setup-browser-cookies' },
     { dir: 'gstack-upgrade', name: 'gstack-upgrade' },
+    { dir: 'plan-design-review', name: 'plan-design-review' },
+    { dir: 'design-review', name: 'design-review' },
+    { dir: 'design-consultation', name: 'design-consultation' },
+    { dir: 'document-release', name: 'document-release' },
+    { dir: 'careful', name: 'careful' },
+    { dir: 'freeze', name: 'freeze' },
+    { dir: 'guard', name: 'guard' },
+    { dir: 'unfreeze', name: 'unfreeze' },
   ];
 
   test('every skill has a SKILL.md.tmpl template', () => {
@@ -144,7 +152,38 @@ describe('gen-skill-docs', () => {
     const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
     expect(content).toContain('_SESSIONS');
     expect(content).toContain('RECOMMENDATION');
-    expect(content).toContain('ELI16');
+  });
+
+  test('generated SKILL.md contains branch detection', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
+    expect(content).toContain('_BRANCH');
+    expect(content).toContain('git branch --show-current');
+  });
+
+  test('generated SKILL.md contains ELI16 simplification rules', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
+    expect(content).toContain('No raw function names');
+    expect(content).toContain('plain English');
+  });
+
+  test('generated SKILL.md contains telemetry line', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
+    expect(content).toContain('skill-usage.jsonl');
+    expect(content).toContain('~/.gstack/analytics');
+  });
+
+  test('preamble-using skills have correct skill name in telemetry', () => {
+    const PREAMBLE_SKILLS = [
+      { dir: '.', name: 'gstack' },
+      { dir: 'ship', name: 'ship' },
+      { dir: 'review', name: 'review' },
+      { dir: 'qa', name: 'qa' },
+      { dir: 'retro', name: 'retro' },
+    ];
+    for (const skill of PREAMBLE_SKILLS) {
+      const content = fs.readFileSync(path.join(ROOT, skill.dir, 'SKILL.md'), 'utf-8');
+      expect(content).toContain(`"skill":"${skill.name}"`);
+    }
   });
 
   test('qa and qa-only templates use QA_METHODOLOGY placeholder', () => {
@@ -200,6 +239,27 @@ describe('gen-skill-docs', () => {
     expect(qaContent).toContain('Fix Loop');
     expect(qaContent).toContain('Triage');
     expect(qaContent).toContain('WTF');
+  });
+});
+
+describe('BASE_BRANCH_DETECT resolver', () => {
+  // Find a generated SKILL.md that uses the placeholder (ship is guaranteed to)
+  const shipContent = fs.readFileSync(path.join(ROOT, 'ship', 'SKILL.md'), 'utf-8');
+
+  test('resolver output contains PR base detection command', () => {
+    expect(shipContent).toContain('gh pr view --json baseRefName');
+  });
+
+  test('resolver output contains repo default branch detection command', () => {
+    expect(shipContent).toContain('gh repo view --json defaultBranchRef');
+  });
+
+  test('resolver output contains fallback to main', () => {
+    expect(shipContent).toMatch(/fall\s*back\s+to\s+`main`/i);
+  });
+
+  test('resolver output uses "the base branch" phrasing', () => {
+    expect(shipContent).toContain('the base branch');
   });
 });
 
@@ -285,5 +345,80 @@ describe('description quality evals', () => {
     const tipsSection = content.slice(content.indexOf('## Tips'));
     expect(tipsSection).toContain('→');
     expect(tipsSection).not.toContain('->');
+  });
+});
+
+describe('REVIEW_DASHBOARD resolver', () => {
+  const REVIEW_SKILLS = ['plan-ceo-review', 'plan-eng-review', 'plan-design-review'];
+
+  for (const skill of REVIEW_SKILLS) {
+    test(`review dashboard appears in ${skill} generated file`, () => {
+      const content = fs.readFileSync(path.join(ROOT, skill, 'SKILL.md'), 'utf-8');
+      expect(content).toContain('gstack-review');
+      expect(content).toContain('REVIEW READINESS DASHBOARD');
+    });
+  }
+
+  test('review dashboard appears in ship generated file', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'ship', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('reviews.jsonl');
+    expect(content).toContain('REVIEW READINESS DASHBOARD');
+  });
+
+  test('resolver output contains key dashboard elements', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'plan-ceo-review', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('VERDICT');
+    expect(content).toContain('CLEARED');
+    expect(content).toContain('Eng Review');
+    expect(content).toContain('7 days');
+    expect(content).toContain('Design Review');
+    expect(content).toContain('skip_eng_review');
+  });
+
+  test('dashboard bash block includes git HEAD for staleness detection', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'plan-ceo-review', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('git rev-parse --short HEAD');
+    expect(content).toContain('---HEAD---');
+  });
+
+  test('dashboard includes staleness detection prose', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'plan-ceo-review', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('Staleness detection');
+    expect(content).toContain('commit');
+  });
+
+  for (const skill of REVIEW_SKILLS) {
+    test(`${skill} contains review chaining section`, () => {
+      const content = fs.readFileSync(path.join(ROOT, skill, 'SKILL.md'), 'utf-8');
+      expect(content).toContain('Review Chaining');
+    });
+
+    test(`${skill} Review Log includes commit field`, () => {
+      const content = fs.readFileSync(path.join(ROOT, skill, 'SKILL.md'), 'utf-8');
+      expect(content).toContain('"commit"');
+    });
+  }
+
+  test('plan-ceo-review chaining mentions eng and design reviews', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'plan-ceo-review', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('/plan-eng-review');
+    expect(content).toContain('/plan-design-review');
+  });
+
+  test('plan-eng-review chaining mentions design and ceo reviews', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'plan-eng-review', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('/plan-design-review');
+    expect(content).toContain('/plan-ceo-review');
+  });
+
+  test('plan-design-review chaining mentions eng and ceo reviews', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'plan-design-review', 'SKILL.md'), 'utf-8');
+    expect(content).toContain('/plan-eng-review');
+    expect(content).toContain('/plan-ceo-review');
+  });
+
+  test('ship does NOT contain review chaining', () => {
+    const content = fs.readFileSync(path.join(ROOT, 'ship', 'SKILL.md'), 'utf-8');
+    expect(content).not.toContain('Review Chaining');
   });
 });
