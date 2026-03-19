@@ -5,21 +5,21 @@ final class ClaudeServiceTests: XCTestCase {
 
     // MARK: - sampleCheckIns
 
-    func testSampleCheckIns_belowMax_returnsAll() {
+    func testSampleCheckIns_belowLimit_returnsAll() {
         let checkIns = makeCheckIns(count: 20)
-        let sample = ClaudeService.sampleCheckIns(checkIns, max: 30)
+        let sample = ClaudeService.sampleCheckIns(checkIns, limit: 30)
         XCTAssertEqual(sample.count, 20)
     }
 
-    func testSampleCheckIns_atMax_returnsAll() {
+    func testSampleCheckIns_atLimit_returnsAll() {
         let checkIns = makeCheckIns(count: 30)
-        let sample = ClaudeService.sampleCheckIns(checkIns, max: 30)
+        let sample = ClaudeService.sampleCheckIns(checkIns, limit: 30)
         XCTAssertEqual(sample.count, 30)
     }
 
-    func testSampleCheckIns_aboveMax_clampsToMax() {
+    func testSampleCheckIns_aboveLimit_clampsToLimit() {
         let checkIns = makeCheckIns(count: 100)
-        let sample = ClaudeService.sampleCheckIns(checkIns, max: 30)
+        let sample = ClaudeService.sampleCheckIns(checkIns, limit: 30)
         XCTAssertLessThanOrEqual(sample.count, 30)
     }
 
@@ -29,7 +29,7 @@ final class ClaudeServiceTests: XCTestCase {
         for i in 0..<10 {
             checkIns[i] = makeCheckIn(index: i, triggerEvent: "trigger-\(i)")
         }
-        let sample = ClaudeService.sampleCheckIns(checkIns, max: 30)
+        let sample = ClaudeService.sampleCheckIns(checkIns, limit: 30)
         let triggerCount = sample.filter { !$0.triggerEvent.isEmpty }.count
         // All 10 trigger entries should be included
         XCTAssertEqual(triggerCount, 10)
@@ -37,7 +37,7 @@ final class ClaudeServiceTests: XCTestCase {
 
     func testSampleCheckIns_sortedAscending() {
         let checkIns = makeCheckIns(count: 50)
-        let sample = ClaudeService.sampleCheckIns(checkIns, max: 30)
+        let sample = ClaudeService.sampleCheckIns(checkIns, limit: 30)
         for i in 1..<sample.count {
             XCTAssertLessThanOrEqual(sample[i - 1].date, sample[i].date,
                 "Result should be sorted oldest → newest")
@@ -113,7 +113,7 @@ final class ClaudeServiceTests: XCTestCase {
             intensity: (index % 10) + 1,
             emotions: ["焦虑"],
             note: "",
-            aiFeedback: nil,
+            aiFeedback: "",
             triggerEvent: triggerEvent
         )
     }

@@ -67,14 +67,14 @@ enum ClaudeService {
 
     /// Returns a deduplicated sample of check-ins for pattern analysis.
     /// Priority: (1) entries with trigger events, (2) most recent 10, (3) evenly spaced from remainder.
-    static func sampleCheckIns(_ checkIns: [CheckIn], max: Int = 30) -> [CheckIn] {
-        guard checkIns.count > max else { return checkIns }
+    static func sampleCheckIns(_ checkIns: [CheckIn], limit: Int = 30) -> [CheckIn] {
+        guard checkIns.count > limit else { return checkIns }
 
         let sorted = checkIns.sorted { $0.date > $1.date }
         var selected: [UUID: CheckIn] = [:]
 
-        // Priority 1: entries with trigger events (up to max/3)
-        let triggerLimit = max / 3
+        // Priority 1: entries with trigger events (up to limit/3)
+        let triggerLimit = limit / 3
         for c in sorted where !c.triggerEvent.trimmingCharacters(in: .whitespaces).isEmpty {
             if selected.count >= triggerLimit { break }
             selected[c.id] = c
@@ -85,9 +85,10 @@ enum ClaudeService {
 
         // Priority 3: evenly spaced from remainder
         let remaining = sorted.filter { selected[$0.id] == nil }
-        let step = max(1, remaining.count / (max - selected.count))
+        let needed = limit - selected.count
+        let step = Swift.max(1, remaining.count / Swift.max(1, needed))
         for (i, c) in remaining.enumerated() {
-            if selected.count >= max { break }
+            if selected.count >= limit { break }
             if i % step == 0 { selected[c.id] = c }
         }
 
@@ -100,7 +101,7 @@ enum ClaudeService {
         contextBrief: String = "",
         language: AppLanguage = LanguageManager.shared.currentLanguage
     ) async throws -> String {
-        let sample = sampleCheckIns(allCheckIns)
+        let sample = sampleCheckIns(allCheckIns, limit: 30)
         let prompt = buildPatternPrompt(checkIns: sample, focus: focus,
                                        contextBrief: contextBrief, language: language)
         let system = patternSystemPrompt(focus: focus, language: language)
