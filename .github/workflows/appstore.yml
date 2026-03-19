@@ -1,0 +1,39 @@
+name: Submit to App Store Review
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: macos-15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_26.2.app
+
+      - name: Show Xcode info
+        run: |
+          xcodebuild -version
+          xcode-select -p
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Inject GitHub PAT into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :GitHubFeedbackPAT $FEEDBACK_PAT" Cathier/Info.plist
+        env:
+          FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
+
+      - name: Run fastlane release
+        env:
+          MATCH_PASSWORD:       ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
+          ASC_API_KEY_ID:       ${{ secrets.ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID:    ${{ secrets.ASC_API_ISSUER_ID }}
+          ASC_API_KEY_CONTENT:  ${{ secrets.ASC_API_KEY_CONTENT }}
+        run: bundle exec fastlane release
