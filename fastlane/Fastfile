@@ -121,6 +121,7 @@ default_platform(:ios)
         build_number:               build_num.to_s,
         submit_for_review:          true,
         automatic_release:          false,
+        reject_if_possible:         true,
         run_precheck_before_submit: false,
         submission_information: {
           add_id_info_uses_idfa:             false,
