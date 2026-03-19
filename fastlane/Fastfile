@@ -103,22 +103,12 @@ default_platform(:ios)
         }
       )
 
-      # Step 1: Upload IPA and wait for Apple to finish processing
-      upload_to_testflight(
-        api_key:                           api_key,
-        skip_waiting_for_build_processing: false,
-        distribute_external:               false,
-        notify_external_testers:           false,
-        changelog:                         "Release build #{build_num}"
-      )
-
-      # Step 2: Submit the now-processed build for App Store review
+      # Upload IPA, wait for Apple processing, and submit for review in one step.
+      # deliver polls internally until the build is ready before submitting.
       upload_to_app_store(
         api_key:                    api_key,
         skip_metadata:              true,
         skip_screenshots:           true,
-        skip_binary_upload:         true,
-        build_number:               build_num.to_s,
         submit_for_review:          true,
         automatic_release:          false,
         reject_if_possible:         true,
