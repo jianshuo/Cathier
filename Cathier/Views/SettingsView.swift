@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage("claudeApiKey") private var apiKey = ""
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+    @AppStorage("contextBrief") private var contextBrief = ""
     @State private var reminderTimes: [ReminderTime] = NotificationService.defaultTimes
     @State private var isAuthorized = false
     @State private var showApiKeySaved = false
@@ -107,6 +108,28 @@ struct SettingsView: View {
                     Text(isAuthorized
                          ? lm.settingsReminderFooterOn
                          : lm.settingsReminderFooterOff)
+                        .font(.caption)
+                }
+
+                // MARK: - Context Brief
+                Section {
+                    TextEditor(text: $contextBrief)
+                        .frame(minHeight: 80)
+                        .font(.subheadline)
+                        .overlay(alignment: .topLeading) {
+                            if contextBrief.isEmpty {
+                                Text(lm.settingsContextPlaceholder)
+                                    .font(.subheadline)
+                                    .foregroundStyle(.tertiary)
+                                    .padding(.top, 8)
+                                    .padding(.leading, 4)
+                                    .allowsHitTesting(false)
+                            }
+                        }
+                } header: {
+                    Text(lm.settingsContextSection)
+                } footer: {
+                    Text(lm.settingsContextFooter)
                         .font(.caption)
                 }
 

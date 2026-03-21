@@ -22,9 +22,11 @@ bin/dev-teardown               # deactivate — back to your global install
 
 ## Contributor mode
 
-Contributor mode is for people who want to fix gstack when it annoys them. Enable it
-and Claude Code will automatically log issues to `~/.gstack/contributor-logs/` as you
-work — what you were doing, what went wrong, repro steps, raw output.
+Contributor mode turns gstack into a self-improving tool. Enable it and Claude Code
+will periodically reflect on its gstack experience — rating it 0-10 at the end of
+each major workflow step. When something isn't a 10, it thinks about why and files
+a report to `~/.gstack/contributor-logs/` with what happened, repro steps, and what
+would make it better.
 
 ```bash
 ~/.claude/skills/gstack/bin/gstack-config set gstack_contributor true
@@ -36,7 +38,7 @@ the issue, fix it, and open a PR.
 
 ### The contributor workflow
 
-1. **Hit friction while using gstack** — contributor mode logs it automatically
+1. **Use gstack normally** — contributor mode reflects and logs issues automatically
 2. **Check your logs:** `ls ~/.gstack/contributor-logs/`
 3. **Fork and clone gstack** (if you haven't already)
 4. **Symlink your fork into the project where you hit the bug:**
@@ -51,6 +53,10 @@ the issue, fix it, and open a PR.
 
 This is the best way to contribute: fix gstack while doing your real work, in the
 project where you actually felt the pain.
+
+### Session awareness
+
+When you have 3+ gstack sessions open simultaneously, every question tells you which project, which branch, and what's happening. No more staring at a question thinking "wait, which window is this?" The format is consistent across all 15 skills.
 
 ## Working on gstack inside the gstack repo
 
@@ -207,17 +213,74 @@ SKILL.md files are **generated** from `.tmpl` templates. Don't edit the `.md` di
 # 1. Edit the template
 vim SKILL.md.tmpl              # or browse/SKILL.md.tmpl
 
-# 2. Regenerate
+# 2. Regenerate for both hosts
 bun run gen:skill-docs
+bun run gen:skill-docs --host codex
 
-# 3. Check health
+# 3. Check health (reports both Claude and Codex)
 bun run skill:check
 
 # Or use watch mode — auto-regenerates on save
 bun run dev:skill
 ```
 
+For template authoring best practices (natural language over bash-isms, dynamic branch detection, `{{BASE_BRANCH_DETECT}}` usage), see CLAUDE.md's "Writing SKILL templates" section.
+
 To add a browse command, add it to `browse/src/commands.ts`. To add a snapshot flag, add it to `SNAPSHOT_FLAGS` in `browse/src/snapshot.ts`. Then rebuild.
+
+## Dual-host development (Claude + Codex)
+
+gstack generates SKILL.md files for two hosts: **Claude** (`.claude/skills/`) and **Codex** (`.agents/skills/`). Every template change needs to be generated for both.
+
+### Generating for both hosts
+
+```bash
+# Generate Claude output (default)
+bun run gen:skill-docs
+
+# Generate Codex output
+bun run gen:skill-docs --host codex
+# --host agents is an alias for --host codex
+
+# Or use build, which does both + compiles binaries
+bun run build
+```
+
+### What changes between hosts
+
+| Aspect | Claude | Codex |
+|--------|--------|-------|
+| Output directory | `{skill}/SKILL.md` | `.agents/skills/gstack-{skill}/SKILL.md` |
+| Frontmatter | Full (name, description, allowed-tools, hooks, version) | Minimal (name + description only) |
+| Paths | `~/.claude/skills/gstack` | `~/.codex/skills/gstack` |
+| Hook skills | `hooks:` frontmatter (enforced by Claude) | Inline safety advisory prose (advisory only) |
+| `/codex` skill | Included (Claude wraps codex exec) | Excluded (self-referential) |
+
+### Testing Codex output
+
+```bash
+# Run all static tests (includes Codex validation)
+bun test
+
+# Check freshness for both hosts
+bun run gen:skill-docs --dry-run
+bun run gen:skill-docs --host codex --dry-run
+
+# Health dashboard covers both hosts
+bun run skill:check
+```
+
+### Dev setup for .agents/
+
+When you run `bin/dev-setup`, it creates symlinks in both `.claude/skills/` and `.agents/skills/` (if applicable), so Codex-compatible agents can discover your dev skills too.
+
+### Adding a new skill
+
+When you add a new skill template, both hosts get it automatically:
+1. Create `{skill}/SKILL.md.tmpl`
+2. Run `bun run gen:skill-docs` (Claude output) and `bun run gen:skill-docs --host codex` (Codex output)
+3. The dynamic template discovery picks it up — no static list to update
+4. Commit both `{skill}/SKILL.md` and `.agents/skills/gstack-{skill}/SKILL.md`
 
 ## Conductor workspaces
 

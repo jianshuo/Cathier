@@ -52,7 +52,9 @@
 
 **Why:** Enables "resume where I left off" for QA sessions and repeatable auth states.
 
-**Effort:** M
+**Context:** The `saveState()`/`restoreState()` helpers from the handoff feature (browser-manager.ts) already capture cookies + localStorage + sessionStorage + URLs. Adding file I/O on top is ~20 lines.
+
+**Effort:** S
 **Priority:** P3
 **Depends on:** Sessions
 
@@ -263,6 +265,30 @@
 **Effort:** S
 **Priority:** P3
 
+### CI/CD generation for non-GitHub providers
+
+**What:** Extend CI/CD bootstrap to generate GitLab CI (`.gitlab-ci.yml`), CircleCI (`.circleci/config.yml`), and Bitrise pipelines.
+
+**Why:** Not all projects use GitHub Actions. Universal CI/CD bootstrap would make test bootstrap work for everyone.
+
+**Context:** v1 ships with GitHub Actions only. Detection logic already checks for `.gitlab-ci.yml`, `.circleci/`, `bitrise.yml` and skips with an informational note. Each provider needs ~20 lines of template text in `generateTestBootstrap()`.
+
+**Effort:** M
+**Priority:** P3
+**Depends on:** Test bootstrap (shipped)
+
+### Auto-upgrade weak tests (★) to strong tests (★★★)
+
+**What:** When Step 3.4 coverage audit identifies existing ★-rated tests (smoke/trivial assertions), generate improved versions testing edge cases and error paths.
+
+**Why:** Many codebases have tests that technically exist but don't catch real bugs — `expect(component).toBeDefined()` isn't testing behavior. Upgrading these closes the gap between "has tests" and "has good tests."
+
+**Context:** Requires the quality scoring rubric from the test coverage audit. Modifying existing test files is riskier than creating new ones — needs careful diffing to ensure the upgraded test still passes. Consider creating a companion test file rather than modifying the original.
+
+**Effort:** M
+**Priority:** P3
+**Depends on:** Test quality scoring (shipped)
+
 ## Retro
 
 ### Deployment health tracking (retro + browse)
@@ -362,6 +388,16 @@
 **Priority:** P2
 **Depends on:** None
 
+### Cross-platform URL open helper
+
+**What:** `gstack-open-url` helper script — detect platform, use `open` (macOS) or `xdg-open` (Linux).
+
+**Why:** The first-time Completeness Principle intro uses macOS `open` to launch the essay. If gstack ever supports Linux, this silently fails.
+
+**Effort:** S (human: ~30 min / CC: ~2 min)
+**Priority:** P4
+**Depends on:** Nothing
+
 ### CDP-based DOM mutation detection for ref staleness
 
 **What:** Use Chrome DevTools Protocol `DOM.documentUpdated` / MutationObserver events to proactively invalidate stale refs when the DOM changes, without requiring an explicit `snapshot` call.
@@ -373,6 +409,128 @@
 **Effort:** L
 **Priority:** P3
 **Depends on:** Ref staleness Parts 1+2 (shipped)
+
+## Office Hours / Design
+
+### Design docs → Supabase team store sync
+
+**What:** Add design docs (`*-design-*.md`) to the Supabase sync pipeline alongside test plans, retro snapshots, and QA reports.
+
+**Why:** Cross-team design discovery at scale. Local `~/.gstack/projects/$SLUG/` keyword-grep discovery works for same-machine users now, but Supabase sync makes it work across the whole team. Duplicate ideas surface, everyone sees what's been explored.
+
+**Context:** /office-hours writes design docs to `~/.gstack/projects/$SLUG/`. The team store already syncs test plans, retro snapshots, QA reports. Design docs follow the same pattern — just add a sync adapter.
+
+**Effort:** S
+**Priority:** P2
+**Depends on:** `garrytan/team-supabase-store` branch landing on main
+
+### /yc-prep skill
+
+**What:** Skill that helps founders prepare their YC application after /office-hours identifies strong signal. Pulls from the design doc, structures answers to YC app questions, runs a mock interview.
+
+**Why:** Closes the loop. /office-hours identifies the founder, /yc-prep helps them apply well. The design doc already contains most of the raw material for a YC application.
+
+**Effort:** M (human: ~2 weeks / CC: ~2 hours)
+**Priority:** P2
+**Depends on:** office-hours founder discovery engine shipping first
+
+## Design Review
+
+### /plan-design-review + /qa-design-review + /design-consultation — SHIPPED
+
+Shipped as v0.5.0 on main. Includes `/plan-design-review` (report-only design audit), `/qa-design-review` (audit + fix loop), and `/design-consultation` (interactive DESIGN.md creation). `{{DESIGN_METHODOLOGY}}` resolver provides shared 80-item design audit checklist.
+
+## Document-Release
+
+### Auto-invoke /document-release from /ship — SHIPPED
+
+Shipped in v0.8.3. Step 8.5 added to `/ship` — after creating the PR, `/ship` automatically reads `document-release/SKILL.md` and executes the doc update workflow. Zero-friction doc updates.
+
+### `{{DOC_VOICE}}` shared resolver
+
+**What:** Create a placeholder resolver in gen-skill-docs.ts encoding the gstack voice guide (friendly, user-forward, lead with benefits). Inject into /ship Step 5, /document-release Step 5, and reference from CLAUDE.md.
+
+**Why:** DRY — voice rules currently live inline in 3 places (CLAUDE.md CHANGELOG style section, /ship Step 5, /document-release Step 5). When the voice evolves, all three drift.
+
+**Context:** Same pattern as `{{QA_METHODOLOGY}}` — shared block injected into multiple templates to prevent drift. ~20 lines in gen-skill-docs.ts.
+
+**Effort:** S
+**Priority:** P2
+**Depends on:** None
+
+## Ship Confidence Dashboard
+
+### Smart review relevance detection — PARTIALLY SHIPPED
+
+~~**What:** Auto-detect which of the 4 reviews are relevant based on branch changes (skip Design Review if no CSS/view changes, skip Code Review if plan-only).~~
+
+`bin/gstack-diff-scope` shipped — categorizes diff into SCOPE_FRONTEND, SCOPE_BACKEND, SCOPE_PROMPTS, SCOPE_TESTS, SCOPE_DOCS, SCOPE_CONFIG. Used by design-review-lite to skip when no frontend files changed. Dashboard integration for conditional row display is a follow-up.
+
+**Remaining:** Dashboard conditional row display (hide "Design Review: NOT YET RUN" when SCOPE_FRONTEND=false). Extend to Eng Review (skip for docs-only) and CEO Review (skip for config-only).
+
+**Effort:** S
+**Priority:** P3
+**Depends on:** gstack-diff-scope (shipped)
+
+### /merge skill — review-gated PR merge
+
+**What:** Create a `/merge` skill that merges an approved PR, but first checks the Review Readiness Dashboard and runs `/review` (Fix-First) if code review hasn't been done. Separates "ship" (create PR) from "merge" (land it).
+
+**Why:** Currently `/review` runs inside `/ship` Step 3.5 but isn't tracked as a gate. A `/merge` skill ensures code review always happens before landing, and enables workflows where someone else reviews the PR first.
+
+**Context:** `/ship` creates the PR. `/merge` would: check dashboard → run `/review` if needed → `gh pr merge`. This is where code review tracking belongs — at merge time, not at plan time.
+
+**Effort:** M
+**Priority:** P2
+**Depends on:** Ship Confidence Dashboard (shipped)
+
+## Completeness
+
+### Completeness metrics dashboard
+
+**What:** Track how often Claude chooses the complete option vs shortcut across gstack sessions. Aggregate into a dashboard showing completeness trend over time.
+
+**Why:** Without measurement, we can't know if the Completeness Principle is working. Could surface patterns (e.g., certain skills still bias toward shortcuts).
+
+**Context:** Would require logging choices (e.g., append to a JSONL file when AskUserQuestion resolves), parsing them, and displaying trends. Similar pattern to eval persistence.
+
+**Effort:** M (human) / S (CC)
+**Priority:** P3
+**Depends on:** Boil the Lake shipped (v0.6.1)
+
+## Safety & Observability
+
+### On-demand hook skills (/careful, /freeze, /guard) — SHIPPED
+
+~~**What:** Three new skills that use Claude Code's session-scoped PreToolUse hooks to add safety guardrails on demand.~~
+
+Shipped as `/careful`, `/freeze`, `/guard`, and `/unfreeze` in v0.6.5. Includes hook fire-rate telemetry (pattern name only, no command content) and inline skill activation telemetry.
+
+### Skill usage telemetry — SHIPPED
+
+~~**What:** Track which skills get invoked, how often, from which repo.~~
+
+Shipped in v0.6.5. TemplateContext in gen-skill-docs.ts bakes skill name into preamble telemetry line. Analytics CLI (`bun run analytics`) for querying. /retro integration shows skills-used-this-week.
+
+### /investigate scoped debugging enhancements (gated on telemetry)
+
+**What:** Six enhancements to /investigate auto-freeze, contingent on telemetry showing the freeze hook actually fires in real debugging sessions.
+
+**Why:** /investigate v0.7.1 auto-freezes edits to the module being debugged. If telemetry shows the hook fires often, these enhancements make the experience smarter. If it never fires, the problem wasn't real and these aren't worth building.
+
+**Context:** All items are prose additions to `investigate/SKILL.md.tmpl`. No new scripts.
+
+**Items:**
+1. Stack trace auto-detection for freeze directory (parse deepest app frame)
+2. Freeze boundary widening (ask to widen instead of hard-block when hitting boundary)
+3. Post-fix auto-unfreeze + full test suite run
+4. Debug instrumentation cleanup (tag with DEBUG-TEMP, remove before commit)
+5. Debug session persistence (~/.gstack/investigate-sessions/ — save investigation for reuse)
+6. Investigation timeline in debug report (hypothesis log with timing)
+
+**Effort:** M (all 6 combined)
+**Priority:** P3
+**Depends on:** Telemetry data showing freeze hook fires in real /investigate sessions
 
 ## Completed
 

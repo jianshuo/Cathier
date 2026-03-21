@@ -7,9 +7,10 @@ An iOS app for emotion awareness and body-mind check-ins, with AI-assisted refle
 - **Body Scan** — identify physical sensations and body areas holding tension
 - **Emotion Labeling** — choose from 80+ emotion words across 9 categories
 - **AI Companion** — receive personalized reflections powered by Claude (Anthropic), using your own API key
-- **Journal** — review your check-in history grouped by day
+- **Pattern Insights** — on-demand analysis of your emotional history; choose a focus (stress triggers, growth, body signals, or surprise me) and Claude narrates 3-5 meaningful patterns across your last 30 check-ins
+- **Journal** — review your check-in history grouped by day, with one-tap access to Pattern Insights
 - **Friend Sharing** — share check-ins with friends at three privacy levels (category only / emotions / full) via CloudKit
-- **Reminders** — set daily reminder times via local notifications
+- **Reminders** — set daily reminder times via local notifications; milestone nudge fires at 30 check-ins to encourage first pattern analysis
 
 ## Tech Stack
 
@@ -54,10 +55,14 @@ An iOS app for emotion awareness and body-mind check-ins, with AI-assisted refle
 
 8. Enter your Anthropic API key in the **Settings** tab to enable AI feedback
 
+9. Optionally fill in the **About You** field in Settings to give Claude context about your life situation, making pattern insights more personally relevant
+
 ## Privacy
 
 - Check-in data is stored **locally on device** (SwiftData) and never sent to our servers
-- Emotion/body data is sent to **Anthropic** only to generate AI feedback (stateless, no history stored)
+- Emotion/body data is sent to **Anthropic** only to generate AI feedback and pattern insights (stateless, no history stored server-side)
+- The optional "About You" context brief is stored **locally** in UserDefaults and is only included in pattern analysis prompts — never sent independently
+- Pattern insight history is stored **locally** in UserDefaults as a JSON array
 - Friend features use **Apple CloudKit** — data is governed by Apple's privacy policy
 - No advertising, analytics SDKs, or tracking of any kind
 

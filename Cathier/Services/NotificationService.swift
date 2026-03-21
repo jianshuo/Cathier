@@ -69,6 +69,27 @@ final class NotificationService {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
     }
 
+    /// One-time nudge delivered when the user reaches 30 check-ins.
+    /// Guards against re-delivery via UserDefaults flag "insightNudgeSent".
+    func scheduleInsightNudge() {
+        guard !UserDefaults.standard.bool(forKey: "insightNudgeSent") else { return }
+        UserDefaults.standard.set(true, forKey: "insightNudgeSent")
+
+        let content = UNMutableNotificationContent()
+        content.title = LanguageManager.shared.notifMilestoneTitle
+        content.body = LanguageManager.shared.notifMilestoneBody
+        content.sound = .default
+
+        // Deliver 2 seconds from now (app is in background or user may have just locked)
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
+        let request = UNNotificationRequest(
+            identifier: "insightMilestone30",
+            content: content,
+            trigger: trigger
+        )
+        UNUserNotificationCenter.current().add(request)
+    }
+
     // MARK: - Persistence
 
     static let defaultTimes: [ReminderTime] = [

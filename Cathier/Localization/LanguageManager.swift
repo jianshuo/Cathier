@@ -374,6 +374,49 @@ extension LanguageManager {
     var detailNoteSection: String    { s("备注",       "Note",            "メモ") }
     var detailDateFormat: String     { s("yyyy年M月d日", "MMM d, yyyy",   "yyyy年M月d日") }
 
+    // MARK: InsightsView
+    var insightsNavTitle: String        { s("模式分析",          "Pattern Insights",         "パターン分析") }
+    var insightsToolbarButton: String   { s("分析",             "Insights",                 "インサイト") }
+    var insightsFocusTitle: String      { s("想了解什么？",       "What do you want to understand?", "何を理解したいですか？") }
+    var insightsFocusTriggers: String   { s("压力来源",          "My stress triggers",       "ストレスの原因") }
+    var insightsFocusGrowth: String     { s("我在成长吗？",       "Am I getting better?",     "成長しているか？") }
+    var insightsFocusBody: String       { s("身体信号",          "What my body tells me",    "体のシグナル") }
+    var insightsFocusSurprise: String   { s("给我惊喜",          "Surprise me",              "サプライズ") }
+    var insightsAnalyze: String         { s("分析我的模式",       "Analyze My Patterns",      "パターンを分析する") }
+    var insightsRefresh: String         { s("重新分析",          "Re-analyze",               "再分析") }
+    var insightsLoading: String         { s("正在分析你的情绪历史…", "Analyzing your emotional history…", "感情の履歴を分析中…") }
+    var insightsEmptyTitle: String      { s("继续记录",          "Keep Checking In",         "チェックインを続けよう") }
+    var insightsEmptyHint: String       { s("至少7次签到后，模式分析将会出现。",
+                                            "Pattern insights appear after at least 7 check-ins.",
+                                            "7回以上のチェックインでパターン分析が利用できます。") }
+    var insightsLoadError: String       { s("无法加载签到记录，请重启应用。",
+                                            "Could not load your check-ins. Try restarting the app.",
+                                            "チェックイン記録を読み込めません。アプリを再起動してください。") }
+    var insightsHistoryTitle: String    { s("历史分析",          "Previous Analyses",        "過去の分析") }
+    var insightsHistoryEmpty: String    { s("还没有分析记录",     "No analyses yet",          "分析記録がまだありません") }
+    var insightsAnalyzedAt: String      { s("分析于",            "Analyzed",                 "分析日") }
+    func insightsNewCheckIns(_ n: Int) -> String {
+        s("自上次分析后新增了 \(n) 条记录",
+          "\(n) new check-ins since last analysis",
+          "前回の分析後に\(n)件の新しいチェックイン")
+    }
+    var insightsChartTitle: String      { s("情绪强度趋势",       "Intensity Over Time",      "強度の推移") }
+
+    // MARK: Settings — Context Brief
+    var settingsContextSection: String  { s("关于你（AI 背景信息）", "About You (AI Context)",  "あなたについて（AIコンテキスト）") }
+    var settingsContextPlaceholder: String { s("告诉 AI 一些你的背景，比如工作、正在经历的事情…这会让分析更有针对性。",
+                                              "Tell the AI about your background — your job, what you're going through… This makes insights more relevant.",
+                                              "AIにあなたの背景（仕事、今経験していることなど）を教えてください。分析がより的確になります。") }
+    var settingsContextFooter: String   { s("仅存储在本机，会加入到模式分析的提示词中。",
+                                            "Stored locally. Included in the pattern analysis prompt.",
+                                            "ローカルに保存。パターン分析のプロンプトに含まれます。") }
+
+    // MARK: Notifications
+    var notifMilestoneTitle: String { s("🌟 模式分析已就绪", "🌟 Pattern Insights Ready", "🌟 パターン分析の準備完了") }
+    var notifMilestoneBody: String  { s("你已完成30次签到！打开日记，分析你的情绪模式。",
+                                        "You've logged 30 check-ins! Open your journal to analyze your emotional patterns.",
+                                        "チェックインが30回になりました！日記を開いて感情のパターンを分析しましょう。") }
+
     // MARK: ClaudeService (error messages)
     var claudeNoApiKey: String       { s("请先在设置中填写 Claude API Key",
                                         "Please enter your Claude API Key in Settings first.",

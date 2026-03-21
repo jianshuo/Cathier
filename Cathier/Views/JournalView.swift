@@ -6,6 +6,7 @@ struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
     @Environment(FriendViewModel.self) private var friendVM
+    @State private var showInsights = false
 
     private var groupedCheckIns: [(String, [CheckIn])] {
         let calendar = Calendar.current
@@ -50,6 +51,21 @@ struct JournalView: View {
                 }
             }
             .navigationTitle(lm.journalNavTitle)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showInsights = true
+                    } label: {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .foregroundStyle(.orange)
+                    }
+                    .accessibilityLabel(lm.insightsNavTitle)
+                }
+            }
+            .sheet(isPresented: $showInsights) {
+                InsightsView()
+                    .environment(lm)
+            }
         }
     }
 

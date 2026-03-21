@@ -17,6 +17,7 @@ import * as path from 'path';
 import { callJudge, judge } from './helpers/llm-judge';
 import type { JudgeScore } from './helpers/llm-judge';
 import { EvalCollector } from './helpers/eval-store';
+import { selectTests, detectBaseBranch, getChangedFiles, LLM_JUDGE_TOUCHFILES, GLOBAL_TOUCHFILES } from './helpers/touchfiles';
 
 const ROOT = path.resolve(import.meta.dir, '..');
 // Run when EVALS=1 is set (requires ANTHROPIC_API_KEY in env)
@@ -26,8 +27,43 @@ const describeEval = evalsEnabled ? describe : describe.skip;
 // Eval result collector
 const evalCollector = evalsEnabled ? new EvalCollector('llm-judge') : null;
 
-describeEval('LLM-as-judge quality evals', () => {
-  test('command reference table scores >= 4 on all dimensions', async () => {
+// --- Diff-based test selection ---
+let selectedTests: string[] | null = null;
+
+if (evalsEnabled && !process.env.EVALS_ALL) {
+  const baseBranch = process.env.EVALS_BASE
+    || detectBaseBranch(ROOT)
+    || 'main';
+  const changedFiles = getChangedFiles(baseBranch, ROOT);
+
+  if (changedFiles.length > 0) {
+    const selection = selectTests(changedFiles, LLM_JUDGE_TOUCHFILES, GLOBAL_TOUCHFILES);
+    selectedTests = selection.selected;
+    process.stderr.write(`\nLLM-judge selection (${selection.reason}): ${selection.selected.length}/${Object.keys(LLM_JUDGE_TOUCHFILES).length} tests\n`);
+    if (selection.skipped.length > 0) {
+      process.stderr.write(`  Skipped: ${selection.skipped.join(', ')}\n`);
+    }
+    process.stderr.write('\n');
+  }
+}
+
+/** Wrap a describe block to skip if none of its tests are selected. */
+function describeIfSelected(name: string, testNames: string[], fn: () => void) {
+  const anySelected = selectedTests === null || testNames.some(t => selectedTests!.includes(t));
+  (anySelected ? describeEval : describe.skip)(name, fn);
+}
+
+/** Skip an individual test if not selected (for multi-test describe blocks). */
+function testIfSelected(testName: string, fn: () => Promise<void>, timeout: number) {
+  const shouldRun = selectedTests === null || selectedTests.includes(testName);
+  (shouldRun ? test : test.skip)(testName, fn, timeout);
+}
+
+describeIfSelected('LLM-as-judge quality evals', [
+  'command reference table', 'snapshot flags reference',
+  'browse/SKILL.md reference', 'setup block', 'regression vs baseline',
+], () => {
+  testIfSelected('command reference table', async () => {
     const t0 = Date.now();
     const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
     const start = content.indexOf('## Command Reference');
@@ -53,7 +89,7 @@ describeEval('LLM-as-judge quality evals', () => {
     expect(scores.actionability).toBeGreaterThanOrEqual(4);
   }, 30_000);
 
-  test('snapshot flags section scores >= 4 on all dimensions', async () => {
+  testIfSelected('snapshot flags reference', async () => {
     const t0 = Date.now();
     const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
     const start = content.indexOf('## Snapshot System');
@@ -79,7 +115,7 @@ describeEval('LLM-as-judge quality evals', () => {
     expect(scores.actionability).toBeGreaterThanOrEqual(4);
   }, 30_000);
 
-  test('browse/SKILL.md overall scores >= 4', async () => {
+  testIfSelected('browse/SKILL.md reference', async () => {
     const t0 = Date.now();
     const content = fs.readFileSync(path.join(ROOT, 'browse', 'SKILL.md'), 'utf-8');
     const start = content.indexOf('## Snapshot Flags');
@@ -104,7 +140,7 @@ describeEval('LLM-as-judge quality evals', () => {
     expect(scores.actionability).toBeGreaterThanOrEqual(4);
   }, 30_000);
 
-  test('setup block scores >= 3 on actionability and clarity', async () => {
+  testIfSelected('setup block', async () => {
     const t0 = Date.now();
     const content = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
     const setupStart = content.indexOf('## SETUP');
@@ -131,7 +167,7 @@ describeEval('LLM-as-judge quality evals', () => {
     expect(scores.clarity).toBeGreaterThanOrEqual(3);
   }, 30_000);
 
-  test('regression check: compare branch vs baseline quality', async () => {
+  testIfSelected('regression vs baseline', async () => {
     const t0 = Date.now();
     const generated = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
     const genStart = generated.indexOf('## Command Reference');
@@ -220,10 +256,10 @@ Scores are 1-5 overall quality.`,
 
 // --- Part 7: QA skill quality evals (C6) ---
 
-describeEval('QA skill quality evals', () => {
+describeIfSelected('QA skill quality evals', ['qa/SKILL.md workflow', 'qa/SKILL.md health rubric', 'qa/SKILL.md anti-refusal'], () => {
   const qaContent = fs.readFileSync(path.join(ROOT, 'qa', 'SKILL.md'), 'utf-8');
 
-  test('qa/SKILL.md workflow quality scores >= 4', async () => {
+  testIfSelected('qa/SKILL.md workflow', async () => {
     const t0 = Date.now();
     const start = qaContent.indexOf('## Workflow');
     const end = qaContent.indexOf('## Health Score Rubric');
@@ -266,7 +302,7 @@ ${section}`);
     expect(scores.actionability).toBeGreaterThanOrEqual(4);
   }, 30_000);
 
-  test('qa/SKILL.md health score rubric is unambiguous', async () => {
+  testIfSelected('qa/SKILL.md health rubric', async () => {
     const t0 = Date.now();
     const start = qaContent.indexOf('## Health Score Rubric');
     const section = qaContent.slice(start);
@@ -306,12 +342,65 @@ ${section}`);
     expect(scores.completeness).toBeGreaterThanOrEqual(3);
     expect(scores.actionability).toBeGreaterThanOrEqual(4);
   }, 30_000);
+
+  testIfSelected('qa/SKILL.md anti-refusal', async () => {
+    const t0 = Date.now();
+    // Extract both the diff-aware mode section and Important Rules section
+    const diffAwareStart = qaContent.indexOf('### Diff-aware');
+    const diffAwareEnd = qaContent.indexOf('### Full');
+    const rulesStart = qaContent.indexOf('## Important Rules');
+    const rulesEnd = qaContent.indexOf('## Framework-Specific');
+    const diffAwareSection = qaContent.slice(diffAwareStart, diffAwareEnd);
+    const rulesSection = qaContent.slice(rulesStart, rulesEnd);
+
+    const result = await callJudge<{ would_browse: boolean; fallback_behavior: string; confidence: number; reasoning: string }>(`You are evaluating whether a QA testing skill document would cause an AI agent to USE THE BROWSER or REFUSE to use the browser in a specific scenario.
+
+SCENARIO:
+A user runs /qa (a browser-based QA testing skill). The branch diff shows ONLY prompt template files and config file changes — no routes, views, controllers, components, or CSS were changed. The changes are "purely backend" with no obvious UI surface.
+
+QUESTION: Based on the document excerpts below, would the agent open the browser and test the application, or would it decline/refuse to browse and suggest running evals or unit tests instead?
+
+DOCUMENT EXCERPT 1 (Diff-aware mode instructions):
+${diffAwareSection}
+
+DOCUMENT EXCERPT 2 (Important Rules):
+${rulesSection}
+
+Respond with ONLY valid JSON:
+{
+  "would_browse": true or false,
+  "fallback_behavior": "description of what the agent would do when no UI pages are identified from the diff",
+  "confidence": N (1-5, how confident you are in your answer),
+  "reasoning": "brief explanation"
+}
+
+Rules:
+- would_browse should be true if the document instructs the agent to always use the browser regardless of diff content
+- would_browse should be false if the document allows the agent to skip browser testing for non-UI changes
+- confidence: 5 = document is unambiguous, 1 = document is unclear or contradictory`);
+
+    console.log('QA anti-refusal result:', JSON.stringify(result, null, 2));
+
+    evalCollector?.addTest({
+      name: 'qa/SKILL.md anti-refusal',
+      suite: 'QA skill quality evals',
+      tier: 'llm-judge',
+      passed: result.would_browse === true && result.confidence >= 4,
+      duration_ms: Date.now() - t0,
+      cost_usd: 0.02,
+      judge_scores: { would_browse: result.would_browse ? 1 : 0, confidence: result.confidence },
+      judge_reasoning: result.reasoning,
+    });
+
+    expect(result.would_browse).toBe(true);
+    expect(result.confidence).toBeGreaterThanOrEqual(4);
+  }, 30_000);
 });
 
 // --- Part 7: Cross-skill consistency judge (C7) ---
 
-describeEval('Cross-skill consistency evals', () => {
-  test('greptile-history patterns are consistent across all skills', async () => {
+describeIfSelected('Cross-skill consistency evals', ['cross-skill greptile consistency'], () => {
+  testIfSelected('cross-skill greptile consistency', async () => {
     const t0 = Date.now();
     const reviewContent = fs.readFileSync(path.join(ROOT, 'review', 'SKILL.md'), 'utf-8');
     const shipContent = fs.readFileSync(path.join(ROOT, 'ship', 'SKILL.md'), 'utf-8');
@@ -375,10 +464,10 @@ score (1-5): 5 = perfectly consistent, 1 = contradictory`);
 
 // --- Part 7: Baseline score pinning (C9) ---
 
-describeEval('Baseline score pinning', () => {
+describeIfSelected('Baseline score pinning', ['baseline score pinning'], () => {
   const baselinesPath = path.join(ROOT, 'test', 'fixtures', 'eval-baselines.json');
 
-  test('LLM eval scores do not regress below baselines', async () => {
+  testIfSelected('baseline score pinning', async () => {
     const t0 = Date.now();
     if (!fs.existsSync(baselinesPath)) {
       console.log('No baseline file found — skipping pinning check');
@@ -426,6 +515,210 @@ describeEval('Baseline score pinning', () => {
       throw new Error(`Score regressions detected:\n${regressions.join('\n')}`);
     }
   }, 60_000);
+});
+
+// --- Workflow SKILL.md quality evals (10 new tests for 100% coverage) ---
+
+/**
+ * DRY helper for workflow SKILL.md judge tests.
+ * Extracts a section from a SKILL.md file and judges its quality as an agent workflow.
+ */
+async function runWorkflowJudge(opts: {
+  testName: string;
+  suite: string;
+  skillPath: string;
+  startMarker: string;
+  endMarker: string | null;
+  judgeContext: string;
+  judgeGoal: string;
+  thresholds?: { clarity: number; completeness: number; actionability: number };
+}) {
+  const t0 = Date.now();
+  const defaults = { clarity: 4, completeness: 3, actionability: 4 };
+  const thresholds = { ...defaults, ...opts.thresholds };
+
+  const content = fs.readFileSync(path.join(ROOT, opts.skillPath), 'utf-8');
+  const startIdx = content.indexOf(opts.startMarker);
+  if (startIdx === -1) throw new Error(`Start marker not found in ${opts.skillPath}: "${opts.startMarker}"`);
+
+  let section: string;
+  if (opts.endMarker) {
+    const endIdx = content.indexOf(opts.endMarker, startIdx);
+    if (endIdx === -1) throw new Error(`End marker not found in ${opts.skillPath}: "${opts.endMarker}"`);
+    section = content.slice(startIdx, endIdx);
+  } else {
+    section = content.slice(startIdx);
+  }
+
+  const scores = await callJudge<JudgeScore>(`You are evaluating the quality of ${opts.judgeContext} for an AI coding agent.
+
+The agent reads this document to learn ${opts.judgeGoal}. It references external tools and files
+that are documented separately — do NOT penalize for missing external definitions.
+
+Rate on three dimensions (1-5 scale):
+- **clarity** (1-5): Can an agent follow the instructions without ambiguity?
+- **completeness** (1-5): Are all steps, decision points, and outputs well-defined?
+- **actionability** (1-5): Can an agent execute this workflow and produce the expected deliverables?
+
+Respond with ONLY valid JSON:
+{"clarity": N, "completeness": N, "actionability": N, "reasoning": "brief explanation"}
+
+Here is the document to evaluate:
+
+${section}`);
+
+  console.log(`${opts.testName} scores:`, JSON.stringify(scores, null, 2));
+
+  evalCollector?.addTest({
+    name: opts.testName,
+    suite: opts.suite,
+    tier: 'llm-judge',
+    passed: scores.clarity >= thresholds.clarity && scores.completeness >= thresholds.completeness && scores.actionability >= thresholds.actionability,
+    duration_ms: Date.now() - t0,
+    cost_usd: 0.02,
+    judge_scores: { clarity: scores.clarity, completeness: scores.completeness, actionability: scores.actionability },
+    judge_reasoning: scores.reasoning,
+  });
+
+  expect(scores.clarity).toBeGreaterThanOrEqual(thresholds.clarity);
+  expect(scores.completeness).toBeGreaterThanOrEqual(thresholds.completeness);
+  expect(scores.actionability).toBeGreaterThanOrEqual(thresholds.actionability);
+}
+
+// Block 1: Ship & Release skills
+describeIfSelected('Ship & Release skill evals', ['ship/SKILL.md workflow', 'document-release/SKILL.md workflow'], () => {
+  testIfSelected('ship/SKILL.md workflow', async () => {
+    await runWorkflowJudge({
+      testName: 'ship/SKILL.md workflow',
+      suite: 'Ship & Release skill evals',
+      skillPath: 'ship/SKILL.md',
+      startMarker: '# Ship:',
+      endMarker: '## Important Rules',
+      judgeContext: 'a ship/release workflow document',
+      judgeGoal: 'how to create a PR: merge base branch, run tests, review diff, bump version, update changelog, push, and open PR',
+    });
+  }, 30_000);
+
+  testIfSelected('document-release/SKILL.md workflow', async () => {
+    await runWorkflowJudge({
+      testName: 'document-release/SKILL.md workflow',
+      suite: 'Ship & Release skill evals',
+      skillPath: 'document-release/SKILL.md',
+      startMarker: '# Document Release:',
+      endMarker: '## Important Rules',
+      judgeContext: 'a post-ship documentation update workflow',
+      judgeGoal: 'how to audit and update project documentation after code ships: README, ARCHITECTURE, CONTRIBUTING, CLAUDE.md, CHANGELOG, TODOS',
+    });
+  }, 30_000);
+});
+
+// Block 2: Plan Review skills
+describeIfSelected('Plan Review skill evals', [
+  'plan-ceo-review/SKILL.md modes', 'plan-eng-review/SKILL.md sections', 'plan-design-review/SKILL.md passes',
+], () => {
+  testIfSelected('plan-ceo-review/SKILL.md modes', async () => {
+    await runWorkflowJudge({
+      testName: 'plan-ceo-review/SKILL.md modes',
+      suite: 'Plan Review skill evals',
+      skillPath: 'plan-ceo-review/SKILL.md',
+      startMarker: '## Step 0: Nuclear Scope Challenge',
+      endMarker: '## Review Sections',
+      judgeContext: 'a CEO/founder plan review framework with 4 scope modes',
+      judgeGoal: 'how to conduct a CEO-perspective plan review: challenge scope, select a mode (Expansion, Selective Expansion, Hold Scope, Reduction), then review sections interactively',
+    });
+  }, 30_000);
+
+  testIfSelected('plan-eng-review/SKILL.md sections', async () => {
+    await runWorkflowJudge({
+      testName: 'plan-eng-review/SKILL.md sections',
+      suite: 'Plan Review skill evals',
+      skillPath: 'plan-eng-review/SKILL.md',
+      startMarker: '## BEFORE YOU START:',
+      endMarker: '## CRITICAL RULE',
+      judgeContext: 'an engineering plan review framework with 4 review sections',
+      judgeGoal: 'how to review a plan for architecture quality, code quality, test coverage, and performance — walking through each section interactively with AskUserQuestion',
+    });
+  }, 30_000);
+
+  testIfSelected('plan-design-review/SKILL.md passes', async () => {
+    await runWorkflowJudge({
+      testName: 'plan-design-review/SKILL.md passes',
+      suite: 'Plan Review skill evals',
+      skillPath: 'plan-design-review/SKILL.md',
+      startMarker: '## Review Sections',
+      endMarker: '## CRITICAL RULE',
+      judgeContext: 'a design plan review framework with 7 review passes',
+      judgeGoal: 'how to review a plan for design quality using a 0-10 rating method: rate each dimension, explain what a 10 looks like, edit the plan to fix gaps, then re-rate',
+    });
+  }, 30_000);
+});
+
+// Block 3: Design skills
+describeIfSelected('Design skill evals', ['design-review/SKILL.md fix loop', 'design-consultation/SKILL.md research'], () => {
+  testIfSelected('design-review/SKILL.md fix loop', async () => {
+    await runWorkflowJudge({
+      testName: 'design-review/SKILL.md fix loop',
+      suite: 'Design skill evals',
+      skillPath: 'design-review/SKILL.md',
+      startMarker: '## Phase 7:',
+      endMarker: '## Additional Rules',
+      judgeContext: 'a design audit triage and fix loop workflow',
+      judgeGoal: 'how to triage design issues by severity, fix them atomically in source code, commit each fix, and re-verify with before/after screenshots',
+    });
+  }, 30_000);
+
+  testIfSelected('design-consultation/SKILL.md research', async () => {
+    await runWorkflowJudge({
+      testName: 'design-consultation/SKILL.md research',
+      suite: 'Design skill evals',
+      skillPath: 'design-consultation/SKILL.md',
+      startMarker: '## Phase 1:',
+      endMarker: '## Phase 4:',
+      judgeContext: 'a design consultation research and proposal workflow',
+      judgeGoal: 'how to gather product context, research the competitive landscape, and produce a complete design system proposal with typography, color, spacing, and motion specifications',
+    });
+  }, 30_000);
+});
+
+// Block 4: Other skills
+describeIfSelected('Other skill evals', [
+  'retro/SKILL.md instructions', 'qa-only/SKILL.md workflow', 'gstack-upgrade/SKILL.md upgrade flow',
+], () => {
+  testIfSelected('retro/SKILL.md instructions', async () => {
+    await runWorkflowJudge({
+      testName: 'retro/SKILL.md instructions',
+      suite: 'Other skill evals',
+      skillPath: 'retro/SKILL.md',
+      startMarker: '## Instructions',
+      endMarker: '## Compare Mode',
+      judgeContext: 'an engineering retrospective data gathering and analysis workflow',
+      judgeGoal: 'how to gather git metrics (commit history, test counts, work patterns), analyze them, produce a structured retro report with praise, growth areas, and trend tracking',
+    });
+  }, 30_000);
+
+  testIfSelected('qa-only/SKILL.md workflow', async () => {
+    await runWorkflowJudge({
+      testName: 'qa-only/SKILL.md workflow',
+      suite: 'Other skill evals',
+      skillPath: 'qa-only/SKILL.md',
+      startMarker: '## Workflow',
+      endMarker: '## Important Rules',
+      judgeContext: 'a report-only QA testing workflow',
+      judgeGoal: 'how to systematically QA test a web application and produce a structured report with health score, screenshots, and repro steps — without fixing anything',
+    });
+  }, 30_000);
+
+  testIfSelected('gstack-upgrade/SKILL.md upgrade flow', async () => {
+    await runWorkflowJudge({
+      testName: 'gstack-upgrade/SKILL.md upgrade flow',
+      suite: 'Other skill evals',
+      skillPath: 'gstack-upgrade/SKILL.md',
+      startMarker: '## Inline upgrade flow',
+      endMarker: '## Standalone usage',
+      judgeContext: 'a version upgrade detection and execution workflow',
+      judgeGoal: 'how to detect install type, compare versions, back up current install, upgrade via git or fresh clone, run setup, and show what changed',
+    });
+  }, 30_000);
 });
 
 // Module-level afterAll — finalize eval collector after all tests complete

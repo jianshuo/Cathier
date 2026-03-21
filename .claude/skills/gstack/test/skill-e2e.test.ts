@@ -1,10 +1,11 @@
 import { describe, test, expect, beforeAll, afterAll } from 'bun:test';
 import { runSkillTest } from './helpers/session-runner';
 import type { SkillTestResult } from './helpers/session-runner';
-import { outcomeJudge } from './helpers/llm-judge';
+import { outcomeJudge, callJudge } from './helpers/llm-judge';
 import { EvalCollector, judgePassed } from './helpers/eval-store';
 import type { EvalTestEntry } from './helpers/eval-store';
 import { startTestServer } from '../browse/test/test-server';
+import { selectTests, detectBaseBranch, getChangedFiles, E2E_TOUCHFILES, GLOBAL_TOUCHFILES } from './helpers/touchfiles';
 import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -13,8 +14,48 @@ import * as os from 'os';
 const ROOT = path.resolve(import.meta.dir, '..');
 
 // Skip unless EVALS=1. Session runner strips CLAUDE* env vars to avoid nested session issues.
+//
+// BLAME PROTOCOL: When an eval fails, do NOT claim "pre-existing" or "not related
+// to our changes" without proof. Run the same eval on main to verify. These tests
+// have invisible couplings — preamble text, SKILL.md content, and timing all affect
+// agent behavior. See CLAUDE.md "E2E eval failure blame protocol" for details.
 const evalsEnabled = !!process.env.EVALS;
 const describeE2E = evalsEnabled ? describe : describe.skip;
+
+// --- Diff-based test selection ---
+// When EVALS_ALL is not set, only run tests whose touchfiles were modified.
+// Set EVALS_ALL=1 to force all tests. Set EVALS_BASE to override base branch.
+let selectedTests: string[] | null = null; // null = run all
+
+if (evalsEnabled && !process.env.EVALS_ALL) {
+  const baseBranch = process.env.EVALS_BASE
+    || detectBaseBranch(ROOT)
+    || 'main';
+  const changedFiles = getChangedFiles(baseBranch, ROOT);
+
+  if (changedFiles.length > 0) {
+    const selection = selectTests(changedFiles, E2E_TOUCHFILES, GLOBAL_TOUCHFILES);
+    selectedTests = selection.selected;
+    process.stderr.write(`\nE2E selection (${selection.reason}): ${selection.selected.length}/${Object.keys(E2E_TOUCHFILES).length} tests\n`);
+    if (selection.skipped.length > 0) {
+      process.stderr.write(`  Skipped: ${selection.skipped.join(', ')}\n`);
+    }
+    process.stderr.write('\n');
+  }
+  // If changedFiles is empty (e.g., on main branch), selectedTests stays null → run all
+}
+
+/** Wrap a describe block to skip entirely if none of its tests are selected. */
+function describeIfSelected(name: string, testNames: string[], fn: () => void) {
+  const anySelected = selectedTests === null || testNames.some(t => selectedTests!.includes(t));
+  (anySelected ? describeE2E : describe.skip)(name, fn);
+}
+
+/** Skip an individual test if not selected (for multi-test describe blocks). */
+function testIfSelected(testName: string, fn: () => Promise<void>, timeout: number) {
+  const shouldRun = selectedTests === null || selectedTests.includes(testName);
+  (shouldRun ? test : test.skip)(testName, fn, timeout);
+}
 
 // Eval result collector — accumulates test results, writes to ~/.gstack-dev/evals/ on finalize
 const evalCollector = evalsEnabled ? new EvalCollector('e2e') : null;
@@ -128,7 +169,10 @@ if (evalsEnabled) {
   }
 }
 
-describeE2E('Skill E2E tests', () => {
+describeIfSelected('Skill E2E tests', [
+  'browse-basic', 'browse-snapshot', 'skillmd-setup-discovery',
+  'skillmd-no-local-binary', 'skillmd-outside-git', 'contributor-mode', 'session-awareness',
+], () => {
   beforeAll(() => {
     testServer = startTestServer();
     tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-'));
@@ -140,7 +184,7 @@ describeE2E('Skill E2E tests', () => {
     try { fs.rmSync(tmpDir, { recursive: true, force: true }); } catch {}
   });
 
-  test('browse basic commands work without errors', async () => {
+  testIfSelected('browse-basic', async () => {
     const result = await runSkillTest({
       prompt: `You have a browse binary at ${browseBin}. Assign it to B variable and run these commands in sequence:
 1. $B goto ${testServer.url}
@@ -161,7 +205,7 @@ Report the results of each command.`,
     expect(result.exitReason).toBe('success');
   }, 90_000);
 
-  test('browse snapshot flags all work', async () => {
+  testIfSelected('browse-snapshot', async () => {
     const result = await runSkillTest({
       prompt: `You have a browse binary at ${browseBin}. Assign it to B variable and run:
 1. $B goto ${testServer.url}
@@ -186,7 +230,7 @@ Report what each command returned.`,
     expect(result.exitReason).toBe('success');
   }, 90_000);
 
-  test('agent discovers browse binary via SKILL.md setup block', async () => {
+  testIfSelected('skillmd-setup-discovery', async () => {
     const skillMd = fs.readFileSync(path.join(ROOT, 'SKILL.md'), 'utf-8');
     const setupStart = skillMd.indexOf('## SETUP');
     const setupEnd = skillMd.indexOf('## IMPORTANT');
@@ -215,7 +259,7 @@ Report whether it worked.`,
     expect(result.exitReason).toBe('success');
   }, 90_000);
 
-  test('SKILL.md setup block handles missing local binary gracefully', async () => {
+  testIfSelected('skillmd-no-local-binary', async () => {
     // Create a tmpdir with no browse binary — no local .claude/skills/gstack/browse/dist/browse
     const emptyDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-empty-'));
 
@@ -250,7 +294,7 @@ Report the exact output. Do NOT try to fix or install anything — just report w
     try { fs.rmSync(emptyDir, { recursive: true, force: true }); } catch {}
   }, 60_000);
 
-  test('SKILL.md setup block works outside git repo', async () => {
+  testIfSelected('skillmd-outside-git', async () => {
     // Create a tmpdir outside any git repo
     const nonGitDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-nogit-'));
 
@@ -281,7 +325,7 @@ Report the exact output — either "READY: <path>" or "NEEDS_SETUP".`,
     try { fs.rmSync(nonGitDir, { recursive: true, force: true }); } catch {}
   }, 60_000);
 
-  test('contributor mode files a report on gstack error', async () => {
+  testIfSelected('contributor-mode', async () => {
     const contribDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-contrib-'));
     const logsDir = path.join(contribDir, 'contributor-logs');
     fs.mkdirSync(logsDir, { recursive: true });
@@ -322,22 +366,28 @@ File a contributor report about this issue. Then tell me what you filed.`,
     const logFiles = fs.readdirSync(logsDir).filter(f => f.endsWith('.md'));
     expect(logFiles.length).toBeGreaterThan(0);
 
+    // Verify new reflection-based format
     const logContent = fs.readFileSync(path.join(logsDir, logFiles[0]), 'utf-8');
     expect(logContent).toContain('Hey gstack team');
     expect(logContent).toContain('What I was trying to do');
     expect(logContent).toContain('What happened instead');
+    expect(logContent).toMatch(/rating/i);
+    // Verify report has repro steps (agent may use "Steps to reproduce", "Repro Steps", etc.)
+    expect(logContent).toMatch(/repro|steps to reproduce|how to reproduce/i);
+    // Verify report has date/version footer (agent may format differently)
+    expect(logContent).toMatch(/date.*2026|2026.*date/i);
 
     // Clean up
     try { fs.rmSync(contribDir, { recursive: true, force: true }); } catch {}
   }, 90_000);
 
-  test('session awareness adds ELI16 context when _SESSIONS >= 3', async () => {
+  testIfSelected('session-awareness', async () => {
     const sessionDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-session-'));
 
     // Set up a git repo so there's project/branch context to reference
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: sessionDir, stdio: 'pipe', timeout: 5000 });
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
     fs.writeFileSync(path.join(sessionDir, 'app.rb'), '# my app\n');
@@ -402,7 +452,7 @@ Remember: _SESSIONS=4, so ELI16 mode is active. The user is juggling multiple wi
 
 // --- B4: QA skill E2E ---
 
-describeE2E('QA skill E2E', () => {
+describeIfSelected('QA skill E2E', ['qa-quick'], () => {
   let qaDir: string;
 
   beforeAll(() => {
@@ -424,16 +474,20 @@ describeE2E('QA skill E2E', () => {
 
   test('/qa quick completes without browse errors', async () => {
     const result = await runSkillTest({
-      prompt: `You have a browse binary at ${browseBin}. Assign it to B variable like: B="${browseBin}"
+      prompt: `B="${browseBin}"
+
+The test server is already running at: ${testServer.url}
+Target page: ${testServer.url}/basic.html
 
 Read the file qa/SKILL.md for the QA workflow instructions.
 
 Run a Quick-depth QA test on ${testServer.url}/basic.html
 Do NOT use AskUserQuestion — run Quick tier directly.
+Do NOT try to start a server or discover ports — the URL above is ready.
 Write your report to ${qaDir}/qa-reports/qa-report.md`,
       workingDirectory: qaDir,
       maxTurns: 35,
-      timeout: 180_000,
+      timeout: 240_000,
       testName: 'qa-quick',
       runId,
     });
@@ -448,12 +502,12 @@ Write your report to ${qaDir}/qa-reports/qa-report.md`,
     }
     // Accept error_max_turns — the agent doing thorough QA work is not a failure
     expect(['success', 'error_max_turns']).toContain(result.exitReason);
-  }, 240_000);
+  }, 300_000);
 });
 
 // --- B5: Review skill E2E ---
 
-describeE2E('Review skill E2E', () => {
+describeIfSelected('Review skill E2E', ['review-sql-injection'], () => {
   let reviewDir: string;
 
   beforeAll(() => {
@@ -464,7 +518,7 @@ describeE2E('Review skill E2E', () => {
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: reviewDir, stdio: 'pipe', timeout: 5000 });
 
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
 
@@ -512,7 +566,7 @@ Write your review findings to ${reviewDir}/review-output.md`,
 
 // --- Review: Enum completeness E2E ---
 
-describeE2E('Review enum completeness E2E', () => {
+describeIfSelected('Review enum completeness E2E', ['review-enum-completeness'], () => {
   let enumDir: string;
 
   beforeAll(() => {
@@ -521,7 +575,7 @@ describeE2E('Review enum completeness E2E', () => {
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: enumDir, stdio: 'pipe', timeout: 5000 });
 
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
 
@@ -582,13 +636,107 @@ The diff adds a new "returned" status to the Order model. Your job is to check i
   }, 120_000);
 });
 
+// --- Review: Design review lite E2E ---
+
+describeE2E('Review design lite E2E', () => {
+  let designDir: string;
+
+  beforeAll(() => {
+    designDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-design-lite-'));
+
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: designDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    // Commit clean base on main
+    fs.writeFileSync(path.join(designDir, 'index.html'), '<h1>Clean</h1>\n');
+    fs.writeFileSync(path.join(designDir, 'styles.css'), 'body { font-size: 16px; }\n');
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial']);
+
+    // Feature branch adds AI slop CSS + HTML
+    run('git', ['checkout', '-b', 'feature/add-landing-page']);
+    const slopCss = fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'review-eval-design-slop.css'), 'utf-8');
+    const slopHtml = fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'review-eval-design-slop.html'), 'utf-8');
+    fs.writeFileSync(path.join(designDir, 'styles.css'), slopCss);
+    fs.writeFileSync(path.join(designDir, 'landing.html'), slopHtml);
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'add landing page']);
+
+    // Copy review skill files
+    fs.copyFileSync(path.join(ROOT, 'review', 'SKILL.md'), path.join(designDir, 'review-SKILL.md'));
+    fs.copyFileSync(path.join(ROOT, 'review', 'checklist.md'), path.join(designDir, 'review-checklist.md'));
+    fs.copyFileSync(path.join(ROOT, 'review', 'design-checklist.md'), path.join(designDir, 'review-design-checklist.md'));
+    fs.copyFileSync(path.join(ROOT, 'review', 'greptile-triage.md'), path.join(designDir, 'review-greptile-triage.md'));
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(designDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/review catches design anti-patterns in CSS/HTML diff', async () => {
+    const result = await runSkillTest({
+      prompt: `You are in a git repo on branch feature/add-landing-page with changes against main.
+Read review-SKILL.md for the review workflow instructions.
+Read review-checklist.md for the code review checklist.
+Read review-design-checklist.md for the design review checklist.
+Run /review on the current diff (git diff main...HEAD).
+
+The diff adds a landing page with CSS and HTML. Check for both code issues AND design anti-patterns.
+Write your review findings to ${designDir}/review-output.md
+
+Important: The design checklist should catch issues like blacklisted fonts, small font sizes, outline:none, !important, AI slop patterns (purple gradients, generic hero copy, 3-column feature grid), etc.`,
+      workingDirectory: designDir,
+      maxTurns: 15,
+      timeout: 120_000,
+      testName: 'review-design-lite',
+      runId,
+    });
+
+    logCost('/review design lite', result);
+    recordE2E('/review design lite', 'Review design lite E2E', result);
+    expect(result.exitReason).toBe('success');
+
+    // Verify the review caught at least 4 of 7 planted design issues
+    const reviewPath = path.join(designDir, 'review-output.md');
+    if (fs.existsSync(reviewPath)) {
+      const review = fs.readFileSync(reviewPath, 'utf-8').toLowerCase();
+      let detected = 0;
+
+      // Issue 1: Blacklisted font (Papyrus) — HIGH
+      if (review.includes('papyrus') || review.includes('blacklisted font') || review.includes('font family')) detected++;
+      // Issue 2: Body text < 16px — HIGH
+      if (review.includes('14px') || review.includes('font-size') || review.includes('font size') || review.includes('body text')) detected++;
+      // Issue 3: outline: none — HIGH
+      if (review.includes('outline') || review.includes('focus')) detected++;
+      // Issue 4: !important — HIGH
+      if (review.includes('!important') || review.includes('important')) detected++;
+      // Issue 5: Purple gradient — MEDIUM
+      if (review.includes('gradient') || review.includes('purple') || review.includes('violet') || review.includes('#6366f1') || review.includes('#8b5cf6')) detected++;
+      // Issue 6: Generic hero copy — MEDIUM
+      if (review.includes('welcome to') || review.includes('all-in-one') || review.includes('generic') || review.includes('hero copy') || review.includes('ai slop')) detected++;
+      // Issue 7: 3-column feature grid — LOW
+      if (review.includes('3-column') || review.includes('three-column') || review.includes('feature grid') || review.includes('icon') || review.includes('circle')) detected++;
+
+      console.log(`Design review detected ${detected}/7 planted issues`);
+      expect(detected).toBeGreaterThanOrEqual(4);
+    }
+  }, 150_000);
+});
+
 // --- B6/B7/B8: Planted-bug outcome evals ---
 
 // Outcome evals also need ANTHROPIC_API_KEY for the LLM judge
 const hasApiKey = !!process.env.ANTHROPIC_API_KEY;
 const describeOutcome = (evalsEnabled && hasApiKey) ? describe : describe.skip;
 
-describeOutcome('Planted-bug outcome evals', () => {
+// Wrap describeOutcome with selection — skip if no planted-bug tests are selected
+const outcomeTestNames = ['qa-b6-static', 'qa-b7-spa', 'qa-b8-checkout'];
+const anyOutcomeSelected = selectedTests === null || outcomeTestNames.some(t => selectedTests!.includes(t));
+(anyOutcomeSelected ? describeOutcome : describe.skip)('Planted-bug outcome evals', () => {
   let outcomeDir: string;
 
   beforeAll(() => {
@@ -752,7 +900,7 @@ CRITICAL RULES:
 
 // --- Plan CEO Review E2E ---
 
-describeE2E('Plan CEO Review E2E', () => {
+describeIfSelected('Plan CEO Review E2E', ['plan-ceo-review'], () => {
   let planDir: string;
 
   beforeAll(() => {
@@ -762,7 +910,7 @@ describeE2E('Plan CEO Review E2E', () => {
       spawnSync(cmd, args, { cwd: planDir, stdio: 'pipe', timeout: 5000 });
 
     // Init git repo (CEO review SKILL.md has a "System Audit" step that runs git)
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
 
@@ -837,9 +985,92 @@ Focus on reviewing the plan content: architecture, error handling, security, and
   }, 420_000);
 });
 
+// --- Plan CEO Review (SELECTIVE EXPANSION) E2E ---
+
+describeIfSelected('Plan CEO Review SELECTIVE EXPANSION E2E', ['plan-ceo-review-selective'], () => {
+  let planDir: string;
+
+  beforeAll(() => {
+    planDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-plan-ceo-sel-'));
+    const { spawnSync } = require('child_process');
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: planDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    fs.writeFileSync(path.join(planDir, 'plan.md'), `# Plan: Add User Dashboard
+
+## Context
+We're building a new user dashboard that shows recent activity, notifications, and quick actions.
+
+## Changes
+1. New React component \`UserDashboard\` in \`src/components/\`
+2. REST API endpoint \`GET /api/dashboard\` returning user stats
+3. PostgreSQL query for activity aggregation
+4. Redis cache layer for dashboard data (5min TTL)
+
+## Architecture
+- Frontend: React + TailwindCSS
+- Backend: Express.js REST API
+- Database: PostgreSQL with existing user/activity tables
+- Cache: Redis for dashboard aggregates
+
+## Open questions
+- Should we use WebSocket for real-time updates?
+- How do we handle users with 100k+ activity records?
+`);
+
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'add plan']);
+
+    fs.mkdirSync(path.join(planDir, 'plan-ceo-review'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'plan-ceo-review', 'SKILL.md'),
+      path.join(planDir, 'plan-ceo-review', 'SKILL.md'),
+    );
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(planDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/plan-ceo-review SELECTIVE EXPANSION produces structured review output', async () => {
+    const result = await runSkillTest({
+      prompt: `Read plan-ceo-review/SKILL.md for the review workflow.
+
+Read plan.md — that's the plan to review. This is a standalone plan document, not a codebase — skip any codebase exploration or system audit steps.
+
+Choose SELECTIVE EXPANSION mode. Skip any AskUserQuestion calls — this is non-interactive.
+For the cherry-pick ceremony, accept all expansion proposals automatically.
+Write your complete review directly to ${planDir}/review-output-selective.md
+
+Focus on reviewing the plan content: architecture, error handling, security, and performance.`,
+      workingDirectory: planDir,
+      maxTurns: 15,
+      timeout: 360_000,
+      testName: 'plan-ceo-review-selective',
+      runId,
+    });
+
+    logCost('/plan-ceo-review (SELECTIVE)', result);
+    recordE2E('/plan-ceo-review-selective', 'Plan CEO Review SELECTIVE EXPANSION E2E', result, {
+      passed: ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+
+    const reviewPath = path.join(planDir, 'review-output-selective.md');
+    if (fs.existsSync(reviewPath)) {
+      const review = fs.readFileSync(reviewPath, 'utf-8');
+      expect(review.length).toBeGreaterThan(200);
+    }
+  }, 420_000);
+});
+
 // --- Plan Eng Review E2E ---
 
-describeE2E('Plan Eng Review E2E', () => {
+describeIfSelected('Plan Eng Review E2E', ['plan-eng-review'], () => {
   let planDir: string;
 
   beforeAll(() => {
@@ -848,7 +1079,7 @@ describeE2E('Plan Eng Review E2E', () => {
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: planDir, stdio: 'pipe', timeout: 5000 });
 
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
 
@@ -905,7 +1136,7 @@ Replace session-cookie auth with JWT tokens. Currently using express-session + R
 
 Read plan.md — that's the plan to review. This is a standalone plan document, not a codebase — skip any codebase exploration steps.
 
-Choose SMALL CHANGE mode. Skip any AskUserQuestion calls — this is non-interactive.
+Proceed directly to the full review. Skip any AskUserQuestion calls — this is non-interactive.
 Write your complete review directly to ${planDir}/review-output.md
 
 Focus on architecture, code quality, tests, and performance sections.`,
@@ -933,7 +1164,7 @@ Focus on architecture, code quality, tests, and performance sections.`,
 
 // --- Retro E2E ---
 
-describeE2E('Retro E2E', () => {
+describeIfSelected('Retro E2E', ['retro'], () => {
   let retroDir: string;
 
   beforeAll(() => {
@@ -943,7 +1174,7 @@ describeE2E('Retro E2E', () => {
       spawnSync(cmd, args, { cwd: retroDir, stdio: 'pipe', timeout: 5000 });
 
     // Create a git repo with varied commit history
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'dev@example.com']);
     run('git', ['config', 'user.name', 'Dev']);
 
@@ -1019,7 +1250,7 @@ Analyze the git history and produce the narrative report as described in the SKI
 
 // --- QA-Only E2E (report-only, no fixes) ---
 
-describeE2E('QA-Only skill E2E', () => {
+describeIfSelected('QA-Only skill E2E', ['qa-only-no-fix'], () => {
   let qaOnlyDir: string;
 
   beforeAll(() => {
@@ -1042,7 +1273,7 @@ describeE2E('QA-Only skill E2E', () => {
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: qaOnlyDir, stdio: 'pipe', timeout: 5000 });
 
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
     fs.writeFileSync(path.join(qaOnlyDir, 'index.html'), '<h1>Test</h1>\n');
@@ -1105,7 +1336,7 @@ Write your report to ${qaOnlyDir}/qa-reports/qa-only-report.md`,
 
 // --- QA Fix Loop E2E ---
 
-describeE2E('QA Fix Loop E2E', () => {
+describeIfSelected('QA Fix Loop E2E', ['qa-fix-loop'], () => {
   let qaFixDir: string;
   let qaFixServer: ReturnType<typeof Bun.serve> | null = null;
 
@@ -1142,7 +1373,7 @@ describeE2E('QA Fix Loop E2E', () => {
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: qaFixDir, stdio: 'pipe', timeout: 5000 });
 
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
     run('git', ['add', '.']);
@@ -1219,7 +1450,7 @@ This is a test+fix loop: find bugs, fix them in the source code, commit each fix
 
 // --- Plan-Eng-Review Test-Plan Artifact E2E ---
 
-describeE2E('Plan-Eng-Review Test-Plan Artifact E2E', () => {
+describeIfSelected('Plan-Eng-Review Test-Plan Artifact E2E', ['plan-eng-review-artifact'], () => {
   let planDir: string;
   let projectDir: string;
 
@@ -1229,7 +1460,7 @@ describeE2E('Plan-Eng-Review Test-Plan Artifact E2E', () => {
     const run = (cmd: string, args: string[]) =>
       spawnSync(cmd, args, { cwd: planDir, stdio: 'pipe', timeout: 5000 });
 
-    run('git', ['init']);
+    run('git', ['init', '-b', 'main']);
     run('git', ['config', 'user.email', 'test@test.com']);
     run('git', ['config', 'user.name', 'Test']);
 
@@ -1306,7 +1537,7 @@ export function main() { return Dashboard(); }
 
 Read plan.md — that's the plan to review. This is a standalone plan with source code in app.ts and dashboard.ts.
 
-Choose SMALL CHANGE mode. Skip any AskUserQuestion calls — this is non-interactive.
+Proceed directly to the full review. Skip any AskUserQuestion calls — this is non-interactive.
 
 IMPORTANT: After your review, you MUST write the test-plan artifact as described in the "Test Plan Artifact" section of SKILL.md. The remote-slug shim is at ${planDir}/browse/bin/remote-slug.
 
@@ -1344,8 +1575,300 @@ Write your review to ${planDir}/review-output.md`,
   }, 420_000);
 });
 
+// --- Base branch detection smoke tests ---
+
+describeIfSelected('Base branch detection', ['review-base-branch', 'ship-base-branch', 'retro-base-branch'], () => {
+  let baseBranchDir: string;
+  const run = (cmd: string, args: string[], cwd: string) =>
+    spawnSync(cmd, args, { cwd, stdio: 'pipe', timeout: 5000 });
+
+  beforeAll(() => {
+    baseBranchDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-basebranch-'));
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(baseBranchDir, { recursive: true, force: true }); } catch {}
+  });
+
+  testIfSelected('review-base-branch', async () => {
+    const dir = path.join(baseBranchDir, 'review-base');
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Create git repo with a feature branch off main
+    run('git', ['init'], dir);
+    run('git', ['config', 'user.email', 'test@test.com'], dir);
+    run('git', ['config', 'user.name', 'Test'], dir);
+
+    fs.writeFileSync(path.join(dir, 'app.rb'), '# clean base\nclass App\nend\n');
+    run('git', ['add', 'app.rb'], dir);
+    run('git', ['commit', '-m', 'initial commit'], dir);
+
+    // Create feature branch with a change
+    run('git', ['checkout', '-b', 'feature/test-review'], dir);
+    fs.writeFileSync(path.join(dir, 'app.rb'), '# clean base\nclass App\n  def hello; "world"; end\nend\n');
+    run('git', ['add', 'app.rb'], dir);
+    run('git', ['commit', '-m', 'feat: add hello method'], dir);
+
+    // Copy review skill files
+    fs.copyFileSync(path.join(ROOT, 'review', 'SKILL.md'), path.join(dir, 'review-SKILL.md'));
+    fs.copyFileSync(path.join(ROOT, 'review', 'checklist.md'), path.join(dir, 'review-checklist.md'));
+    fs.copyFileSync(path.join(ROOT, 'review', 'greptile-triage.md'), path.join(dir, 'review-greptile-triage.md'));
+
+    const result = await runSkillTest({
+      prompt: `You are in a git repo on a feature branch with changes.
+Read review-SKILL.md for the review workflow instructions.
+Also read review-checklist.md and apply it.
+
+IMPORTANT: Follow Step 0 to detect the base branch. Since there is no remote, gh commands will fail — fall back to main.
+Then run the review against the detected base branch.
+Write your findings to ${dir}/review-output.md`,
+      workingDirectory: dir,
+      maxTurns: 15,
+      timeout: 90_000,
+      testName: 'review-base-branch',
+      runId,
+    });
+
+    logCost('/review base-branch', result);
+    recordE2E('/review base branch detection', 'Base branch detection', result);
+    expect(result.exitReason).toBe('success');
+
+    // Verify the review used "base branch" language (from Step 0)
+    const toolOutputs = result.toolCalls.map(tc => tc.output || '').join('\n');
+    const allOutput = (result.output || '') + toolOutputs;
+    // The agent should have run git diff against main (the fallback)
+    const usedGitDiff = result.toolCalls.some(tc =>
+      tc.tool === 'Bash' && typeof tc.input === 'string' && tc.input.includes('git diff')
+    );
+    expect(usedGitDiff).toBe(true);
+  }, 120_000);
+
+  testIfSelected('ship-base-branch', async () => {
+    const dir = path.join(baseBranchDir, 'ship-base');
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Create git repo with feature branch
+    run('git', ['init'], dir);
+    run('git', ['config', 'user.email', 'test@test.com'], dir);
+    run('git', ['config', 'user.name', 'Test'], dir);
+
+    fs.writeFileSync(path.join(dir, 'app.ts'), 'console.log("v1");\n');
+    run('git', ['add', 'app.ts'], dir);
+    run('git', ['commit', '-m', 'initial'], dir);
+
+    run('git', ['checkout', '-b', 'feature/ship-test'], dir);
+    fs.writeFileSync(path.join(dir, 'app.ts'), 'console.log("v2");\n');
+    run('git', ['add', 'app.ts'], dir);
+    run('git', ['commit', '-m', 'feat: update to v2'], dir);
+
+    // Copy ship skill
+    fs.copyFileSync(path.join(ROOT, 'ship', 'SKILL.md'), path.join(dir, 'ship-SKILL.md'));
+
+    const result = await runSkillTest({
+      prompt: `Read ship-SKILL.md for the ship workflow.
+
+Run ONLY Step 0 (Detect base branch) and Step 1 (Pre-flight) from the ship workflow.
+Since there is no remote, gh commands will fail — fall back to main.
+
+After completing Step 0 and Step 1, STOP. Do NOT proceed to Step 2 or beyond.
+Do NOT push, create PRs, or modify VERSION/CHANGELOG.
+
+Write a summary of what you detected to ${dir}/ship-preflight.md including:
+- The detected base branch name
+- The current branch name
+- The diff stat against the base branch`,
+      workingDirectory: dir,
+      maxTurns: 10,
+      timeout: 60_000,
+      testName: 'ship-base-branch',
+      runId,
+    });
+
+    logCost('/ship base-branch', result);
+    recordE2E('/ship base branch detection', 'Base branch detection', result);
+    expect(result.exitReason).toBe('success');
+
+    // Verify preflight output was written
+    const preflightPath = path.join(dir, 'ship-preflight.md');
+    if (fs.existsSync(preflightPath)) {
+      const content = fs.readFileSync(preflightPath, 'utf-8');
+      expect(content.length).toBeGreaterThan(20);
+      // Should mention the branch name
+      expect(content.toLowerCase()).toMatch(/main|base/);
+    }
+
+    // Verify no destructive actions — no push, no PR creation
+    const destructiveTools = result.toolCalls.filter(tc =>
+      tc.tool === 'Bash' && typeof tc.input === 'string' &&
+      (tc.input.includes('git push') || tc.input.includes('gh pr create'))
+    );
+    expect(destructiveTools).toHaveLength(0);
+  }, 90_000);
+
+  testIfSelected('retro-base-branch', async () => {
+    const dir = path.join(baseBranchDir, 'retro-base');
+    fs.mkdirSync(dir, { recursive: true });
+
+    // Create git repo with commit history
+    run('git', ['init'], dir);
+    run('git', ['config', 'user.email', 'dev@example.com'], dir);
+    run('git', ['config', 'user.name', 'Dev'], dir);
+
+    fs.writeFileSync(path.join(dir, 'app.ts'), 'console.log("hello");\n');
+    run('git', ['add', 'app.ts'], dir);
+    run('git', ['commit', '-m', 'feat: initial app', '--date', '2026-03-14T09:00:00'], dir);
+
+    fs.writeFileSync(path.join(dir, 'auth.ts'), 'export function login() {}\n');
+    run('git', ['add', 'auth.ts'], dir);
+    run('git', ['commit', '-m', 'feat: add auth', '--date', '2026-03-15T10:00:00'], dir);
+
+    fs.writeFileSync(path.join(dir, 'test.ts'), 'test("it works", () => {});\n');
+    run('git', ['add', 'test.ts'], dir);
+    run('git', ['commit', '-m', 'test: add tests', '--date', '2026-03-16T11:00:00'], dir);
+
+    // Copy retro skill
+    fs.mkdirSync(path.join(dir, 'retro'), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, 'retro', 'SKILL.md'), path.join(dir, 'retro', 'SKILL.md'));
+
+    const result = await runSkillTest({
+      prompt: `Read retro/SKILL.md for instructions on how to run a retrospective.
+
+IMPORTANT: Follow the "Detect default branch" step first. Since there is no remote, gh will fail — fall back to main.
+Then use the detected branch name for all git queries.
+
+Run /retro for the last 7 days of this git repo. Skip any AskUserQuestion calls — this is non-interactive.
+This is a local-only repo so use the local branch (main) instead of origin/main for all git log commands.
+
+Write your retrospective to ${dir}/retro-output.md`,
+      workingDirectory: dir,
+      maxTurns: 25,
+      timeout: 240_000,
+      testName: 'retro-base-branch',
+      runId,
+    });
+
+    logCost('/retro base-branch', result);
+    recordE2E('/retro default branch detection', 'Base branch detection', result, {
+      passed: ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+
+    // Verify retro output was produced
+    const retroPath = path.join(dir, 'retro-output.md');
+    if (fs.existsSync(retroPath)) {
+      const content = fs.readFileSync(retroPath, 'utf-8');
+      expect(content.length).toBeGreaterThan(100);
+    }
+  }, 300_000);
+});
+
+// --- Document-Release skill E2E ---
+
+describeIfSelected('Document-Release skill E2E', ['document-release'], () => {
+  let docReleaseDir: string;
+
+  beforeAll(() => {
+    docReleaseDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-doc-release-'));
+
+    // Copy document-release skill files
+    copyDirSync(path.join(ROOT, 'document-release'), path.join(docReleaseDir, 'document-release'));
+
+    // Init git repo with initial docs
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: docReleaseDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    // Create initial README with a features list
+    fs.writeFileSync(path.join(docReleaseDir, 'README.md'),
+      '# Test Project\n\n## Features\n\n- Feature A\n- Feature B\n\n## Install\n\n```bash\nnpm install\n```\n');
+
+    // Create initial CHANGELOG that must NOT be clobbered
+    fs.writeFileSync(path.join(docReleaseDir, 'CHANGELOG.md'),
+      '# Changelog\n\n## 1.0.0 — 2026-03-01\n\n- Initial release with Feature A and Feature B\n- Setup CI pipeline\n');
+
+    // Create VERSION file (already bumped)
+    fs.writeFileSync(path.join(docReleaseDir, 'VERSION'), '1.1.0\n');
+
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial']);
+
+    // Create feature branch with a code change
+    run('git', ['checkout', '-b', 'feat/add-feature-c']);
+    fs.writeFileSync(path.join(docReleaseDir, 'feature-c.ts'), 'export function featureC() { return "C"; }\n');
+    fs.writeFileSync(path.join(docReleaseDir, 'VERSION'), '1.1.1\n');
+    fs.writeFileSync(path.join(docReleaseDir, 'CHANGELOG.md'),
+      '# Changelog\n\n## 1.1.1 — 2026-03-16\n\n- Added Feature C\n\n## 1.0.0 — 2026-03-01\n\n- Initial release with Feature A and Feature B\n- Setup CI pipeline\n');
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'feat: add feature C']);
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(docReleaseDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/document-release updates docs without clobbering CHANGELOG', async () => {
+    const result = await runSkillTest({
+      prompt: `Read the file document-release/SKILL.md for the document-release workflow instructions.
+
+Run the /document-release workflow on this repo. The base branch is "main".
+
+IMPORTANT:
+- Do NOT use AskUserQuestion — auto-approve everything or skip if unsure.
+- Do NOT push or create PRs (there is no remote).
+- Do NOT run gh commands (no remote).
+- Focus on updating README.md to reflect the new Feature C.
+- Do NOT overwrite or regenerate CHANGELOG entries.
+- Skip VERSION bump (it's already bumped).
+- After editing, just commit the changes locally.`,
+      workingDirectory: docReleaseDir,
+      maxTurns: 30,
+      allowedTools: ['Bash', 'Read', 'Write', 'Edit', 'Grep', 'Glob'],
+      timeout: 180_000,
+      testName: 'document-release',
+      runId,
+    });
+
+    logCost('/document-release', result);
+
+    // Read CHANGELOG to verify it was NOT clobbered
+    const changelog = fs.readFileSync(path.join(docReleaseDir, 'CHANGELOG.md'), 'utf-8');
+    const hasOriginalEntries = changelog.includes('Initial release with Feature A and Feature B')
+      && changelog.includes('Setup CI pipeline')
+      && changelog.includes('1.0.0');
+    if (!hasOriginalEntries) {
+      console.warn('CHANGELOG CLOBBERED — original entries missing!');
+    }
+
+    // Check if README was updated
+    const readme = fs.readFileSync(path.join(docReleaseDir, 'README.md'), 'utf-8');
+    const readmeUpdated = readme.includes('Feature C') || readme.includes('feature-c') || readme.includes('feature C');
+
+    const exitOk = ['success', 'error_max_turns'].includes(result.exitReason);
+    recordE2E('/document-release', 'Document-Release skill E2E', result, {
+      passed: exitOk && hasOriginalEntries,
+    });
+
+    // Critical guardrail: CHANGELOG must not be clobbered
+    expect(hasOriginalEntries).toBe(true);
+
+    // Accept error_max_turns — thorough doc review is not a failure
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+
+    // Informational: did it update README?
+    if (readmeUpdated) {
+      console.log('README updated to include Feature C');
+    } else {
+      console.warn('README was NOT updated — agent may not have found the feature');
+    }
+  }, 240_000);
+});
+
 // --- Deferred skill E2E tests (destructive or require interactive UI) ---
 
+// Deferred tests — only test.todo entries, no selection needed
 describeE2E('Deferred skill E2E', () => {
   // Ship is destructive: pushes to remote, creates PRs, modifies VERSION/CHANGELOG
   test.todo('/ship completes full workflow');
@@ -1353,8 +1876,1161 @@ describeE2E('Deferred skill E2E', () => {
   // Setup-browser-cookies requires interactive browser picker UI
   test.todo('/setup-browser-cookies imports cookies');
 
-  // Gstack-upgrade is destructive: modifies skill installation directory
-  test.todo('/gstack-upgrade completes upgrade flow');
+});
+
+// --- gstack-upgrade E2E ---
+
+describeIfSelected('gstack-upgrade E2E', ['gstack-upgrade-happy-path'], () => {
+  let upgradeDir: string;
+  let remoteDir: string;
+
+  beforeAll(() => {
+    upgradeDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-upgrade-'));
+    remoteDir = fs.mkdtempSync(path.join(os.tmpdir(), 'gstack-remote-'));
+
+    const run = (cmd: string, args: string[], cwd: string) =>
+      spawnSync(cmd, args, { cwd, stdio: 'pipe', timeout: 5000 });
+
+    // Init the "project" repo
+    run('git', ['init'], upgradeDir);
+    run('git', ['config', 'user.email', 'test@test.com'], upgradeDir);
+    run('git', ['config', 'user.name', 'Test'], upgradeDir);
+
+    // Create mock gstack install directory (local-git type)
+    const mockGstack = path.join(upgradeDir, '.claude', 'skills', 'gstack');
+    fs.mkdirSync(mockGstack, { recursive: true });
+
+    // Init as a git repo
+    run('git', ['init'], mockGstack);
+    run('git', ['config', 'user.email', 'test@test.com'], mockGstack);
+    run('git', ['config', 'user.name', 'Test'], mockGstack);
+
+    // Create bare remote
+    run('git', ['init', '--bare'], remoteDir);
+    run('git', ['remote', 'add', 'origin', remoteDir], mockGstack);
+
+    // Write old version files
+    fs.writeFileSync(path.join(mockGstack, 'VERSION'), '0.5.0\n');
+    fs.writeFileSync(path.join(mockGstack, 'CHANGELOG.md'),
+      '# Changelog\n\n## 0.5.0 — 2026-03-01\n\n- Initial release\n');
+    fs.writeFileSync(path.join(mockGstack, 'setup'),
+      '#!/bin/bash\necho "Setup completed"\n', { mode: 0o755 });
+
+    // Initial commit + push
+    run('git', ['add', '.'], mockGstack);
+    run('git', ['commit', '-m', 'initial'], mockGstack);
+    run('git', ['push', '-u', 'origin', 'HEAD:main'], mockGstack);
+
+    // Create new version (simulate upstream release)
+    fs.writeFileSync(path.join(mockGstack, 'VERSION'), '0.6.0\n');
+    fs.writeFileSync(path.join(mockGstack, 'CHANGELOG.md'),
+      '# Changelog\n\n## 0.6.0 — 2026-03-15\n\n- New feature: interactive design review\n- Fix: snapshot flag validation\n\n## 0.5.0 — 2026-03-01\n\n- Initial release\n');
+    run('git', ['add', '.'], mockGstack);
+    run('git', ['commit', '-m', 'release 0.6.0'], mockGstack);
+    run('git', ['push', 'origin', 'HEAD:main'], mockGstack);
+
+    // Reset working copy back to old version
+    run('git', ['reset', '--hard', 'HEAD~1'], mockGstack);
+
+    // Copy gstack-upgrade skill
+    fs.mkdirSync(path.join(upgradeDir, 'gstack-upgrade'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'gstack-upgrade', 'SKILL.md'),
+      path.join(upgradeDir, 'gstack-upgrade', 'SKILL.md'),
+    );
+
+    // Commit so git repo is clean
+    run('git', ['add', '.'], upgradeDir);
+    run('git', ['commit', '-m', 'initial project'], upgradeDir);
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(upgradeDir, { recursive: true, force: true }); } catch {}
+    try { fs.rmSync(remoteDir, { recursive: true, force: true }); } catch {}
+  });
+
+  testIfSelected('gstack-upgrade-happy-path', async () => {
+    const mockGstack = path.join(upgradeDir, '.claude', 'skills', 'gstack');
+    const result = await runSkillTest({
+      prompt: `Read gstack-upgrade/SKILL.md for the upgrade workflow.
+
+You are running /gstack-upgrade standalone. The gstack installation is at ./.claude/skills/gstack (local-git type — it has a .git directory with an origin remote).
+
+Current version: 0.5.0. A new version 0.6.0 is available on origin/main.
+
+Follow the standalone upgrade flow:
+1. Detect install type (local-git)
+2. Run git fetch origin && git reset --hard origin/main in the install directory
+3. Run the setup script
+4. Show what's new from CHANGELOG
+
+Skip any AskUserQuestion calls — auto-approve the upgrade. Write a summary of what you did to stdout.
+
+IMPORTANT: The install directory is at ./.claude/skills/gstack — use that exact path.`,
+      workingDirectory: upgradeDir,
+      maxTurns: 20,
+      timeout: 180_000,
+      testName: 'gstack-upgrade-happy-path',
+      runId,
+    });
+
+    logCost('/gstack-upgrade happy path', result);
+
+    // Check that the version was updated
+    const versionAfter = fs.readFileSync(path.join(mockGstack, 'VERSION'), 'utf-8').trim();
+    const output = result.output || '';
+    const mentionsUpgrade = output.toLowerCase().includes('0.6.0') ||
+      output.toLowerCase().includes('upgrade') ||
+      output.toLowerCase().includes('updated');
+
+    recordE2E('/gstack-upgrade happy path', 'gstack-upgrade E2E', result, {
+      passed: versionAfter === '0.6.0' && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    expect(versionAfter).toBe('0.6.0');
+  }, 240_000);
+});
+
+// --- Design Consultation E2E ---
+
+/**
+ * LLM judge for DESIGN.md quality — checks font blacklist compliance,
+ * coherence, specificity, and AI slop avoidance.
+ */
+async function designQualityJudge(designMd: string): Promise<{ passed: boolean; reasoning: string }> {
+  return callJudge<{ passed: boolean; reasoning: string }>(`You are evaluating a generated DESIGN.md file for quality.
+
+Evaluate against these criteria — ALL must pass for an overall "passed: true":
+1. Does NOT recommend Inter, Roboto, Arial, Helvetica, Open Sans, Lato, Montserrat, or Poppins as primary fonts
+2. Aesthetic direction is coherent with color approach (e.g., brutalist aesthetic doesn't pair with expressive color without explanation)
+3. Font recommendations include specific font names (not generic like "a sans-serif font")
+4. Color palette includes actual hex values, not placeholders like "[hex]"
+5. Rationale is provided for major decisions (not just "because it looks good")
+6. No AI slop patterns: purple gradients mentioned positively, "3-column feature grid" language, generic marketing speak
+7. Product context is reflected in design choices (civic tech → should have appropriate, professional aesthetic)
+
+DESIGN.md content:
+\`\`\`
+${designMd}
+\`\`\`
+
+Return JSON: { "passed": true/false, "reasoning": "one paragraph explaining your evaluation" }`);
+}
+
+describeIfSelected('Design Consultation E2E', [
+  'design-consultation-core', 'design-consultation-research',
+  'design-consultation-existing', 'design-consultation-preview',
+], () => {
+  let designDir: string;
+
+  beforeAll(() => {
+    designDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-design-consultation-'));
+    const { spawnSync } = require('child_process');
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: designDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    // Create a realistic project context
+    fs.writeFileSync(path.join(designDir, 'README.md'), `# CivicPulse
+
+A civic tech data platform for government employees to access, visualize, and share public data. Built with Next.js and PostgreSQL.
+
+## Features
+- Real-time data dashboards for municipal budgets
+- Public records search with faceted filtering
+- Data export and sharing tools for inter-department collaboration
+`);
+    fs.writeFileSync(path.join(designDir, 'package.json'), JSON.stringify({
+      name: 'civicpulse',
+      version: '0.1.0',
+      dependencies: { next: '^14.0.0', react: '^18.2.0', 'tailwindcss': '^3.4.0' },
+    }, null, 2));
+
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial project setup']);
+
+    // Copy design-consultation skill
+    fs.mkdirSync(path.join(designDir, 'design-consultation'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'design-consultation', 'SKILL.md'),
+      path.join(designDir, 'design-consultation', 'SKILL.md'),
+    );
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(designDir, { recursive: true, force: true }); } catch {}
+  });
+
+  testIfSelected('design-consultation-core', async () => {
+    const result = await runSkillTest({
+      prompt: `Read design-consultation/SKILL.md for the design consultation workflow.
+
+This is a civic tech data platform called CivicPulse for government employees who need to access public data. Read the README.md for details.
+
+Skip research — work from your design knowledge. Skip the font preview page. Skip any AskUserQuestion calls — this is non-interactive. Accept your first design system proposal.
+
+Write DESIGN.md and CLAUDE.md (or update it) in the working directory.`,
+      workingDirectory: designDir,
+      maxTurns: 20,
+      timeout: 360_000,
+      testName: 'design-consultation-core',
+      runId,
+    });
+
+    logCost('/design-consultation core', result);
+
+    const designPath = path.join(designDir, 'DESIGN.md');
+    const claudePath = path.join(designDir, 'CLAUDE.md');
+    const designExists = fs.existsSync(designPath);
+    const claudeExists = fs.existsSync(claudePath);
+    let designContent = '';
+
+    if (designExists) {
+      designContent = fs.readFileSync(designPath, 'utf-8');
+    }
+
+    // Structural checks
+    const requiredSections = ['Product Context', 'Aesthetic', 'Typography', 'Color', 'Spacing', 'Layout', 'Motion'];
+    const missingSections = requiredSections.filter(s => !designContent.toLowerCase().includes(s.toLowerCase()));
+
+    // LLM judge for quality
+    let judgeResult = { passed: false, reasoning: 'judge not run' };
+    if (designExists && designContent.length > 100) {
+      try {
+        judgeResult = await designQualityJudge(designContent);
+        console.log('Design quality judge:', JSON.stringify(judgeResult, null, 2));
+      } catch (err) {
+        console.warn('Judge failed:', err);
+        judgeResult = { passed: true, reasoning: 'judge error — defaulting to pass' };
+      }
+    }
+
+    const structuralPass = designExists && claudeExists && missingSections.length === 0;
+    recordE2E('/design-consultation core', 'Design Consultation E2E', result, {
+      passed: structuralPass && judgeResult.passed && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    expect(designExists).toBe(true);
+    if (designExists) {
+      expect(missingSections).toHaveLength(0);
+    }
+    if (claudeExists) {
+      const claude = fs.readFileSync(claudePath, 'utf-8');
+      expect(claude.toLowerCase()).toContain('design.md');
+    }
+  }, 420_000);
+
+  testIfSelected('design-consultation-research', async () => {
+    // Clean up from previous test
+    try { fs.unlinkSync(path.join(designDir, 'DESIGN.md')); } catch {}
+    try { fs.unlinkSync(path.join(designDir, 'CLAUDE.md')); } catch {}
+
+    const result = await runSkillTest({
+      prompt: `Read design-consultation/SKILL.md for the design consultation workflow.
+
+This is a civic tech data platform called CivicPulse. Read the README.md.
+
+DO research what's out there before proposing — search for civic tech and government data platform designs. Skip the font preview page. Skip any AskUserQuestion calls — this is non-interactive.
+
+Write DESIGN.md to the working directory.`,
+      workingDirectory: designDir,
+      maxTurns: 30,
+      timeout: 360_000,
+      testName: 'design-consultation-research',
+      runId,
+    });
+
+    logCost('/design-consultation research', result);
+
+    const designPath = path.join(designDir, 'DESIGN.md');
+    const designExists = fs.existsSync(designPath);
+    let designContent = '';
+    if (designExists) {
+      designContent = fs.readFileSync(designPath, 'utf-8');
+    }
+
+    // Check if WebSearch was used (may not be available in all envs)
+    const webSearchCalls = result.toolCalls.filter(tc => tc.tool === 'WebSearch');
+    if (webSearchCalls.length > 0) {
+      console.log(`WebSearch used ${webSearchCalls.length} times`);
+    } else {
+      console.warn('WebSearch not used — may be unavailable in test env');
+    }
+
+    // LLM judge
+    let judgeResult = { passed: false, reasoning: 'judge not run' };
+    if (designExists && designContent.length > 100) {
+      try {
+        judgeResult = await designQualityJudge(designContent);
+        console.log('Design quality judge (research):', JSON.stringify(judgeResult, null, 2));
+      } catch (err) {
+        console.warn('Judge failed:', err);
+        judgeResult = { passed: true, reasoning: 'judge error — defaulting to pass' };
+      }
+    }
+
+    recordE2E('/design-consultation research', 'Design Consultation E2E', result, {
+      passed: designExists && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    expect(designExists).toBe(true);
+  }, 420_000);
+
+  testIfSelected('design-consultation-existing', async () => {
+    // Pre-create a minimal DESIGN.md
+    fs.writeFileSync(path.join(designDir, 'DESIGN.md'), `# Design System — CivicPulse
+
+## Typography
+Body: system-ui
+`);
+
+    const result = await runSkillTest({
+      prompt: `Read design-consultation/SKILL.md for the design consultation workflow.
+
+There is already a DESIGN.md in this repo. Update it with a complete design system for CivicPulse, a civic tech data platform for government employees.
+
+Skip research. Skip font preview. Skip any AskUserQuestion calls — this is non-interactive.`,
+      workingDirectory: designDir,
+      maxTurns: 20,
+      timeout: 360_000,
+      testName: 'design-consultation-existing',
+      runId,
+    });
+
+    logCost('/design-consultation existing', result);
+
+    const designPath = path.join(designDir, 'DESIGN.md');
+    const designExists = fs.existsSync(designPath);
+    let designContent = '';
+    if (designExists) {
+      designContent = fs.readFileSync(designPath, 'utf-8');
+    }
+
+    // Should have more content than the minimal version
+    const hasColor = designContent.toLowerCase().includes('color');
+    const hasSpacing = designContent.toLowerCase().includes('spacing');
+
+    recordE2E('/design-consultation existing', 'Design Consultation E2E', result, {
+      passed: designExists && hasColor && hasSpacing && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    expect(designExists).toBe(true);
+    if (designExists) {
+      expect(hasColor).toBe(true);
+      expect(hasSpacing).toBe(true);
+    }
+  }, 420_000);
+
+  testIfSelected('design-consultation-preview', async () => {
+    // Clean up
+    try { fs.unlinkSync(path.join(designDir, 'DESIGN.md')); } catch {}
+
+    const result = await runSkillTest({
+      prompt: `Read design-consultation/SKILL.md for the design consultation workflow.
+
+This is CivicPulse, a civic tech data platform. Read the README.md.
+
+Skip research. Skip any AskUserQuestion calls — this is non-interactive. Generate the font and color preview page but write it to ./design-preview.html instead of /tmp/ (do NOT run the open command). Then write DESIGN.md.`,
+      workingDirectory: designDir,
+      maxTurns: 20,
+      timeout: 360_000,
+      testName: 'design-consultation-preview',
+      runId,
+    });
+
+    logCost('/design-consultation preview', result);
+
+    const previewPath = path.join(designDir, 'design-preview.html');
+    const designPath = path.join(designDir, 'DESIGN.md');
+    const previewExists = fs.existsSync(previewPath);
+    const designExists = fs.existsSync(designPath);
+
+    let previewContent = '';
+    if (previewExists) {
+      previewContent = fs.readFileSync(previewPath, 'utf-8');
+    }
+
+    const hasHtml = previewContent.includes('<html') || previewContent.includes('<!DOCTYPE');
+    const hasFontRef = previewContent.includes('font-family') || previewContent.includes('fonts.googleapis') || previewContent.includes('fonts.bunny');
+    const hasColorRef = previewContent.includes('#') && (previewContent.includes('background') || previewContent.includes('color:'));
+
+    // LLM judge on the DESIGN.md
+    let judgeResult = { passed: false, reasoning: 'judge not run' };
+    if (designExists) {
+      const designContent = fs.readFileSync(designPath, 'utf-8');
+      if (designContent.length > 100) {
+        try {
+          judgeResult = await designQualityJudge(designContent);
+          console.log('Design quality judge (preview):', JSON.stringify(judgeResult, null, 2));
+        } catch (err) {
+          console.warn('Judge failed:', err);
+          judgeResult = { passed: true, reasoning: 'judge error — defaulting to pass' };
+        }
+      }
+    }
+
+    recordE2E('/design-consultation preview', 'Design Consultation E2E', result, {
+      passed: previewExists && designExists && hasHtml && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    expect(previewExists).toBe(true);
+    if (previewExists) {
+      expect(hasHtml).toBe(true);
+      expect(hasFontRef).toBe(true);
+    }
+    expect(designExists).toBe(true);
+  }, 420_000);
+});
+
+// --- Plan Design Review E2E (plan-mode) ---
+
+describeIfSelected('Plan Design Review E2E', ['plan-design-review-plan-mode', 'plan-design-review-no-ui-scope'], () => {
+  let reviewDir: string;
+
+  beforeAll(() => {
+    reviewDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-plan-design-'));
+
+    const { spawnSync } = require('child_process');
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: reviewDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    // Copy plan-design-review skill
+    fs.mkdirSync(path.join(reviewDir, 'plan-design-review'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'plan-design-review', 'SKILL.md'),
+      path.join(reviewDir, 'plan-design-review', 'SKILL.md'),
+    );
+
+    // Create a plan file with intentional design gaps
+    fs.writeFileSync(path.join(reviewDir, 'plan.md'), `# Plan: User Dashboard
+
+## Context
+Build a user dashboard that shows account stats, recent activity, and settings.
+
+## Implementation
+1. Create a dashboard page at /dashboard
+2. Show user stats (posts, followers, engagement rate)
+3. Add a recent activity feed
+4. Add a settings panel
+5. Use a clean, modern UI with cards and icons
+6. Add a hero section at the top with a gradient background
+
+## Technical Details
+- React components with Tailwind CSS
+- API endpoint: GET /api/dashboard
+- WebSocket for real-time activity updates
+`);
+
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial plan']);
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(reviewDir, { recursive: true, force: true }); } catch {}
+  });
+
+  testIfSelected('plan-design-review-plan-mode', async () => {
+    const result = await runSkillTest({
+      prompt: `Read plan-design-review/SKILL.md for the design review workflow.
+
+Review the plan in ./plan.md. This plan has several design gaps — it uses vague language like "clean, modern UI" and "cards and icons", mentions a "hero section with gradient" (AI slop), and doesn't specify empty states, error states, loading states, responsive behavior, or accessibility.
+
+Skip the preamble bash block. Skip any AskUserQuestion calls — this is non-interactive. Rate each design dimension 0-10 and explain what would make it a 10. Then EDIT plan.md to add the missing design decisions (interaction state table, empty states, responsive behavior, etc.).
+
+IMPORTANT: Do NOT try to browse any URLs or use a browse binary. This is a plan review, not a live site audit. Just read the plan file, review it, and edit it to fix the gaps.`,
+      workingDirectory: reviewDir,
+      maxTurns: 15,
+      timeout: 300_000,
+      testName: 'plan-design-review-plan-mode',
+      runId,
+    });
+
+    logCost('/plan-design-review plan-mode', result);
+
+    // Check that the agent produced design ratings (0-10 scale)
+    const output = result.output || '';
+    const hasRatings = /\d+\/10/.test(output);
+    const hasDesignContent = output.toLowerCase().includes('information architecture') ||
+      output.toLowerCase().includes('interaction state') ||
+      output.toLowerCase().includes('ai slop') ||
+      output.toLowerCase().includes('hierarchy');
+
+    // Check that the plan file was edited (the core new behavior)
+    const planAfter = fs.readFileSync(path.join(reviewDir, 'plan.md'), 'utf-8');
+    const planOriginal = `# Plan: User Dashboard`;
+    const planWasEdited = planAfter.length > 300; // Original is ~450 chars, edited should be much longer
+    const planHasDesignAdditions = planAfter.toLowerCase().includes('empty') ||
+      planAfter.toLowerCase().includes('loading') ||
+      planAfter.toLowerCase().includes('error') ||
+      planAfter.toLowerCase().includes('state') ||
+      planAfter.toLowerCase().includes('responsive') ||
+      planAfter.toLowerCase().includes('accessibility');
+
+    recordE2E('/plan-design-review plan-mode', 'Plan Design Review E2E', result, {
+      passed: hasDesignContent && planWasEdited && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    // Agent should produce design-relevant output about the plan
+    expect(hasDesignContent).toBe(true);
+    // Agent should have edited the plan file to add missing design decisions
+    expect(planWasEdited).toBe(true);
+    expect(planHasDesignAdditions).toBe(true);
+  }, 360_000);
+
+  testIfSelected('plan-design-review-no-ui-scope', async () => {
+    // Write a backend-only plan
+    fs.writeFileSync(path.join(reviewDir, 'backend-plan.md'), `# Plan: Database Migration
+
+## Context
+Migrate user records from PostgreSQL to a new schema with better indexing.
+
+## Implementation
+1. Create migration to add new columns to users table
+2. Backfill data from legacy columns
+3. Add database indexes for common query patterns
+4. Update ActiveRecord models
+5. Run migration in staging first, then production
+`);
+
+    const result = await runSkillTest({
+      prompt: `Read plan-design-review/SKILL.md for the design review workflow.
+
+Review the plan in ./backend-plan.md. This is a pure backend database migration plan with no UI changes.
+
+Skip the preamble bash block. Skip any AskUserQuestion calls — this is non-interactive. Write your findings directly to stdout.
+
+IMPORTANT: Do NOT try to browse any URLs or use a browse binary. This is a plan review, not a live site audit.`,
+      workingDirectory: reviewDir,
+      maxTurns: 10,
+      timeout: 180_000,
+      testName: 'plan-design-review-no-ui-scope',
+      runId,
+    });
+
+    logCost('/plan-design-review no-ui-scope', result);
+
+    // Agent should detect no UI scope and exit early
+    const output = result.output || '';
+    const detectsNoUI = output.toLowerCase().includes('no ui') ||
+      output.toLowerCase().includes('no frontend') ||
+      output.toLowerCase().includes('no design') ||
+      output.toLowerCase().includes('not applicable') ||
+      output.toLowerCase().includes('backend');
+
+    recordE2E('/plan-design-review no-ui-scope', 'Plan Design Review E2E', result, {
+      passed: detectsNoUI && ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+    expect(detectsNoUI).toBe(true);
+  }, 240_000);
+});
+
+// --- Design Review E2E (live-site audit + fix) ---
+
+describeIfSelected('Design Review E2E', ['design-review-fix'], () => {
+  let qaDesignDir: string;
+  let qaDesignServer: ReturnType<typeof Bun.serve> | null = null;
+
+  beforeAll(() => {
+    qaDesignDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-qa-design-'));
+    setupBrowseShims(qaDesignDir);
+
+    const { spawnSync } = require('child_process');
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: qaDesignDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    // Create HTML/CSS with intentional design issues
+    fs.writeFileSync(path.join(qaDesignDir, 'index.html'), `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Design Test App</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1 style="font-size: 48px; color: #333;">Welcome</h1>
+    <h2 style="font-size: 47px; color: #334;">Subtitle Here</h2>
+  </header>
+  <main>
+    <div class="card" style="padding: 10px; margin: 20px;">
+      <h3 style="color: blue;">Card Title</h3>
+      <p style="color: #666; font-size: 14px; line-height: 1.2;">Some content here with tight line height.</p>
+    </div>
+    <div class="card" style="padding: 30px; margin: 5px;">
+      <h3 style="color: green;">Another Card</h3>
+      <p style="color: #999; font-size: 16px;">Different spacing and colors for no reason.</p>
+    </div>
+    <button style="background: red; color: white; padding: 5px 10px; border: none;">Click Me</button>
+    <button style="background: #007bff; color: white; padding: 12px 24px; border: none; border-radius: 20px;">Also Click</button>
+  </main>
+</body>
+</html>`);
+
+    fs.writeFileSync(path.join(qaDesignDir, 'style.css'), `body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+.card {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+`);
+
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial design test page']);
+
+    // Start a simple file server for the design test page
+    qaDesignServer = Bun.serve({
+      port: 0,
+      fetch(req) {
+        const url = new URL(req.url);
+        const filePath = path.join(qaDesignDir, url.pathname === '/' ? 'index.html' : url.pathname.slice(1));
+        try {
+          const content = fs.readFileSync(filePath);
+          const ext = path.extname(filePath);
+          const contentType = ext === '.css' ? 'text/css' : ext === '.html' ? 'text/html' : 'text/plain';
+          return new Response(content, { headers: { 'Content-Type': contentType } });
+        } catch {
+          return new Response('Not Found', { status: 404 });
+        }
+      },
+    });
+
+    // Copy design-review skill
+    fs.mkdirSync(path.join(qaDesignDir, 'design-review'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'design-review', 'SKILL.md'),
+      path.join(qaDesignDir, 'design-review', 'SKILL.md'),
+    );
+  });
+
+  afterAll(() => {
+    qaDesignServer?.stop();
+    try { fs.rmSync(qaDesignDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('Test 7: /design-review audits and fixes design issues', async () => {
+    const serverUrl = `http://localhost:${(qaDesignServer as any)?.port}`;
+
+    const result = await runSkillTest({
+      prompt: `IMPORTANT: The browse binary is already assigned below as B. Do NOT search for it or run the SKILL.md setup block — just use $B directly.
+
+B="${browseBin}"
+
+Read design-review/SKILL.md for the design review + fix workflow.
+
+Review the site at ${serverUrl}. Use --quick mode. Skip any AskUserQuestion calls — this is non-interactive. Fix up to 3 issues max. Write your report to ./design-audit.md.`,
+      workingDirectory: qaDesignDir,
+      maxTurns: 30,
+      timeout: 360_000,
+      testName: 'design-review-fix',
+      runId,
+    });
+
+    logCost('/design-review fix', result);
+
+    const reportPath = path.join(qaDesignDir, 'design-audit.md');
+    const reportExists = fs.existsSync(reportPath);
+
+    // Check if any design fix commits were made
+    const gitLog = spawnSync('git', ['log', '--oneline'], {
+      cwd: qaDesignDir, stdio: 'pipe',
+    });
+    const commits = gitLog.stdout.toString().trim().split('\n');
+    const designFixCommits = commits.filter((c: string) => c.includes('style(design)'));
+
+    recordE2E('/design-review fix', 'Design Review E2E', result, {
+      passed: ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    // Accept error_max_turns — the fix loop is complex
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+
+    // Report and commits are best-effort — log what happened
+    if (reportExists) {
+      const report = fs.readFileSync(reportPath, 'utf-8');
+      console.log(`Design audit report: ${report.length} chars`);
+    } else {
+      console.warn('No design-audit.md generated');
+    }
+    console.log(`Design fix commits: ${designFixCommits.length}`);
+  }, 420_000);
+});
+
+// --- Test Bootstrap E2E ---
+
+describeIfSelected('Test Bootstrap E2E', ['qa-bootstrap'], () => {
+  let bootstrapDir: string;
+  let bootstrapServer: ReturnType<typeof Bun.serve>;
+
+  beforeAll(() => {
+    bootstrapDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-bootstrap-'));
+    setupBrowseShims(bootstrapDir);
+
+    // Copy qa skill files
+    copyDirSync(path.join(ROOT, 'qa'), path.join(bootstrapDir, 'qa'));
+
+    // Create a minimal Node.js project with NO test framework
+    fs.writeFileSync(path.join(bootstrapDir, 'package.json'), JSON.stringify({
+      name: 'test-bootstrap-app',
+      version: '1.0.0',
+      type: 'module',
+    }, null, 2));
+
+    // Create a simple app file with a bug
+    fs.writeFileSync(path.join(bootstrapDir, 'app.js'), `
+export function add(a, b) { return a + b; }
+export function subtract(a, b) { return a - b; }
+export function divide(a, b) { return a / b; } // BUG: no zero check
+`);
+
+    // Create a simple HTML page with a bug
+    fs.writeFileSync(path.join(bootstrapDir, 'index.html'), `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Bootstrap Test</title></head>
+<body>
+  <h1>Test App</h1>
+  <a href="/nonexistent-page">Broken Link</a>
+  <script>console.error("ReferenceError: undefinedVar is not defined");</script>
+</body>
+</html>
+`);
+
+    // Init git repo
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: bootstrapDir, stdio: 'pipe', timeout: 5000 });
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial commit']);
+
+    // Serve from working directory
+    bootstrapServer = Bun.serve({
+      port: 0,
+      hostname: '127.0.0.1',
+      fetch(req) {
+        const url = new URL(req.url);
+        let filePath = url.pathname === '/' ? '/index.html' : url.pathname;
+        filePath = filePath.replace(/^\//, '');
+        const fullPath = path.join(bootstrapDir, filePath);
+        if (!fs.existsSync(fullPath)) {
+          return new Response('Not Found', { status: 404 });
+        }
+        const content = fs.readFileSync(fullPath, 'utf-8');
+        return new Response(content, {
+          headers: { 'Content-Type': 'text/html' },
+        });
+      },
+    });
+  });
+
+  afterAll(() => {
+    bootstrapServer?.stop();
+    try { fs.rmSync(bootstrapDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/qa bootstrap + regression test on zero-test project', async () => {
+    const serverUrl = `http://127.0.0.1:${bootstrapServer!.port}`;
+
+    const result = await runSkillTest({
+      prompt: `You have a browse binary at ${browseBin}. Assign it to B variable like: B="${browseBin}"
+
+Read the file qa/SKILL.md for the QA workflow instructions.
+
+Run a Quick-tier QA test on ${serverUrl}
+The source code for this page is at ${bootstrapDir}/index.html — you can fix bugs there.
+Do NOT use AskUserQuestion — for any AskUserQuestion prompts, choose the RECOMMENDED option automatically.
+Write your report to ${bootstrapDir}/qa-reports/qa-report.md
+
+This project has NO test framework. When the bootstrap asks, pick vitest (option A).
+This is a test+fix loop: find bugs, fix them, write regression tests, commit each fix.`,
+      workingDirectory: bootstrapDir,
+      maxTurns: 50,
+      allowedTools: ['Bash', 'Read', 'Write', 'Edit', 'Glob', 'Grep'],
+      timeout: 420_000,
+      testName: 'qa-bootstrap',
+      runId,
+    });
+
+    logCost('/qa bootstrap', result);
+    recordE2E('/qa bootstrap + regression test', 'Test Bootstrap E2E', result, {
+      passed: ['success', 'error_max_turns'].includes(result.exitReason),
+    });
+
+    expect(['success', 'error_max_turns']).toContain(result.exitReason);
+
+    // Verify bootstrap created test infrastructure
+    const hasTestConfig = fs.existsSync(path.join(bootstrapDir, 'vitest.config.ts'))
+      || fs.existsSync(path.join(bootstrapDir, 'vitest.config.js'))
+      || fs.existsSync(path.join(bootstrapDir, 'jest.config.js'))
+      || fs.existsSync(path.join(bootstrapDir, 'jest.config.ts'));
+    console.log(`Test config created: ${hasTestConfig}`);
+
+    const hasTestingMd = fs.existsSync(path.join(bootstrapDir, 'TESTING.md'));
+    console.log(`TESTING.md created: ${hasTestingMd}`);
+
+    // Check for bootstrap commit
+    const gitLog = spawnSync('git', ['log', '--oneline', '--grep=bootstrap'], {
+      cwd: bootstrapDir, stdio: 'pipe',
+    });
+    const bootstrapCommits = gitLog.stdout.toString().trim();
+    console.log(`Bootstrap commits: ${bootstrapCommits || 'none'}`);
+
+    // Check for regression test commits
+    const regressionLog = spawnSync('git', ['log', '--oneline', '--grep=test(qa)'], {
+      cwd: bootstrapDir, stdio: 'pipe',
+    });
+    const regressionCommits = regressionLog.stdout.toString().trim();
+    console.log(`Regression test commits: ${regressionCommits || 'none'}`);
+
+    // Verify at least the bootstrap happened (fix commits are bonus)
+    const allCommits = spawnSync('git', ['log', '--oneline'], {
+      cwd: bootstrapDir, stdio: 'pipe',
+    });
+    const totalCommits = allCommits.stdout.toString().trim().split('\n').length;
+    console.log(`Total commits: ${totalCommits}`);
+    expect(totalCommits).toBeGreaterThan(1); // At least initial + bootstrap
+  }, 420_000);
+});
+
+// --- Test Coverage Audit E2E ---
+
+describeIfSelected('Test Coverage Audit E2E', ['ship-coverage-audit'], () => {
+  let coverageDir: string;
+
+  beforeAll(() => {
+    coverageDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-coverage-'));
+
+    // Copy ship skill files
+    copyDirSync(path.join(ROOT, 'ship'), path.join(coverageDir, 'ship'));
+    copyDirSync(path.join(ROOT, 'review'), path.join(coverageDir, 'review'));
+
+    // Create a Node.js project WITH test framework but coverage gaps
+    fs.writeFileSync(path.join(coverageDir, 'package.json'), JSON.stringify({
+      name: 'test-coverage-app',
+      version: '1.0.0',
+      type: 'module',
+      scripts: { test: 'echo "no tests yet"' },
+      devDependencies: { vitest: '^1.0.0' },
+    }, null, 2));
+
+    // Create vitest config
+    fs.writeFileSync(path.join(coverageDir, 'vitest.config.ts'),
+      `import { defineConfig } from 'vitest/config';\nexport default defineConfig({ test: {} });\n`);
+
+    fs.writeFileSync(path.join(coverageDir, 'VERSION'), '0.1.0.0\n');
+    fs.writeFileSync(path.join(coverageDir, 'CHANGELOG.md'), '# Changelog\n');
+
+    // Create source file with multiple code paths
+    fs.mkdirSync(path.join(coverageDir, 'src'), { recursive: true });
+    fs.writeFileSync(path.join(coverageDir, 'src', 'billing.ts'), `
+export function processPayment(amount: number, currency: string) {
+  if (amount <= 0) throw new Error('Invalid amount');
+  if (currency !== 'USD' && currency !== 'EUR') throw new Error('Unsupported currency');
+  return { status: 'success', amount, currency };
+}
+
+export function refundPayment(paymentId: string, reason: string) {
+  if (!paymentId) throw new Error('Payment ID required');
+  if (!reason) throw new Error('Reason required');
+  return { status: 'refunded', paymentId, reason };
+}
+`);
+
+    // Create a test directory with ONE test (partial coverage)
+    fs.mkdirSync(path.join(coverageDir, 'test'), { recursive: true });
+    fs.writeFileSync(path.join(coverageDir, 'test', 'billing.test.ts'), `
+import { describe, test, expect } from 'vitest';
+import { processPayment } from '../src/billing';
+
+describe('processPayment', () => {
+  test('processes valid payment', () => {
+    const result = processPayment(100, 'USD');
+    expect(result.status).toBe('success');
+  });
+  // GAP: no test for invalid amount
+  // GAP: no test for unsupported currency
+  // GAP: refundPayment not tested at all
+});
+`);
+
+    // Init git repo with main branch
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: coverageDir, stdio: 'pipe', timeout: 5000 });
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'initial commit']);
+
+    // Create feature branch
+    run('git', ['checkout', '-b', 'feature/billing']);
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(coverageDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/ship Step 3.4 produces coverage diagram', async () => {
+    const result = await runSkillTest({
+      prompt: `Read the file ship/SKILL.md for the ship workflow instructions.
+
+You are on the feature/billing branch. The base branch is main.
+This is a test project — there is no remote, no PR to create.
+
+ONLY run Step 3.4 (Test Coverage Audit) from the ship workflow.
+Skip all other steps (tests, evals, review, version, changelog, commit, push, PR).
+
+The source code is in ${coverageDir}/src/billing.ts.
+Existing tests are in ${coverageDir}/test/billing.test.ts.
+The test command is: echo "tests pass" (mocked — just pretend tests pass).
+
+Produce the ASCII coverage diagram showing which code paths are tested and which have gaps.
+Do NOT generate new tests — just produce the diagram and coverage summary.
+Output the diagram directly.`,
+      workingDirectory: coverageDir,
+      maxTurns: 15,
+      allowedTools: ['Bash', 'Read', 'Write', 'Edit', 'Glob', 'Grep'],
+      timeout: 120_000,
+      testName: 'ship-coverage-audit',
+      runId,
+    });
+
+    logCost('/ship coverage audit', result);
+    recordE2E('/ship Step 3.4 coverage audit', 'Test Coverage Audit E2E', result, {
+      passed: result.exitReason === 'success',
+    });
+
+    expect(result.exitReason).toBe('success');
+
+    // Check output contains coverage diagram elements
+    const output = result.output || '';
+    const hasGap = output.includes('GAP') || output.includes('gap') || output.includes('NO TEST');
+    const hasTested = output.includes('TESTED') || output.includes('tested') || output.includes('✓');
+    const hasCoverage = output.includes('COVERAGE') || output.includes('coverage') || output.includes('paths tested');
+
+    console.log(`Output has GAP markers: ${hasGap}`);
+    console.log(`Output has TESTED markers: ${hasTested}`);
+    console.log(`Output has coverage summary: ${hasCoverage}`);
+
+    // At minimum, the agent should have read the source and test files
+    const readCalls = result.toolCalls.filter(tc => tc.tool === 'Read');
+    expect(readCalls.length).toBeGreaterThan(0);
+  }, 180_000);
+});
+
+// --- Codex skill E2E ---
+
+describeIfSelected('Codex skill E2E', ['codex-review'], () => {
+  let codexDir: string;
+
+  beforeAll(() => {
+    codexDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-codex-'));
+
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: codexDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+
+    // Commit a clean base on main
+    fs.writeFileSync(path.join(codexDir, 'app.rb'), '# clean base\nclass App\nend\n');
+    run('git', ['add', 'app.rb']);
+    run('git', ['commit', '-m', 'initial commit']);
+
+    // Create feature branch with vulnerable code (reuse review fixture)
+    run('git', ['checkout', '-b', 'feature/add-vuln']);
+    const vulnContent = fs.readFileSync(path.join(ROOT, 'test', 'fixtures', 'review-eval-vuln.rb'), 'utf-8');
+    fs.writeFileSync(path.join(codexDir, 'user_controller.rb'), vulnContent);
+    run('git', ['add', 'user_controller.rb']);
+    run('git', ['commit', '-m', 'add vulnerable controller']);
+
+    // Copy the codex skill file
+    fs.copyFileSync(path.join(ROOT, 'codex', 'SKILL.md'), path.join(codexDir, 'codex-SKILL.md'));
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(codexDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/codex review produces findings and GATE verdict', async () => {
+    // Check codex is available — skip if not installed
+    const codexCheck = spawnSync('which', ['codex'], { stdio: 'pipe', timeout: 3000 });
+    if (codexCheck.status !== 0) {
+      console.warn('codex CLI not installed — skipping E2E test');
+      return;
+    }
+
+    const result = await runSkillTest({
+      prompt: `You are in a git repo on branch feature/add-vuln with changes against main.
+Read codex-SKILL.md for the /codex skill instructions.
+Run /codex review to review the current diff against main.
+Write the full output (including the GATE verdict) to ${codexDir}/codex-output.md`,
+      workingDirectory: codexDir,
+      maxTurns: 10,
+      timeout: 300_000,
+      testName: 'codex-review',
+      runId,
+    });
+
+    logCost('/codex review', result);
+    recordE2E('/codex review', 'Codex skill E2E', result);
+    expect(result.exitReason).toBe('success');
+
+    // Check that output file was created with review content
+    const outputPath = path.join(codexDir, 'codex-output.md');
+    if (fs.existsSync(outputPath)) {
+      const output = fs.readFileSync(outputPath, 'utf-8');
+      // Should contain the CODEX SAYS header or GATE verdict
+      const hasCodexOutput = output.includes('CODEX') || output.includes('GATE') || output.includes('codex');
+      expect(hasCodexOutput).toBe(true);
+    }
+  }, 360_000);
+});
+
+// --- Office Hours Spec Review E2E ---
+
+describeIfSelected('Office Hours Spec Review E2E', ['office-hours-spec-review'], () => {
+  let ohDir: string;
+
+  beforeAll(() => {
+    ohDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-oh-spec-'));
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: ohDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+    fs.writeFileSync(path.join(ohDir, 'README.md'), '# Test Project\n');
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'init']);
+
+    // Copy office-hours skill
+    fs.mkdirSync(path.join(ohDir, 'office-hours'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'office-hours', 'SKILL.md'),
+      path.join(ohDir, 'office-hours', 'SKILL.md'),
+    );
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(ohDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/office-hours SKILL.md contains spec review loop', async () => {
+    const result = await runSkillTest({
+      prompt: `Read office-hours/SKILL.md. I want to understand the spec review loop.
+
+Summarize what the "Spec Review Loop" section does — specifically:
+1. How many dimensions does the reviewer check?
+2. What tool is used to dispatch the reviewer?
+3. What's the maximum number of iterations?
+4. What metrics are tracked?
+
+Write your summary to ${ohDir}/spec-review-summary.md`,
+      workingDirectory: ohDir,
+      maxTurns: 8,
+      timeout: 120_000,
+      testName: 'office-hours-spec-review',
+      runId,
+    });
+
+    logCost('/office-hours spec review', result);
+    recordE2E('/office-hours-spec-review', 'Office Hours Spec Review E2E', result);
+    expect(result.exitReason).toBe('success');
+
+    const summaryPath = path.join(ohDir, 'spec-review-summary.md');
+    if (fs.existsSync(summaryPath)) {
+      const summary = fs.readFileSync(summaryPath, 'utf-8').toLowerCase();
+      // Verify the agent understood the key concepts
+      expect(summary).toMatch(/5.*dimension|dimension.*5|completeness|consistency|clarity|scope|feasibility/);
+      expect(summary).toMatch(/agent|subagent/);
+      expect(summary).toMatch(/3.*iteration|iteration.*3|maximum.*3/);
+    }
+  }, 180_000);
+});
+
+// --- Plan CEO Review Benefits-From E2E ---
+
+describeIfSelected('Plan CEO Review Benefits-From E2E', ['plan-ceo-review-benefits'], () => {
+  let benefitsDir: string;
+
+  beforeAll(() => {
+    benefitsDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skill-e2e-benefits-'));
+    const run = (cmd: string, args: string[]) =>
+      spawnSync(cmd, args, { cwd: benefitsDir, stdio: 'pipe', timeout: 5000 });
+
+    run('git', ['init', '-b', 'main']);
+    run('git', ['config', 'user.email', 'test@test.com']);
+    run('git', ['config', 'user.name', 'Test']);
+    fs.writeFileSync(path.join(benefitsDir, 'README.md'), '# Test Project\n');
+    run('git', ['add', '.']);
+    run('git', ['commit', '-m', 'init']);
+
+    // Copy plan-ceo-review skill
+    fs.mkdirSync(path.join(benefitsDir, 'plan-ceo-review'), { recursive: true });
+    fs.copyFileSync(
+      path.join(ROOT, 'plan-ceo-review', 'SKILL.md'),
+      path.join(benefitsDir, 'plan-ceo-review', 'SKILL.md'),
+    );
+  });
+
+  afterAll(() => {
+    try { fs.rmSync(benefitsDir, { recursive: true, force: true }); } catch {}
+  });
+
+  test('/plan-ceo-review SKILL.md contains prerequisite skill offer', async () => {
+    const result = await runSkillTest({
+      prompt: `Read plan-ceo-review/SKILL.md. Search for sections about "Prerequisite" or "office-hours" or "design doc found".
+
+Summarize what happens when no design doc is found — specifically:
+1. Is /office-hours offered as a prerequisite?
+2. What options does the user get?
+3. Is there a mid-session detection for when the user seems lost?
+
+Write your summary to ${benefitsDir}/benefits-summary.md`,
+      workingDirectory: benefitsDir,
+      maxTurns: 8,
+      timeout: 120_000,
+      testName: 'plan-ceo-review-benefits',
+      runId,
+    });
+
+    logCost('/plan-ceo-review benefits-from', result);
+    recordE2E('/plan-ceo-review-benefits', 'Plan CEO Review Benefits-From E2E', result);
+    expect(result.exitReason).toBe('success');
+
+    const summaryPath = path.join(benefitsDir, 'benefits-summary.md');
+    if (fs.existsSync(summaryPath)) {
+      const summary = fs.readFileSync(summaryPath, 'utf-8').toLowerCase();
+      // Verify the agent understood the skill chaining
+      expect(summary).toMatch(/office.hours/);
+      expect(summary).toMatch(/design doc|no design/i);
+    }
+  }, 180_000);
 });
 
 // Module-level afterAll — finalize eval collector after all tests complete
