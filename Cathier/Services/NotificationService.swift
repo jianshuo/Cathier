@@ -76,8 +76,8 @@ final class NotificationService {
         UserDefaults.standard.set(true, forKey: "insightNudgeSent")
 
         let content = UNMutableNotificationContent()
-        content.title = "🌟 模式分析已就绪"
-        content.body = "你已完成30次签到！打开日记，分析你的情绪模式。"
+        content.title = LanguageManager.shared.notifMilestoneTitle
+        content.body = LanguageManager.shared.notifMilestoneBody
         content.sound = .default
 
         // Deliver 2 seconds from now (app is in background or user may have just locked)

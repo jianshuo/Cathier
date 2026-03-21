@@ -47,7 +47,9 @@ final class ClaudeServiceTests: XCTestCase {
     // MARK: - buildPatternPrompt
 
     func testBuildPatternPrompt_containsFocusModeInstructionContext() {
-        let checkIns = makeCheckIns(count: 5)
+        // At least one check-in must have a trigger so the Trigger label appears in the data section
+        var checkIns = makeCheckIns(count: 5)
+        checkIns[0] = makeCheckIn(index: 0, triggerEvent: "work deadline")
         let prompt = ClaudeService.buildPatternPrompt(
             checkIns: checkIns,
             focus: .triggers,
@@ -55,7 +57,7 @@ final class ClaudeServiceTests: XCTestCase {
             language: .en
         )
         XCTAssertTrue(prompt.contains("Trigger") || prompt.contains("trigger"),
-                      "Prompt should reference trigger field for .triggers focus")
+                      "Prompt should reference trigger field when check-ins have trigger events")
     }
 
     func testBuildPatternPrompt_includesContextBriefWhenPresent() {

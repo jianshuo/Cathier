@@ -411,6 +411,12 @@ extension LanguageManager {
                                             "Stored locally. Included in the pattern analysis prompt.",
                                             "ローカルに保存。パターン分析のプロンプトに含まれます。") }
 
+    // MARK: Notifications
+    var notifMilestoneTitle: String { s("🌟 模式分析已就绪", "🌟 Pattern Insights Ready", "🌟 パターン分析の準備完了") }
+    var notifMilestoneBody: String  { s("你已完成30次签到！打开日记，分析你的情绪模式。",
+                                        "You've logged 30 check-ins! Open your journal to analyze your emotional patterns.",
+                                        "チェックインが30回になりました！日記を開いて感情のパターンを分析しましょう。") }
+
     // MARK: ClaudeService (error messages)
     var claudeNoApiKey: String       { s("请先在设置中填写 Claude API Key",
                                         "Please enter your Claude API Key in Settings first.",
