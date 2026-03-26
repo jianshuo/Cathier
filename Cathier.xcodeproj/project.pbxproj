@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		D48A51402F75276000B11317 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D48A513F2F75276000B11317 /* StoreKit.framework */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		D41915302F6C604900594512 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -18,6 +22,7 @@
 
 /* Begin PBXFileReference section */
 		D419152C2F6C604900594512 /* CathierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CathierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D48A513F2F75276000B11317 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D4B61DC02F63B0140074205F /* Cathier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cathier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -59,17 +64,27 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D48A51402F75276000B11317 /* StoreKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		D48A513E2F75276000B11317 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D48A513F2F75276000B11317 /* StoreKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		D4B61DB72F63B0140074205F = {
 			isa = PBXGroup;
 			children = (
 				D4B61DC22F63B0140074205F /* Cathier */,
 				D419152D2F6C604900594512 /* CathierTests */,
+				D48A513E2F75276000B11317 /* Frameworks */,
 				D4B61DC12F63B0140074205F /* Products */,
 			);
 			sourceTree = "<group>";

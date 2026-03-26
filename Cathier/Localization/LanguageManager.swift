@@ -307,12 +307,38 @@ extension LanguageManager {
     // MARK: SettingsView
     var settingsNavTitle: String     { s("设置",           "Settings",             "設定") }
     var settingsAISection: String    { s("AI 设置",         "AI Settings",          "AI設定") }
+    var settingsHasKey: String       { s("我有 API Key",    "I Have a Key",         "APIキーあり") }
+    var settingsNoKey: String        { s("我没有 API Key",  "No API Key",           "APIキーなし") }
     var settingsAIProvider: String   { s("AI 服务商",       "AI Provider",          "AIプロバイダー") }
     var settingsSaved: String        { s("已保存",          "Saved",                "保存済み") }
     var settingsGetKey: String       { s("获取 API Key →",  "Get API Key →",        "API Keyを取得 →") }
     var settingsKeyFooter: String    { s("API Key 仅存储在本机，不会上传到任何服务器。",
                                         "API Key is stored locally only and never uploaded to any server.",
                                         "API Keyはローカルにのみ保存され、サーバーにアップロードされることはありません。") }
+
+    // MARK: Managed subscription strings
+    var settingsManagedFooter: String   { s("订阅后无需填写任何 API Key，即可使用全部 AI 功能。订阅随时可取消。",
+                                            "No API Key needed after subscribing. Full AI features included. Cancel anytime.",
+                                            "購読後はAPIキー不要。全AI機能が使えます。いつでもキャンセル可能。") }
+    var settingsManagedDesc: String     { s("使用我们提供的 AI，无需自己申请 API Key，开箱即用。",
+                                            "Use our hosted AI — no API Key required, works right away.",
+                                            "APIキー不要のホストAIをご利用いただけます。すぐに使えます。") }
+    var settingsManagedFeature1: String { s("由通义千问 (Qwen) 提供支持",
+                                            "Powered by Qwen (通义千问)",
+                                            "通義千問（Qwen）提供") }
+    var settingsManagedFeature2: String { s("支持全部签到与情绪反馈功能",
+                                            "Full check-in & emotion feedback",
+                                            "チェックインと感情フィードバック全機能対応") }
+    var settingsManagedFeature3: String { s("支持模式分析与洞察报告",
+                                            "Pattern analysis & insight reports",
+                                            "パターン分析とインサイトレポート対応") }
+    var settingsManagedSubscribe: String { s("订阅",  "Subscribe",  "購読する") }
+    var settingsManagedPerMonth: String  { s("月",    "month",      "月") }
+    var settingsManagedActive: String    { s("已订阅，AI 服务使用中",
+                                             "Subscribed — AI service active",
+                                             "購読中 — AIサービス利用中") }
+    var settingsManagedManage: String    { s("管理订阅 →",  "Manage Subscription →",  "サブスクリプション管理 →") }
+    var settingsManagedRestore: String   { s("恢复购买",   "Restore Purchase",        "購入を復元") }
     var settingsRemindersSection: String { s("定时提醒",    "Reminders",            "リマインダー") }
     var settingsEnableReminder: String   { s("开启提醒",    "Enable Reminders",     "リマインダーを有効にする") }
     var settingsSaveReminder: String     { s("保存提醒设置", "Save Reminder Settings", "リマインダー設定を保存") }
@@ -330,7 +356,7 @@ extension LanguageManager {
     var settingsLocalOnly: String        { s("iCloud 同步", "iCloud sync",          "iCloud同期") }
     var settingsLanguageSection: String  { s("语言",        "Language",             "言語") }
     var aboutMadeBy: String             { s("作者",        "Made by",              "作者") }
-    var aboutCreatorName: String        { s("Cathy",       "Cathy",                "Cathy") }
+    var aboutCreatorName: String        { s("Cathy Zhang",  "Cathy Zhang",          "Cathy Zhang") }
     var aboutAppDescription: String     { s("你的情绪感知训练伙伴", "Your emotional awareness companion", "感情認識トレーニングの仲間") }
     var aboutPrivacyTitle: String       { s("隐私设计",    "Privacy First",        "プライバシー優先") }
     var aboutPrivacyDetail: String      { s("数据存储在设备本地，AI 反馈通过你的 API 密钥处理，不经过第三方服务器。",
@@ -432,6 +458,9 @@ extension LanguageManager {
     var claudeNoApiKey: String       { s("请先在设置中填写 API Key",
                                         "Please enter your API Key in Settings first.",
                                         "先に設定でAPI Keyを入力してください。") }
+    var claudeNotSubscribed: String  { s("请先订阅以使用 AI 服务",
+                                         "Please subscribe to use the AI service.",
+                                         "AIサービスを利用するには購読してください。") }
     func claudeApiError(_ code: Int) -> String {
         s("API 请求失败（HTTP \(code)）", "API request failed (HTTP \(code))", "APIリクエストが失敗しました（HTTP \(code)）")
     }

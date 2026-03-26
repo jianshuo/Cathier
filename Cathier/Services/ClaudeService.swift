@@ -2,6 +2,7 @@ import Foundation
 
 enum ClaudeError: LocalizedError {
     case noApiKey
+    case notSubscribed
     case apiError(Int)
     case decodingError
 
@@ -9,12 +10,14 @@ enum ClaudeError: LocalizedError {
         let lm = LanguageManager.shared
         switch self {
         case .noApiKey:        return lm.claudeNoApiKey
+        case .notSubscribed:   return lm.claudeNotSubscribed
         case .apiError(let c): return lm.claudeApiError(c)
         case .decodingError:   return lm.claudeDecodeError
         }
     }
 }
 
+// Anthropic wire format
 private struct ClaudeResponse: Decodable {
     let content: [ContentBlock]
     struct ContentBlock: Decodable {
@@ -23,44 +26,98 @@ private struct ClaudeResponse: Decodable {
     }
 }
 
+// OpenAI-compatible wire format
+private struct OpenAIResponse: Decodable {
+    let choices: [Choice]
+    struct Choice: Decodable {
+        let message: Message
+        struct Message: Decodable {
+            let content: String
+        }
+    }
+}
+
 enum ClaudeService {
 
-    private static let feedbackModel  = "claude-haiku-4-5-20251001"
-    private static let insightsModel  = "claude-sonnet-4-6"
+    // MARK: - Managed service configuration
+    // Injected at build time from the QWEN_API_KEY GitHub secret → Info.plist.
+    // Never hard-code the real key here.
+    private static var managedApiKey: String {
+        Bundle.main.infoDictionary?["QwenApiKey"] as? String ?? ""
+    }
+
+    // MARK: - Provider helpers
+
+    private static var activeProvider: AIProvider {
+        let raw = UserDefaults.standard.string(forKey: "aiProvider") ?? AIProvider.claude.rawValue
+        return AIProvider(rawValue: raw) ?? .claude
+    }
+
+    private static var feedbackModel: String  { activeProvider.feedbackModel }
+    private static var insightsModel: String  { activeProvider.insightsModel }
 
     // MARK: - Shared network helper
 
     private static func call(model: String, system: String, user: String, maxTokens: Int) async throws -> String {
-        let apiKey = UserDefaults.standard.string(forKey: "claudeApiKey") ?? ""
-        guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
+        let provider = activeProvider
 
-        let url = URL(string: "https://api.anthropic.com/v1/messages")!
-        var request = URLRequest(url: url)
+        // Resolve API key — managed tier uses the hardcoded developer key
+        let apiKey: String
+        if provider.isManaged {
+            guard SubscriptionManager.shared.isSubscribed else { throw ClaudeError.notSubscribed }
+            apiKey = managedApiKey
+            guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
+        } else {
+            apiKey = UserDefaults.standard.string(forKey: provider.apiKeyStorageKey) ?? ""
+            guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
+        }
+
+        var request = URLRequest(url: provider.endpoint)
         request.httpMethod = "POST"
-        request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-        request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
         request.setValue("application/json", forHTTPHeaderField: "content-type")
 
-        let body: [String: Any] = [
-            "model": model,
-            "max_tokens": maxTokens,
-            "system": system,
-            "messages": [["role": "user", "content": user]],
-        ]
+        let body: [String: Any]
+
+        if provider.isAnthropicFormat {
+            request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+            request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+            body = [
+                "model": model,
+                "max_tokens": maxTokens,
+                "system": system,
+                "messages": [["role": "user", "content": user]],
+            ]
+        } else {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
+            body = [
+                "model": model,
+                "max_tokens": maxTokens,
+                "messages": [
+                    ["role": "system", "content": system],
+                    ["role": "user", "content": user],
+                ],
+            ]
+        }
+
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)
 
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            if let body = String(data: data, encoding: .utf8) {
-                print("[ClaudeService] HTTP \(statusCode): \(body)")
+            if let responseBody = String(data: data, encoding: .utf8) {
+                print("[AIService] HTTP \(statusCode): \(responseBody)")
             }
             throw ClaudeError.apiError(statusCode)
         }
 
-        let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
-        return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
+        if provider.isAnthropicFormat {
+            let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
+            return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
+        } else {
+            let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+            return decoded.choices.first?.message.content ?? ""
+        }
     }
 
     // MARK: - Pattern Insights

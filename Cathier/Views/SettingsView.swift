@@ -1,4 +1,5 @@
 import SwiftUI
+import StoreKit
 
 struct SettingsView: View {
     @AppStorage("aiProvider") private var selectedProviderRaw: String = AIProvider.claude.rawValue
@@ -11,8 +12,31 @@ struct SettingsView: View {
     @State private var apiKeyInput = ""
     @Environment(LanguageManager.self) private var lm
 
+    private let subManager = SubscriptionManager.shared
+
     private var selectedProvider: AIProvider {
         AIProvider(rawValue: selectedProviderRaw) ?? .claude
+    }
+
+    /// Binding for the "has key / no key" segmented control.
+    /// Switching to managed saves the current provider so it can be restored later.
+    private var managedModeBinding: Binding<Bool> {
+        Binding(
+            get: { selectedProvider.isManaged },
+            set: { useManaged in
+                if useManaged {
+                    if !selectedProvider.isManaged {
+                        UserDefaults.standard.set(selectedProviderRaw, forKey: "lastNonManagedProvider")
+                    }
+                    selectedProviderRaw = AIProvider.managed.rawValue
+                } else {
+                    let last = UserDefaults.standard.string(forKey: "lastNonManagedProvider")
+                        ?? AIProvider.claude.rawValue
+                    selectedProviderRaw = last
+                    apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                }
+            }
+        )
     }
 
     var body: some View {
@@ -37,47 +61,62 @@ struct SettingsView: View {
 
                 // MARK: - AI Settings
                 Section {
-                    // Provider picker
-                    Picker(lm.settingsAIProvider, selection: $selectedProviderRaw) {
-                        ForEach(AIProvider.allCases) { provider in
-                            Text(provider.displayName).tag(provider.rawValue)
-                        }
+                    // Top-level choice: has key vs no key
+                    Picker("", selection: managedModeBinding) {
+                        Text(lm.settingsHasKey).tag(false)
+                        Text(lm.settingsNoKey).tag(true)
                     }
-                    .onChange(of: selectedProviderRaw) { _, _ in
-                        apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
-                    }
+                    .pickerStyle(.segmented)
+                    .listRowBackground(Color.clear)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
 
-                    // API key input for the selected provider
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("API Key")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        SecureField(selectedProvider.keyPlaceholder, text: $apiKeyInput)
-                            .textFieldStyle(.plain)
-                            .autocorrectionDisabled()
-                            .textInputAutocapitalization(.never)
-                        if showApiKeySaved {
-                            Text(lm.settingsSaved)
+                    if selectedProvider.isManaged {
+                        // No-key path: subscription panel
+                        ManagedSubscriptionPanel(subManager: subManager, lm: lm)
+                    } else {
+                        // Has-key path: provider picker + key input
+                        Picker(lm.settingsAIProvider, selection: $selectedProviderRaw) {
+                            ForEach(AIProvider.allCases.filter { !$0.isManaged }) { provider in
+                                Text(provider.displayName).tag(provider.rawValue)
+                            }
+                        }
+                        .onChange(of: selectedProviderRaw) { _, _ in
+                            apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                        }
+
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("API Key")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            SecureField(selectedProvider.keyPlaceholder, text: $apiKeyInput)
+                                .textFieldStyle(.plain)
+                                .autocorrectionDisabled()
+                                .textInputAutocapitalization(.never)
+                            if showApiKeySaved {
+                                Text(lm.settingsSaved)
+                                    .font(.caption)
+                                    .foregroundColor(.green)
+                            }
+                        }
+                        .padding(.vertical, 4)
+                        .onChange(of: apiKeyInput) { _, newValue in
+                            UserDefaults.standard.set(newValue, forKey: selectedProvider.apiKeyStorageKey)
+                            showApiKeySaved = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                showApiKeySaved = false
+                            }
+                        }
+
+                        if let url = selectedProvider.consoleURL {
+                            Link(lm.settingsGetKey, destination: url)
                                 .font(.caption)
-                                .foregroundColor(.green)
+                                .foregroundColor(.orange)
                         }
                     }
-                    .padding(.vertical, 4)
-                    .onChange(of: apiKeyInput) { _, newValue in
-                        UserDefaults.standard.set(newValue, forKey: selectedProvider.apiKeyStorageKey)
-                        showApiKeySaved = true
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            showApiKeySaved = false
-                        }
-                    }
-
-                    Link(lm.settingsGetKey, destination: selectedProvider.consoleURL)
-                        .font(.caption)
-                        .foregroundColor(.orange)
                 } header: {
                     Text(lm.settingsAISection)
                 } footer: {
-                    Text(lm.settingsKeyFooter)
+                    Text(selectedProvider.isManaged ? lm.settingsManagedFooter : lm.settingsKeyFooter)
                         .font(.caption)
                 }
 
@@ -177,7 +216,9 @@ struct SettingsView: View {
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
-                apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                if !selectedProvider.isManaged {
+                    apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                }
             }
         }
     }
@@ -211,5 +252,100 @@ struct SettingsView: View {
         comps.hour = hour
         comps.minute = minute
         return calendar.date(from: comps) ?? Date()
+    }
+}
+
+// MARK: - Managed Subscription Panel
+
+private struct ManagedSubscriptionPanel: View {
+    let subManager: SubscriptionManager
+    let lm: LanguageManager
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            if subManager.isSubscribed {
+                subscribedView
+            } else {
+                unsubscribedView
+            }
+        }
+        .padding(.vertical, 6)
+    }
+
+    private var subscribedView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(spacing: 6) {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+                Text(lm.settingsManagedActive)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+            if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
+                Link(lm.settingsManagedManage, destination: url)
+                    .font(.caption)
+                    .foregroundColor(.orange)
+            }
+        }
+    }
+
+    private var unsubscribedView: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(lm.settingsManagedDesc)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+
+            VStack(alignment: .leading, spacing: 4) {
+                FeatureBullet(text: lm.settingsManagedFeature1)
+                FeatureBullet(text: lm.settingsManagedFeature2)
+                FeatureBullet(text: lm.settingsManagedFeature3)
+            }
+
+            Button {
+                Task { await subManager.purchase() }
+            } label: {
+                HStack(spacing: 8) {
+                    if subManager.isPurchasing {
+                        ProgressView()
+                            .scaleEffect(0.85)
+                            .tint(.white)
+                    }
+                    Text("\(lm.settingsManagedSubscribe) · \(subManager.displayPrice) / \(lm.settingsManagedPerMonth)")
+                        .fontWeight(.semibold)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 11)
+                .background(Color.orange)
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            .disabled(subManager.isPurchasing)
+
+            Button(lm.settingsManagedRestore) {
+                Task { await subManager.restore() }
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity)
+
+            if let err = subManager.errorMessage {
+                Text(err)
+                    .font(.caption)
+                    .foregroundColor(.red)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: .infinity)
+            }
+        }
+    }
+}
+
+private struct FeatureBullet: View {
+    let text: String
+    var body: some View {
+        Label(text, systemImage: "checkmark")
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .symbolRenderingMode(.palette)
+            .foregroundStyle(Color.orange, Color.secondary)
     }
 }

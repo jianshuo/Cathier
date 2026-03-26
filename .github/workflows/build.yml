@@ -40,6 +40,11 @@ jobs:
         env:
           FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
+      - name: Inject Qwen API key into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :QwenApiKey $QWEN_API_KEY" Cathier/Info.plist
+        env:
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+
       # Push to main always goes to TestFlight.
       # Manual dispatch uses the chosen destination.
       - name: Run fastlane
