@@ -68,6 +68,8 @@ private struct FriendHomeView: View {
     @Query(filter: #Predicate<DailyJournal> { $0.isShared }, sort: \DailyJournal.date, order: .reverse)
     private var sharedJournals: [DailyJournal]
 
+    @State private var showInviteView = false
+
     private var hasFeedContent: Bool {
         !vm.friendCheckIns.isEmpty || !sharedJournals.isEmpty
     }
@@ -91,6 +93,9 @@ private struct FriendHomeView: View {
                     Image(systemName: "person.2.fill")
                 }
             }
+        }
+        .sheet(isPresented: $showInviteView) {
+            NavigationStack { InviteView() }
         }
         .refreshable { await vm.loadFriendsAndFeed() }
     }
@@ -126,6 +131,24 @@ private struct FriendHomeView: View {
     private var friendAvatarRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
+                // Add friend button inline with avatars
+                Button(action: { showInviteView = true }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: "person.badge.plus")
+                            .font(.system(size: 22))
+                            .foregroundColor(.orange)
+                            .frame(width: 52, height: 52)
+                            .background(Color.orange.opacity(0.12))
+                            .clipShape(Circle())
+                        Text(lm.manageInviteAction)
+                            .font(.caption2)
+                            .foregroundColor(.orange)
+                            .lineLimit(1)
+                            .frame(width: 52)
+                    }
+                }
+                .buttonStyle(.plain)
+
                 ForEach(vm.friends) { friend in
                     VStack(spacing: 4) {
                         Text(friend.avatarEmoji)
@@ -168,12 +191,22 @@ private struct FriendHomeView: View {
     }
 
     private var emptyFeedView: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             Text("💤")
                 .font(.system(size: 48))
             Text(lm.friendEmptyFeed)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
+            Button(action: { showInviteView = true }) {
+                Label(lm.manageInviteAction, systemImage: "person.badge.plus")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 28)
+                    .padding(.vertical, 12)
+                    .background(Color.orange)
+                    .cornerRadius(22)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

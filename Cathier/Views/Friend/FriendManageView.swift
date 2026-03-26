@@ -3,19 +3,11 @@ import SwiftUI
 struct FriendManageView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
-    @State private var showInviteView = false
     @State private var removingFriend: UserProfile?
     @State private var showRemoveAlert = false
 
     var body: some View {
         List {
-            Section {
-                Button(action: { showInviteView = true }) {
-                    Label(lm.manageInviteAction, systemImage: "person.badge.plus")
-                        .foregroundColor(.orange)
-                }
-            }
-
             if !vm.friends.isEmpty {
                 Section(lm.manageConnectedFriends(vm.friends.count)) {
                     ForEach(vm.friends) { friend in
@@ -56,9 +48,6 @@ struct FriendManageView: View {
         }
         .navigationTitle(lm.manageNavTitle)
         .navigationBarTitleDisplayMode(.inline)
-        .sheet(isPresented: $showInviteView) {
-            NavigationStack { InviteView() }
-        }
         .alert(lm.manageDisconnectAlert(removingFriend?.displayName ?? ""), isPresented: $showRemoveAlert) {
             Button(lm.manageDisconnect, role: .destructive) {
                 if let friend = removingFriend {
