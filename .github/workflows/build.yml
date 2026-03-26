@@ -1,9 +1,18 @@
-name: Build & TestFlight
+name: Build & Deploy
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      destination:
+        description: 'Deploy target'
+        required: true
+        default: 'testflight'
+        type: choice
+        options:
+          - testflight
+          - appstore
 
 jobs:
   build:
@@ -31,11 +40,19 @@ jobs:
         env:
           FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
-      - name: Run fastlane beta
+      # Push to main always goes to TestFlight.
+      # Manual dispatch uses the chosen destination.
+      - name: Run fastlane
         env:
           MATCH_PASSWORD:       ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
           ASC_API_KEY_ID:       ${{ secrets.ASC_API_KEY_ID }}
           ASC_API_ISSUER_ID:    ${{ secrets.ASC_API_ISSUER_ID }}
           ASC_API_KEY_CONTENT:  ${{ secrets.ASC_API_KEY_CONTENT }}
-        run: bundle exec fastlane beta
+        run: |
+          DEST="${{ github.event.inputs.destination }}"
+          if [ "$DEST" = "appstore" ]; then
+            bundle exec fastlane release
+          else
+            bundle exec fastlane beta
+          fi
