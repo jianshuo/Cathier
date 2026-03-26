@@ -36,6 +36,8 @@ final class SubscriptionManager {
     // MARK: - Public API
 
     func purchase() async {
+        // Load product on demand in case init's background task hasn't finished yet
+        if product == nil { await loadProduct() }
         guard let product else {
             errorMessage = "Product unavailable. Check App Store Connect setup."
             return

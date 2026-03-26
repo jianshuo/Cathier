@@ -1,0 +1,234 @@
+/* Tabs */
+"tab.today" = "此刻";
+"tab.journal" = "日记";
+"tab.friends" = "好友";
+"tab.settings" = "设置";
+
+/* TodayView */
+"today.nav_title" = "此刻";
+"today.records" = "今日记录";
+"today.start_scan" = "开始身体扫描";
+"today.body_saying" = "此刻，你的身体在说什么？";
+"greeting.morning" = "早上好";
+"greeting.afternoon" = "下午好";
+"greeting.evening" = "晚上好";
+"today.no_check_in" = "你今天还没有签到，花一分钟感受一下身体吧。";
+"today.checked_in" = "今天已签到 %d 次，继续保持。";
+
+/* JournalView */
+"journal.nav_title" = "日记";
+"journal.delete" = "删除";
+"journal.empty" = "还没有记录";
+"journal.empty_hint" = "完成第一次签到后，记录会出现在这里。";
+"journal.today" = "今天";
+"journal.yesterday" = "昨天";
+"journal.date_format" = "M月d日";
+
+/* CheckInFlow */
+"check_in.cancel" = "取消";
+"check_in.step_body_scan" = "身体扫描";
+"check_in.step_emotion" = "情绪识别";
+"check_in.step_ai" = "AI 陪伴";
+
+/* BodyScanView */
+"body_scan.where_title" = "哪里有感受？";
+"body_scan.multiple" = "可多选";
+"body_scan.what_title" = "是什么样的感受？";
+"body_scan.trigger_title" = "是什么引发了这个感受？";
+"body_scan.trigger_subtitle" = "可选";
+"body_scan.trigger_placeholder" = "描述一个事件、场景或想法…";
+"body_scan.intensity" = "感受的强度";
+"body_scan.next" = "下一步：识别情绪";
+"body_scan.mild" = "轻微";
+"body_scan.intense" = "强烈";
+
+/* EmotionLabelView */
+"emotion.question" = "这种感受，更接近哪种情绪？";
+"emotion.specific" = "更具体是…";
+"emotion.custom_prompt" = "或者，你想用自己的词描述";
+"emotion.custom_placeholder" = "输入情绪词…";
+"emotion.gen_ai" = "生成 AI 反馈";
+"emotion.skip" = "跳过，直接保存";
+"emotion.selected" = "已选择";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "此刻的感受";
+"ai.note_label" = "添加备注（可选）";
+"ai.note_placeholder" = "记录一些额外的想法…";
+"ai.share_title" = "分享给好友？";
+"ai.dont_share" = "不分享";
+"ai.only_self" = "仅自己可见";
+"ai.companion" = "AI 陪伴";
+"ai.save" = "保存记录";
+"ai.loading" = "正在感受你的感受…";
+"ai.retry" = "重试";
+"ai.intensity_badge" = "强度 %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "只分享情绪大类";
+"tier.category_desc" = "好友只看到情绪大类和强度";
+"tier.emotions_name" = "分享情绪词";
+"tier.emotions_desc" = "好友看到具体情绪词";
+"tier.full_name" = "完整分享";
+"tier.full_desc" = "好友看到全部内容含笔记";
+"ai.share_ai_feedback_toggle" = "也分享 AI 反馈";
+"ai.share_ai_feedback_desc" = "好友也能看到 AI 给你的回应";
+
+/* FriendFeedView */
+"friend.nav_title" = "好友";
+"friend.no_friends" = "还没有好友";
+"friend.invite_hint" = "邀请朋友互相分享情绪吧";
+"friend.invite" = "邀请好友";
+"friend.empty_feed" = "好友还没有分享任何情绪";
+"friend.default_name" = "朋友";
+
+/* FriendSetupView */
+"setup.title" = "设置你的好友档案";
+"setup.subtitle" = "好友看到的就是这个名字和头像";
+"setup.choose_emoji" = "选一个头像 emoji";
+"setup.nickname_label" = "你的昵称";
+"setup.nickname_placeholder" = "输入昵称…";
+"setup.done" = "完成";
+
+/* FriendManageView */
+"manage.nav_title" = "好友管理";
+"manage.invite_action" = "邀请好友 / 输入邀请码";
+"manage.connected_friends" = "已连接的好友 (%d)";
+"manage.disconnect" = "断开连接";
+"manage.no_friends" = "还没有好友，发送邀请链接来连接吧";
+"manage.connected_on" = "连接于 %@";
+"manage.disconnect_alert" = "断开与「%@」的连接？";
+"manage.disconnect_message" = "双方将不再能看到彼此分享的情绪记录";
+"manage.cancel" = "取消";
+
+/* InviteView */
+"invite.nav_title" = "邀请 / 添加好友";
+"invite.send_title" = "邀请好友";
+"invite.send_hint" = "生成一个邀请链接，发给对方。对方点击后即可互相添加。";
+"invite.generate" = "生成邀请链接";
+"invite.regenerate" = "重新生成";
+"invite.enter_title" = "输入邀请码";
+"invite.enter_hint" = "如果朋友把邀请码发给了你，在这里输入。";
+"invite.success" = "添加成功！";
+"invite.placeholder" = "输入8位邀请码…";
+"invite.confirm" = "确认添加";
+
+/* InviteAcceptSheet */
+"accept.success" = "已成功添加好友！";
+"accept.title" = "收到一个好友邀请";
+"accept.code" = "邀请码：%@";
+"accept.button" = "接受邀请";
+"accept.later" = "稍后再说";
+"accept.nav_title" = "好友邀请";
+
+/* SettingsView */
+"settings.nav_title" = "设置";
+"settings.ai_section" = "AI 设置";
+"settings.ai_provider" = "AI 服务商";
+"settings.saved" = "已保存";
+"settings.get_key" = "获取 API Key →";
+"settings.key_footer" = "API Key 仅存储在本机，不会上传到任何服务器。";
+"settings.managed_footer" = "订阅后无需填写任何 API Key，即可使用全部 AI 功能。订阅随时可取消。";
+"settings.managed_desc" = "使用我们提供的 AI，无需自己申请 API Key，开箱即用。";
+"settings.managed_feature1" = "由通义千问 (Qwen) 提供支持";
+"settings.managed_feature2" = "支持全部签到与情绪反馈功能";
+"settings.managed_feature3" = "支持模式分析与洞察报告";
+"settings.managed_subscribe" = "订阅";
+"settings.managed_per_month" = "月";
+"settings.managed_active" = "已订阅，AI 服务使用中";
+"settings.managed_manage" = "管理订阅 →";
+"settings.managed_restore" = "恢复购买";
+"settings.reminders_section" = "定时提醒";
+"settings.enable_reminder" = "开启提醒";
+"settings.save_reminder" = "保存提醒设置";
+"settings.reminder_footer_on" = "提醒会在设定时间以本地通知推送。";
+"settings.reminder_footer_off" = "请在系统设置中允许通知权限，以便接收提醒。";
+"settings.about_section" = "关于";
+"settings.about_row" = "关于 Cathier";
+"settings.version" = "版本";
+"settings.build" = "构建号";
+"settings.data_storage" = "数据存储";
+"settings.local_only" = "iCloud 同步";
+"settings.language_section" = "语言";
+"settings.has_key" = "我有 API Key";
+"settings.no_key" = "使用托管 AI";
+"settings.context_section" = "关于你（AI 背景信息）";
+"settings.context_placeholder" = "告诉 AI 一些你的背景，比如工作、正在经历的事情…这会让分析更有针对性。";
+"settings.context_footer" = "仅存储在本机，会加入到模式分析的提示词中。";
+
+/* AboutView */
+"about.made_by" = "作者";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "你的情绪感知训练伙伴";
+"about.privacy_title" = "隐私设计";
+"about.privacy_detail" = "数据存储在设备本地，AI 反馈通过你的 API 密钥处理，不经过第三方服务器。";
+"about.copyright_label" = "版权所有";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "今日心情与收获";
+"journal_entry.mood_label" = "今天心情怎么样？";
+"journal_entry.gains_label" = "今日收获";
+"journal_entry.gains_placeholder" = "记录今天的收获、感悟或想说的话…";
+"journal_entry.share_label" = "分享给好友";
+"journal_entry.share_desc" = "好友可以看到你的心情和收获";
+"journal_entry.save" = "保存今日日记";
+"journal_entry.edit" = "编辑";
+"journal_entry.once_a_day" = "每天只能记录一次";
+"journal_entry.today_title" = "今日日记";
+"journal_entry.shared_badge" = "已分享";
+"journal_entry.private_badge" = "仅自己";
+"journal_entry.write_prompt" = "记录今天的心情与收获";
+"journal_entry.write_hint" = "每天一次，留下属于今天的印记";
+
+/* FeedbackView */
+"feedback.nav_title" = "功能建议";
+"feedback.section_title" = "反馈与建议";
+"feedback.button" = "提交功能建议";
+"feedback.title_label" = "标题";
+"feedback.title_placeholder" = "简短描述你的建议…";
+"feedback.body_label" = "详细描述";
+"feedback.body_footer" = "你的建议会以 GitHub Issue 形式提交，并由 AI 自动实现。";
+"feedback.token_section" = "GitHub 设置";
+"feedback.token_footer" = "需要有 repo 权限的 GitHub Personal Access Token 才能提交 Issue。Token 仅存储在本机。";
+"feedback.submit" = "提交";
+"feedback.success" = "提交成功！";
+"feedback.view_issue" = "查看 GitHub Issue →";
+
+/* CheckInDetailView */
+"detail.nav_title" = "记录详情";
+"detail.done" = "完成";
+"detail.body_section" = "身体感受";
+"detail.emotions_section" = "情绪";
+"detail.trigger_section" = "触发事件";
+"detail.note_section" = "备注";
+"detail.date_format" = "yyyy年M月d日";
+
+/* InsightsView */
+"insights.nav_title" = "模式分析";
+"insights.toolbar_button" = "分析";
+"insights.focus_title" = "想了解什么？";
+"insights.focus_triggers" = "压力来源";
+"insights.focus_growth" = "我在成长吗？";
+"insights.focus_body" = "身体信号";
+"insights.focus_surprise" = "给我惊喜";
+"insights.analyze" = "分析我的模式";
+"insights.refresh" = "重新分析";
+"insights.loading" = "正在分析你的情绪历史…";
+"insights.empty_title" = "继续记录";
+"insights.empty_hint" = "至少7次签到后，模式分析将会出现。";
+"insights.load_error" = "无法加载签到记录，请重启应用。";
+"insights.history_title" = "历史分析";
+"insights.history_empty" = "还没有分析记录";
+"insights.analyzed_at" = "分析于";
+"insights.new_check_ins" = "自上次分析后新增了 %d 条记录";
+"insights.chart_title" = "情绪强度趋势";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 模式分析已就绪";
+"notif.milestone_body" = "你已完成30次签到！打开日记，分析你的情绪模式。";
+
+/* Error messages */
+"error.no_api_key" = "请先在设置中填写 API Key";
+"error.not_subscribed" = "请先订阅以使用 AI 服务";
+"error.api_error" = "API 请求失败（HTTP %d）";
+"error.decode_error" = "解析 AI 响应失败";

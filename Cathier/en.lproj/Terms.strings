@@ -1,0 +1,142 @@
+/* Body parts */
+"呼吸" = "Breath";
+"腹部" = "Abdomen";
+"心脏" = "Heart";
+"心轮" = "Heart Chakra";
+"眉心" = "Third Eye";
+"胃" = "Stomach";
+"海底轮" = "Root Chakra";
+"头部" = "Head";
+"眼睛" = "Eyes";
+"脸部" = "Face";
+"喉咙" = "Throat";
+"头皮" = "Scalp";
+"肩膀" = "Shoulders";
+"颈部" = "Neck";
+"手臂" = "Arms";
+"手掌" = "Palms";
+"大腿" = "Thighs";
+"整个身体" = "Whole Body";
+
+/* Sensations */
+"紧绷" = "Tense";
+"沉重" = "Heavy";
+"发热" = "Hot";
+"空洞" = "Empty";
+"酸胀" = "Aching";
+"轻盈" = "Light";
+"颤抖" = "Trembling";
+"麻木" = "Numb";
+"刺痛" = "Tingling";
+"收缩" = "Contracting";
+"压迫" = "Pressure";
+"温暖" = "Warm";
+"冰冷" = "Cold";
+"放松" = "Relaxed";
+"震动" = "Vibrating";
+"膨胀" = "Expanding";
+
+/* Emotion categories */
+"激情" = "Impassioned";
+"快乐" = "Happy";
+"平静" = "Calm";
+"爱与关怀" = "Love & Care";
+"愤怒" = "Anger";
+"恐惧" = "Fear";
+"悲伤" = "Disheartened";
+"惊讶" = "Surprise";
+
+/* Emotions — Impassioned */
+"热情" = "Enthusiastic";
+"兴奋" = "Excited";
+"激动" = "Aroused";
+"狂喜" = "Delirious";
+"充满激情" = "Passionate";
+"欣喜若狂" = "Euphoric";
+"激动万分" = "Thrilled";
+"坚定" = "Determined";
+"自信" = "Confident";
+"乐观" = "Optimistic";
+"期待" = "Anticipating";
+
+/* Emotions — Happy */
+"喜悦" = "Joyful";
+"幸福" = "Blissful";
+"被逗乐" = "Amused";
+"高兴" = "Delighted";
+"幸运" = "Lucky";
+"感恩" = "Grateful";
+"充满希望" = "Hopeful";
+"充满活力" = "Alive";
+"愉悦" = "Pleasant";
+
+/* Emotions — Calm */
+"平和" = "Peaceful";
+"满足" = "Contented";
+"宁静" = "Serene";
+"舒适" = "Comfortable";
+"专注" = "Focused";
+"从容" = "Composed";
+"淡然" = "Detached";
+"安然" = "At Ease";
+
+/* Emotions — Love & Care */
+"充满爱" = "Loving";
+"充满柔情" = "Affectionate";
+"钦佩" = "Admiring";
+"同情" = "Compassionate";
+"友好" = "Friendly";
+
+/* Emotions — Anger */
+"狂怒" = "Furious";
+"愤慨" = "Outraged";
+"烦躁" = "Irritated";
+"恼火" = "Annoyed";
+"怨恨" = "Resentful";
+"不满" = "Discontent";
+"嫉妒" = "Jealous";
+"挫败" = "Frustrated";
+
+/* Emotions — Fear */
+"紧张" = "Nervous";
+"担心" = "Worried";
+"害怕" = "Afraid";
+"焦虑" = "Anxious";
+"压力大" = "Stressed";
+"不安" = "Uneasy";
+"慌乱" = "Panicked";
+"惶恐" = "Terrified";
+
+/* Emotions — Disheartened */
+"难过" = "Sad";
+"孤独" = "Lonely";
+"受伤" = "Hurt";
+"抑郁" = "Depressed";
+"精疲力尽" = "Exhausted";
+"失落" = "Lost";
+"委屈" = "Aggrieved";
+"沮丧" = "Dejected";
+"哀伤" = "Sorrowful";
+"遗憾" = "Regretful";
+"无助" = "Helpless";
+"绝望" = "Desperate";
+
+/* Emotions — Shame */
+"羞愧" = "Ashamed";
+"尴尬" = "Embarrassed";
+"内疚" = "Guilty";
+"后悔" = "Remorseful";
+"羞耻" = "Shameful";
+"自责" = "Self-blaming";
+"厌恶" = "Disgusted";
+"反感" = "Repulsed";
+
+/* Emotions — Surprise */
+"震惊" = "Shocked";
+"受惊" = "Startled";
+"惊叹" = "Amazed";
+"震撼" = "Astonished";
+"惊喜" = "Pleasantly Surprised";
+"困惑" = "Confused";
+"好奇" = "Curious";
+"意外" = "Unexpected";

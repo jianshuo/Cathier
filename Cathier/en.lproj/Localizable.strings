@@ -1,0 +1,234 @@
+/* Tabs */
+"tab.today" = "Now";
+"tab.journal" = "Journal";
+"tab.friends" = "Friends";
+"tab.settings" = "Settings";
+
+/* TodayView */
+"today.nav_title" = "Now";
+"today.records" = "Today's Records";
+"today.start_scan" = "Start Body Scan";
+"today.body_saying" = "What is your body saying right now?";
+"greeting.morning" = "Good morning";
+"greeting.afternoon" = "Good afternoon";
+"greeting.evening" = "Good evening";
+"today.no_check_in" = "You haven't checked in today. Take a minute to scan your body.";
+"today.checked_in" = "Checked in %d times today. Keep it up!";
+
+/* JournalView */
+"journal.nav_title" = "Journal";
+"journal.delete" = "Delete";
+"journal.empty" = "No Records Yet";
+"journal.empty_hint" = "Your records will appear here after your first check-in.";
+"journal.today" = "Today";
+"journal.yesterday" = "Yesterday";
+"journal.date_format" = "MMM d";
+
+/* CheckInFlow */
+"check_in.cancel" = "Cancel";
+"check_in.step_body_scan" = "Body Scan";
+"check_in.step_emotion" = "Emotion Label";
+"check_in.step_ai" = "AI Companion";
+
+/* BodyScanView */
+"body_scan.where_title" = "Where do you feel it?";
+"body_scan.multiple" = "Multiple allowed";
+"body_scan.what_title" = "What does it feel like?";
+"body_scan.trigger_title" = "What triggered this feeling?";
+"body_scan.trigger_subtitle" = "Optional";
+"body_scan.trigger_placeholder" = "Describe an event, scene, or thought\u2026";
+"body_scan.intensity" = "Intensity";
+"body_scan.next" = "Next: Identify Emotions";
+"body_scan.mild" = "Mild";
+"body_scan.intense" = "Intense";
+
+/* EmotionLabelView */
+"emotion.question" = "What emotion does this feeling resemble?";
+"emotion.specific" = "More specifically\u2026";
+"emotion.custom_prompt" = "Or describe it in your own words";
+"emotion.custom_placeholder" = "Type an emotion...";
+"emotion.gen_ai" = "Generate AI Feedback";
+"emotion.skip" = "Skip and save directly";
+"emotion.selected" = "Selected";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "Current Feelings";
+"ai.note_label" = "Add a note (optional)";
+"ai.note_placeholder" = "Record some extra thoughts...";
+"ai.share_title" = "Share with friends?";
+"ai.dont_share" = "Don't share";
+"ai.only_self" = "Only visible to me";
+"ai.companion" = "AI Companion";
+"ai.save" = "Save Record";
+"ai.loading" = "Processing your feelings...";
+"ai.retry" = "Retry";
+"ai.intensity_badge" = "Intensity %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "Share emotion category";
+"tier.category_desc" = "Friend sees only emotion category and intensity";
+"tier.emotions_name" = "Share emotion words";
+"tier.emotions_desc" = "Friend sees specific emotion words";
+"tier.full_name" = "Full share";
+"tier.full_desc" = "Friend sees everything including notes";
+"ai.share_ai_feedback_toggle" = "Also share AI feedback";
+"ai.share_ai_feedback_desc" = "Friends can also see the AI\u2019s response to you";
+
+/* FriendFeedView */
+"friend.nav_title" = "Friends";
+"friend.no_friends" = "No Friends Yet";
+"friend.invite_hint" = "Invite friends to share moods with each other";
+"friend.invite" = "Invite Friends";
+"friend.empty_feed" = "No friend has shared any mood yet";
+"friend.default_name" = "Friend";
+
+/* FriendSetupView */
+"setup.title" = "Set Up Your Friend Profile";
+"setup.subtitle" = "Friends will see this name and avatar";
+"setup.choose_emoji" = "Choose an avatar emoji";
+"setup.nickname_label" = "Your Nickname";
+"setup.nickname_placeholder" = "Enter nickname...";
+"setup.done" = "Done";
+
+/* FriendManageView */
+"manage.nav_title" = "Friend Management";
+"manage.invite_action" = "Invite / Enter Code";
+"manage.connected_friends" = "Connected Friends (%d)";
+"manage.disconnect" = "Disconnect";
+"manage.no_friends" = "No friends yet. Share an invite link to connect.";
+"manage.connected_on" = "Connected on %@";
+"manage.disconnect_alert" = "Disconnect from \"%@\"?";
+"manage.disconnect_message" = "You will no longer see each other\u2019s shared mood records.";
+"manage.cancel" = "Cancel";
+
+/* InviteView */
+"invite.nav_title" = "Invite / Add Friend";
+"invite.send_title" = "Invite Friends";
+"invite.send_hint" = "Generate an invite link and send it to your friend. They can tap it to connect.";
+"invite.generate" = "Generate Invite Link";
+"invite.regenerate" = "Regenerate";
+"invite.enter_title" = "Enter Invite Code";
+"invite.enter_hint" = "If a friend sent you an invite code, enter it here.";
+"invite.success" = "Added successfully!";
+"invite.placeholder" = "Enter 8-digit invite code...";
+"invite.confirm" = "Confirm";
+
+/* InviteAcceptSheet */
+"accept.success" = "Friend added successfully!";
+"accept.title" = "Friend Invitation Received";
+"accept.code" = "Invite code: %@";
+"accept.button" = "Accept Invitation";
+"accept.later" = "Maybe Later";
+"accept.nav_title" = "Friend Invitation";
+
+/* SettingsView */
+"settings.nav_title" = "Settings";
+"settings.ai_section" = "AI Settings";
+"settings.ai_provider" = "AI Provider";
+"settings.saved" = "Saved";
+"settings.get_key" = "Get API Key \u2192";
+"settings.key_footer" = "API Key is stored locally only and never uploaded to any server.";
+"settings.managed_footer" = "No API Key needed after subscribing. Full AI features included. Cancel anytime.";
+"settings.managed_desc" = "Use our hosted AI \u2014 no API Key required, works right away.";
+"settings.managed_feature1" = "Powered by Qwen (\u901a\u4e49\u5343\u95ee)";
+"settings.managed_feature2" = "Full check-in & emotion feedback";
+"settings.managed_feature3" = "Pattern analysis & insight reports";
+"settings.managed_subscribe" = "Subscribe";
+"settings.managed_per_month" = "month";
+"settings.managed_active" = "Subscribed \u2014 AI service active";
+"settings.managed_manage" = "Manage Subscription \u2192";
+"settings.managed_restore" = "Restore Purchase";
+"settings.reminders_section" = "Reminders";
+"settings.enable_reminder" = "Enable Reminders";
+"settings.save_reminder" = "Save Reminder Settings";
+"settings.reminder_footer_on" = "Reminders will be sent as local notifications at the set times.";
+"settings.reminder_footer_off" = "Please allow notification permission in System Settings to receive reminders.";
+"settings.about_section" = "About";
+"settings.about_row" = "About Cathier";
+"settings.version" = "Version";
+"settings.build" = "Build";
+"settings.data_storage" = "Data Storage";
+"settings.local_only" = "iCloud sync";
+"settings.language_section" = "Language";
+"settings.has_key" = "I have an API Key";
+"settings.no_key" = "Use Managed AI";
+"settings.context_section" = "About You (AI Context)";
+"settings.context_placeholder" = "Tell the AI about your background \u2014 your job, what you\u2019re going through\u2026 This makes insights more relevant.";
+"settings.context_footer" = "Stored locally. Included in the pattern analysis prompt.";
+
+/* AboutView */
+"about.made_by" = "Made by";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "Your emotional awareness companion";
+"about.privacy_title" = "Privacy First";
+"about.privacy_detail" = "Your data stays on-device. AI feedback is processed through your own API key, never through third-party servers.";
+"about.copyright_label" = "Copyright";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "Today's Journal";
+"journal_entry.mood_label" = "How are you feeling today?";
+"journal_entry.gains_label" = "Today's Gains";
+"journal_entry.gains_placeholder" = "Record today\u2019s gains, insights, or thoughts\u2026";
+"journal_entry.share_label" = "Share with Friends";
+"journal_entry.share_desc" = "Friends can see your mood and gains";
+"journal_entry.save" = "Save Today's Journal";
+"journal_entry.edit" = "Edit";
+"journal_entry.once_a_day" = "One entry per day";
+"journal_entry.today_title" = "Today's Journal";
+"journal_entry.shared_badge" = "Shared";
+"journal_entry.private_badge" = "Private";
+"journal_entry.write_prompt" = "Record today\u2019s mood & gains";
+"journal_entry.write_hint" = "Once a day \u2014 leave a mark for today";
+
+/* FeedbackView */
+"feedback.nav_title" = "Feature Feedback";
+"feedback.section_title" = "Feedback";
+"feedback.button" = "Submit Feedback";
+"feedback.title_label" = "Title";
+"feedback.title_placeholder" = "Brief description of your suggestion\u2026";
+"feedback.body_label" = "Details";
+"feedback.body_footer" = "Your suggestion will be submitted as a GitHub Issue and automatically implemented by AI.";
+"feedback.token_section" = "GitHub Settings";
+"feedback.token_footer" = "A GitHub Personal Access Token with \u2018repo\u2019 scope is required to submit issues. Stored locally only.";
+"feedback.submit" = "Submit";
+"feedback.success" = "Submitted successfully!";
+"feedback.view_issue" = "View GitHub Issue \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "Record Detail";
+"detail.done" = "Done";
+"detail.body_section" = "Body Sensations";
+"detail.emotions_section" = "Emotions";
+"detail.trigger_section" = "Trigger Event";
+"detail.note_section" = "Note";
+"detail.date_format" = "MMM d, yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "Pattern Insights";
+"insights.toolbar_button" = "Insights";
+"insights.focus_title" = "What do you want to understand?";
+"insights.focus_triggers" = "My stress triggers";
+"insights.focus_growth" = "Am I getting better?";
+"insights.focus_body" = "What my body tells me";
+"insights.focus_surprise" = "Surprise me";
+"insights.analyze" = "Analyze My Patterns";
+"insights.refresh" = "Re-analyze";
+"insights.loading" = "Analyzing your emotional history\u2026";
+"insights.empty_title" = "Keep Checking In";
+"insights.empty_hint" = "Pattern insights appear after at least 7 check-ins.";
+"insights.load_error" = "Could not load your check-ins. Try restarting the app.";
+"insights.history_title" = "Previous Analyses";
+"insights.history_empty" = "No analyses yet";
+"insights.analyzed_at" = "Analyzed";
+"insights.new_check_ins" = "%d new check-ins since last analysis";
+"insights.chart_title" = "Intensity Over Time";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 Pattern Insights Ready";
+"notif.milestone_body" = "You've logged 30 check-ins! Open your journal to analyze your emotional patterns.";
+
+/* Error messages */
+"error.no_api_key" = "Please enter your API Key in Settings first.";
+"error.not_subscribed" = "Please subscribe to use the AI service.";
+"error.api_error" = "API request failed (HTTP %d)";
+"error.decode_error" = "Failed to parse AI response";

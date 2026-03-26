@@ -1,0 +1,77 @@
+{
+  "identifier" : "A7BB4DDF-E47F-4236-B859-8CA922DFC40A",
+  "nonConsumableProducts" : [],
+  "nonRenewingSubscriptionProducts" : [],
+  "products" : [],
+  "settings" : {
+    "_developerTeamID" : "",
+    "_failTransactionsEnabled" : false,
+    "_localReceiptURL" : null,
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Restore Purchases"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "0E8FD840-0506-43DA-AFDA-60644E9E80B2",
+      "localizations" : [],
+      "name" : "AI Access",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [],
+          "codeOffers" : [],
+          "displayPrice" : "4.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6BEB8FB6-CB39-4B2B-8CAD-A514FA861724",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access all AI features without needing your own API key.",
+              "displayName" : "Monthly AI Access",
+              "locale" : "en_US"
+            },
+            {
+              "description" : "无需 API Key，使用全部 AI 功能。",
+              "displayName" : "月度 AI 服务",
+              "locale" : "zh_Hans_CN"
+            }
+          ],
+          "productID" : "com.cathier.ai.managed.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Monthly AI Access",
+          "subscriptionGroupID" : "0E8FD840-0506-43DA-AFDA-60644E9E80B2",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

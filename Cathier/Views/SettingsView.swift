@@ -2,7 +2,11 @@ import SwiftUI
 import StoreKit
 
 struct SettingsView: View {
+    /// Source of truth for ClaudeService — may be "managed".
     @AppStorage("aiProvider") private var selectedProviderRaw: String = AIProvider.claude.rawValue
+    /// Separate key for the provider Picker — never "managed", so the Picker always has a valid tag.
+    @AppStorage("lastNonManagedProvider") private var nonManagedProviderRaw: String = AIProvider.claude.rawValue
+
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
     @AppStorage("contextBrief") private var contextBrief = ""
     @State private var reminderTimes: [ReminderTime] = NotificationService.defaultTimes
@@ -12,28 +16,26 @@ struct SettingsView: View {
     @State private var apiKeyInput = ""
     @Environment(LanguageManager.self) private var lm
 
-    private let subManager = SubscriptionManager.shared
+    @State private var subManager = SubscriptionManager.shared
 
     private var selectedProvider: AIProvider {
         AIProvider(rawValue: selectedProviderRaw) ?? .claude
     }
 
-    /// Binding for the "has key / no key" segmented control.
-    /// Switching to managed saves the current provider so it can be restored later.
+    private var isManaged: Bool { selectedProvider.isManaged }
+
+    /// Segmented control binding: toggling to managed sets aiProvider = "managed";
+    /// toggling back restores lastNonManagedProvider.
     private var managedModeBinding: Binding<Bool> {
         Binding(
-            get: { selectedProvider.isManaged },
+            get: { isManaged },
             set: { useManaged in
                 if useManaged {
-                    if !selectedProvider.isManaged {
-                        UserDefaults.standard.set(selectedProviderRaw, forKey: "lastNonManagedProvider")
-                    }
                     selectedProviderRaw = AIProvider.managed.rawValue
                 } else {
-                    let last = UserDefaults.standard.string(forKey: "lastNonManagedProvider")
-                        ?? AIProvider.claude.rawValue
-                    selectedProviderRaw = last
-                    apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                    selectedProviderRaw = nonManagedProviderRaw
+                    apiKeyInput = UserDefaults.standard.string(forKey:
+                        (AIProvider(rawValue: nonManagedProviderRaw) ?? .claude).apiKeyStorageKey) ?? ""
                 }
             }
         )
@@ -52,9 +54,7 @@ struct SettingsView: View {
                             Text(lang.displayName).tag(lang)
                         }
                     }
-                    .pickerStyle(.segmented)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                    .pickerStyle(.menu)
                 } header: {
                     Text(lm.settingsLanguageSection)
                 }
@@ -75,13 +75,16 @@ struct SettingsView: View {
                         ManagedSubscriptionPanel(subManager: subManager, lm: lm)
                     } else {
                         // Has-key path: provider picker + key input
-                        Picker(lm.settingsAIProvider, selection: $selectedProviderRaw) {
+                        Picker(lm.settingsAIProvider, selection: $nonManagedProviderRaw) {
                             ForEach(AIProvider.allCases.filter { !$0.isManaged }) { provider in
                                 Text(provider.displayName).tag(provider.rawValue)
                             }
                         }
-                        .onChange(of: selectedProviderRaw) { _, _ in
-                            apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                        .onChange(of: nonManagedProviderRaw) { _, newRaw in
+                            // Mirror to aiProvider so ClaudeService sees the change
+                            selectedProviderRaw = newRaw
+                            let provider = AIProvider(rawValue: newRaw) ?? .claude
+                            apiKeyInput = UserDefaults.standard.string(forKey: provider.apiKeyStorageKey) ?? ""
                         }
 
                         VStack(alignment: .leading, spacing: 8) {
@@ -100,7 +103,8 @@ struct SettingsView: View {
                         }
                         .padding(.vertical, 4)
                         .onChange(of: apiKeyInput) { _, newValue in
-                            UserDefaults.standard.set(newValue, forKey: selectedProvider.apiKeyStorageKey)
+                            let key = (AIProvider(rawValue: nonManagedProviderRaw) ?? .claude).apiKeyStorageKey
+                            UserDefaults.standard.set(newValue, forKey: key)
                             showApiKeySaved = true
                             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                                 showApiKeySaved = false
@@ -216,9 +220,8 @@ struct SettingsView: View {
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
-                if !selectedProvider.isManaged {
-                    apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
-                }
+                let provider = AIProvider(rawValue: nonManagedProviderRaw) ?? .claude
+                apiKeyInput = UserDefaults.standard.string(forKey: provider.apiKeyStorageKey) ?? ""
             }
         }
     }

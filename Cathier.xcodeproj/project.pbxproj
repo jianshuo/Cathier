@@ -23,6 +23,7 @@
 /* Begin PBXFileReference section */
 		D419152C2F6C604900594512 /* CathierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CathierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D48A513F2F75276000B11317 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		D48A514C2F752CFA00B11317 /* Products.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Products.storekit; sourceTree = "<group>"; };
 		D4B61DC02F63B0140074205F /* Cathier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cathier.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -82,6 +83,7 @@
 		D4B61DB72F63B0140074205F = {
 			isa = PBXGroup;
 			children = (
+				D48A514C2F752CFA00B11317 /* Products.storekit */,
 				D4B61DC22F63B0140074205F /* Cathier */,
 				D419152D2F6C604900594512 /* CathierTests */,
 				D48A513E2F75276000B11317 /* Frameworks */,
@@ -171,6 +173,8 @@
 			knownRegions = (
 				en,
 				Base,
+				zh,
+				ja,
 			);
 			mainGroup = D4B61DB72F63B0140074205F;
 			minimizedProjectReferenceProxies = 1;

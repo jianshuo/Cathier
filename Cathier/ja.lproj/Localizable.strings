@@ -1,0 +1,234 @@
+/* Tabs */
+"tab.today" = "今";
+"tab.journal" = "日記";
+"tab.friends" = "友達";
+"tab.settings" = "設定";
+
+/* TodayView */
+"today.nav_title" = "今";
+"today.records" = "今日の記録";
+"today.start_scan" = "ボディスキャン開始";
+"today.body_saying" = "今、あなたの体は何を言っていますか？";
+"greeting.morning" = "おはようございます";
+"greeting.afternoon" = "こんにちは";
+"greeting.evening" = "こんばんは";
+"today.no_check_in" = "今日はまだチェックインしていません。少し身体を感じてみましょう。";
+"today.checked_in" = "今日は %d 回チェックイン済み。この調子で！";
+
+/* JournalView */
+"journal.nav_title" = "日記";
+"journal.delete" = "削除";
+"journal.empty" = "記録がまだありません";
+"journal.empty_hint" = "最初のチェックイン後、記録がここに表示されます。";
+"journal.today" = "今日";
+"journal.yesterday" = "昨日";
+"journal.date_format" = "M月d日";
+
+/* CheckInFlow */
+"check_in.cancel" = "キャンセル";
+"check_in.step_body_scan" = "ボディスキャン";
+"check_in.step_emotion" = "感情の識別";
+"check_in.step_ai" = "AIコンパニオン";
+
+/* BodyScanView */
+"body_scan.where_title" = "どこに感じますか？";
+"body_scan.multiple" = "複数選択可";
+"body_scan.what_title" = "どんな感覚ですか？";
+"body_scan.trigger_title" = "この感覚は何がきっかけでしたか？";
+"body_scan.trigger_subtitle" = "任意";
+"body_scan.trigger_placeholder" = "出来事、場面、または考えを描写してください…";
+"body_scan.intensity" = "感覚の強度";
+"body_scan.next" = "次へ：感情の識別";
+"body_scan.mild" = "軽度";
+"body_scan.intense" = "強烈";
+
+/* EmotionLabelView */
+"emotion.question" = "この感覚はどの感情に近いですか？";
+"emotion.specific" = "より具体的には…";
+"emotion.custom_prompt" = "または、自分の言葉で表現する";
+"emotion.custom_placeholder" = "感情を入力...";
+"emotion.gen_ai" = "AIフィードバックを生成";
+"emotion.skip" = "スキップして保存";
+"emotion.selected" = "選択済み";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "現在の感覚";
+"ai.note_label" = "メモを追加（任意）";
+"ai.note_placeholder" = "追加のメモ...";
+"ai.share_title" = "友達とシェアする？";
+"ai.dont_share" = "シェアしない";
+"ai.only_self" = "自分のみ";
+"ai.companion" = "AIコンパニオン";
+"ai.save" = "記録を保存";
+"ai.loading" = "あなたの気持ちを処理中...";
+"ai.retry" = "再試行";
+"ai.intensity_badge" = "強度 %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "感情カテゴリのみ";
+"tier.category_desc" = "友達には感情カテゴリと強度のみ表示";
+"tier.emotions_name" = "感情の言葉をシェア";
+"tier.emotions_desc" = "友達には具体的な感情の言葉が表示";
+"tier.full_name" = "完全シェア";
+"tier.full_desc" = "友達にはメモを含む全内容が表示";
+"ai.share_ai_feedback_toggle" = "AIフィードバックもシェア";
+"ai.share_ai_feedback_desc" = "友達もAIからのフィードバックを見られます";
+
+/* FriendFeedView */
+"friend.nav_title" = "友達";
+"friend.no_friends" = "まだ友達がいません";
+"friend.invite_hint" = "友達を招待して感情をシェアしよう";
+"friend.invite" = "友達を招待";
+"friend.empty_feed" = "友達はまだ感情をシェアしていません";
+"friend.default_name" = "友達";
+
+/* FriendSetupView */
+"setup.title" = "友達プロフィールを設定";
+"setup.subtitle" = "友達にはこの名前とアバターが表示されます";
+"setup.choose_emoji" = "アバター絵文字を選択";
+"setup.nickname_label" = "ニックネーム";
+"setup.nickname_placeholder" = "ニックネームを入力...";
+"setup.done" = "完了";
+
+/* FriendManageView */
+"manage.nav_title" = "友達管理";
+"manage.invite_action" = "招待/コードを入力";
+"manage.connected_friends" = "繋がっている友達 (%d)";
+"manage.disconnect" = "接続を解除";
+"manage.no_friends" = "まだ友達がいません。招待リンクをシェアして繋がりましょう。";
+"manage.connected_on" = "接続日: %@";
+"manage.disconnect_alert" = "「%@」との接続を解除しますか？";
+"manage.disconnect_message" = "互いにシェアした感情記録は見られなくなります。";
+"manage.cancel" = "キャンセル";
+
+/* InviteView */
+"invite.nav_title" = "招待/友達追加";
+"invite.send_title" = "友達を招待";
+"invite.send_hint" = "招待リンクを生成して友達に送りましょう。タップするだけで繋がれます。";
+"invite.generate" = "招待リンクを生成";
+"invite.regenerate" = "再生成";
+"invite.enter_title" = "招待コードを入力";
+"invite.enter_hint" = "友達からの招待コードをここに入力してください。";
+"invite.success" = "追加成功！";
+"invite.placeholder" = "8桁の招待コードを入力...";
+"invite.confirm" = "確認して追加";
+
+/* InviteAcceptSheet */
+"accept.success" = "友達の追加に成功しました！";
+"accept.title" = "友達招待を受け取りました";
+"accept.code" = "招待コード：%@";
+"accept.button" = "招待を受け入れる";
+"accept.later" = "後で";
+"accept.nav_title" = "友達招待";
+
+/* SettingsView */
+"settings.nav_title" = "設定";
+"settings.ai_section" = "AI設定";
+"settings.ai_provider" = "AIプロバイダー";
+"settings.saved" = "保存済み";
+"settings.get_key" = "API Keyを取得 →";
+"settings.key_footer" = "API Keyはローカルにのみ保存され、サーバーにアップロードされることはありません。";
+"settings.managed_footer" = "購読後はAPIキー不要。全AI機能が使えます。いつでもキャンセル可能。";
+"settings.managed_desc" = "APIキー不要のホストAIをご利用いただけます。すぐに使えます。";
+"settings.managed_feature1" = "通義千問（Qwen）提供";
+"settings.managed_feature2" = "チェックインと感情フィードバック全機能対応";
+"settings.managed_feature3" = "パターン分析とインサイトレポート対応";
+"settings.managed_subscribe" = "購読する";
+"settings.managed_per_month" = "月";
+"settings.managed_active" = "購読中 — AIサービス利用中";
+"settings.managed_manage" = "サブスクリプション管理 →";
+"settings.managed_restore" = "購入を復元";
+"settings.reminders_section" = "リマインダー";
+"settings.enable_reminder" = "リマインダーを有効にする";
+"settings.save_reminder" = "リマインダー設定を保存";
+"settings.reminder_footer_on" = "設定した時刻にローカル通知でリマインダーが届きます。";
+"settings.reminder_footer_off" = "リマインダーを受け取るには、システム設定で通知を許可してください。";
+"settings.about_section" = "このアプリについて";
+"settings.about_row" = "Cathierについて";
+"settings.version" = "バージョン";
+"settings.build" = "ビルド";
+"settings.data_storage" = "データ保存";
+"settings.local_only" = "iCloud同期";
+"settings.language_section" = "言語";
+"settings.has_key" = "APIキーを持っている";
+"settings.no_key" = "マネージドAIを使用";
+"settings.context_section" = "あなたについて（AIコンテキスト）";
+"settings.context_placeholder" = "AIにあなたの背景（仕事、今経験していることなど）を教えてください。分析がより的確になります。";
+"settings.context_footer" = "ローカルに保存。パターン分析のプロンプトに含まれます。";
+
+/* AboutView */
+"about.made_by" = "作者";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "感情認識トレーニングの仲間";
+"about.privacy_title" = "プライバシー優先";
+"about.privacy_detail" = "データはデバイスに保存されます。AIフィードバックはあなた自身のAPIキーを通じて処理され、サードパーティのサーバーを経由しません。";
+"about.copyright_label" = "著作権";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "今日の気持ちと収穫";
+"journal_entry.mood_label" = "今日の気分は？";
+"journal_entry.gains_label" = "今日の収穫";
+"journal_entry.gains_placeholder" = "今日の収穫、気づき、伝えたいことを記録しよう…";
+"journal_entry.share_label" = "友達とシェア";
+"journal_entry.share_desc" = "友達があなたの気分と収穫を見られます";
+"journal_entry.save" = "今日の日記を保存";
+"journal_entry.edit" = "編集";
+"journal_entry.once_a_day" = "1日1回のみ記録できます";
+"journal_entry.today_title" = "今日の日記";
+"journal_entry.shared_badge" = "シェア済み";
+"journal_entry.private_badge" = "非公開";
+"journal_entry.write_prompt" = "今日の気分と収穫を記録";
+"journal_entry.write_hint" = "1日1回、今日の足跡を残しましょう";
+
+/* FeedbackView */
+"feedback.nav_title" = "機能フィードバック";
+"feedback.section_title" = "フィードバック";
+"feedback.button" = "フィードバックを送る";
+"feedback.title_label" = "タイトル";
+"feedback.title_placeholder" = "提案を簡単に説明...";
+"feedback.body_label" = "詳細";
+"feedback.body_footer" = "提案はGitHub Issueとして提出され、AIによって自動実装されます。";
+"feedback.token_section" = "GitHub設定";
+"feedback.token_footer" = "Issueを提出するにはrepoスコープのGitHub Personal Access Tokenが必要です。ローカルにのみ保存されます。";
+"feedback.submit" = "送信";
+"feedback.success" = "送信成功！";
+"feedback.view_issue" = "GitHub Issueを見る →";
+
+/* CheckInDetailView */
+"detail.nav_title" = "記録の詳細";
+"detail.done" = "完了";
+"detail.body_section" = "身体の感覚";
+"detail.emotions_section" = "感情";
+"detail.trigger_section" = "トリガーイベント";
+"detail.note_section" = "メモ";
+"detail.date_format" = "yyyy年M月d日";
+
+/* InsightsView */
+"insights.nav_title" = "パターン分析";
+"insights.toolbar_button" = "インサイト";
+"insights.focus_title" = "何を理解したいですか？";
+"insights.focus_triggers" = "ストレスの原因";
+"insights.focus_growth" = "成長しているか？";
+"insights.focus_body" = "体のシグナル";
+"insights.focus_surprise" = "サプライズ";
+"insights.analyze" = "パターンを分析する";
+"insights.refresh" = "再分析";
+"insights.loading" = "感情の履歴を分析中…";
+"insights.empty_title" = "チェックインを続けよう";
+"insights.empty_hint" = "7回以上のチェックインでパターン分析が利用できます。";
+"insights.load_error" = "チェックイン記録を読み込めません。アプリを再起動してください。";
+"insights.history_title" = "過去の分析";
+"insights.history_empty" = "分析記録がまだありません";
+"insights.analyzed_at" = "分析日";
+"insights.new_check_ins" = "前回の分析後に%d件の新しいチェックイン";
+"insights.chart_title" = "強度の推移";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 パターン分析の準備完了";
+"notif.milestone_body" = "チェックインが30回になりました！日記を開いて感情のパターンを分析しましょう。";
+
+/* Error messages */
+"error.no_api_key" = "先に設定でAPI Keyを入力してください。";
+"error.not_subscribed" = "AIサービスを利用するには購読してください。";
+"error.api_error" = "APIリクエストが失敗しました（HTTP %d）";
+"error.decode_error" = "AI応答の解析に失敗しました";
