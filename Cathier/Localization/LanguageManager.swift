@@ -307,6 +307,7 @@ extension LanguageManager {
     // MARK: SettingsView
     var settingsNavTitle: String     { s("设置",           "Settings",             "設定") }
     var settingsAISection: String    { s("AI 设置",         "AI Settings",          "AI設定") }
+    var settingsAIProvider: String   { s("AI 服务商",       "AI Provider",          "AIプロバイダー") }
     var settingsSaved: String        { s("已保存",          "Saved",                "保存済み") }
     var settingsGetKey: String       { s("获取 API Key →",  "Get API Key →",        "API Keyを取得 →") }
     var settingsKeyFooter: String    { s("API Key 仅存储在本机，不会上传到任何服务器。",
@@ -322,10 +323,20 @@ extension LanguageManager {
                                               "Please allow notification permission in System Settings to receive reminders.",
                                               "リマインダーを受け取るには、システム設定で通知を許可してください。") }
     var settingsAboutSection: String     { s("关于",        "About",                "このアプリについて") }
+    var settingsAboutRow: String         { s("关于 Cathier", "About Cathier",        "Cathierについて") }
     var settingsVersion: String          { s("版本",        "Version",              "バージョン") }
+    var settingsBuild: String            { s("构建号",      "Build",                "ビルド") }
     var settingsDataStorage: String      { s("数据存储",    "Data Storage",         "データ保存") }
     var settingsLocalOnly: String        { s("iCloud 同步", "iCloud sync",          "iCloud同期") }
     var settingsLanguageSection: String  { s("语言",        "Language",             "言語") }
+    var aboutMadeBy: String             { s("作者",        "Made by",              "作者") }
+    var aboutCreatorName: String        { s("Cathy",       "Cathy",                "Cathy") }
+    var aboutAppDescription: String     { s("你的情绪感知训练伙伴", "Your emotional awareness companion", "感情認識トレーニングの仲間") }
+    var aboutPrivacyTitle: String       { s("隐私设计",    "Privacy First",        "プライバシー優先") }
+    var aboutPrivacyDetail: String      { s("数据存储在设备本地，AI 反馈通过你的 API 密钥处理，不经过第三方服务器。",
+                                            "Your data stays on-device. AI feedback is processed through your own API key, never through third-party servers.",
+                                            "データはデバイスに保存されます。AIフィードバックはあなた自身のAPIキーを通じて処理され、サードパーティのサーバーを経由しません。") }
+    var aboutCopyrightLabel: String     { s("版权所有",    "Copyright",            "著作権") }
 
     // MARK: DailyJournalEntryView
     var journalEntryNavTitle: String        { s("今日心情与收获",   "Today's Journal",              "今日の気持ちと収穫") }
@@ -418,9 +429,9 @@ extension LanguageManager {
                                         "チェックインが30回になりました！日記を開いて感情のパターンを分析しましょう。") }
 
     // MARK: ClaudeService (error messages)
-    var claudeNoApiKey: String       { s("请先在设置中填写 Claude API Key",
-                                        "Please enter your Claude API Key in Settings first.",
-                                        "先に設定でClaude API Keyを入力してください。") }
+    var claudeNoApiKey: String       { s("请先在设置中填写 API Key",
+                                        "Please enter your API Key in Settings first.",
+                                        "先に設定でAPI Keyを入力してください。") }
     func claudeApiError(_ code: Int) -> String {
         s("API 请求失败（HTTP \(code)）", "API request failed (HTTP \(code))", "APIリクエストが失敗しました（HTTP \(code)）")
     }

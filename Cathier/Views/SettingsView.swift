@@ -1,14 +1,19 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @AppStorage("claudeApiKey") private var apiKey = ""
+    @AppStorage("aiProvider") private var selectedProviderRaw: String = AIProvider.claude.rawValue
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
     @AppStorage("contextBrief") private var contextBrief = ""
     @State private var reminderTimes: [ReminderTime] = NotificationService.defaultTimes
     @State private var isAuthorized = false
     @State private var showApiKeySaved = false
     @State private var showFeedback = false
+    @State private var apiKeyInput = ""
     @Environment(LanguageManager.self) private var lm
+
+    private var selectedProvider: AIProvider {
+        AIProvider(rawValue: selectedProviderRaw) ?? .claude
+    }
 
     var body: some View {
         NavigationStack {
@@ -32,11 +37,22 @@ struct SettingsView: View {
 
                 // MARK: - AI Settings
                 Section {
+                    // Provider picker
+                    Picker(lm.settingsAIProvider, selection: $selectedProviderRaw) {
+                        ForEach(AIProvider.allCases) { provider in
+                            Text(provider.displayName).tag(provider.rawValue)
+                        }
+                    }
+                    .onChange(of: selectedProviderRaw) { _, _ in
+                        apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
+                    }
+
+                    // API key input for the selected provider
                     VStack(alignment: .leading, spacing: 8) {
-                        Text("Claude API Key")
+                        Text("API Key")
                             .font(.subheadline)
                             .fontWeight(.medium)
-                        SecureField("sk-ant-…", text: $apiKey)
+                        SecureField(selectedProvider.keyPlaceholder, text: $apiKeyInput)
                             .textFieldStyle(.plain)
                             .autocorrectionDisabled()
                             .textInputAutocapitalization(.never)
@@ -47,8 +63,15 @@ struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
+                    .onChange(of: apiKeyInput) { _, newValue in
+                        UserDefaults.standard.set(newValue, forKey: selectedProvider.apiKeyStorageKey)
+                        showApiKeySaved = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            showApiKeySaved = false
+                        }
+                    }
 
-                    Link(lm.settingsGetKey, destination: URL(string: "https://console.anthropic.com")!)
+                    Link(lm.settingsGetKey, destination: selectedProvider.consoleURL)
                         .font(.caption)
                         .foregroundColor(.orange)
                 } header: {
@@ -56,12 +79,6 @@ struct SettingsView: View {
                 } footer: {
                     Text(lm.settingsKeyFooter)
                         .font(.caption)
-                }
-                .onChange(of: apiKey) { _, _ in
-                    showApiKeySaved = true
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        showApiKeySaved = false
-                    }
                 }
 
                 // MARK: - Notification Settings
@@ -145,18 +162,11 @@ struct SettingsView: View {
 
                 // MARK: - About
                 Section(lm.settingsAboutSection) {
-                    HStack {
-                        Text(lm.settingsVersion)
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-")
-                            .foregroundColor(.secondary)
+                    NavigationLink(lm.settingsAboutRow) {
+                        AboutView()
+                            .environment(lm)
                     }
-                    HStack {
-                        Text(lm.settingsDataStorage)
-                        Spacer()
-                        Text(lm.settingsLocalOnly)
-                            .foregroundColor(.secondary)
-                    }
+                    .foregroundColor(.primary)
                 }
             }
             .navigationTitle(lm.settingsNavTitle)
@@ -167,6 +177,7 @@ struct SettingsView: View {
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
+                apiKeyInput = UserDefaults.standard.string(forKey: selectedProvider.apiKeyStorageKey) ?? ""
             }
         }
     }
