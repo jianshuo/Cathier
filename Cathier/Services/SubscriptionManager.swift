@@ -4,7 +4,7 @@ import StoreKit
 ///
 /// App Store Connect setup required:
 ///   1. Create an Auto-Renewable Subscription group called "AI Access"
-///   2. Add product ID: com.cathier.ai.managed.monthly  (price tier: $4.99 USD)
+///   2. Add product ID: com.wangjianshuo.cathier.ai.managed.monthly  (price tier: $4.99 USD)
 ///   3. Enable In-App Purchases capability in Xcode (Signing & Capabilities)
 @Observable
 final class SubscriptionManager {
@@ -12,7 +12,7 @@ final class SubscriptionManager {
     static let shared = SubscriptionManager()
 
     /// Must match the product ID created in App Store Connect.
-    static let productID = "com.cathier.ai.managed.monthly"
+    static let productID = "com.wangjianshuo.cathier.ai.managed.monthly"
 
     private(set) var isSubscribed = false
     private(set) var product: Product?

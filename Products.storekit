@@ -61,7 +61,7 @@
               "locale" : "zh_Hans_CN"
             }
           ],
-          "productID" : "com.cathier.ai.managed.monthly",
+          "productID" : "com.wangjianshuo.cathier.ai.managed.monthly",
           "recurringSubscriptionPeriod" : "P1M",
           "referenceName" : "Monthly AI Access",
           "subscriptionGroupID" : "0E8FD840-0506-43DA-AFDA-60644E9E80B2",
