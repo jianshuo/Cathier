@@ -65,7 +65,7 @@
          </BuildableReference>
       </BuildableProductRunnable>
       <StoreKitConfigurationFileReference
-         identifier = "../../Products.storekit">
+         identifier = "../../CathierAI.storekit">
       </StoreKitConfigurationFileReference>
    </LaunchAction>
    <ProfileAction
