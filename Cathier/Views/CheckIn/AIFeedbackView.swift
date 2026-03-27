@@ -46,8 +46,8 @@ struct AIFeedbackView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color.orange)
-                .cornerRadius(14)
+                .background(Color.cathierAccent)
+                .clipShape(Capsule())
                 .padding(.top, 8)
             }
             .padding(.horizontal, 20)
@@ -68,7 +68,7 @@ struct AIFeedbackView: View {
             HStack(spacing: 6) {
                 Image(systemName: "person.2.fill")
                     .font(.caption)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.cathierAccent)
                 Text(lm.aiShareTitle)
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -93,8 +93,8 @@ struct AIFeedbackView: View {
                 }
             }
             .padding(12)
-            .background(Color(.secondarySystemBackground))
-            .cornerRadius(12)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 
@@ -151,7 +151,7 @@ struct AIFeedbackView: View {
         Toggle(isOn: $shareAIFeedback) {
             HStack(spacing: 12) {
                 Image(systemName: "sparkles")
-                    .foregroundColor(.orange)
+                    .foregroundColor(.cathierAccent)
                     .frame(width: 16)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lm.aiShareAIFeedbackToggle)
@@ -163,7 +163,7 @@ struct AIFeedbackView: View {
                 }
             }
         }
-        .tint(.orange)
+        .tint(.cathierAccent)
     }
 
     // MARK: - History
@@ -219,8 +219,8 @@ struct AIFeedbackView: View {
             }
         }
         .padding(16)
-        .background(Color(.secondarySystemBackground))
-        .cornerRadius(16)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 
     @ViewBuilder
@@ -264,7 +264,7 @@ struct AIFeedbackView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 6) {
                 Image(systemName: "sparkles")
-                    .foregroundColor(.orange)
+                    .foregroundColor(.cathierAccent)
                 Text(lm.aiCompanion)
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -277,32 +277,26 @@ struct AIFeedbackView: View {
                 errorView(error)
             } else if !viewModel.aiFeedback.isEmpty {
                 Text(viewModel.aiFeedback)
-                    .font(.body)
+                    .font(.cathierSerif(.body))
                     .foregroundColor(.primary)
-                    .lineSpacing(4)
+                    .lineSpacing(5)
                     .transition(.opacity)
             }
         }
         .padding(16)
-        .background(
-            LinearGradient(
-                colors: [Color.orange.opacity(0.08), Color.orange.opacity(0.03)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+        .background(Color.cathierAccentLight)
         .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 1)
         )
-        .cornerRadius(16)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .animation(.easeInOut, value: viewModel.isLoadingAI)
     }
 
     private var loadingView: some View {
         HStack(spacing: 12) {
             ProgressView()
-                .tint(.orange)
+                .tint(.cathierAccent)
             Text(lm.aiLoading)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -320,7 +314,7 @@ struct AIFeedbackView: View {
             }) {
                 Text(lm.aiRetry)
                     .font(.subheadline)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.cathierAccent)
             }
         }
     }
