@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Cathier Design Tokens
 // Defined in DESIGN.md. Update both files if tokens change.
