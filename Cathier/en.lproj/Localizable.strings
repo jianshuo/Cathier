@@ -77,8 +77,8 @@
 /* FriendFeedView */
 "friend.nav_title" = "Friends";
 "friend.no_friends" = "No Friends Yet";
-"friend.invite_hint" = "Invite friends to share moods with each other";
-"friend.invite" = "Invite Friends";
+"friend.add_hint" = "Add friends by searching their name";
+"friend.add_friend" = "Add Friend";
 "friend.empty_feed" = "No friend has shared any mood yet";
 "friend.default_name" = "Friend";
 
@@ -92,34 +92,29 @@
 
 /* FriendManageView */
 "manage.nav_title" = "Friend Management";
-"manage.invite_action" = "Invite / Enter Code";
+"manage.add_friend" = "Add Friend";
 "manage.connected_friends" = "Connected Friends (%d)";
 "manage.disconnect" = "Disconnect";
-"manage.no_friends" = "No friends yet. Share an invite link to connect.";
+"manage.no_friends" = "No friends yet. Search by name to add someone.";
 "manage.connected_on" = "Connected on %@";
 "manage.disconnect_alert" = "Disconnect from \"%@\"?";
 "manage.disconnect_message" = "You will no longer see each other\u2019s shared mood records.";
 "manage.cancel" = "Cancel";
 
-/* InviteView */
-"invite.nav_title" = "Invite / Add Friend";
-"invite.send_title" = "Invite Friends";
-"invite.send_hint" = "Generate an invite link and send it to your friend. They can tap it to connect.";
-"invite.generate" = "Generate Invite Link";
-"invite.regenerate" = "Regenerate";
-"invite.enter_title" = "Enter Invite Code";
-"invite.enter_hint" = "If a friend sent you an invite code, enter it here.";
-"invite.success" = "Added successfully!";
-"invite.placeholder" = "Enter 8-digit invite code...";
-"invite.confirm" = "Confirm";
+/* AddFriendView */
+"search.nav_title" = "Add Friend";
+"search.placeholder" = "Search by name…";
+"search.hint" = "Enter a name to find people";
+"search.no_results" = "No users found";
+"search.add" = "Add";
+"search.requested" = "Requested";
+"search.already_friends" = "Friends";
 
-/* InviteAcceptSheet */
-"accept.success" = "Friend added successfully!";
-"accept.title" = "Friend Invitation Received";
-"accept.code" = "Invite code: %@";
-"accept.button" = "Accept Invitation";
-"accept.later" = "Maybe Later";
-"accept.nav_title" = "Friend Invitation";
+/* FriendRequests */
+"request.pending_section" = "Friend Requests";
+"request.accept" = "Accept";
+"request.decline" = "Decline";
+"request.from" = "wants to be friends";
 
 /* SettingsView */
 "settings.nav_title" = "Settings";

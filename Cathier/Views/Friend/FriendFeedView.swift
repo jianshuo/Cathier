@@ -1,4 +1,4 @@
-import Combine
+import CloudKit
 import SwiftData
 import SwiftUI
 
@@ -29,19 +29,6 @@ struct FriendFeedView: View {
             .navigationBarTitleDisplayMode(.large)
         }
         .task { await vm.initialize() }
-        .onReceive(NotificationCenter.default.publisher(for: .cathierInviteReceived)) { note in
-            guard let code = note.userInfo?["code"] as? String else { return }
-            vm.pendingInviteCode = code
-            vm.showInviteAcceptSheet = true
-        }
-        .sheet(isPresented: Binding(
-            get: { vm.showInviteAcceptSheet },
-            set: { vm.showInviteAcceptSheet = $0 }
-        )) {
-            if let code = vm.pendingInviteCode {
-                InviteAcceptSheet(code: code)
-            }
-        }
     }
 
     @ViewBuilder
@@ -68,7 +55,7 @@ private struct FriendHomeView: View {
     @Query(filter: #Predicate<DailyJournal> { $0.isShared }, sort: \DailyJournal.date, order: .reverse)
     private var sharedJournals: [DailyJournal]
 
-    @State private var showInviteView = false
+    @State private var showAddFriendView = false
 
     private var hasFeedContent: Bool {
         !vm.friendCheckIns.isEmpty || !sharedJournals.isEmpty
@@ -90,14 +77,50 @@ private struct FriendHomeView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 NavigationLink(destination: FriendManageView()) {
-                    Image(systemName: "person.2.fill")
+                    ZStack(alignment: .topTrailing) {
+                        Image(systemName: "person.2.fill")
+                        if vm.pendingRequestCount > 0 {
+                            Text("\(vm.pendingRequestCount)")
+                                .font(.system(size: 9, weight: .bold))
+                                .foregroundColor(.white)
+                                .padding(3)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                                .offset(x: 10, y: -8)
+                        }
+                    }
                 }
             }
         }
-        .sheet(isPresented: $showInviteView) {
-            NavigationStack { InviteView() }
+        .sheet(isPresented: $showAddFriendView) {
+            AddFriendView()
         }
         .refreshable { await vm.loadFriendsAndFeed() }
+    }
+
+    // Unified feed item merging check-ins and shared journals, sorted latest first.
+    private enum FeedItem: Identifiable {
+        case checkIn(FriendCheckIn)
+        case journal(DailyJournal)
+
+        var id: String {
+            switch self {
+            case .checkIn(let c): return c.id.recordName
+            case .journal(let j): return j.id.uuidString
+            }
+        }
+        var date: Date {
+            switch self {
+            case .checkIn(let c): return c.date
+            case .journal(let j): return j.date
+            }
+        }
+    }
+
+    private var mergedFeed: [FeedItem] {
+        let checkIns = vm.friendCheckIns.map { FeedItem.checkIn($0) }
+        let journals = sharedJournals.map { FeedItem.journal($0) }
+        return (checkIns + journals).sorted { $0.date > $1.date }
     }
 
     private var feedList: some View {
@@ -111,16 +134,13 @@ private struct FriendHomeView: View {
                 Divider()
                     .padding(.horizontal, 20)
 
-                // Shared journal entries (mine, local SwiftData)
-                ForEach(sharedJournals) { journal in
-                    SharedJournalFeedRow(journal: journal, profile: vm.currentProfile)
-                    Divider()
-                        .padding(.leading, 72)
-                }
-
-                // Check-in feed
-                ForEach(vm.friendCheckIns) { item in
-                    FriendCheckInCard(item: item, owner: vm.profile(for: item.ownerRef))
+                ForEach(mergedFeed) { item in
+                    switch item {
+                    case .checkIn(let checkIn):
+                        FriendCheckInCard(item: checkIn, owner: vm.profile(for: checkIn.ownerRef))
+                    case .journal(let journal):
+                        SharedJournalFeedRow(journal: journal, profile: vm.currentProfile)
+                    }
                     Divider()
                         .padding(.leading, 72)
                 }
@@ -132,7 +152,7 @@ private struct FriendHomeView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
                 // Add friend button inline with avatars
-                Button(action: { showInviteView = true }) {
+                Button(action: { showAddFriendView = true }) {
                     VStack(spacing: 4) {
                         Image(systemName: "person.badge.plus")
                             .font(.system(size: 22))
@@ -140,7 +160,7 @@ private struct FriendHomeView: View {
                             .frame(width: 52, height: 52)
                             .background(Color.orange.opacity(0.12))
                             .clipShape(Circle())
-                        Text(lm.manageInviteAction)
+                        Text(lm.manageAddFriend)
                             .font(.caption2)
                             .foregroundColor(.orange)
                             .lineLimit(1)
@@ -173,11 +193,11 @@ private struct FriendHomeView: View {
                 .font(.system(size: 56))
             Text(lm.friendNoFriends)
                 .font(.headline)
-            Text(lm.friendInviteHint)
+            Text(lm.friendAddHint)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            NavigationLink(destination: InviteView()) {
-                Text(lm.friendInvite)
+            Button(action: { showAddFriendView = true }) {
+                Text(lm.friendAddFriend)
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
@@ -197,8 +217,8 @@ private struct FriendHomeView: View {
             Text(lm.friendEmptyFeed)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
-            Button(action: { showInviteView = true }) {
-                Label(lm.manageInviteAction, systemImage: "person.badge.plus")
+            Button(action: { showAddFriendView = true }) {
+                Label(lm.manageAddFriend, systemImage: "person.badge.plus")
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.white)
@@ -235,6 +255,7 @@ struct FriendCheckInCard: View {
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -383,6 +404,7 @@ struct SharedJournalFeedRow: View {
                         .transition(.opacity.combined(with: .move(edge: .top)))
                 }
             }
+            .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
     }
@@ -420,99 +442,6 @@ struct SharedJournalFeedRow: View {
             Image(systemName: expanded ? "chevron.up" : "chevron.down")
                 .font(.caption)
                 .foregroundColor(.secondary)
-        }
-    }
-}
-
-// MARK: - Invite accept sheet (shown via deep link)
-
-private struct InviteAcceptSheet: View {
-    let code: String
-    @Environment(FriendViewModel.self) private var vm
-    @Environment(\.dismiss) private var dismiss
-    @Environment(LanguageManager.self) private var lm
-
-    @State private var isLoading = false
-    @State private var error: String?
-    @State private var accepted = false
-
-    var body: some View {
-        NavigationStack {
-            VStack(spacing: 24) {
-                if accepted {
-                    VStack(spacing: 12) {
-                        Text("🎉")
-                            .font(.system(size: 56))
-                        Text(lm.acceptSuccess)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                    }
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                } else {
-                    VStack(spacing: 12) {
-                        Text("🤝")
-                            .font(.system(size: 48))
-                        Text(lm.acceptTitle)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                        Text(lm.acceptCode(code))
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .fontDesign(.monospaced)
-                    }
-                    .frame(maxWidth: .infinity)
-
-                    if let error {
-                        Text(error)
-                            .font(.subheadline)
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                    }
-
-                    Button(action: acceptAction) {
-                        if isLoading {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text(lm.acceptButton)
-                                .font(.headline)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                    .background(isLoading ? Color.gray : Color.orange)
-                    .cornerRadius(14)
-                    .disabled(isLoading)
-                    .padding(.horizontal, 24)
-                }
-            }
-            .padding()
-            .navigationTitle(lm.acceptNavTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(lm.acceptLater) { dismiss() }
-                }
-            }
-        }
-        .presentationDetents([.medium])
-    }
-
-    private func acceptAction() {
-        isLoading = true
-        error = nil
-        Task {
-            do {
-                try await vm.acceptInvite(code: code)
-                accepted = true
-                vm.pendingInviteCode = nil
-                vm.showInviteAcceptSheet = false
-                try? await Task.sleep(for: .seconds(1.2))
-                dismiss()
-            } catch {
-                self.error = error.localizedDescription
-            }
-            isLoading = false
         }
     }
 }

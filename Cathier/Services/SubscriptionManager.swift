@@ -36,12 +36,18 @@ final class SubscriptionManager {
     // MARK: - Public API
 
     func purchase() async {
+        print("[Sub] purchase() tapped")
         // Load product on demand in case init's background task hasn't finished yet
-        if product == nil { await loadProduct() }
+        if product == nil {
+            print("[Sub] product is nil, calling loadProduct()")
+            await loadProduct()
+        }
         guard let product else {
+            print("[Sub] ❌ Still no product after loadProduct() — aborting purchase")
             errorMessage = "Product unavailable. Check App Store Connect setup."
             return
         }
+        print("[Sub] Calling product.purchase() for \(product.id)")
         isPurchasing = true
         errorMessage = nil
         defer { isPurchasing = false }
@@ -49,18 +55,24 @@ final class SubscriptionManager {
             let result = try await product.purchase()
             switch result {
             case .success(let verification):
+                print("[Sub] purchase .success, verification: \(verification)")
                 if case .verified(let tx) = verification {
+                    print("[Sub] ✅ Transaction verified: \(tx.productID)")
                     await tx.finish()
                     await checkStatus()
+                } else {
+                    print("[Sub] ⚠️ Transaction unverified")
+                    errorMessage = "Purchase could not be verified."
                 }
             case .userCancelled:
-                break
+                print("[Sub] User cancelled purchase")
             case .pending:
-                break
+                print("[Sub] Purchase pending (e.g. Ask to Buy)")
             @unknown default:
-                break
+                print("[Sub] Unknown purchase result")
             }
         } catch {
+            print("[Sub] ❌ purchase() error: \(error)")
             errorMessage = error.localizedDescription
         }
     }
@@ -84,8 +96,19 @@ final class SubscriptionManager {
     // MARK: - Internal
 
     private func loadProduct() async {
-        guard let products = try? await Product.products(for: [Self.productID]) else { return }
-        product = products.first
+        print("[Sub] loadProduct() called for \(Self.productID)")
+        do {
+            let products = try await Product.products(for: [Self.productID])
+            print("[Sub] StoreKit returned \(products.count) product(s): \(products.map(\.id))")
+            product = products.first
+            if product == nil {
+                print("[Sub] ⚠️ No product found — check product ID in App Store Connect / .storekit config")
+            } else {
+                print("[Sub] ✅ Product loaded: \(product!.displayName) \(product!.displayPrice)")
+            }
+        } catch {
+            print("[Sub] ❌ loadProduct error: \(error)")
+        }
     }
 
     func checkStatus() async {

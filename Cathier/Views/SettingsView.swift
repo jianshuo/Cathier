@@ -263,6 +263,7 @@ struct SettingsView: View {
 private struct ManagedSubscriptionPanel: View {
     let subManager: SubscriptionManager
     let lm: LanguageManager
+    @Environment(\.openURL) private var openURL
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -304,6 +305,12 @@ private struct ManagedSubscriptionPanel: View {
                 FeatureBullet(text: lm.settingsManagedFeature3)
             }
 
+            if let errorMessage = subManager.errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+
             Button {
                 Task { await subManager.purchase() }
             } label: {
@@ -322,11 +329,13 @@ private struct ManagedSubscriptionPanel: View {
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }
+            .buttonStyle(.borderless)
             .disabled(subManager.isPurchasing)
 
             Button(lm.settingsManagedRestore) {
                 Task { await subManager.restore() }
             }
+            .buttonStyle(.borderless)
             .font(.caption)
             .foregroundColor(.secondary)
             .frame(maxWidth: .infinity)
@@ -339,7 +348,8 @@ private struct ManagedSubscriptionPanel: View {
                     .foregroundColor(.secondary)
                 HStack(spacing: 4) {
                     if let termsURL = URL(string: "https://github.com/jianshuo/Cathier/blob/main/TERMS_OF_SERVICE.md") {
-                        Link("Terms of Use", destination: termsURL)
+                        Button("Terms of Use") { openURL(termsURL) }
+                            .buttonStyle(.borderless)
                             .font(.caption)
                             .foregroundColor(.orange)
                     }
@@ -347,7 +357,8 @@ private struct ManagedSubscriptionPanel: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                     if let privacyURL = URL(string: "https://github.com/jianshuo/Cathier/blob/main/PRIVACY_POLICY.md") {
-                        Link("Privacy Policy", destination: privacyURL)
+                        Button("Privacy Policy") { openURL(privacyURL) }
+                            .buttonStyle(.borderless)
                             .font(.caption)
                             .foregroundColor(.orange)
                     }

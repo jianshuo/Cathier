@@ -77,8 +77,8 @@
 /* FriendFeedView */
 "friend.nav_title" = "好友";
 "friend.no_friends" = "还没有好友";
-"friend.invite_hint" = "邀请朋友互相分享情绪吧";
-"friend.invite" = "邀请好友";
+"friend.add_hint" = "通过名字搜索来添加好友";
+"friend.add_friend" = "添加好友";
 "friend.empty_feed" = "好友还没有分享任何情绪";
 "friend.default_name" = "朋友";
 
@@ -92,34 +92,29 @@
 
 /* FriendManageView */
 "manage.nav_title" = "好友管理";
-"manage.invite_action" = "邀请好友 / 输入邀请码";
+"manage.add_friend" = "添加好友";
 "manage.connected_friends" = "已连接的好友 (%d)";
 "manage.disconnect" = "断开连接";
-"manage.no_friends" = "还没有好友，发送邀请链接来连接吧";
+"manage.no_friends" = "还没有好友，搜索名字来添加吧";
 "manage.connected_on" = "连接于 %@";
 "manage.disconnect_alert" = "断开与「%@」的连接？";
 "manage.disconnect_message" = "双方将不再能看到彼此分享的情绪记录";
 "manage.cancel" = "取消";
 
-/* InviteView */
-"invite.nav_title" = "邀请 / 添加好友";
-"invite.send_title" = "邀请好友";
-"invite.send_hint" = "生成一个邀请链接，发给对方。对方点击后即可互相添加。";
-"invite.generate" = "生成邀请链接";
-"invite.regenerate" = "重新生成";
-"invite.enter_title" = "输入邀请码";
-"invite.enter_hint" = "如果朋友把邀请码发给了你，在这里输入。";
-"invite.success" = "添加成功！";
-"invite.placeholder" = "输入8位邀请码…";
-"invite.confirm" = "确认添加";
+/* AddFriendView */
+"search.nav_title" = "添加好友";
+"search.placeholder" = "搜索名字…";
+"search.hint" = "输入名字来搜索用户";
+"search.no_results" = "没有找到用户";
+"search.add" = "添加";
+"search.requested" = "已发送";
+"search.already_friends" = "已是好友";
 
-/* InviteAcceptSheet */
-"accept.success" = "已成功添加好友！";
-"accept.title" = "收到一个好友邀请";
-"accept.code" = "邀请码：%@";
-"accept.button" = "接受邀请";
-"accept.later" = "稍后再说";
-"accept.nav_title" = "好友邀请";
+/* FriendRequests */
+"request.pending_section" = "收到的好友请求";
+"request.accept" = "接受";
+"request.decline" = "拒绝";
+"request.from" = "向你发送了好友请求";
 
 /* SettingsView */
 "settings.nav_title" = "设置";

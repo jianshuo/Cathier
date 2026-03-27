@@ -1,7 +1,7 @@
 import CloudKit
 import Foundation
 
-final class CloudKitService {
+actor CloudKitService {
     static let shared = CloudKitService()
 
     // ⚠️ Replace with your container ID from Xcode → Signing & Capabilities → iCloud
@@ -34,24 +34,65 @@ final class CloudKitService {
         return UserProfile(record: record) ?? profile
     }
 
-    // MARK: - InviteCode
+    /// Fetch all UserProfile records; filtering is done locally.
+    /// ⚠️ Requires a Queryable index on `recordName` in CloudKit Dashboard:
+    ///    Schema → Record Types → UserProfile → Add Index → Queryable → recordName
+    func fetchAllProfiles() async throws -> [UserProfile] {
+        var profiles: [UserProfile] = []
+        var cursor: CKQueryOperation.Cursor?
 
-    func saveInvite(_ invite: InviteRecord) async throws -> InviteRecord {
-        let record = try await db.save(invite.toRecord())
-        return InviteRecord(record: record) ?? invite
-    }
+        let query = CKQuery(recordType: UserProfile.recordType, predicate: NSPredicate(value: true))
+        let (firstPage, firstCursor) = try await db.records(matching: query, resultsLimit: 200)
+        profiles += firstPage.compactMap { try? $0.1.get() }.compactMap { UserProfile(record: $0) }
+        cursor = firstCursor
 
-    func fetchInvite(code: String) async throws -> InviteRecord? {
-        // Invite code IS the record name — direct fetch, no query or indexing needed.
-        do {
-            let record = try await db.record(for: CKRecord.ID(recordName: "invite_\(code)"))
-            return InviteRecord(record: record)
-        } catch let error as CKError where error.code == .unknownItem {
-            return nil
+        while let activeCursor = cursor {
+            let (page, nextCursor) = try await db.records(continuingMatchFrom: activeCursor)
+            profiles += page.compactMap { try? $0.1.get() }.compactMap { UserProfile(record: $0) }
+            cursor = nextCursor
         }
+
+        return profiles
     }
 
-    func deleteInvite(id: CKRecord.ID) async throws {
+    func fetchProfiles(ids: [CKRecord.ID]) async throws -> [UserProfile] {
+        guard !ids.isEmpty else { return [] }
+        let results = try await db.records(for: ids)
+        return results.values
+            .compactMap { try? $0.get() }
+            .compactMap { UserProfile(record: $0) }
+    }
+
+    // MARK: - FriendRequest
+
+    func saveFriendRequest(_ request: FriendRequestRecord) async throws -> FriendRequestRecord {
+        let record = try await db.save(request.toRecord())
+        return FriendRequestRecord(record: record) ?? request
+    }
+
+    /// Fetch requests where I am the recipient (awaiting my approval).
+    /// ⚠️ Requires a Queryable index on `toProfileRef` in CloudKit Dashboard.
+    func fetchReceivedRequests(toProfileRef: CKRecord.Reference) async throws -> [FriendRequestRecord] {
+        let predicate = NSPredicate(format: "toProfileRef == %@", toProfileRef)
+        let query = CKQuery(recordType: FriendRequestRecord.recordType, predicate: predicate)
+        let (results, _) = try await db.records(matching: query)
+        return results
+            .compactMap { try? $0.1.get() }
+            .compactMap { FriendRequestRecord(record: $0) }
+    }
+
+    /// Fetch requests I sent (to track "Requested" state locally).
+    /// ⚠️ Requires a Queryable index on `fromProfileRef` in CloudKit Dashboard.
+    func fetchSentRequests(fromProfileRef: CKRecord.Reference) async throws -> [FriendRequestRecord] {
+        let predicate = NSPredicate(format: "fromProfileRef == %@", fromProfileRef)
+        let query = CKQuery(recordType: FriendRequestRecord.recordType, predicate: predicate)
+        let (results, _) = try await db.records(matching: query)
+        return results
+            .compactMap { try? $0.1.get() }
+            .compactMap { FriendRequestRecord(record: $0) }
+    }
+
+    func deleteFriendRequest(id: CKRecord.ID) async throws {
         _ = try await db.deleteRecord(withID: id)
     }
 

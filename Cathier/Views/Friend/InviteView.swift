@@ -1,163 +1,127 @@
+import CloudKit
 import SwiftUI
 
-struct InviteView: View {
+struct AddFriendView: View {
     @Environment(FriendViewModel.self) private var vm
-    @Environment(\.dismiss) private var dismiss
     @Environment(LanguageManager.self) private var lm
+    @Environment(\.dismiss) private var dismiss
 
-    @State private var inviteLink: String?
-    @State private var isGenerating = false
-    @State private var generateError: String?
-
-    @State private var manualCode = ""
-    @State private var isAccepting = false
-    @State private var acceptError: String?
-    @State private var acceptSuccess = false
+    @State private var sendingToID: String?
+    @State private var sendError: String?
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 32) {
-                // ── Send invite ──────────────────────────────────────────
-                VStack(alignment: .leading, spacing: 12) {
-                    Label(lm.inviteSendTitle, systemImage: "link")
-                        .font(.headline)
-
-                    Text(lm.inviteSendHint)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-
-                    if let link = inviteLink {
-                        HStack {
-                            Text(link)
-                                .font(.caption)
-                                .fontDesign(.monospaced)
-                                .foregroundColor(.secondary)
-                                .lineLimit(2)
-                            Spacer()
-                            ShareLink(item: link) {
-                                Image(systemName: "square.and.arrow.up")
-                                    .foregroundColor(.orange)
-                            }
-                        }
-                        .padding(12)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-                    }
-
-                    if let error = generateError {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-
-                    Button(action: generateAction) {
-                        if isGenerating {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text(inviteLink == nil ? lm.inviteGenerate : lm.inviteRegenerate)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 13)
-                    .background(isGenerating ? Color.gray : Color.orange)
-                    .cornerRadius(12)
-                    .disabled(isGenerating)
+        NavigationStack {
+            Group {
+                if vm.isLoadingUsers && vm.allUsers.isEmpty {
+                    ProgressView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    userList
                 }
-                .padding(16)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(16)
-
-                // ── Accept invite ────────────────────────────────────────
-                VStack(alignment: .leading, spacing: 12) {
-                    Label(lm.inviteEnterTitle, systemImage: "keyboard")
-                        .font(.headline)
-
-                    Text(lm.inviteEnterHint)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-
-                    if acceptSuccess {
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .foregroundColor(.green)
-                            Text(lm.inviteSuccess)
-                                .font(.subheadline)
-                                .foregroundColor(.green)
-                        }
-                    }
-
-                    TextField(lm.invitePlaceholder, text: $manualCode)
-                        .textFieldStyle(.plain)
-                        .textInputAutocapitalization(.characters)
-                        .padding(12)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(10)
-                        .onChange(of: manualCode) { _, _ in acceptError = nil; acceptSuccess = false }
-
-                    if let error = acceptError {
-                        Text(error)
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
-
-                    Button(action: acceptAction) {
-                        if isAccepting {
-                            ProgressView().tint(.white)
-                        } else {
-                            Text(lm.inviteConfirm)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundColor(.white)
-                        }
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 13)
-                    .background(canAccept ? Color.orange : Color(.systemGray3))
-                    .cornerRadius(12)
-                    .disabled(!canAccept || isAccepting)
-                }
-                .padding(16)
-                .background(Color(.secondarySystemBackground))
-                .cornerRadius(16)
             }
-            .padding(20)
+            .navigationTitle(lm.searchNavTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .searchable(text: Binding(
+                get: { vm.searchQuery },
+                set: { vm.searchQuery = $0 }
+            ), prompt: lm.searchPlaceholder)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(lm.manageCancel) { dismiss() }
+                }
+            }
         }
-        .navigationTitle(lm.inviteNavTitle)
-        .navigationBarTitleDisplayMode(.inline)
+        .task { await vm.loadAllUsers() }
+        .onDisappear { vm.searchQuery = "" }
     }
 
-    private var canAccept: Bool {
-        manualCode.trimmingCharacters(in: .whitespaces).count >= 6
-    }
-
-    private func generateAction() {
-        isGenerating = true
-        generateError = nil
-        Task {
-            do {
-                inviteLink = try await vm.generateInviteLink()
-            } catch {
-                generateError = error.localizedDescription
+    private var userList: some View {
+        List {
+            if vm.filteredUsers.isEmpty {
+                Text(vm.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
+                     ? lm.searchHint
+                     : lm.searchNoResults)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .listRowBackground(Color.clear)
+            } else {
+                ForEach(vm.filteredUsers) { profile in
+                    userRow(profile)
+                }
             }
-            isGenerating = false
+        }
+        .listStyle(.plain)
+    }
+
+    private func userRow(_ profile: UserProfile) -> some View {
+        HStack(spacing: 12) {
+            Text(profile.avatarEmoji)
+                .font(.title2)
+                .frame(width: 44, height: 44)
+                .background(Color(.systemGray5))
+                .clipShape(Circle())
+
+            Text(profile.displayName)
+                .font(.subheadline)
+                .fontWeight(.medium)
+
+            Spacer()
+
+            actionButton(for: profile)
+        }
+        .padding(.vertical, 4)
+    }
+
+    @ViewBuilder
+    private func actionButton(for profile: UserProfile) -> some View {
+        if vm.isFriend(profile) {
+            Text(lm.searchAlreadyFriends)
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color(.systemGray5))
+                .clipShape(Capsule())
+        } else if vm.hasSentRequest(to: profile) {
+            Text(lm.searchRequested)
+                .font(.caption)
+                .foregroundColor(.orange)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 6)
+                .background(Color.orange.opacity(0.12))
+                .clipShape(Capsule())
+        } else {
+            Button { sendRequest(to: profile) } label: {
+                if sendingToID == profile.id.recordName {
+                    ProgressView()
+                        .frame(width: 60, height: 28)
+                } else {
+                    Text(lm.searchAdd)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(.white)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.orange)
+                        .clipShape(Capsule())
+                        .contentShape(Capsule())
+                }
+            }
+            .buttonStyle(.plain)
+            .disabled(sendingToID != nil)
         }
     }
 
-    private func acceptAction() {
-        isAccepting = true
-        acceptError = nil
+    private func sendRequest(to profile: UserProfile) {
+        sendingToID = profile.id.recordName
+        sendError = nil
         Task {
             do {
-                try await vm.acceptInvite(code: manualCode.trimmingCharacters(in: .whitespaces))
-                acceptSuccess = true
-                manualCode = ""
+                try await vm.sendFriendRequest(to: profile)
             } catch {
-                acceptError = error.localizedDescription
+                sendError = error.localizedDescription
             }
-            isAccepting = false
+            sendingToID = nil
         }
     }
 }

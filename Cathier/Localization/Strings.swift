@@ -87,8 +87,8 @@ extension LanguageManager {
     // MARK: FriendFeedView
     var friendNavTitle: String    { localized("friend.nav_title") }
     var friendNoFriends: String   { localized("friend.no_friends") }
-    var friendInviteHint: String  { localized("friend.invite_hint") }
-    var friendInvite: String      { localized("friend.invite") }
+    var friendAddHint: String     { localized("friend.add_hint") }
+    var friendAddFriend: String   { localized("friend.add_friend") }
     var friendEmptyFeed: String   { localized("friend.empty_feed") }
     var friendDefaultName: String { localized("friend.default_name") }
 
@@ -102,7 +102,7 @@ extension LanguageManager {
 
     // MARK: FriendManageView
     var manageNavTitle: String      { localized("manage.nav_title") }
-    var manageInviteAction: String  { localized("manage.invite_action") }
+    var manageAddFriend: String     { localized("manage.add_friend") }
     func manageConnectedFriends(_ count: Int) -> String {
         String(format: localized("manage.connected_friends"), count)
     }
@@ -117,27 +117,20 @@ extension LanguageManager {
     var manageDisconnectMessage: String { localized("manage.disconnect_message") }
     var manageCancel: String            { localized("manage.cancel") }
 
-    // MARK: InviteView
-    var inviteNavTitle: String    { localized("invite.nav_title") }
-    var inviteSendTitle: String   { localized("invite.send_title") }
-    var inviteSendHint: String    { localized("invite.send_hint") }
-    var inviteGenerate: String    { localized("invite.generate") }
-    var inviteRegenerate: String  { localized("invite.regenerate") }
-    var inviteEnterTitle: String  { localized("invite.enter_title") }
-    var inviteEnterHint: String   { localized("invite.enter_hint") }
-    var inviteSuccess: String     { localized("invite.success") }
-    var invitePlaceholder: String { localized("invite.placeholder") }
-    var inviteConfirm: String     { localized("invite.confirm") }
+    // MARK: AddFriendView
+    var searchNavTitle: String      { localized("search.nav_title") }
+    var searchPlaceholder: String   { localized("search.placeholder") }
+    var searchHint: String          { localized("search.hint") }
+    var searchNoResults: String     { localized("search.no_results") }
+    var searchAdd: String           { localized("search.add") }
+    var searchRequested: String     { localized("search.requested") }
+    var searchAlreadyFriends: String { localized("search.already_friends") }
 
-    // MARK: InviteAcceptSheet
-    var acceptSuccess: String  { localized("accept.success") }
-    var acceptTitle: String    { localized("accept.title") }
-    func acceptCode(_ code: String) -> String {
-        String(format: localized("accept.code"), code)
-    }
-    var acceptButton: String   { localized("accept.button") }
-    var acceptLater: String    { localized("accept.later") }
-    var acceptNavTitle: String { localized("accept.nav_title") }
+    // MARK: FriendRequestsView
+    var requestPendingSection: String { localized("request.pending_section") }
+    var requestAccept: String         { localized("request.accept") }
+    var requestDecline: String        { localized("request.decline") }
+    var requestFrom: String           { localized("request.from") }
 
     // MARK: SettingsView
     var settingsNavTitle: String          { localized("settings.nav_title") }

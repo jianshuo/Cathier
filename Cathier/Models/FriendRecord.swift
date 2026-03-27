@@ -1,60 +1,58 @@
 import CloudKit
 import Foundation
 
-// Invite created by the sender (A). Deleted after B accepts or A cancels.
-struct InviteRecord: Identifiable {
-    static let recordType = "InviteCode"
+// MARK: - FriendRequest (sent by A, pending acceptance by B)
+
+struct FriendRequestRecord: Identifiable {
+    static let recordType = "FriendRequest"
 
     let id: CKRecord.ID
     let fromProfileRef: CKRecord.Reference
-    let inviteCode: String
+    let toProfileRef: CKRecord.Reference
     let createdAt: Date
 
-    init(fromProfileRef: CKRecord.Reference) {
-        // Use the invite code as the record name so we can fetch by ID — no query needed.
-        let code = String(UUID().uuidString.replacingOccurrences(of: "-", with: "").prefix(8)).uppercased()
-        self.inviteCode = code
-        self.id = CKRecord.ID(recordName: "invite_\(code)")
+    init(fromProfileRef: CKRecord.Reference, toProfileRef: CKRecord.Reference) {
+        self.id = CKRecord.ID(recordName: UUID().uuidString)
         self.fromProfileRef = fromProfileRef
+        self.toProfileRef = toProfileRef
         self.createdAt = Date()
     }
 
     init?(record: CKRecord) {
         guard record.recordType == Self.recordType,
               let fromProfileRef = record["fromProfileRef"] as? CKRecord.Reference,
-              let inviteCode = record["inviteCode"] as? String,
+              let toProfileRef = record["toProfileRef"] as? CKRecord.Reference,
               let createdAt = record["createdAt"] as? Date
         else { return nil }
         self.id = record.recordID
         self.fromProfileRef = fromProfileRef
-        self.inviteCode = inviteCode
+        self.toProfileRef = toProfileRef
         self.createdAt = createdAt
     }
 
     func toRecord() -> CKRecord {
         let record = CKRecord(recordType: Self.recordType, recordID: id)
         record["fromProfileRef"] = fromProfileRef
-        record["inviteCode"] = inviteCode
+        record["toProfileRef"] = toProfileRef
         record["createdAt"] = createdAt
         return record
     }
 }
 
-// Friendship created by the accepter (B). Represents confirmed mutual connection.
+// MARK: - Friendship (confirmed mutual connection)
+
 struct FriendshipRecord: Identifiable {
     static let recordType = "Friendship"
 
     let id: CKRecord.ID
-    let initiatorRef: CKRecord.Reference  // the inviter A
-    let accepterRef: CKRecord.Reference   // the accepter B (record creator)
-    let inviteCode: String
+    let initiatorRef: CKRecord.Reference  // the requester
+    let accepterRef: CKRecord.Reference   // the approver
     let createdAt: Date
 
-    init(initiatorRef: CKRecord.Reference, accepterRef: CKRecord.Reference, inviteCode: String) {
+    init(initiatorRef: CKRecord.Reference, accepterRef: CKRecord.Reference) {
         self.id = CKRecord.ID(recordName: UUID().uuidString)
         self.initiatorRef = initiatorRef
         self.accepterRef = accepterRef
-        self.inviteCode = inviteCode
         self.createdAt = Date()
     }
 
@@ -62,13 +60,11 @@ struct FriendshipRecord: Identifiable {
         guard record.recordType == Self.recordType,
               let initiatorRef = record["initiatorRef"] as? CKRecord.Reference,
               let accepterRef = record["accepterRef"] as? CKRecord.Reference,
-              let inviteCode = record["inviteCode"] as? String,
               let createdAt = record["createdAt"] as? Date
         else { return nil }
         self.id = record.recordID
         self.initiatorRef = initiatorRef
         self.accepterRef = accepterRef
-        self.inviteCode = inviteCode
         self.createdAt = createdAt
     }
 
@@ -76,12 +72,10 @@ struct FriendshipRecord: Identifiable {
         let record = CKRecord(recordType: Self.recordType, recordID: id)
         record["initiatorRef"] = initiatorRef
         record["accepterRef"] = accepterRef
-        record["inviteCode"] = inviteCode
         record["createdAt"] = createdAt
         return record
     }
 
-    /// Returns the reference to the other person given my own profile ref.
     func friendRef(myProfileRef: CKRecord.Reference) -> CKRecord.Reference {
         initiatorRef.recordID == myProfileRef.recordID ? accepterRef : initiatorRef
     }

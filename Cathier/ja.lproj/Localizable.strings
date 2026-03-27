@@ -77,8 +77,8 @@
 /* FriendFeedView */
 "friend.nav_title" = "友達";
 "friend.no_friends" = "まだ友達がいません";
-"friend.invite_hint" = "友達を招待して感情をシェアしよう";
-"friend.invite" = "友達を招待";
+"friend.add_hint" = "名前で検索して友達を追加しよう";
+"friend.add_friend" = "友達を追加";
 "friend.empty_feed" = "友達はまだ感情をシェアしていません";
 "friend.default_name" = "友達";
 
@@ -92,34 +92,29 @@
 
 /* FriendManageView */
 "manage.nav_title" = "友達管理";
-"manage.invite_action" = "招待/コードを入力";
+"manage.add_friend" = "友達を追加";
 "manage.connected_friends" = "繋がっている友達 (%d)";
 "manage.disconnect" = "接続を解除";
-"manage.no_friends" = "まだ友達がいません。招待リンクをシェアして繋がりましょう。";
+"manage.no_friends" = "まだ友達がいません。名前で検索して追加しましょう。";
 "manage.connected_on" = "接続日: %@";
 "manage.disconnect_alert" = "「%@」との接続を解除しますか？";
 "manage.disconnect_message" = "互いにシェアした感情記録は見られなくなります。";
 "manage.cancel" = "キャンセル";
 
-/* InviteView */
-"invite.nav_title" = "招待/友達追加";
-"invite.send_title" = "友達を招待";
-"invite.send_hint" = "招待リンクを生成して友達に送りましょう。タップするだけで繋がれます。";
-"invite.generate" = "招待リンクを生成";
-"invite.regenerate" = "再生成";
-"invite.enter_title" = "招待コードを入力";
-"invite.enter_hint" = "友達からの招待コードをここに入力してください。";
-"invite.success" = "追加成功！";
-"invite.placeholder" = "8桁の招待コードを入力...";
-"invite.confirm" = "確認して追加";
+/* AddFriendView */
+"search.nav_title" = "友達を追加";
+"search.placeholder" = "名前で検索…";
+"search.hint" = "名前を入力してユーザーを検索";
+"search.no_results" = "ユーザーが見つかりません";
+"search.add" = "追加";
+"search.requested" = "申請済み";
+"search.already_friends" = "友達";
 
-/* InviteAcceptSheet */
-"accept.success" = "友達の追加に成功しました！";
-"accept.title" = "友達招待を受け取りました";
-"accept.code" = "招待コード：%@";
-"accept.button" = "招待を受け入れる";
-"accept.later" = "後で";
-"accept.nav_title" = "友達招待";
+/* FriendRequests */
+"request.pending_section" = "受信した友達申請";
+"request.accept" = "承認";
+"request.decline" = "拒否";
+"request.from" = "友達申請を送りました";
 
 /* SettingsView */
 "settings.nav_title" = "設定";

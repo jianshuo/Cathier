@@ -7,7 +7,7 @@ final class FriendViewModel {
 
     enum AccountState {
         case loading
-        case unavailable(String)  // message to show user
+        case unavailable(String)
         case needsProfile
         case ready(UserProfile)
     }
@@ -19,9 +19,21 @@ final class FriendViewModel {
     var isLoadingFeed = false
     var error: String?
 
-    /// Set when app opens a cathier://invite?code= deep link
-    var pendingInviteCode: String?
-    var showInviteAcceptSheet = false
+    // Friend requests
+    var pendingRequests: [FriendRequestRecord] = []
+    var pendingRequestSenders: [UserProfile] = []
+    var sentRequestRecipientIDs: Set<String> = []
+
+    // All users + local search filter
+    var allUsers: [UserProfile] = []
+    var isLoadingUsers = false
+    var searchQuery: String = ""
+
+    var filteredUsers: [UserProfile] {
+        let q = searchQuery.trimmingCharacters(in: .whitespaces)
+        guard !q.isEmpty else { return allUsers }
+        return allUsers.filter { $0.displayName.localizedCaseInsensitiveContains(q) }
+    }
 
     private let ck = CloudKitService.shared
     private(set) var myProfileID: CKRecord.ID?
@@ -30,6 +42,8 @@ final class FriendViewModel {
         if case .ready(let p) = accountState { return p }
         return nil
     }
+
+    var pendingRequestCount: Int { pendingRequests.count }
 
     // MARK: - Initialise
 
@@ -72,8 +86,24 @@ final class FriendViewModel {
         isLoadingFeed = true
         defer { isLoadingFeed = false }
         do {
-            friendships = try await ck.fetchFriendships(profileRef: profile.reference)
+            async let friendshipsTask = ck.fetchFriendships(profileRef: profile.reference)
+            async let receivedTask = ck.fetchReceivedRequests(toProfileRef: profile.reference)
+            async let sentTask = ck.fetchSentRequests(fromProfileRef: profile.reference)
+
+            let (fetchedFriendships, received, sent) = try await (friendshipsTask, receivedTask, sentTask)
+
+            friendships = fetchedFriendships
             friends = try await ck.fetchFriendProfiles(friendships: friendships, myProfileRef: profile.reference)
+
+            pendingRequests = received
+            sentRequestRecipientIDs = Set(sent.map { $0.toProfileRef.recordID.recordName })
+
+            if !received.isEmpty {
+                pendingRequestSenders = try await ck.fetchProfiles(ids: received.map { $0.fromProfileRef.recordID })
+            } else {
+                pendingRequestSenders = []
+            }
+
             let allRefs = friends.map { $0.reference } + [profile.reference]
             friendCheckIns = try await ck.fetchFriendCheckIns(friendProfileRefs: allRefs)
         } catch {
@@ -89,45 +119,57 @@ final class FriendViewModel {
         friendships.removeAll { $0.id == fs.id }
         friends.removeAll { $0.id == friend.id }
         friendCheckIns.removeAll { $0.ownerRef.recordID == friend.id }
-        // Refresh full list in background in case we couldn't delete (not the owner)
         await loadFriendsAndFeed()
         _ = profile  // suppress warning
     }
 
-    // MARK: - Invite
+    // MARK: - Load all users (for Add Friend screen)
 
-    func generateInviteLink() async throws -> String {
-        guard let profile = currentProfile else { throw ckError("未登录") }
-        let invite = InviteRecord(fromProfileRef: profile.reference)
-        let saved = try await ck.saveInvite(invite)
-        return "cathier://invite?code=\(saved.inviteCode)"
+    func loadAllUsers() async {
+        guard !isLoadingUsers else { return }
+        isLoadingUsers = true
+        defer { isLoadingUsers = false }
+        do {
+            let all = try await ck.fetchAllProfiles()
+            let myID = currentProfile?.id
+            allUsers = all
+                .filter { $0.id != myID }
+                .sorted { $0.displayName.localizedCompare($1.displayName) == .orderedAscending }
+        } catch {
+            self.error = error.localizedDescription
+        }
     }
 
-    func acceptInvite(code: String) async throws {
-        guard let myProfile = currentProfile else { throw ckError("未登录") }
-        guard let invite = try await ck.fetchInvite(code: code.uppercased()) else {
-            throw ckError("邀请码无效或已过期")
-        }
-        guard invite.fromProfileRef.recordID != myProfile.id else {
-            throw ckError("不能添加自己哦")
-        }
-        let alreadyFriend = friendships.contains {
-            $0.initiatorRef.recordID == invite.fromProfileRef.recordID ||
-            $0.accepterRef.recordID == invite.fromProfileRef.recordID
-        }
-        guard !alreadyFriend else { return }  // already connected, silently succeed
+    // MARK: - Friend Requests
 
-        let fs = FriendshipRecord(
-            initiatorRef: invite.fromProfileRef,
-            accepterRef: myProfile.reference,
-            inviteCode: code.uppercased()
-        )
+    func sendFriendRequest(to profile: UserProfile) async throws {
+        guard let myProfile = currentProfile else { throw ckError("未登录") }
+        guard profile.id != myProfile.id else { throw ckError("不能添加自己") }
+        guard !isFriend(profile) && !hasSentRequest(to: profile) else { return }
+
+        let request = FriendRequestRecord(fromProfileRef: myProfile.reference, toProfileRef: profile.reference)
+        _ = try await ck.saveFriendRequest(request)
+        sentRequestRecipientIDs.insert(profile.id.recordName)
+    }
+
+    func acceptRequest(_ request: FriendRequestRecord) async throws {
+        guard let myProfile = currentProfile else { throw ckError("未登录") }
+        let fs = FriendshipRecord(initiatorRef: request.fromProfileRef, accepterRef: myProfile.reference)
         let saved = try await ck.saveFriendship(fs)
         friendships.append(saved)
+        try await ck.deleteFriendRequest(id: request.id)
+        pendingRequests.removeAll { $0.id == request.id }
+        pendingRequestSenders.removeAll { $0.id == request.fromProfileRef.recordID }
         await loadFriendsAndFeed()
     }
 
-    // MARK: - Shared check-ins (Phase 2)
+    func declineRequest(_ request: FriendRequestRecord) async throws {
+        try await ck.deleteFriendRequest(id: request.id)
+        pendingRequests.removeAll { $0.id == request.id }
+        pendingRequestSenders.removeAll { $0.id == request.fromProfileRef.recordID }
+    }
+
+    // MARK: - Shared check-ins
 
     func shareCheckIn(_ checkIn: CheckIn, tier: FriendCheckIn.PrivacyTier, shareAIFeedback: Bool = false) async throws {
         guard let profile = currentProfile else { return }
@@ -156,6 +198,18 @@ final class FriendViewModel {
             ($0.initiatorRef.recordID == myProfile.id && $0.accepterRef.recordID == friend.id) ||
             ($0.accepterRef.recordID == myProfile.id && $0.initiatorRef.recordID == friend.id)
         }
+    }
+
+    func isFriend(_ profile: UserProfile) -> Bool {
+        friendship(with: profile) != nil
+    }
+
+    func hasSentRequest(to profile: UserProfile) -> Bool {
+        sentRequestRecipientIDs.contains(profile.id.recordName)
+    }
+
+    func sender(for request: FriendRequestRecord) -> UserProfile? {
+        pendingRequestSenders.first { $0.id == request.fromProfileRef.recordID }
     }
 
     private func ckError(_ message: String) -> NSError {
