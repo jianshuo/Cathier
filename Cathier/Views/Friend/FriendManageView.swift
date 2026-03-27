@@ -107,7 +107,7 @@ struct FriendManageView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.orange)
+                .background(Color.cathierAccent)
                 .clipShape(Capsule())
                 .contentShape(Capsule())
                 .buttonStyle(.plain)

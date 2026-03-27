@@ -57,7 +57,7 @@ struct JournalView: View {
                         showInsights = true
                     } label: {
                         Image(systemName: "chart.line.uptrend.xyaxis")
-                            .foregroundStyle(.orange)
+                            .foregroundStyle(.cathierAccent)
                     }
                     .accessibilityLabel(lm.insightsNavTitle)
                 }

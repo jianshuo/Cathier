@@ -33,7 +33,7 @@ struct FeedbackView: View {
                 if let url = submittedURL {
                     Section {
                         Link(lm.feedbackViewIssue, destination: url)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                     } header: {
                         Text(lm.feedbackSuccess)
                             .foregroundColor(.green)

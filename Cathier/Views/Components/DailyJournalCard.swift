@@ -24,11 +24,11 @@ struct DailyJournalCard: View {
                     systemImage: journal.isShared ? "person.2.fill" : "lock.fill"
                 )
                 .font(.caption)
-                .foregroundColor(journal.isShared ? .orange : .secondary)
+                .foregroundColor(journal.isShared ? .cathierSage : .secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(
-                    (journal.isShared ? Color.orange : Color.secondary)
+                    (journal.isShared ? Color.cathierAccent : Color.secondary)
                         .opacity(0.1)
                 )
                 .clipShape(Capsule())
@@ -37,7 +37,7 @@ struct DailyJournalCard: View {
                     Button(action: edit) {
                         Image(systemName: "pencil.circle.fill")
                             .font(.title3)
-                            .foregroundColor(.orange.opacity(0.8))
+                            .foregroundColor(.cathierSage.opacity(0.8))
                     }
                     .buttonStyle(.plain)
                 }

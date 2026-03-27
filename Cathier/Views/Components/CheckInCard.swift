@@ -38,7 +38,7 @@ struct CheckInCard: View {
                 if !checkIn.emotions.isEmpty {
                     FlowLayout(spacing: 6) {
                         ForEach(checkIn.emotions, id: \.self) { emotion in
-                            let color = EmotionData.category(for: emotion)?.color ?? .orange
+                            let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                             let emoji = EmotionData.emoji(for: emotion)
                             Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")
                                 .font(.caption)
@@ -58,7 +58,7 @@ struct CheckInCard: View {
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: "sparkles")
                             .font(.caption2)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                             .padding(.top, 2)
                         Text(LocalizedStringKey(checkIn.aiFeedback))
                             .font(.subheadline)

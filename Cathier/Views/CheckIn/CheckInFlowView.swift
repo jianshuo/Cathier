@@ -65,16 +65,16 @@ private struct StepIndicatorView: View {
                 let isCompleted = stepIndex(step) < stepIndex(currentStep)
                 let isCurrent = step == currentStep
                 Circle()
-                    .fill(isCompleted || isCurrent ? Color.orange : Color(.systemGray4))
+                    .fill(isCompleted || isCurrent ? Color.cathierAccent : Color(.systemGray4))
                     .frame(width: 10, height: 10)
                     .overlay(
                         Circle()
-                            .stroke(isCurrent ? Color.orange : Color.clear, lineWidth: 2)
+                            .stroke(isCurrent ? Color.cathierAccent : Color.clear, lineWidth: 2)
                             .frame(width: 16, height: 16)
                     )
                 if index < steps.count - 1 {
                     Rectangle()
-                        .fill(isCompleted ? Color.orange : Color(.systemGray4))
+                        .fill(isCompleted ? Color.cathierAccent : Color(.systemGray4))
                         .frame(height: 2)
                 }
             }
@@ -93,7 +93,7 @@ private struct StepIndicatorView: View {
 struct ChipView: View {
     let label: String
     let isSelected: Bool
-    var color: Color = .orange
+    var color: Color = .cathierAccent
     let action: () -> Void
 
     var body: some View {

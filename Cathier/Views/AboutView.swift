@@ -23,7 +23,7 @@ struct AboutView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "heart.text.clipboard")
                         .font(.system(size: 52))
-                        .foregroundStyle(.orange)
+                        .foregroundStyle(.cathierAccent)
                     Text("Cathier")
                         .font(.title2)
                         .fontWeight(.semibold)

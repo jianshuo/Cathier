@@ -76,7 +76,7 @@ struct EmotionLabelView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(viewModel.canProceedFromEmotionLabel ? Color.orange : Color(.systemGray3))
+                        .background(viewModel.canProceedFromEmotionLabel ? Color.cathierAccent : Color(.systemGray3))
                         .cornerRadius(14)
                 }
                 .disabled(!viewModel.canProceedFromEmotionLabel)
@@ -105,7 +105,7 @@ struct EmotionLabelView: View {
                 .foregroundColor(.secondary)
             FlowLayout(spacing: 8) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
-                    let color = EmotionData.category(for: emotion)?.color ?? .orange
+                    let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                     let emoji = EmotionData.emoji(for: emotion)
                     HStack(spacing: 4) {
                         Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")

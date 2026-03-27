@@ -114,7 +114,7 @@ struct SettingsView: View {
                         if let url = selectedProvider.consoleURL {
                             Link(lm.settingsGetKey, destination: url)
                                 .font(.caption)
-                                .foregroundColor(.orange)
+                                .foregroundColor(.cathierAccent)
                         }
                     }
                 } header: {
@@ -127,7 +127,7 @@ struct SettingsView: View {
                 // MARK: - Notification Settings
                 Section {
                     Toggle(lm.settingsEnableReminder, isOn: $notificationsEnabled)
-                        .tint(.orange)
+                        .tint(.cathierAccent)
                         .onChange(of: notificationsEnabled) { _, enabled in
                             handleNotificationToggle(enabled)
                         }
@@ -137,7 +137,7 @@ struct SettingsView: View {
                             HStack {
                                 Toggle("", isOn: $time.isEnabled)
                                     .labelsHidden()
-                                    .tint(.orange)
+                                    .tint(.cathierAccent)
                                 Spacer()
                                 DatePicker(
                                     "",
@@ -160,7 +160,7 @@ struct SettingsView: View {
                         Button(lm.settingsSaveReminder) {
                             saveReminderSettings()
                         }
-                        .foregroundColor(.orange)
+                        .foregroundColor(.cathierAccent)
                     }
                 } header: {
                     Text(lm.settingsRemindersSection)
@@ -199,7 +199,7 @@ struct SettingsView: View {
                         showFeedback = true
                     } label: {
                         Label(lm.feedbackButton, systemImage: "lightbulb")
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                     }
                 }
 
@@ -288,7 +288,7 @@ private struct ManagedSubscriptionPanel: View {
             if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
                 Link(lm.settingsManagedManage, destination: url)
                     .font(.caption)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.cathierAccent)
             }
         }
     }
@@ -325,7 +325,7 @@ private struct ManagedSubscriptionPanel: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 11)
-                .background(Color.orange)
+                .background(Color.cathierAccent)
                 .foregroundColor(.white)
                 .cornerRadius(10)
             }
@@ -351,7 +351,7 @@ private struct ManagedSubscriptionPanel: View {
                         Button("Terms of Use") { openURL(termsURL) }
                             .buttonStyle(.borderless)
                             .font(.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                     }
                     Text("·")
                         .font(.caption)
@@ -360,7 +360,7 @@ private struct ManagedSubscriptionPanel: View {
                         Button("Privacy Policy") { openURL(privacyURL) }
                             .buttonStyle(.borderless)
                             .font(.caption)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                     }
                 }
             }
@@ -383,6 +383,6 @@ private struct FeatureBullet: View {
             .font(.caption)
             .foregroundColor(.secondary)
             .symbolRenderingMode(.palette)
-            .foregroundStyle(Color.orange, Color.secondary)
+            .foregroundStyle(Color.cathierAccent, Color.secondary)
     }
 }

@@ -120,7 +120,7 @@ struct AIFeedbackView: View {
         return Button(action: { selectedTier = tier }) {
             HStack(spacing: 12) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .orange : .secondary)
+                    .foregroundColor(isSelected ? .cathierAccent : .secondary)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
                         .font(.subheadline)
@@ -244,7 +244,7 @@ struct AIFeedbackView: View {
                 .frame(width: 16)
             FlowLayout(spacing: 6) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
-                    let color = EmotionData.category(for: emotion)?.color ?? .orange
+                    let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                     Text(lm.display(emotion))
                         .font(.caption)
                         .fontWeight(.medium)
@@ -340,7 +340,7 @@ struct IntensityBadge: View {
     private var intensityColor: Color {
         switch intensity {
         case ..<4: return .green
-        case ..<7: return .orange
+        case ..<7: return .cathierAccent
         default:   return .red
         }
     }

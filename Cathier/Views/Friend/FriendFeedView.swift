@@ -314,7 +314,7 @@ struct FriendCheckInCard: View {
             if item.privacyTier != .category && !item.emotions.isEmpty {
                 FlowLayout(spacing: 6) {
                     ForEach(item.emotions, id: \.self) { emotion in
-                        let color = EmotionData.category(for: emotion)?.color ?? .orange
+                        let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                         Text(lm.display(emotion))
                             .font(.caption)
                             .padding(.horizontal, 10)

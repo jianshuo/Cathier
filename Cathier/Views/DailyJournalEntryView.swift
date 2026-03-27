@@ -86,14 +86,14 @@ struct DailyJournalEntryView: View {
             .padding(.vertical, 10)
             .background(
                 isSelected
-                    ? Color.orange.opacity(0.15)
+                    ? Color.cathierAccentLight
                     : Color.clear
             )
             .cornerRadius(12)
             .overlay(
                 isSelected
                     ? RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.orange.opacity(0.4), lineWidth: 1)
+                        .stroke(Color.cathierAccent.opacity(0.4), lineWidth: 1)
                     : nil
             )
         }
@@ -125,7 +125,7 @@ struct DailyJournalEntryView: View {
         Toggle(isOn: $isShared) {
             HStack(spacing: 10) {
                 Image(systemName: "person.2.fill")
-                    .foregroundColor(.orange)
+                    .foregroundColor(.cathierAccent)
                     .frame(width: 20)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lm.journalEntryShareLabel)
@@ -138,7 +138,7 @@ struct DailyJournalEntryView: View {
                 }
             }
         }
-        .tint(.orange)
+        .tint(.cathierAccent)
         .padding(14)
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
@@ -156,7 +156,7 @@ struct DailyJournalEntryView: View {
         }
         .background(
             selectedMood != nil
-                ? Color.orange
+                ? Color.cathierAccent
                 : Color.gray.opacity(0.4)
         )
         .cornerRadius(14)

@@ -86,7 +86,7 @@ struct CheckInDetailView: View {
                                 .foregroundColor(.secondary)
                             FlowLayout(spacing: 8) {
                                 ForEach(checkIn.emotions, id: \.self) { emotion in
-                                    let color = EmotionData.category(for: emotion)?.color ?? .orange
+                                    let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                                     let emoji = EmotionData.emoji(for: emotion)
                                     chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)", color: color)
                                 }
@@ -114,7 +114,7 @@ struct CheckInDetailView: View {
                             Label(lm.aiCompanion, systemImage: "sparkles")
                                 .font(.subheadline)
                                 .fontWeight(.semibold)
-                                .foregroundColor(.orange)
+                                .foregroundColor(.cathierAccent)
                             MarkdownText(raw: checkIn.aiFeedback,
                                          font: .body,
                                          paragraphSpacing: 8,
@@ -122,7 +122,7 @@ struct CheckInDetailView: View {
                         }
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.orange.opacity(0.25), lineWidth: 1)
+                                .stroke(Color.cathierAccent.opacity(0.25), lineWidth: 1)
                         )
                     }
 

@@ -93,7 +93,7 @@ struct InsightsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(vm.isLoading ? Color.orange.opacity(0.6) : Color.orange)
+            .background(vm.isLoading ? Color.cathierAccent.opacity(0.6) : Color.cathierAccent)
             .foregroundStyle(.white)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
@@ -150,14 +150,14 @@ struct InsightsView: View {
                     y: .value("Intensity", c.intensity)
                 )
                 .interpolationMethod(.catmullRom)
-                .foregroundStyle(Color.orange.gradient)
+                .foregroundStyle(Color.cathierAccent.gradient)
 
                 AreaMark(
                     x: .value("Date", c.date),
                     y: .value("Intensity", c.intensity)
                 )
                 .interpolationMethod(.catmullRom)
-                .foregroundStyle(Color.orange.opacity(0.15).gradient)
+                .foregroundStyle(Color.cathierAccent.opacity(0.15).gradient)
             }
             .chartYScale(domain: 0...10)
             .chartXAxis {
@@ -177,10 +177,10 @@ struct InsightsView: View {
     private func errorBanner(_ message: String) -> some View {
         Label(message, systemImage: "exclamationmark.triangle.fill")
             .font(.subheadline)
-            .foregroundStyle(.orange)
+            .foregroundStyle(.cathierAccent)
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.orange.opacity(0.1))
+            .background(Color.cathierAccent.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal)
     }
@@ -247,7 +247,7 @@ private struct FocusChip: View {
                 .fontWeight(isSelected ? .semibold : .regular)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.orange : Color(.tertiarySystemBackground))
+                .background(isSelected ? Color.cathierAccent : Color(.tertiarySystemBackground))
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())
                 .overlay(

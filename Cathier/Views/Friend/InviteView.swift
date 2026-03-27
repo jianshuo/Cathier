@@ -85,10 +85,10 @@ struct AddFriendView: View {
         } else if vm.hasSentRequest(to: profile) {
             Text(lm.searchRequested)
                 .font(.caption)
-                .foregroundColor(.orange)
+                .foregroundColor(.cathierAccent)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.orange.opacity(0.12))
+                .background(Color.cathierAccent.opacity(0.12))
                 .clipShape(Capsule())
         } else {
             Button { sendRequest(to: profile) } label: {
@@ -102,7 +102,7 @@ struct AddFriendView: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.orange)
+                        .background(Color.cathierAccent)
                         .clipShape(Capsule())
                         .contentShape(Capsule())
                 }
