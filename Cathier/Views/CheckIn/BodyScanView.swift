@@ -80,8 +80,8 @@ struct BodyScanView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(viewModel.canProceedFromBodyScan ? Color.orange : Color(.systemGray3))
-                        .cornerRadius(14)
+                        .background(viewModel.canProceedFromBodyScan ? Color.cathierAccent : Color(.systemGray3))
+                        .clipShape(Capsule())
                 }
                 .disabled(!viewModel.canProceedFromBodyScan)
                 .padding(.top, 8)

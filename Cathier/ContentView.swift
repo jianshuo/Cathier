@@ -9,18 +9,22 @@ struct ContentView: View {
         TabView {
             Tab(lm.tabToday, systemImage: "heart.fill") {
                 TodayView()
+                    .onAppear { t("📱 TodayView appeared") }
             }
             Tab(lm.tabJournal, systemImage: "calendar") {
                 JournalView()
+                    .onAppear { t("📱 JournalView appeared") }
             }
             Tab(lm.tabFriends, systemImage: "person.2.fill") {
                 FriendFeedView()
+                    .onAppear { t("📱 FriendFeedView appeared") }
             }
             Tab(lm.tabSettings, systemImage: "gearshape.fill") {
                 SettingsView()
+                    .onAppear { t("📱 SettingsView appeared") }
             }
         }
-        .tint(.orange)
+        .tint(.cathierAccent)
         .environment(friendVM)
     }
 }
