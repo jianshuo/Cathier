@@ -125,11 +125,11 @@ struct InsightsView: View {
 
             // Narrative
             Text(text)
-                .font(.body)
+                .font(.cathierSerif(.body))
                 .lineSpacing(5)
                 .padding()
-                .background(Color(.secondarySystemGroupedBackground))
-                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .background(Color.cathierAccentLight)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.horizontal)
         }
     }
