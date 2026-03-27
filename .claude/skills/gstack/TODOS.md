@@ -1,5 +1,39 @@
 # TODOS
 
+## Builder Ethos
+
+### First-time Search Before Building intro
+
+**What:** Add a `generateSearchIntro()` function (like `generateLakeIntro()`) that introduces the Search Before Building principle on first use, with a link to the blog essay.
+
+**Why:** Boil the Lake has an intro flow that links to the essay and marks `.completeness-intro-seen`. Search Before Building should have the same pattern for discoverability.
+
+**Context:** Blocked on a blog post to link to. When the essay exists, add the intro flow with a `.search-intro-seen` marker file. Pattern: `generateLakeIntro()` at gen-skill-docs.ts:176.
+
+**Effort:** S
+**Priority:** P2
+**Depends on:** Blog post about Search Before Building
+
+## Chrome DevTools MCP Integration
+
+### Real Chrome session access
+
+**What:** Integrate Chrome DevTools MCP to connect to the user's real Chrome session with real cookies, real state, no Playwright middleman.
+
+**Why:** Right now, headed mode launches a fresh Chromium profile. Users must log in manually or import cookies. Chrome DevTools MCP connects to the user's actual Chrome ... instant access to every authenticated site. This is the future of browser automation for AI agents.
+
+**Context:** Google shipped Chrome DevTools MCP in Chrome 146+ (June 2025). It provides screenshots, console messages, performance traces, Lighthouse audits, and full page interaction through the user's real browser. gstack should use it for real-session access while keeping Playwright for headless CI/testing workflows.
+
+Potential new skills:
+- `/debug-browser`: JS error tracing with source-mapped stack traces
+- `/perf-debug`: performance traces, Core Web Vitals, network waterfall
+
+May replace `/setup-browser-cookies` for most use cases since the user's real cookies are already there.
+
+**Effort:** L (human: ~2 weeks / CC: ~2 hours)
+**Priority:** P0
+**Depends on:** Chrome 146+, DevTools MCP server installed
+
 ## Browse
 
 ### Bundle server.ts into compiled binary
@@ -46,17 +80,14 @@
 **Effort:** S
 **Priority:** P3
 
-### State persistence
+### State persistence — SHIPPED
 
-**What:** Save/load cookies + localStorage to JSON files for reproducible test sessions.
+~~**What:** Save/load cookies + localStorage to JSON files for reproducible test sessions.~~
 
-**Why:** Enables "resume where I left off" for QA sessions and repeatable auth states.
+`$B state save/load` ships in v0.12.1.0. V1 saves cookies + URLs only (not localStorage, which breaks on load-before-navigate). Files at `.gstack/browse-states/{name}.json` with 0o600 permissions. Load replaces session (closes all pages first). Name sanitized to `[a-zA-Z0-9_-]`.
 
-**Context:** The `saveState()`/`restoreState()` helpers from the handoff feature (browser-manager.ts) already capture cookies + localStorage + sessionStorage + URLs. Adding file I/O on top is ~20 lines.
-
-**Effort:** S
-**Priority:** P3
-**Depends on:** Sessions
+**Remaining:** V2 localStorage support (needs pre-navigation injection strategy).
+**Completed:** v0.12.1.0 (2026-03-26)
 
 ### Auth vault
 
@@ -68,14 +99,13 @@
 **Priority:** P3
 **Depends on:** Sessions, state persistence
 
-### Iframe support
+### Iframe support — SHIPPED
 
-**What:** `frame <sel>` and `frame main` commands for cross-frame interaction.
+~~**What:** `frame <sel>` and `frame main` commands for cross-frame interaction.~~
 
-**Why:** Many web apps use iframes (embeds, payment forms, ads). Currently invisible to browse.
+`$B frame` ships in v0.12.1.0. Supports CSS selector, @ref, `--name`, and `--url` pattern matching. Execution target abstraction (`getActiveFrameOrPage()`) across all read/write/snapshot commands. Frame context cleared on navigation, tab switch, resume. Detached frame auto-recovery. Page-only operations (goto, screenshot, viewport) throw clear error when in frame context.
 
-**Effort:** M
-**Priority:** P4
+**Completed:** v0.12.1.0 (2026-03-26)
 
 ### Semantic locators
 
@@ -131,25 +161,77 @@
 **Effort:** L
 **Priority:** P4
 
-### CDP mode
+### Headed mode with Chrome extension — SHIPPED
 
-**What:** Connect to already-running Chrome/Electron apps via Chrome DevTools Protocol.
+`$B connect` launches Playwright's bundled Chromium in headed mode with the gstack Chrome extension auto-loaded. `$B handoff` now produces the same result (extension + side panel). Sidebar chat gated behind `--chat` flag.
 
-**Why:** Test production apps, Electron apps, and existing browser sessions without launching new instances.
+### `$B watch` — SHIPPED
 
-**Effort:** M
+Claude observes user browsing in passive read-only mode with periodic snapshots. `$B watch stop` exits with summary. Mutation commands blocked during watch.
+
+### Sidebar scout / file drop relay — SHIPPED
+
+Sidebar agent writes structured messages to `.context/sidebar-inbox/`. Workspace agent reads via `$B inbox`. Message format: `{type, timestamp, page, userMessage, sidebarSessionId}`.
+
+### Multi-agent tab isolation
+
+**What:** Two Claude sessions connect to the same browser, each operating on different tabs. No cross-contamination.
+
+**Why:** Enables parallel /qa + /design-review on different tabs in the same browser.
+
+**Context:** Requires tab ownership model for concurrent headed connections. Playwright may not cleanly support two persistent contexts. Needs investigation.
+
+**Effort:** L (human: ~2 weeks / CC: ~2 hours)
+**Priority:** P3
+**Depends on:** Headed mode (shipped)
+
+### Chrome Web Store publishing
+
+**What:** Publish the gstack browse Chrome extension to Chrome Web Store for easier install.
+
+**Why:** Currently sideloaded via chrome://extensions. Web Store makes install one-click.
+
+**Effort:** S
 **Priority:** P4
+**Depends on:** Chrome extension proving value via sideloading
 
-### Linux/Windows cookie decryption
+### Linux cookie decryption — PARTIALLY SHIPPED
 
-**What:** GNOME Keyring / kwallet / DPAPI support for non-macOS cookie import.
+~~**What:** GNOME Keyring / kwallet / DPAPI support for non-macOS cookie import.~~
 
-**Why:** Cross-platform cookie import. Currently macOS-only (Keychain).
+Linux cookie import shipped in v0.11.11.0 (Wave 3). Supports Chrome, Chromium, Brave, Edge on Linux with GNOME Keyring (libsecret) and "peanuts" fallback. Windows DPAPI support remains deferred.
 
-**Effort:** L
+**Remaining:** Windows cookie decryption (DPAPI). Needs complete rewrite — PR #64 was 1346 lines and stale.
+
+**Effort:** L (Windows only)
 **Priority:** P4
+**Completed (Linux):** v0.11.11.0 (2026-03-23)
 
 ## Ship
+
+### GitLab support for /land-and-deploy
+
+**What:** Add GitLab MR merge + CI polling support to `/land-and-deploy` skill. Currently uses `gh pr view`, `gh pr checks`, `gh pr merge`, and `gh run list/view` in 15+ places — each needs a GitLab conditional path using `glab ci status`, `glab mr merge`, etc.
+
+**Why:** Without this, GitLab users can `/ship` (create MR) but can't `/land-and-deploy` (merge + verify). Completes the GitLab story end-to-end.
+
+**Context:** `/retro`, `/ship`, and `/document-release` now support GitLab via the multi-platform `BASE_BRANCH_DETECT` resolver. `/land-and-deploy` has deeper GitHub-specific semantics (merge queues, required checks via `gh pr checks`, deploy workflow polling) that have different shapes on GitLab. The `glab` CLI (v1.90.0) supports `glab mr merge`, `glab ci status`, `glab ci view` but with different output formats and no merge queue concept.
+
+**Effort:** L
+**Priority:** P2
+**Depends on:** None (BASE_BRANCH_DETECT multi-platform resolver is already done)
+
+### Multi-commit CHANGELOG completeness eval
+
+**What:** Add a periodic E2E eval that creates a branch with 5+ commits spanning 3+ themes (features, cleanup, infra), runs /ship's Step 5 CHANGELOG generation, and verifies the CHANGELOG mentions all themes.
+
+**Why:** The bug fixed in v0.11.22 (garrytan/ship-full-commit-coverage) showed that /ship's CHANGELOG generation biased toward recent commits on long branches. The prompt fix adds a cross-check, but no test exercises the multi-commit failure mode. The existing `ship-local-workflow` E2E only uses a single-commit branch.
+
+**Context:** Would be a `periodic` tier test (~$4/run, non-deterministic since it tests LLM instruction-following). Setup: create bare remote, clone, add 5+ commits across different themes on a feature branch, run Step 5 via `claude -p`, verify CHANGELOG output covers all themes. Pattern: `ship-local-workflow` in `test/skill-e2e-workflow.test.ts`.
+
+**Effort:** M
+**Priority:** P3
+**Depends on:** None
 
 ### Ship log — persistent record of /ship runs
 
@@ -163,17 +245,6 @@
 **Priority:** P2
 **Depends on:** None
 
-### Post-deploy verification (ship + browse)
-
-**What:** After push, browse staging/preview URL, screenshot key pages, check console for JS errors, compare staging vs prod via snapshot diff. Include verification screenshots in PR body. STOP if critical errors found.
-
-**Why:** Catch deployment-time regressions (JS errors, broken layouts) before merge.
-
-**Context:** Requires S3 upload infrastructure for PR screenshots. Pairs with visual PR annotations.
-
-**Effort:** L
-**Priority:** P2
-**Depends on:** /setup-gstack-upload, visual PR annotations
 
 ### Visual verification with screenshots in PR body
 
@@ -334,35 +405,25 @@
 **Priority:** P3
 **Depends on:** Video recording
 
-### Deploy-verify skill
 
-**What:** Lightweight post-deploy smoke test: hit key URLs, verify 200s, screenshot critical pages, console error check, compare against baseline snapshots. Pass/fail with evidence.
 
-**Why:** Fast post-deploy confidence check, separate from full QA.
+### Extend worktree isolation to Claude E2E tests
 
-**Effort:** M
-**Priority:** P2
+**What:** Add `useWorktree?: boolean` option to `runSkillTest()` so any Claude E2E test can opt into worktree mode for full repo context instead of tmpdir fixtures.
 
-### GitHub Actions eval upload
+**Why:** Some Claude E2E tests (CSO audit, review-sql-injection) create minimal fake repos but would produce more realistic results with full repo context. The infrastructure exists (`describeWithWorktree()` in e2e-helpers.ts) — this extends it to the session-runner level.
 
-**What:** Run eval suite in CI, upload result JSON as artifact, post summary comment on PR.
+**Context:** WorktreeManager shipped in v0.11.12.0. Currently only Gemini/Codex tests use worktrees. Claude tests use planted-bug fixture repos which are correct for their purpose, but new tests that want real repo context can use `describeWithWorktree()` today. This TODO is about making it even easier via a flag on `runSkillTest()`.
 
-**Why:** CI integration catches quality regressions before merge and provides persistent eval records per PR.
+**Effort:** M (human: ~2 days / CC: ~20 min)
+**Priority:** P3
+**Depends on:** Worktree isolation (shipped v0.11.12.0)
 
-**Context:** Requires `ANTHROPIC_API_KEY` in CI secrets. Cost is ~$4/run. Eval persistence system (v0.3.6) writes JSON to `~/.gstack-dev/evals/` — CI would upload as GitHub Actions artifacts and use `eval:compare` to post delta comment.
+### E2E model pinning — SHIPPED
 
-**Effort:** M
-**Priority:** P2
-**Depends on:** Eval persistence (shipped in v0.3.6)
+~~**What:** Pin E2E tests to claude-sonnet-4-6 for cost efficiency, add retry:2 for flaky LLM responses.~~
 
-### E2E model pinning
-
-**What:** Pin E2E tests to claude-sonnet-4-6 for cost efficiency, add retry:2 for flaky LLM responses.
-
-**Why:** Reduce E2E test cost and flakiness.
-
-**Effort:** XS
-**Priority:** P2
+Shipped: Default model changed to Sonnet for structure tests (~30), Opus retained for quality tests (~10). `--retry 2` added. `EVALS_MODEL` env var for override. `test:e2e:fast` tier added. Rate-limit telemetry (first_response_ms, max_inter_turn_ms) and wall_clock_ms tracking added to eval-store.
 
 ### Eval web dashboard
 
@@ -440,6 +501,30 @@
 
 Shipped as v0.5.0 on main. Includes `/plan-design-review` (report-only design audit), `/qa-design-review` (audit + fix loop), and `/design-consultation` (interactive DESIGN.md creation). `{{DESIGN_METHODOLOGY}}` resolver provides shared 80-item design audit checklist.
 
+### Design outside voices in /plan-eng-review
+
+**What:** Extend the parallel dual-voice pattern (Codex + Claude subagent) to /plan-eng-review's architecture review section.
+
+**Why:** The design beachhead (v0.11.3.0) proves cross-model consensus works for subjective reviews. Architecture reviews have similar subjectivity in tradeoff decisions.
+
+**Context:** Depends on learnings from the design beachhead. If the litmus scorecard format proves useful, adapt it for architecture dimensions (coupling, scaling, reversibility).
+
+**Effort:** S
+**Priority:** P3
+**Depends on:** Design outside voices shipped (v0.11.3.0)
+
+### Outside voices in /qa visual regression detection
+
+**What:** Add Codex design voice to /qa for detecting visual regressions during bug-fix verification.
+
+**Why:** When fixing bugs, the fix can introduce visual regressions that code-level checks miss. Codex could flag "the fix broke the responsive layout" during re-test.
+
+**Context:** Depends on /qa having design awareness. Currently /qa focuses on functional testing.
+
+**Effort:** M
+**Priority:** P3
+**Depends on:** Design outside voices shipped (v0.11.3.0)
+
 ## Document-Release
 
 ### Auto-invoke /document-release from /ship — SHIPPED
@@ -472,17 +557,20 @@ Shipped in v0.8.3. Step 8.5 added to `/ship` — after creating the PR, `/ship` 
 **Priority:** P3
 **Depends on:** gstack-diff-scope (shipped)
 
-### /merge skill — review-gated PR merge
 
-**What:** Create a `/merge` skill that merges an approved PR, but first checks the Review Readiness Dashboard and runs `/review` (Fix-First) if code review hasn't been done. Separates "ship" (create PR) from "merge" (land it).
+## Codex
 
-**Why:** Currently `/review` runs inside `/ship` Step 3.5 but isn't tracked as a gate. A `/merge` skill ensures code review always happens before landing, and enables workflows where someone else reviews the PR first.
+### Codex→Claude reverse buddy check skill
 
-**Context:** `/ship` creates the PR. `/merge` would: check dashboard → run `/review` if needed → `gh pr merge`. This is where code review tracking belongs — at merge time, not at plan time.
+**What:** A Codex-native skill (`.agents/skills/gstack-claude/SKILL.md`) that runs `claude -p` to get an independent second opinion from Claude — the reverse of what `/codex` does today from Claude Code.
 
-**Effort:** M
-**Priority:** P2
-**Depends on:** Ship Confidence Dashboard (shipped)
+**Why:** Codex users deserve the same cross-model challenge that Claude users get via `/codex`. Currently the flow is one-way (Claude→Codex). Codex users have no way to get a Claude second opinion.
+
+**Context:** The `/codex` skill template (`codex/SKILL.md.tmpl`) shows the pattern — it wraps `codex exec` with JSONL parsing, timeout handling, and structured output. The reverse skill would wrap `claude -p` with similar infrastructure. Would be generated into `.agents/skills/gstack-claude/` by `gen-skill-docs --host codex`.
+
+**Effort:** M (human: ~2 weeks / CC: ~30 min)
+**Priority:** P1
+**Depends on:** None
 
 ## Completeness
 
@@ -533,6 +621,25 @@ Shipped in v0.6.5. TemplateContext in gen-skill-docs.ts bakes skill name into pr
 **Depends on:** Telemetry data showing freeze hook fires in real /investigate sessions
 
 ## Completed
+
+### CI eval pipeline (v0.9.9.0)
+- GitHub Actions eval upload on Ubicloud runners ($0.006/run)
+- Within-file test concurrency (test() → testConcurrentIfSelected())
+- Eval artifact upload + PR comment with pass/fail + cost
+- Baseline comparison via artifact download from main
+- EVALS_CONCURRENCY=40 for ~6min wall clock (was ~18min)
+**Completed:** v0.9.9.0
+
+### Deploy pipeline (v0.9.8.0)
+- /land-and-deploy — merge PR, wait for CI/deploy, canary verification
+- /canary — post-deploy monitoring loop with anomaly detection
+- /benchmark — performance regression detection with Core Web Vitals
+- /setup-deploy — one-time deploy platform configuration
+- /review Performance & Bundle Impact pass
+- E2E model pinning (Sonnet default, Opus for quality tests)
+- E2E timing telemetry (first_response_ms, max_inter_turn_ms, wall_clock_ms)
+- test:e2e:fast tier, --retry 2 on all E2E scripts
+**Completed:** v0.9.8.0
 
 ### Phase 1: Foundations (v0.2.0)
 - Rename to gstack
