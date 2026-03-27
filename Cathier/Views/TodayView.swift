@@ -90,11 +90,11 @@ struct TodayView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color(red: 0.4, green: 0.6, blue: 1.0).opacity(0.15))
+                        .fill(Color.cathierSage.opacity(0.15))
                         .frame(width: 48, height: 48)
                     Image(systemName: "book.fill")
                         .font(.system(size: 22))
-                        .foregroundColor(Color(red: 0.4, green: 0.6, blue: 1.0))
+                        .foregroundColor(Color.cathierSage)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(lm.journalEntryWritePrompt)
@@ -111,8 +111,8 @@ struct TodayView: View {
                     .foregroundColor(.secondary)
             }
             .padding(16)
-            .background(Color(.secondarySystemBackground))
-            .cornerRadius(16)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
     }
@@ -157,12 +157,12 @@ struct TodayView: View {
             .padding(.vertical, 28)
             .background(
                 LinearGradient(
-                    colors: [Color(red: 1.0, green: 0.6, blue: 0.1), Color(red: 0.95, green: 0.4, blue: 0.1)],
+                    colors: [Color.cathierAccent, Color.cathierAccent.opacity(0.75)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
             )
-            .cornerRadius(20)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         }
         .buttonStyle(.plain)
     }
