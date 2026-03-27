@@ -331,6 +331,29 @@ private struct ManagedSubscriptionPanel: View {
             .foregroundColor(.secondary)
             .frame(maxWidth: .infinity)
 
+            Divider()
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text("By subscribing, you agree to our:")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                HStack(spacing: 4) {
+                    if let termsURL = URL(string: "https://github.com/jianshuo/Cathier/blob/main/TERMS_OF_SERVICE.md") {
+                        Link("Terms of Use", destination: termsURL)
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                    Text("·")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    if let privacyURL = URL(string: "https://github.com/jianshuo/Cathier/blob/main/PRIVACY_POLICY.md") {
+                        Link("Privacy Policy", destination: privacyURL)
+                            .font(.caption)
+                            .foregroundColor(.orange)
+                    }
+                }
+            }
+
             if let err = subManager.errorMessage {
                 Text(err)
                     .font(.caption)
