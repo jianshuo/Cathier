@@ -156,13 +156,13 @@ private struct FriendHomeView: View {
                     VStack(spacing: 4) {
                         Image(systemName: "person.badge.plus")
                             .font(.system(size: 22))
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierSage)
                             .frame(width: 52, height: 52)
-                            .background(Color.orange.opacity(0.12))
+                            .background(Color.cathierSage.opacity(0.12))
                             .clipShape(Circle())
                         Text(lm.manageAddFriend)
                             .font(.caption2)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierSage)
                             .lineLimit(1)
                             .frame(width: 52)
                     }
@@ -203,8 +203,8 @@ private struct FriendHomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.orange)
-                    .cornerRadius(22)
+                    .background(Color.cathierSage)
+                    .clipShape(Capsule())
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -224,8 +224,8 @@ private struct FriendHomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.orange)
-                    .cornerRadius(22)
+                    .background(Color.cathierSage)
+                    .clipShape(Capsule())
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -349,30 +349,24 @@ struct FriendCheckInCard: View {
                     HStack(spacing: 4) {
                         Image(systemName: "sparkles")
                             .font(.caption2)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                         Text(lm.aiCompanion)
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(.orange)
+                            .foregroundColor(.cathierAccent)
                     }
                     Text(item.aiFeedback)
-                        .font(.subheadline)
+                        .font(.cathierSerif(.subheadline))
                         .foregroundColor(.primary)
                         .lineSpacing(3)
                 }
                 .padding(10)
-                .background(
-                    LinearGradient(
-                        colors: [Color.orange.opacity(0.08), Color.orange.opacity(0.03)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+                .background(Color.cathierAccentLight)
                 .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.orange.opacity(0.2), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 1)
                 )
-                .cornerRadius(8)
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
             }
         }
     }
@@ -429,8 +423,8 @@ struct SharedJournalFeedRow: View {
                             .fontWeight(.medium)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(Color.blue.opacity(0.12))
-                            .foregroundColor(Color.blue)
+                            .background(Color.cathierSageLight)
+                            .foregroundColor(Color.cathierSage)
                             .clipShape(Capsule())
                     }
                     Text(journal.date.absoluteString)
