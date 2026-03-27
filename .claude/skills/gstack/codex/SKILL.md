@@ -428,6 +428,8 @@ TMPERR=$(mktemp /tmp/codex-err-XXXXXX.txt)
 
 2. Run the review (5-minute timeout):
 ```bash
+_REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
+cd "$_REPO_ROOT"
 codex review --base <base> -c 'model_reasoning_effort="high"' --enable web_search_cached 2>"$TMPERR"
 ```
 
@@ -436,6 +438,8 @@ If the user passed `--xhigh`, use `"xhigh"` instead of `"high"`.
 Use `timeout: 300000` on the Bash call. If the user provided custom instructions
 (e.g., `/codex review focus on security`), pass them as the prompt argument:
 ```bash
+_REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
+cd "$_REPO_ROOT"
 codex review "focus on security" --base <base> -c 'model_reasoning_effort="high"' --enable web_search_cached 2>"$TMPERR"
 ```
 
@@ -577,7 +581,8 @@ With focus (e.g., "security"):
 If the user passed `--xhigh`, use `"xhigh"` instead of `"high"`.
 
 ```bash
-codex exec "<prompt>" -C "$(git rev-parse --show-toplevel)" -s read-only -c 'model_reasoning_effort="high"' --enable web_search_cached --json 2>/dev/null | PYTHONUNBUFFERED=1 python3 -u -c "
+_REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
+codex exec "<prompt>" -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="high"' --enable web_search_cached --json 2>/dev/null | PYTHONUNBUFFERED=1 python3 -u -c "
 import sys, json
 for line in sys.stdin:
     line = line.strip()
@@ -676,7 +681,8 @@ If the user passed `--xhigh`, use `"xhigh"` instead of `"medium"`.
 
 For a **new session:**
 ```bash
-codex exec "<prompt>" -C "$(git rev-parse --show-toplevel)" -s read-only -c 'model_reasoning_effort="medium"' --enable web_search_cached --json 2>"$TMPERR" | PYTHONUNBUFFERED=1 python3 -u -c "
+_REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
+codex exec "<prompt>" -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="medium"' --enable web_search_cached --json 2>"$TMPERR" | PYTHONUNBUFFERED=1 python3 -u -c "
 import sys, json
 for line in sys.stdin:
     line = line.strip()
@@ -709,7 +715,8 @@ for line in sys.stdin:
 
 For a **resumed session** (user chose "Continue"):
 ```bash
-codex exec resume <session-id> "<prompt>" -C "$(git rev-parse --show-toplevel)" -s read-only -c 'model_reasoning_effort="medium"' --enable web_search_cached --json 2>"$TMPERR" | PYTHONUNBUFFERED=1 python3 -u -c "
+_REPO_ROOT=$(git rev-parse --show-toplevel) || { echo "ERROR: not in a git repo" >&2; exit 1; }
+codex exec resume <session-id> "<prompt>" -C "$_REPO_ROOT" -s read-only -c 'model_reasoning_effort="medium"' --enable web_search_cached --json 2>"$TMPERR" | PYTHONUNBUFFERED=1 python3 -u -c "
 <same python streaming parser as above, with flush=True on all print() calls>
 "
 ```
