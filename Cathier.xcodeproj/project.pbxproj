@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D42D7A142F764B1A009020D5 /* InstrumentSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42D7A132F764B1A009020D5 /* InstrumentSerif-Regular.ttf */; };
+		D42D7A152F764B1A009020D5 /* InstrumentSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42D7A122F764B1A009020D5 /* InstrumentSerif-Italic.ttf */; };
 		D48A52222F753AC900B11317 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D48A52212F753AC900B11317 /* StoreKit.framework */; };
 		D48A53622F7581B600B11317 /* CathierAI.storekit in Resources */ = {isa = PBXBuildFile; fileRef = D48A53612F7581B600B11317 /* CathierAI.storekit */; };
 /* End PBXBuildFile section */
@@ -23,6 +25,8 @@
 
 /* Begin PBXFileReference section */
 		D419152C2F6C604900594512 /* CathierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CathierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		D42D7A122F764B1A009020D5 /* InstrumentSerif-Italic.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "InstrumentSerif-Italic.ttf"; sourceTree = "<group>"; };
+		D42D7A132F764B1A009020D5 /* InstrumentSerif-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "InstrumentSerif-Regular.ttf"; sourceTree = "<group>"; };
 		D48A52212F753AC900B11317 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D48A53612F7581B600B11317 /* CathierAI.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = CathierAI.storekit; sourceTree = "<group>"; };
 		D4B61DC02F63B0140074205F /* Cathier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cathier.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +93,8 @@
 				D419152D2F6C604900594512 /* CathierTests */,
 				D48A513E2F75276000B11317 /* Frameworks */,
 				D4B61DC12F63B0140074205F /* Products */,
+				D42D7A122F764B1A009020D5 /* InstrumentSerif-Italic.ttf */,
+				D42D7A132F764B1A009020D5 /* InstrumentSerif-Regular.ttf */,
 			);
 			sourceTree = "<group>";
 		};
@@ -202,6 +208,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D42D7A142F764B1A009020D5 /* InstrumentSerif-Regular.ttf in Resources */,
+				D42D7A152F764B1A009020D5 /* InstrumentSerif-Italic.ttf in Resources */,
 				D48A53622F7581B600B11317 /* CathierAI.storekit in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
