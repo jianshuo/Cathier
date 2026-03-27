@@ -48,24 +48,34 @@ final class FriendViewModel {
     // MARK: - Initialise
 
     func initialize() async {
+        t("FriendVM.initialize() — START")
         do {
+            t("ck.accountStatus() — START")
             let status = try await ck.accountStatus()
+            t("ck.accountStatus() — END: \(status.rawValue)")
             guard status == .available else {
                 accountState = .unavailable("请在「系统设置」中登录 iCloud 以使用好友功能")
                 return
             }
+            t("ck.fetchCurrentUserRecordID() — START")
             let userRecordID = try await ck.fetchCurrentUserRecordID()
+            t("ck.fetchCurrentUserRecordID() — END")
             myProfileID = userRecordID
             let profileID = CKRecord.ID(recordName: "profile_\(userRecordID.recordName)")
+            t("ck.fetchProfile() — START")
             if let profile = try await ck.fetchProfile(id: profileID) {
+                t("ck.fetchProfile() — END: found profile")
                 accountState = .ready(profile)
                 await loadFriendsAndFeed()
             } else {
+                t("ck.fetchProfile() — END: no profile (needsSetup)")
                 accountState = .needsProfile
             }
         } catch {
+            t("FriendVM.initialize() — ERROR: \(error)")
             accountState = .unavailable("iCloud 暂时无法连接，请稍后再试")
         }
+        t("FriendVM.initialize() — DONE")
     }
 
     // MARK: - Profile setup

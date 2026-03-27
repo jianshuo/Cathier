@@ -20,10 +20,20 @@ final class SubscriptionManager {
     private(set) var errorMessage: String?
 
     init() {
-        Task { await loadProduct() }
-        Task { await checkStatus() }
+        t("SubscriptionManager.init() — START")
+        Task {
+            t("StoreKit loadProduct() — START")
+            await loadProduct()
+            t("StoreKit loadProduct() — END")
+        }
+        Task {
+            t("StoreKit checkStatus() — START")
+            await checkStatus()
+            t("StoreKit checkStatus() — END")
+        }
         // Listen for background transaction updates (renewals, refunds, etc.)
         Task {
+            t("StoreKit Transaction.updates loop — START")
             for await result in Transaction.updates {
                 if case .verified(let tx) = result {
                     await tx.finish()
@@ -31,6 +41,7 @@ final class SubscriptionManager {
                 }
             }
         }
+        t("SubscriptionManager.init() — END (tasks queued)")
     }
 
     // MARK: - Public API

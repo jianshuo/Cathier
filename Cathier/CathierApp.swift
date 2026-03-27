@@ -1,6 +1,13 @@
 import SwiftUI
 import SwiftData
 
+// Global launch clock — set as early as possible so all timers share one origin.
+let appLaunchTime = Date()
+func t(_ label: String) {
+    let ms = Int(Date().timeIntervalSince(appLaunchTime) * 1000)
+    print("[LAUNCH +\(ms)ms] \(label)")
+}
+
 @main
 struct CathierApp: App {
     @State private var container: ModelContainer?
@@ -14,22 +21,36 @@ struct CathierApp: App {
                     .environment(LanguageManager.shared)
                     .task { await ConfigService.shared.refreshFromGitHub() }
                     .task { checkMilestoneNudge() }
+                    .task {
+                        // Heartbeat: fires every second. Gaps in this log = MainActor blocked.
+                        while !Task.isCancelled {
+                            t("💓 MainActor heartbeat")
+                            try? await Task.sleep(for: .seconds(1))
+                        }
+                    }
             } else {
                 ProgressView()
                     .task(priority: .userInitiated) {
-                        // Run on a background thread so the main thread stays free
-                        // even during CloudKit schema initialisation (can take 1-2 min
-                        // on first launch while NSPersistentCloudKitContainer negotiates
-                        // the schema with iCloud).
+                        t("Task.detached for ModelContainer — START")
                         container = try? await Task.detached(priority: .userInitiated) {
+                            t("ModelConfiguration init — START")
                             let config = ModelConfiguration(
                                 cloudKitDatabase: .private("iCloud.com.wangjianshuo.Cathier")
                             )
-                            return try ModelContainer(
+                            t("ModelConfiguration init — END")
+                            t("ModelContainer init — START")
+                            let c = try ModelContainer(
                                 for: CheckIn.self, DailyJournal.self,
                                 configurations: config
                             )
+                            t("ModelContainer init — END ✅")
+                            return c
                         }.value
+                        if container != nil {
+                            t("container ready, switching to ContentView")
+                        } else {
+                            t("⚠️ ModelContainer init FAILED — container is nil")
+                        }
                     }
             }
         }

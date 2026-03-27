@@ -47,7 +47,7 @@ All sizes use iOS Dynamic Type — never hardcode font sizes. Use `.font(.body)`
 ## Color
 
 ### Approach
-Restrained — one warm earthy accent (terracotta) + warm neutrals. Color is rare and meaningful. The warm off-white background is a deliberate departure from the pure-white iOS default — it makes the app feel analog, physical, present.
+Restrained — one bright energetic accent (orange) + warm neutrals. Color is rare and meaningful. The warm off-white background is a deliberate departure from the pure-white iOS default — it makes the app feel analog, physical, present.
 
 ### Light Mode Palette
 ```
@@ -59,9 +59,9 @@ Text Primary:    #1A1613  — near-black, warm undertone
 Text Secondary:  #5C5650  — secondary text
 Text Muted:      #8A837A  — timestamps, captions, placeholders
 
-Accent:          #C4614A  — terracotta. Primary brand color. Used sparingly.
-Accent Light:    #F2E3DF  — terracotta tint. Chip backgrounds, AI card header.
-Accent Hover:    #AE5240  — pressed/hover state for terracotta elements.
+Accent:          #F2700A  — bright orange. Primary brand color. Used sparingly.
+Accent Light:    #FEEBD8  — orange tint. Chip backgrounds, AI card header.
+Accent Hover:    #D96308  — pressed/hover state for orange elements.
 
 Sage:            #6B8F71  — secondary accent. Positive states, friend features, growth.
 Sage Light:      #E0EDE2  — sage tint. Shared check-ins, positive chips.
@@ -82,8 +82,8 @@ Text Primary:    #F0EDE8
 Text Secondary:  #B5AFA9
 Text Muted:      #7A736D
 
-Accent:          #D4745E  — slightly lighter terracotta for dark backgrounds
-Accent Light:    #3A2420
+Accent:          #F5861A  — slightly lighter orange for dark backgrounds
+Accent Light:    #3D2210
 Sage:            #7DA384
 Sage Light:      #1E2E20
 ```
@@ -216,6 +216,7 @@ Never do these in Cathier UI:
 |------|----------|-----------|
 | 2026-03-27 | Initial design system created | /design-consultation based on competitive research + product context |
 | 2026-03-27 | Terracotta (#C4614A) as primary accent | No emotion app in category uses warm earthy red. Distinctive in App Store screenshots. Evokes physical/body presence, appropriate for body scan feature. |
+| 2026-03-27 | Updated accent to bright orange (#F2700A) | Terracotta read too dark and heavy in practice. Bright orange (#F2700A) is vivid and energetic — keeps the warm identity while actually reading as a strong accent color. Dark mode uses #F5861A. |
 | 2026-03-27 | Instrument Serif for AI reflection text | Every competitor uses clean sans throughout. Serif for reflection moments creates "journal" personality that is genuinely different. |
 | 2026-03-27 | Warm off-white (#F7F5F1) background | Makes the app feel analog and physical — reinforces body-awareness theme. Deliberate departure from default iOS pure white. |
 | 2026-03-27 | No spring animations | The check-in flow should feel like a quiet ritual. Bouncy motion undermines the calm, deliberate feel of emotion awareness practice. |

@@ -58,23 +58,35 @@ final class ConfigService {
 
     private let remoteURL = URL(string: "https://raw.githubusercontent.com/jianshuo/Cathier/main/Cathier/emotion_config.json")!
     private let cacheURL: URL = {
+        // cachesDirectory is NEVER iCloud-synced. Using documentDirectory caused a
+        // 3-second main-thread block when iCloud had the file but it wasn't downloaded.
         FileManager.default
-            .urls(for: .documentDirectory, in: .userDomainMask)[0]
+            .urls(for: .cachesDirectory, in: .userDomainMask)[0]
             .appendingPathComponent("emotion_config_cache.json")
     }()
 
     init() {
-        loadFromDiskOrBundle()
+        t("ConfigService.init() — START")
+        // Load bundle synchronously (always local, < 5 ms).
+        t("ConfigService: loading from bundle — START")
+        loadFromBundle()
+        t("ConfigService: loading from bundle — END")
+        // Check cache asynchronously so we never block the main thread.
+        Task.detached(priority: .utility) {
+            t("ConfigService: loading from cache (background) — START")
+            guard let data = try? Data(contentsOf: self.cacheURL),
+                  let config = try? JSONDecoder().decode(EmotionConfig.self, from: data) else {
+                t("ConfigService: no valid cache found")
+                return
+            }
+            t("ConfigService: applying cache (background) — START")
+            await MainActor.run { self.apply(config) }
+            t("ConfigService: applying cache (background) — END")
+        }
+        t("ConfigService.init() — END")
     }
 
-    // MARK: - Load (sync, called at init)
-
-    private func loadFromDiskOrBundle() {
-        if let data = try? Data(contentsOf: cacheURL),
-           let config = try? JSONDecoder().decode(EmotionConfig.self, from: data) {
-            apply(config)
-            return
-        }
+    private func loadFromBundle() {
         if let url = Bundle.main.url(forResource: "emotion_config", withExtension: "json"),
            let data = try? Data(contentsOf: url),
            let config = try? JSONDecoder().decode(EmotionConfig.self, from: data) {

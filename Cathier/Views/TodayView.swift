@@ -18,6 +18,7 @@ struct TodayView: View {
     }
 
     var body: some View {
+        let _ = t("TodayView.body evaluated — checkIns:\(checkIns.count) journals:\(journals.count)")
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
