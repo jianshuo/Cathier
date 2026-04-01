@@ -24,7 +24,7 @@ struct DailyJournalCard: View {
                     systemImage: journal.isShared ? "person.2.fill" : "lock.fill"
                 )
                 .font(.caption)
-                .foregroundColor(journal.isShared ? .cathierSage : .secondary)
+                .foregroundColor(journal.isShared ? .cathierAccent : .secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(
@@ -37,7 +37,7 @@ struct DailyJournalCard: View {
                     Button(action: edit) {
                         Image(systemName: "pencil.circle.fill")
                             .font(.title3)
-                            .foregroundColor(.cathierSage.opacity(0.8))
+                            .foregroundColor(.cathierAccent.opacity(0.8))
                     }
                     .buttonStyle(.plain)
                 }

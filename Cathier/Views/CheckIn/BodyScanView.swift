@@ -134,7 +134,7 @@ private struct IntensitySlider: View {
     let intenseLabel: String
 
     private let gradient = LinearGradient(
-        colors: [.green, .yellow, .orange, .red],
+        colors: [.yellow, .orange, .cathierAccent, .red],
         startPoint: .leading,
         endPoint: .trailing
     )
@@ -153,7 +153,7 @@ private struct IntensitySlider: View {
 
     private var intensityColor: Color {
         switch value {
-        case ..<4: return .green
+        case ..<4: return .yellow
         case ..<7: return .orange
         default:   return .red
         }

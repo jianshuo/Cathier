@@ -339,7 +339,7 @@ struct IntensityBadge: View {
 
     private var intensityColor: Color {
         switch intensity {
-        case ..<4: return .green
+        case ..<4: return .yellow
         case ..<7: return .cathierAccent
         default:   return .red
         }

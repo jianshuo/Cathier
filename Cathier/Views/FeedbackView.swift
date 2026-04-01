@@ -36,7 +36,7 @@ struct FeedbackView: View {
                             .foregroundColor(.cathierAccent)
                     } header: {
                         Text(lm.feedbackSuccess)
-                            .foregroundColor(.green)
+                            .foregroundColor(.cathierAccent)
                     }
                 }
 
