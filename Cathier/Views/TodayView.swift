@@ -91,11 +91,11 @@ struct TodayView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color.cathierSage.opacity(0.15))
+                        .fill(Color.cathierAccent.opacity(0.15))
                         .frame(width: 48, height: 48)
                     Image(systemName: "book.fill")
                         .font(.system(size: 22))
-                        .foregroundColor(Color.cathierSage)
+                        .foregroundColor(Color.cathierAccent)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(lm.journalEntryWritePrompt)

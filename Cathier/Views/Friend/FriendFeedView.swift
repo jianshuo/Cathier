@@ -156,13 +156,13 @@ private struct FriendHomeView: View {
                     VStack(spacing: 4) {
                         Image(systemName: "person.badge.plus")
                             .font(.system(size: 22))
-                            .foregroundColor(.cathierSage)
+                            .foregroundColor(.cathierAccent)
                             .frame(width: 52, height: 52)
-                            .background(Color.cathierSage.opacity(0.12))
+                            .background(Color.cathierAccent.opacity(0.12))
                             .clipShape(Circle())
                         Text(lm.manageAddFriend)
                             .font(.caption2)
-                            .foregroundColor(.cathierSage)
+                            .foregroundColor(.cathierAccent)
                             .lineLimit(1)
                             .frame(width: 52)
                     }
@@ -203,7 +203,7 @@ private struct FriendHomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.cathierSage)
+                    .background(Color.cathierAccent)
                     .clipShape(Capsule())
             }
         }
@@ -224,7 +224,7 @@ private struct FriendHomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.cathierSage)
+                    .background(Color.cathierAccent)
                     .clipShape(Capsule())
             }
         }
@@ -423,8 +423,8 @@ struct SharedJournalFeedRow: View {
                             .fontWeight(.medium)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(Color.cathierSageLight)
-                            .foregroundColor(Color.cathierSage)
+                            .background(Color.cathierAccentLight)
+                            .foregroundColor(Color.cathierAccent)
                             .clipShape(Capsule())
                     }
                     Text(journal.date.absoluteString)

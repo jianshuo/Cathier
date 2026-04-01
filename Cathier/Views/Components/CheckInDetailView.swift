@@ -40,14 +40,14 @@ struct CheckInDetailView: View {
                                 if !checkIn.bodyParts.isEmpty {
                                     FlowLayout(spacing: 8) {
                                         ForEach(checkIn.bodyParts, id: \.self) { part in
-                                            chip(lm.display(part), color: .blue)
+                                            chip(lm.display(part), color: .cathierAccent)
                                         }
                                     }
                                 }
                                 if !parsed.global.isEmpty {
                                     FlowLayout(spacing: 8) {
                                         ForEach(parsed.global, id: \.self) { s in
-                                            chip(lm.display(s), color: .teal)
+                                            chip(lm.display(s), color: .cathierAccent)
                                         }
                                     }
                                 }
@@ -58,10 +58,10 @@ struct CheckInDetailView: View {
                                         Text(lm.display(entry.part))
                                             .font(.caption)
                                             .fontWeight(.medium)
-                                            .foregroundColor(.blue)
+                                            .foregroundColor(.cathierAccent)
                                         FlowLayout(spacing: 6) {
                                             ForEach(entry.sensations, id: \.self) { s in
-                                                chip(lm.display(s), color: .teal)
+                                                chip(lm.display(s), color: .cathierAccent)
                                             }
                                         }
                                     }
@@ -69,7 +69,7 @@ struct CheckInDetailView: View {
                                 if !parsed.global.isEmpty {
                                     FlowLayout(spacing: 8) {
                                         ForEach(parsed.global, id: \.self) { s in
-                                            chip(lm.display(s), color: .teal)
+                                            chip(lm.display(s), color: .cathierAccent)
                                         }
                                     }
                                 }
@@ -174,7 +174,7 @@ struct CheckInDetailView: View {
             if isShared, let tier = currentTier {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.green)
+                        .foregroundColor(.cathierAccent)
                     Text(tier.displayName)
                         .font(.subheadline)
                     Text("·")
@@ -253,7 +253,7 @@ struct CheckInDetailView: View {
         }
         .overlay(
             RoundedRectangle(cornerRadius: 14)
-                .stroke(isShared ? Color.green.opacity(0.3) : Color.clear, lineWidth: 1)
+                .stroke(isShared ? Color.cathierAccent.opacity(0.3) : Color.clear, lineWidth: 1)
         )
     }
 

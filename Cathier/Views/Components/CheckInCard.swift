@@ -16,7 +16,7 @@ struct CheckInCard: View {
                     if checkIn.shareLevel != nil {
                         Image(systemName: "person.2.fill")
                             .font(.caption2)
-                            .foregroundColor(.green.opacity(0.8))
+                            .foregroundColor(.cathierAccent.opacity(0.8))
                     }
                     Spacer()
                     IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
