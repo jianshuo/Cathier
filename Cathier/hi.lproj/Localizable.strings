@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "अभी";
+"tab.journal" = "डायरी";
+"tab.friends" = "दोस्त";
+"tab.settings" = "सेटिंग्स";
+
+/* TodayView */
+"today.nav_title" = "अभी";
+"today.records" = "आज के रिकॉर्ड";
+"today.start_scan" = "शरीर स्कैन शुरू करें";
+"today.body_saying" = "अभी आपका शरीर क्या कह रहा है?";
+"greeting.morning" = "सुप्रभात";
+"greeting.afternoon" = "शुभ दोपहर";
+"greeting.evening" = "शुभ संध्या";
+"today.no_check_in" = "आपने आज चेक-इन नहीं किया। अपने शरीर को स्कैन करने के लिए एक मिनट लें।";
+"today.checked_in" = "आज %d बार चेक-इन किया। जारी रखें!";
+
+/* JournalView */
+"journal.nav_title" = "डायरी";
+"journal.delete" = "हटाएं";
+"journal.empty" = "अभी तक कोई रिकॉर्ड नहीं";
+"journal.empty_hint" = "पहले चेक-इन के बाद आपके रिकॉर्ड यहाँ दिखेंगे।";
+"journal.today" = "आज";
+"journal.yesterday" = "कल";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "रद्द करें";
+"check_in.step_body_scan" = "शरीर स्कैन";
+"check_in.step_emotion" = "भावना लेबल";
+"check_in.step_ai" = "AI साथी";
+
+/* BodyScanView */
+"body_scan.where_title" = "आप इसे कहाँ महसूस करते हैं?";
+"body_scan.multiple" = "एकाधिक चुनाव की अनुमति";
+"body_scan.what_title" = "यह कैसा लगता है?";
+"body_scan.trigger_title" = "इस भावना को किसने उत्पन्न किया?";
+"body_scan.trigger_subtitle" = "वैकल्पिक";
+"body_scan.trigger_placeholder" = "कोई घटना, दृश्य, या विचार का वर्णन करें\u2026";
+"body_scan.intensity" = "तीव्रता";
+"body_scan.next" = "अगला: भावनाओं की पहचान";
+"body_scan.mild" = "हल्का";
+"body_scan.intense" = "तीव्र";
+
+/* EmotionLabelView */
+"emotion.question" = "यह भावना किस भावना जैसी लगती है?";
+"emotion.specific" = "अधिक विशेष रूप से\u2026";
+"emotion.custom_prompt" = "या इसे अपने शब्दों में वर्णन करें";
+"emotion.custom_placeholder" = "एक भावना टाइप करें...";
+"emotion.gen_ai" = "AI फीडबैक जनरेट करें";
+"emotion.skip" = "छोड़ें और सीधे सेव करें";
+"emotion.selected" = "चुना गया";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "वर्तमान भावनाएं";
+"ai.note_label" = "नोट जोड़ें (वैकल्पिक)";
+"ai.note_placeholder" = "अतिरिक्त विचार रिकॉर्ड करें...";
+"ai.share_title" = "दोस्तों के साथ साझा करें?";
+"ai.dont_share" = "साझा न करें";
+"ai.only_self" = "केवल मेरे लिए दृश्यमान";
+"ai.companion" = "AI साथी";
+"ai.save" = "रिकॉर्ड सेव करें";
+"ai.loading" = "आपकी भावनाओं को प्रोसेस किया जा रहा है...";
+"ai.retry" = "फिर से प्रयास करें";
+"ai.intensity_badge" = "तीव्रता %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "भावना श्रेणी साझा करें";
+"tier.category_desc" = "मित्र केवल भावना श्रेणी और तीव्रता देख सकते हैं";
+"tier.emotions_name" = "भावना शब्द साझा करें";
+"tier.emotions_desc" = "मित्र विशिष्ट भावना शब्द देख सकते हैं";
+"tier.full_name" = "पूर्ण साझाकरण";
+"tier.full_desc" = "मित्र नोट्स सहित सब कुछ देख सकते हैं";
+"ai.share_ai_feedback_toggle" = "AI फीडबैक भी साझा करें";
+"ai.share_ai_feedback_desc" = "दोस्त AI की प्रतिक्रिया भी देख सकते हैं";
+
+/* FriendFeedView */
+"friend.nav_title" = "दोस्त";
+"friend.no_friends" = "अभी कोई दोस्त नहीं";
+"friend.add_hint" = "नाम खोजकर दोस्त जोड़ें";
+"friend.add_friend" = "दोस्त जोड़ें";
+"friend.empty_feed" = "किसी दोस्त ने अभी तक कोई मूड साझा नहीं किया";
+"friend.default_name" = "दोस्त";
+
+/* FriendSetupView */
+"setup.title" = "दोस्त प्रोफाइल सेट करें";
+"setup.subtitle" = "दोस्त यह नाम और अवतार देखेंगे";
+"setup.choose_emoji" = "अवतार इमोजी चुनें";
+"setup.nickname_label" = "आपका उपनाम";
+"setup.nickname_placeholder" = "उपनाम दर्ज करें...";
+"setup.done" = "हो गया";
+
+/* FriendManageView */
+"manage.nav_title" = "दोस्त प्रबंधन";
+"manage.add_friend" = "दोस्त जोड़ें";
+"manage.connected_friends" = "जुड़े हुए दोस्त (%d)";
+"manage.disconnect" = "डिसकनेक्ट करें";
+"manage.no_friends" = "अभी कोई दोस्त नहीं। किसी को जोड़ने के लिए नाम से खोजें।";
+"manage.connected_on" = "%@ को जुड़े";
+"manage.disconnect_alert" = "\"%@\" से डिसकनेक्ट करें?";
+"manage.disconnect_message" = "आप एक दूसरे के साझा मूड रिकॉर्ड नहीं देख पाएंगे।";
+"manage.cancel" = "रद्द करें";
+
+/* AddFriendView */
+"search.nav_title" = "दोस्त जोड़ें";
+"search.placeholder" = "नाम से खोजें\u2026";
+"search.hint" = "लोगों को खोजने के लिए नाम दर्ज करें";
+"search.no_results" = "कोई उपयोगकर्ता नहीं मिला";
+"search.add" = "जोड़ें";
+"search.requested" = "अनुरोध किया गया";
+"search.already_friends" = "दोस्त";
+
+/* FriendRequests */
+"request.pending_section" = "दोस्ती के अनुरोध";
+"request.accept" = "स्वीकार करें";
+"request.decline" = "अस्वीकार करें";
+"request.from" = "दोस्त बनना चाहते हैं";
+
+/* SettingsView */
+"settings.nav_title" = "सेटिंग्स";
+"settings.ai_section" = "AI सेटिंग्स";
+"settings.ai_provider" = "AI प्रदाता";
+"settings.saved" = "सेव हो गया";
+"settings.get_key" = "API Key प्राप्त करें \u2192";
+"settings.key_footer" = "API Key केवल स्थानीय रूप से संग्रहीत है और किसी सर्वर पर अपलोड नहीं होती।";
+"settings.managed_footer" = "सदस्यता के बाद API Key की आवश्यकता नहीं। पूर्ण AI सुविधाएं शामिल। कभी भी रद्द करें।";
+"settings.managed_desc" = "हमारे होस्ट किए गए AI का उपयोग करें \u2014 API Key की आवश्यकता नहीं, तुरंत काम करता है।";
+"settings.managed_feature1" = "Qwen (\u901a\u4e49\u5343\u95ee) द्वारा संचालित";
+"settings.managed_feature2" = "पूर्ण चेक-इन और भावना फीडबैक";
+"settings.managed_feature3" = "पैटर्न विश्लेषण और इनसाइट रिपोर्ट";
+"settings.managed_subscribe" = "सदस्यता लें";
+"settings.managed_per_month" = "महीना";
+"settings.managed_active" = "सदस्यता सक्रिय \u2014 AI सेवा चालू";
+"settings.managed_manage" = "सदस्यता प्रबंधित करें \u2192";
+"settings.managed_restore" = "खरीदारी पुनर्स्थापित करें";
+"settings.reminders_section" = "रिमाइंडर";
+"settings.enable_reminder" = "रिमाइंडर सक्षम करें";
+"settings.save_reminder" = "रिमाइंडर सेटिंग्स सेव करें";
+"settings.reminder_footer_on" = "रिमाइंडर निर्धारित समय पर स्थानीय अधिसूचनाओं के रूप में भेजे जाएंगे।";
+"settings.reminder_footer_off" = "रिमाइंडर पाने के लिए सिस्टम सेटिंग्स में अधिसूचना अनुमति दें।";
+"settings.about_section" = "के बारे में";
+"settings.about_row" = "Cathier के बारे में";
+"settings.version" = "संस्करण";
+"settings.build" = "बिल्ड";
+"settings.data_storage" = "डेटा संग्रहण";
+"settings.local_only" = "iCloud सिंक";
+"settings.language_section" = "भाषा";
+"settings.has_key" = "मेरे पास API Key है";
+"settings.no_key" = "प्रबंधित AI का उपयोग करें";
+"settings.context_section" = "आपके बारे में (AI संदर्भ)";
+"settings.context_placeholder" = "AI को अपनी पृष्ठभूमि बताएं \u2014 आपका काम, आप किससे गुज़र रहे हैं\u2026 इससे इनसाइट अधिक प्रासंगिक होती हैं।";
+"settings.context_footer" = "स्थानीय रूप से संग्रहीत। पैटर्न विश्लेषण प्रॉम्प्ट में शामिल।";
+
+/* AboutView */
+"about.made_by" = "बनाया";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "आपका भावनात्मक जागरूकता साथी";
+"about.privacy_title" = "गोपनीयता पहले";
+"about.privacy_detail" = "आपका डेटा डिवाइस पर रहता है। AI फीडबैक आपकी खुद की API Key के माध्यम से संसाधित होता है, कभी भी तीसरे पक्ष के सर्वर के माध्यम से नहीं।";
+"about.copyright_label" = "कॉपीराइट";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "आज की डायरी";
+"journal_entry.mood_label" = "आज आप कैसा महसूस कर रहे हैं?";
+"journal_entry.gains_label" = "आज की उपलब्धियां";
+"journal_entry.gains_placeholder" = "आज की उपलब्धियां, इनसाइट या विचार रिकॉर्ड करें\u2026";
+"journal_entry.share_label" = "दोस्तों के साथ साझा करें";
+"journal_entry.share_desc" = "दोस्त आपका मूड और उपलब्धियां देख सकते हैं";
+"journal_entry.save" = "आज की डायरी सेव करें";
+"journal_entry.edit" = "संपादित करें";
+"journal_entry.once_a_day" = "दिन में एक बार";
+"journal_entry.today_title" = "आज की डायरी";
+"journal_entry.shared_badge" = "साझा किया";
+"journal_entry.private_badge" = "निजी";
+"journal_entry.write_prompt" = "आज का मूड और उपलब्धियां रिकॉर्ड करें";
+"journal_entry.write_hint" = "दिन में एक बार \u2014 आज के लिए एक निशान छोड़ें";
+
+/* FeedbackView */
+"feedback.nav_title" = "फीचर सुझाव";
+"feedback.section_title" = "फीडबैक";
+"feedback.button" = "सुझाव सबमिट करें";
+"feedback.title_label" = "शीर्षक";
+"feedback.title_placeholder" = "अपने सुझाव का संक्षिप्त विवरण\u2026";
+"feedback.body_label" = "विवरण";
+"feedback.body_footer" = "आपका सुझाव GitHub Issue के रूप में सबमिट किया जाएगा और AI द्वारा स्वचालित रूप से लागू किया जाएगा।";
+"feedback.token_section" = "GitHub सेटिंग्स";
+"feedback.token_footer" = "Issues सबमिट करने के लिए 'repo' स्कोप वाला GitHub Personal Access Token आवश्यक है। केवल स्थानीय रूप से संग्रहीत।";
+"feedback.submit" = "सबमिट करें";
+"feedback.success" = "सफलतापूर्वक सबमिट किया गया!";
+"feedback.view_issue" = "GitHub Issue देखें \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "रिकॉर्ड विवरण";
+"detail.done" = "हो गया";
+"detail.body_section" = "शारीरिक संवेदनाएं";
+"detail.emotions_section" = "भावनाएं";
+"detail.trigger_section" = "ट्रिगर घटना";
+"detail.note_section" = "नोट";
+"detail.date_format" = "d MMM yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "पैटर्न इनसाइट";
+"insights.toolbar_button" = "इनसाइट";
+"insights.focus_title" = "आप क्या समझना चाहते हैं?";
+"insights.focus_triggers" = "मेरे तनाव के कारण";
+"insights.focus_growth" = "क्या मैं बेहतर हो रहा हूं?";
+"insights.focus_body" = "मेरा शरीर मुझे क्या बताता है";
+"insights.focus_surprise" = "मुझे चौंकाएं";
+"insights.analyze" = "मेरे पैटर्न का विश्लेषण करें";
+"insights.refresh" = "फिर से विश्लेषण करें";
+"insights.loading" = "आपके भावनात्मक इतिहास का विश्लेषण हो रहा है\u2026";
+"insights.empty_title" = "रिकॉर्ड करते रहें";
+"insights.empty_hint" = "कम से कम 7 चेक-इन के बाद पैटर्न इनसाइट दिखाई देते हैं।";
+"insights.load_error" = "आपके चेक-इन लोड नहीं हो सके। ऐप फिर से शुरू करने का प्रयास करें।";
+"insights.history_title" = "पिछले विश्लेषण";
+"insights.history_empty" = "अभी तक कोई विश्लेषण नहीं";
+"insights.analyzed_at" = "विश्लेषण किया";
+"insights.new_check_ins" = "अंतिम विश्लेषण के बाद %d नए चेक-इन";
+"insights.chart_title" = "समय के साथ तीव्रता";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 पैटर्न इनसाइट तैयार";
+"notif.milestone_body" = "आपने 30 चेक-इन रिकॉर्ड किए! अपने भावनात्मक पैटर्न का विश्लेषण करने के लिए डायरी खोलें।";
+
+/* Error messages */
+"error.no_api_key" = "कृपया पहले सेटिंग्स में अपनी API Key दर्ज करें।";
+"error.not_subscribed" = "AI सेवा का उपयोग करने के लिए कृपया सदस्यता लें।";
+"error.api_error" = "API अनुरोध विफल (HTTP %d)";
+"error.decode_error" = "AI प्रतिक्रिया पार्स करने में विफल";

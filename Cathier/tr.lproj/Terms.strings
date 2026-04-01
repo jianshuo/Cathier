@@ -1,0 +1,142 @@
+/* Body parts */
+"呼吸" = "Nefes";
+"腹部" = "Karın";
+"心脏" = "Kalp";
+"心轮" = "Kalp Çakrası";
+"眉心" = "Üçüncü Göz";
+"胃" = "Mide";
+"海底轮" = "Kök Çakrası";
+"头部" = "Baş";
+"眼睛" = "Gözler";
+"脸部" = "Yüz";
+"喉咙" = "Boğaz";
+"头皮" = "Saç derisi";
+"肩膀" = "Omuzlar";
+"颈部" = "Boyun";
+"手臂" = "Kollar";
+"手掌" = "Avuç içleri";
+"大腿" = "Uyluklар";
+"整个身体" = "Tüm vücut";
+
+/* Sensations */
+"紧绷" = "Gergin";
+"沉重" = "Ağır";
+"发热" = "Sıcak";
+"空洞" = "Boş";
+"酸胀" = "Ağrılı";
+"轻盈" = "Hafif";
+"颤抖" = "Titreyen";
+"麻木" = "Uyuşuk";
+"刺痛" = "Karıncalanma";
+"收缩" = "Kasılan";
+"压迫" = "Baskı";
+"温暖" = "Sıcak";
+"冰冷" = "Soğuk";
+"放松" = "Rahat";
+"震动" = "Titreşen";
+"膨胀" = "Genişleyen";
+
+/* Emotion categories */
+"激情" = "Tutkulu";
+"快乐" = "Mutlu";
+"平静" = "Sakin";
+"爱与关怀" = "Sevgi ve İlgi";
+"愤怒" = "Öfke";
+"恐惧" = "Korku";
+"悲伤" = "Üzüntü";
+"惊讶" = "Şaşkınlık";
+
+/* Emotions — Impassioned */
+"热情" = "Hevesli";
+"兴奋" = "Heyecanlı";
+"激动" = "Coşkulu";
+"狂喜" = "Delirmiş";
+"充满激情" = "Tutkulu";
+"欣喜若狂" = "Coşkunluk";
+"激动万分" = "Heyecan dolu";
+"坚定" = "Kararlı";
+"自信" = "Kendinden emin";
+"乐观" = "İyimser";
+"期待" = "Bekleyişte";
+
+/* Emotions — Happy */
+"喜悦" = "Neşeli";
+"幸福" = "Mutlu";
+"被逗乐" = "Eğlenen";
+"高兴" = "Memnun";
+"幸运" = "Şanslı";
+"感恩" = "Minnettar";
+"充满希望" = "Umut dolu";
+"充满活力" = "Canlı";
+"愉悦" = "Hoş";
+
+/* Emotions — Calm */
+"平和" = "Huzurlu";
+"满足" = "Tatmin olmuş";
+"宁静" = "Sakin";
+"舒适" = "Rahat";
+"专注" = "Odaklanmış";
+"从容" = "Soğukkanlı";
+"淡然" = "Kayıtsız";
+"安然" = "Rahat";
+
+/* Emotions — Love & Care */
+"充满爱" = "Sevgi dolu";
+"充满柔情" = "Şefkatli";
+"钦佩" = "Hayranlık duyan";
+"同情" = "Şefkatli";
+"友好" = "Dostane";
+
+/* Emotions — Anger */
+"狂怒" = "Öfkeli";
+"愤慨" = "Kızgın";
+"烦躁" = "Sinirli";
+"恼火" = "Rahatsız";
+"怨恨" = "Kinli";
+"不满" = "Memnuniyetsiz";
+"嫉妒" = "Kıskanç";
+"挫败" = "Hayal kırıklığına uğramış";
+
+/* Emotions — Fear */
+"紧张" = "Sinirli";
+"担心" = "Endişeli";
+"害怕" = "Korkmuş";
+"焦虑" = "Kaygılı";
+"压力大" = "Stresli";
+"不安" = "Huzursuz";
+"慌乱" = "Panikleyen";
+"惶恐" = "Dehşete düşmüş";
+
+/* Emotions — Disheartened */
+"难过" = "Üzgün";
+"孤独" = "Yalnız";
+"受伤" = "Kırılmış";
+"抑郁" = "Depresif";
+"精疲力尽" = "Yorgun";
+"失落" = "Kaybolmuş";
+"委屈" = "Haksızlığa uğramış";
+"沮丧" = "Cesareti kırılmış";
+"哀伤" = "Kederli";
+"遗憾" = "Pişman";
+"无助" = "Çaresiz";
+"绝望" = "Umutsuz";
+
+/* Emotions — Shame */
+"羞愧" = "Utanmış";
+"尴尬" = "Mahcup";
+"内疚" = "Suçlu";
+"后悔" = "Pişman";
+"羞耻" = "Utanç verici";
+"自责" = "Kendini suçlayan";
+"厌恶" = "Tiksinen";
+"反感" = "İtilen";
+
+/* Emotions — Surprise */
+"震惊" = "Şoke olmuş";
+"受惊" = "Ürkmüş";
+"惊叹" = "Şaşırmış";
+"震撼" = "Hayrete düşmüş";
+"惊喜" = "Hoş bir şekilde şaşırmış";
+"困惑" = "Kafası karışmış";
+"好奇" = "Meraklı";
+"意外" = "Beklenmedik";

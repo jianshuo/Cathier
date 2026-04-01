@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "Сейчас";
+"tab.journal" = "Дневник";
+"tab.friends" = "Друзья";
+"tab.settings" = "Настройки";
+
+/* TodayView */
+"today.nav_title" = "Сейчас";
+"today.records" = "Записи за сегодня";
+"today.start_scan" = "Начать сканирование тела";
+"today.body_saying" = "Что говорит вам ваше тело прямо сейчас?";
+"greeting.morning" = "Доброе утро";
+"greeting.afternoon" = "Добрый день";
+"greeting.evening" = "Добрый вечер";
+"today.no_check_in" = "Сегодня вы ещё не делали чекин. Уделите минуту сканированию тела.";
+"today.checked_in" = "Сегодня сделано %d чекинов. Продолжайте!";
+
+/* JournalView */
+"journal.nav_title" = "Дневник";
+"journal.delete" = "Удалить";
+"journal.empty" = "Записей пока нет";
+"journal.empty_hint" = "Ваши записи появятся здесь после первого чекина.";
+"journal.today" = "Сегодня";
+"journal.yesterday" = "Вчера";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "Отмена";
+"check_in.step_body_scan" = "Сканирование тела";
+"check_in.step_emotion" = "Метка эмоции";
+"check_in.step_ai" = "Помощник ИИ";
+
+/* BodyScanView */
+"body_scan.where_title" = "Где вы это чувствуете?";
+"body_scan.multiple" = "Можно выбрать несколько";
+"body_scan.what_title" = "Как это ощущается?";
+"body_scan.trigger_title" = "Что вызвало это чувство?";
+"body_scan.trigger_subtitle" = "Необязательно";
+"body_scan.trigger_placeholder" = "Опишите событие, сцену или мысль\u2026";
+"body_scan.intensity" = "Интенсивность";
+"body_scan.next" = "Далее: Определить эмоции";
+"body_scan.mild" = "Слабая";
+"body_scan.intense" = "Сильная";
+
+/* EmotionLabelView */
+"emotion.question" = "На какую эмоцию похоже это чувство?";
+"emotion.specific" = "Более конкретно\u2026";
+"emotion.custom_prompt" = "Или опишите своими словами";
+"emotion.custom_placeholder" = "Введите эмоцию...";
+"emotion.gen_ai" = "Получить отзыв ИИ";
+"emotion.skip" = "Пропустить и сохранить сразу";
+"emotion.selected" = "Выбрано";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "Текущие чувства";
+"ai.note_label" = "Добавить заметку (необязательно)";
+"ai.note_placeholder" = "Запишите дополнительные мысли...";
+"ai.share_title" = "Поделиться с друзьями?";
+"ai.dont_share" = "Не делиться";
+"ai.only_self" = "Видно только мне";
+"ai.companion" = "Помощник ИИ";
+"ai.save" = "Сохранить запись";
+"ai.loading" = "Обработка ваших чувств...";
+"ai.retry" = "Повторить";
+"ai.intensity_badge" = "Интенсивность %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "Поделиться категорией эмоции";
+"tier.category_desc" = "Друг видит только категорию эмоции и интенсивность";
+"tier.emotions_name" = "Поделиться словами эмоции";
+"tier.emotions_desc" = "Друг видит конкретные слова эмоции";
+"tier.full_name" = "Полный доступ";
+"tier.full_desc" = "Друг видит всё, включая заметки";
+"ai.share_ai_feedback_toggle" = "Также поделиться отзывом ИИ";
+"ai.share_ai_feedback_desc" = "Друзья тоже могут видеть ответ ИИ";
+
+/* FriendFeedView */
+"friend.nav_title" = "Друзья";
+"friend.no_friends" = "Друзей пока нет";
+"friend.add_hint" = "Добавляйте друзей, ища по имени";
+"friend.add_friend" = "Добавить друга";
+"friend.empty_feed" = "Никто из друзей ещё не поделился настроением";
+"friend.default_name" = "Друг";
+
+/* FriendSetupView */
+"setup.title" = "Настройка профиля друга";
+"setup.subtitle" = "Друзья увидят это имя и аватар";
+"setup.choose_emoji" = "Выберите эмодзи аватара";
+"setup.nickname_label" = "Ваш псевдоним";
+"setup.nickname_placeholder" = "Введите псевдоним...";
+"setup.done" = "Готово";
+
+/* FriendManageView */
+"manage.nav_title" = "Управление друзьями";
+"manage.add_friend" = "Добавить друга";
+"manage.connected_friends" = "Подключённые друзья (%d)";
+"manage.disconnect" = "Отключить";
+"manage.no_friends" = "Друзей пока нет. Ищите по имени, чтобы кого-нибудь добавить.";
+"manage.connected_on" = "Подключились %@";
+"manage.disconnect_alert" = "Отключиться от \"%@\"?";
+"manage.disconnect_message" = "Вы больше не будете видеть общие записи настроения друг друга.";
+"manage.cancel" = "Отмена";
+
+/* AddFriendView */
+"search.nav_title" = "Добавить друга";
+"search.placeholder" = "Поиск по имени\u2026";
+"search.hint" = "Введите имя, чтобы найти людей";
+"search.no_results" = "Пользователи не найдены";
+"search.add" = "Добавить";
+"search.requested" = "Запрошено";
+"search.already_friends" = "Друзья";
+
+/* FriendRequests */
+"request.pending_section" = "Заявки в друзья";
+"request.accept" = "Принять";
+"request.decline" = "Отклонить";
+"request.from" = "хочет быть вашим другом";
+
+/* SettingsView */
+"settings.nav_title" = "Настройки";
+"settings.ai_section" = "Настройки ИИ";
+"settings.ai_provider" = "Провайдер ИИ";
+"settings.saved" = "Сохранено";
+"settings.get_key" = "Получить ключ API \u2192";
+"settings.key_footer" = "Ключ API хранится только локально и никогда не загружается на сервер.";
+"settings.managed_footer" = "После подписки ключ API не нужен. Полные функции ИИ включены. Отменяйте когда угодно.";
+"settings.managed_desc" = "Используйте наш хостинговый ИИ \u2014 ключ API не нужен, работает сразу.";
+"settings.managed_feature1" = "На основе Qwen (\u901a\u4e49\u5343\u95ee)";
+"settings.managed_feature2" = "Полный чекин и эмоциональная обратная связь";
+"settings.managed_feature3" = "Анализ паттернов и отчёты об инсайтах";
+"settings.managed_subscribe" = "Подписаться";
+"settings.managed_per_month" = "мес";
+"settings.managed_active" = "Подписка активна \u2014 сервис ИИ работает";
+"settings.managed_manage" = "Управление подпиской \u2192";
+"settings.managed_restore" = "Восстановить покупку";
+"settings.reminders_section" = "Напоминания";
+"settings.enable_reminder" = "Включить напоминания";
+"settings.save_reminder" = "Сохранить настройки напоминаний";
+"settings.reminder_footer_on" = "Напоминания будут отправляться как локальные уведомления в установленное время.";
+"settings.reminder_footer_off" = "Разрешите уведомления в системных настройках, чтобы получать напоминания.";
+"settings.about_section" = "О приложении";
+"settings.about_row" = "О Cathier";
+"settings.version" = "Версия";
+"settings.build" = "Сборка";
+"settings.data_storage" = "Хранилище данных";
+"settings.local_only" = "Синхронизация iCloud";
+"settings.language_section" = "Язык";
+"settings.has_key" = "У меня есть ключ API";
+"settings.no_key" = "Использовать управляемый ИИ";
+"settings.context_section" = "О вас (контекст ИИ)";
+"settings.context_placeholder" = "Расскажите ИИ о себе \u2014 вашей работе, что сейчас происходит\u2026 Это сделает инсайты более актуальными.";
+"settings.context_footer" = "Хранится локально. Включается в запрос анализа паттернов.";
+
+/* AboutView */
+"about.made_by" = "Создано";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "Ваш помощник в эмоциональной осознанности";
+"about.privacy_title" = "Конфиденциальность прежде всего";
+"about.privacy_detail" = "Ваши данные остаются на устройстве. Обратная связь ИИ обрабатывается через ваш собственный ключ API, никогда через сторонние серверы.";
+"about.copyright_label" = "Авторское право";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "Дневник сегодня";
+"journal_entry.mood_label" = "Как вы себя чувствуете сегодня?";
+"journal_entry.gains_label" = "Достижения дня";
+"journal_entry.gains_placeholder" = "Записывайте достижения, инсайты или мысли дня\u2026";
+"journal_entry.share_label" = "Поделиться с друзьями";
+"journal_entry.share_desc" = "Друзья могут видеть ваше настроение и достижения";
+"journal_entry.save" = "Сохранить дневник дня";
+"journal_entry.edit" = "Изменить";
+"journal_entry.once_a_day" = "Одна запись в день";
+"journal_entry.today_title" = "Дневник сегодня";
+"journal_entry.shared_badge" = "Поделились";
+"journal_entry.private_badge" = "Личное";
+"journal_entry.write_prompt" = "Запишите настроение и достижения дня";
+"journal_entry.write_hint" = "Один раз в день \u2014 оставьте след сегодняшнего дня";
+
+/* FeedbackView */
+"feedback.nav_title" = "Предложения по функциям";
+"feedback.section_title" = "Отзыв";
+"feedback.button" = "Отправить предложение";
+"feedback.title_label" = "Заголовок";
+"feedback.title_placeholder" = "Краткое описание вашего предложения\u2026";
+"feedback.body_label" = "Детали";
+"feedback.body_footer" = "Ваше предложение будет отправлено как GitHub Issue и автоматически реализовано ИИ.";
+"feedback.token_section" = "Настройки GitHub";
+"feedback.token_footer" = "Для отправки issues требуется личный токен доступа GitHub с областью 'repo'. Хранится только локально.";
+"feedback.submit" = "Отправить";
+"feedback.success" = "Успешно отправлено!";
+"feedback.view_issue" = "Посмотреть GitHub Issue \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "Детали записи";
+"detail.done" = "Готово";
+"detail.body_section" = "Телесные ощущения";
+"detail.emotions_section" = "Эмоции";
+"detail.trigger_section" = "Triggering event";
+"detail.note_section" = "Заметка";
+"detail.date_format" = "d MMM yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "Инсайты паттернов";
+"insights.toolbar_button" = "Инсайты";
+"insights.focus_title" = "Что вы хотите понять?";
+"insights.focus_triggers" = "Мои стрессовые факторы";
+"insights.focus_growth" = "Я становлюсь лучше?";
+"insights.focus_body" = "Что говорит мне тело";
+"insights.focus_surprise" = "Удиви меня";
+"insights.analyze" = "Анализировать мои паттерны";
+"insights.refresh" = "Перeanализировать";
+"insights.loading" = "Анализ вашей эмоциональной истории\u2026";
+"insights.empty_title" = "Продолжайте записывать";
+"insights.empty_hint" = "Инсайты паттернов появятся после как минимум 7 чекинов.";
+"insights.load_error" = "Не удалось загрузить чекины. Попробуйте перезапустить приложение.";
+"insights.history_title" = "Предыдущие анализы";
+"insights.history_empty" = "Анализов пока нет";
+"insights.analyzed_at" = "Проанализировано";
+"insights.new_check_ins" = "%d новых чекинов с последнего анализа";
+"insights.chart_title" = "Интенсивность со временем";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 Инсайты паттернов готовы";
+"notif.milestone_body" = "Вы зафиксировали 30 чекинов! Откройте дневник, чтобы проанализировать свои эмоциональные паттерны.";
+
+/* Error messages */
+"error.no_api_key" = "Сначала введите ключ API в Настройках.";
+"error.not_subscribed" = "Подпишитесь для использования сервиса ИИ.";
+"error.api_error" = "Ошибка API-запроса (HTTP %d)";
+"error.decode_error" = "Не удалось разобрать ответ ИИ";
