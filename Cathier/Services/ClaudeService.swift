@@ -2,7 +2,6 @@ import Foundation
 
 enum ClaudeError: LocalizedError {
     case noApiKey
-    case notSubscribed
     case apiError(Int)
     case decodingError
 
@@ -10,7 +9,6 @@ enum ClaudeError: LocalizedError {
         let lm = LanguageManager.shared
         switch self {
         case .noApiKey:        return lm.claudeNoApiKey
-        case .notSubscribed:   return lm.claudeNotSubscribed
         case .apiError(let c): return lm.claudeApiError(c)
         case .decodingError:   return lm.claudeDecodeError
         }
@@ -40,18 +38,18 @@ private struct OpenAIResponse: Decodable {
 enum ClaudeService {
 
     // MARK: - Managed service configuration
-    // Injected at build time from the QWEN_API_KEY GitHub secret → Info.plist.
-    // Never hard-code the real key here.
+    // Production: injected at build time from the QWEN_API_KEY GitHub secret → Info.plist.
+    // Local dev: set QWEN_API_KEY in Xcode scheme → Run → Environment Variables.
     private static var managedApiKey: String {
-        Bundle.main.infoDictionary?["QwenApiKey"] as? String ?? ""
+        let plistKey = Bundle.main.infoDictionary?["QwenApiKey"] as? String ?? ""
+        if !plistKey.isEmpty { return plistKey }
+        return ProcessInfo.processInfo.environment["QWEN_API_KEY"] ?? ""
     }
 
     // MARK: - Provider helpers
 
-    private static var activeProvider: AIProvider {
-        let raw = UserDefaults.standard.string(forKey: "aiProvider") ?? AIProvider.claude.rawValue
-        return AIProvider(rawValue: raw) ?? .claude
-    }
+    // Always use the managed Qwen provider — developer's key, free for all users.
+    private static var activeProvider: AIProvider { .managed }
 
     private static var feedbackModel: String  { activeProvider.feedbackModel }
     private static var insightsModel: String  { activeProvider.insightsModel }
@@ -61,16 +59,9 @@ enum ClaudeService {
     private static func call(model: String, system: String, user: String, maxTokens: Int) async throws -> String {
         let provider = activeProvider
 
-        // Resolve API key — managed tier uses the hardcoded developer key
-        let apiKey: String
-        if provider.isManaged {
-            guard SubscriptionManager.shared.isSubscribed else { throw ClaudeError.notSubscribed }
-            apiKey = managedApiKey
-            guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
-        } else {
-            apiKey = UserDefaults.standard.string(forKey: provider.apiKeyStorageKey) ?? ""
-            guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
-        }
+        // Always use the developer's Qwen key injected at build time.
+        let apiKey = managedApiKey
+        guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
 
         var request = URLRequest(url: provider.endpoint)
         request.httpMethod = "POST"

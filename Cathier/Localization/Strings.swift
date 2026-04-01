@@ -134,21 +134,6 @@ extension LanguageManager {
 
     // MARK: SettingsView
     var settingsNavTitle: String          { localized("settings.nav_title") }
-    var settingsAISection: String         { localized("settings.ai_section") }
-    var settingsAIProvider: String        { localized("settings.ai_provider") }
-    var settingsSaved: String             { localized("settings.saved") }
-    var settingsGetKey: String            { localized("settings.get_key") }
-    var settingsKeyFooter: String         { localized("settings.key_footer") }
-    var settingsManagedFooter: String     { localized("settings.managed_footer") }
-    var settingsManagedDesc: String       { localized("settings.managed_desc") }
-    var settingsManagedFeature1: String   { localized("settings.managed_feature1") }
-    var settingsManagedFeature2: String   { localized("settings.managed_feature2") }
-    var settingsManagedFeature3: String   { localized("settings.managed_feature3") }
-    var settingsManagedSubscribe: String  { localized("settings.managed_subscribe") }
-    var settingsManagedPerMonth: String   { localized("settings.managed_per_month") }
-    var settingsManagedActive: String     { localized("settings.managed_active") }
-    var settingsManagedManage: String     { localized("settings.managed_manage") }
-    var settingsManagedRestore: String    { localized("settings.managed_restore") }
     var settingsRemindersSection: String  { localized("settings.reminders_section") }
     var settingsEnableReminder: String    { localized("settings.enable_reminder") }
     var settingsSaveReminder: String      { localized("settings.save_reminder") }
@@ -161,8 +146,6 @@ extension LanguageManager {
     var settingsDataStorage: String       { localized("settings.data_storage") }
     var settingsLocalOnly: String         { localized("settings.local_only") }
     var settingsLanguageSection: String   { localized("settings.language_section") }
-    var settingsHasKey: String            { localized("settings.has_key") }
-    var settingsNoKey: String             { localized("settings.no_key") }
     var settingsContextSection: String    { localized("settings.context_section") }
     var settingsContextPlaceholder: String { localized("settings.context_placeholder") }
     var settingsContextFooter: String     { localized("settings.context_footer") }
@@ -242,7 +225,6 @@ extension LanguageManager {
 
     // MARK: Error messages
     var claudeNoApiKey: String     { localized("error.no_api_key") }
-    var claudeNotSubscribed: String { localized("error.not_subscribed") }
     func claudeApiError(_ code: Int) -> String {
         String(format: localized("error.api_error"), code)
     }

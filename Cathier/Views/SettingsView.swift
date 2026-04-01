@@ -1,45 +1,12 @@
 import SwiftUI
-import StoreKit
 
 struct SettingsView: View {
-    /// Source of truth for ClaudeService — may be "managed".
-    @AppStorage("aiProvider") private var selectedProviderRaw: String = AIProvider.claude.rawValue
-    /// Separate key for the provider Picker — never "managed", so the Picker always has a valid tag.
-    @AppStorage("lastNonManagedProvider") private var nonManagedProviderRaw: String = AIProvider.claude.rawValue
-
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
     @AppStorage("contextBrief") private var contextBrief = ""
     @State private var reminderTimes: [ReminderTime] = NotificationService.defaultTimes
     @State private var isAuthorized = false
-    @State private var showApiKeySaved = false
     @State private var showFeedback = false
-    @State private var apiKeyInput = ""
     @Environment(LanguageManager.self) private var lm
-
-    @State private var subManager = SubscriptionManager.shared
-
-    private var selectedProvider: AIProvider {
-        AIProvider(rawValue: selectedProviderRaw) ?? .claude
-    }
-
-    private var isManaged: Bool { selectedProvider.isManaged }
-
-    /// Segmented control binding: toggling to managed sets aiProvider = "managed";
-    /// toggling back restores lastNonManagedProvider.
-    private var managedModeBinding: Binding<Bool> {
-        Binding(
-            get: { isManaged },
-            set: { useManaged in
-                if useManaged {
-                    selectedProviderRaw = AIProvider.managed.rawValue
-                } else {
-                    selectedProviderRaw = nonManagedProviderRaw
-                    apiKeyInput = UserDefaults.standard.string(forKey:
-                        (AIProvider(rawValue: nonManagedProviderRaw) ?? .claude).apiKeyStorageKey) ?? ""
-                }
-            }
-        )
-    }
 
     var body: some View {
         NavigationStack {
@@ -57,71 +24,6 @@ struct SettingsView: View {
                     .pickerStyle(.menu)
                 } header: {
                     Text(lm.settingsLanguageSection)
-                }
-
-                // MARK: - AI Settings
-                Section {
-                    // Top-level choice: has key vs no key
-                    Picker("", selection: managedModeBinding) {
-                        Text(lm.settingsHasKey).tag(false)
-                        Text(lm.settingsNoKey).tag(true)
-                    }
-                    .pickerStyle(.segmented)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-
-                    if selectedProvider.isManaged {
-                        // No-key path: subscription panel
-                        ManagedSubscriptionPanel(subManager: subManager, lm: lm)
-                    } else {
-                        // Has-key path: provider picker + key input
-                        Picker(lm.settingsAIProvider, selection: $nonManagedProviderRaw) {
-                            ForEach(AIProvider.allCases.filter { !$0.isManaged }) { provider in
-                                Text(provider.displayName).tag(provider.rawValue)
-                            }
-                        }
-                        .onChange(of: nonManagedProviderRaw) { _, newRaw in
-                            // Mirror to aiProvider so ClaudeService sees the change
-                            selectedProviderRaw = newRaw
-                            let provider = AIProvider(rawValue: newRaw) ?? .claude
-                            apiKeyInput = UserDefaults.standard.string(forKey: provider.apiKeyStorageKey) ?? ""
-                        }
-
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("API Key")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                            SecureField(selectedProvider.keyPlaceholder, text: $apiKeyInput)
-                                .textFieldStyle(.plain)
-                                .autocorrectionDisabled()
-                                .textInputAutocapitalization(.never)
-                            if showApiKeySaved {
-                                Text(lm.settingsSaved)
-                                    .font(.caption)
-                                    .foregroundColor(.green)
-                            }
-                        }
-                        .padding(.vertical, 4)
-                        .onChange(of: apiKeyInput) { _, newValue in
-                            let key = (AIProvider(rawValue: nonManagedProviderRaw) ?? .claude).apiKeyStorageKey
-                            UserDefaults.standard.set(newValue, forKey: key)
-                            showApiKeySaved = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                showApiKeySaved = false
-                            }
-                        }
-
-                        if let url = selectedProvider.consoleURL {
-                            Link(lm.settingsGetKey, destination: url)
-                                .font(.caption)
-                                .foregroundColor(.cathierAccent)
-                        }
-                    }
-                } header: {
-                    Text(lm.settingsAISection)
-                } footer: {
-                    Text(selectedProvider.isManaged ? lm.settingsManagedFooter : lm.settingsKeyFooter)
-                        .font(.caption)
                 }
 
                 // MARK: - Notification Settings
@@ -220,8 +122,6 @@ struct SettingsView: View {
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
-                let provider = AIProvider(rawValue: nonManagedProviderRaw) ?? .claude
-                apiKeyInput = UserDefaults.standard.string(forKey: provider.apiKeyStorageKey) ?? ""
             }
         }
     }
@@ -255,134 +155,5 @@ struct SettingsView: View {
         comps.hour = hour
         comps.minute = minute
         return calendar.date(from: comps) ?? Date()
-    }
-}
-
-// MARK: - Managed Subscription Panel
-
-private struct ManagedSubscriptionPanel: View {
-    let subManager: SubscriptionManager
-    let lm: LanguageManager
-    @Environment(\.openURL) private var openURL
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            if subManager.isSubscribed {
-                subscribedView
-            } else {
-                unsubscribedView
-            }
-        }
-        .padding(.vertical, 6)
-    }
-
-    private var subscribedView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                Text(lm.settingsManagedActive)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-            }
-            if let url = URL(string: "https://apps.apple.com/account/subscriptions") {
-                Link(lm.settingsManagedManage, destination: url)
-                    .font(.caption)
-                    .foregroundColor(.cathierAccent)
-            }
-        }
-    }
-
-    private var unsubscribedView: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(lm.settingsManagedDesc)
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-
-            VStack(alignment: .leading, spacing: 4) {
-                FeatureBullet(text: lm.settingsManagedFeature1)
-                FeatureBullet(text: lm.settingsManagedFeature2)
-                FeatureBullet(text: lm.settingsManagedFeature3)
-            }
-
-            if let errorMessage = subManager.errorMessage {
-                Text(errorMessage)
-                    .font(.caption)
-                    .foregroundColor(.red)
-            }
-
-            Button {
-                Task { await subManager.purchase() }
-            } label: {
-                HStack(spacing: 8) {
-                    if subManager.isPurchasing {
-                        ProgressView()
-                            .scaleEffect(0.85)
-                            .tint(.white)
-                    }
-                    Text("\(lm.settingsManagedSubscribe) · \(subManager.displayPrice) / \(lm.settingsManagedPerMonth)")
-                        .fontWeight(.semibold)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 11)
-                .background(Color.cathierAccent)
-                .foregroundColor(.white)
-                .cornerRadius(10)
-            }
-            .buttonStyle(.borderless)
-            .disabled(subManager.isPurchasing)
-
-            Button(lm.settingsManagedRestore) {
-                Task { await subManager.restore() }
-            }
-            .buttonStyle(.borderless)
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(maxWidth: .infinity)
-
-            Divider()
-
-            VStack(alignment: .leading, spacing: 6) {
-                Text("By subscribing, you agree to our:")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                HStack(spacing: 4) {
-                    if let termsURL = URL(string: "https://github.com/jianshuo/Cathier/blob/main/TERMS_OF_SERVICE.md") {
-                        Button("Terms of Use") { openURL(termsURL) }
-                            .buttonStyle(.borderless)
-                            .font(.caption)
-                            .foregroundColor(.cathierAccent)
-                    }
-                    Text("·")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    if let privacyURL = URL(string: "https://github.com/jianshuo/Cathier/blob/main/PRIVACY_POLICY.md") {
-                        Button("Privacy Policy") { openURL(privacyURL) }
-                            .buttonStyle(.borderless)
-                            .font(.caption)
-                            .foregroundColor(.cathierAccent)
-                    }
-                }
-            }
-
-            if let err = subManager.errorMessage {
-                Text(err)
-                    .font(.caption)
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-            }
-        }
-    }
-}
-
-private struct FeatureBullet: View {
-    let text: String
-    var body: some View {
-        Label(text, systemImage: "checkmark")
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(Color.cathierAccent, Color.secondary)
     }
 }
