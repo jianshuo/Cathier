@@ -179,6 +179,18 @@
 				Base,
 				zh,
 				ja,
+				es,
+				fr,
+				de,
+				it,
+				pt,
+				ko,
+				ru,
+				ar,
+				hi,
+				th,
+				vi,
+				tr,
 			);
 			mainGroup = D4B61DB72F63B0140074205F;
 			minimizedProjectReferenceProxies = 1;

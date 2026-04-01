@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "الآن";
+"tab.journal" = "اليوميات";
+"tab.friends" = "الأصدقاء";
+"tab.settings" = "الإعدادات";
+
+/* TodayView */
+"today.nav_title" = "الآن";
+"today.records" = "سجلات اليوم";
+"today.start_scan" = "بدء مسح الجسم";
+"today.body_saying" = "ماذا يقول جسمك الآن؟";
+"greeting.morning" = "صباح الخير";
+"greeting.afternoon" = "مساء الخير";
+"greeting.evening" = "مساء النور";
+"today.no_check_in" = "لم تسجّل دخولاً اليوم. خذ دقيقة لمسح جسمك.";
+"today.checked_in" = "سجّلت دخولاً %d مرات اليوم. واصل!";
+
+/* JournalView */
+"journal.nav_title" = "اليوميات";
+"journal.delete" = "حذف";
+"journal.empty" = "لا توجد سجلات بعد";
+"journal.empty_hint" = "ستظهر سجلاتك هنا بعد أول تسجيل دخول.";
+"journal.today" = "اليوم";
+"journal.yesterday" = "أمس";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "إلغاء";
+"check_in.step_body_scan" = "مسح الجسم";
+"check_in.step_emotion" = "تسمية المشاعر";
+"check_in.step_ai" = "رفيق الذكاء الاصطناعي";
+
+/* BodyScanView */
+"body_scan.where_title" = "أين تشعر بذلك؟";
+"body_scan.multiple" = "يُسمح بالاختيار المتعدد";
+"body_scan.what_title" = "كيف تبدو هذه الإحساس؟";
+"body_scan.trigger_title" = "ما الذي أثار هذا الشعور؟";
+"body_scan.trigger_subtitle" = "اختياري";
+"body_scan.trigger_placeholder" = "صف حدثاً أو مشهداً أو فكرة\u2026";
+"body_scan.intensity" = "الشدة";
+"body_scan.next" = "التالي: تحديد المشاعر";
+"body_scan.mild" = "خفيف";
+"body_scan.intense" = "شديد";
+
+/* EmotionLabelView */
+"emotion.question" = "بأي مشاعر يشبه هذا الإحساس؟";
+"emotion.specific" = "بشكل أكثر تحديداً\u2026";
+"emotion.custom_prompt" = "أو صفه بكلماتك الخاصة";
+"emotion.custom_placeholder" = "اكتب مشاعراً...";
+"emotion.gen_ai" = "توليد ملاحظات الذكاء الاصطناعي";
+"emotion.skip" = "تخطّ والحفظ مباشرة";
+"emotion.selected" = "محدد";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "المشاعر الحالية";
+"ai.note_label" = "إضافة ملاحظة (اختياري)";
+"ai.note_placeholder" = "سجّل بعض الأفكار الإضافية...";
+"ai.share_title" = "المشاركة مع الأصدقاء؟";
+"ai.dont_share" = "لا تشارك";
+"ai.only_self" = "مرئي لي فقط";
+"ai.companion" = "رفيق الذكاء الاصطناعي";
+"ai.save" = "حفظ السجل";
+"ai.loading" = "جارٍ معالجة مشاعرك...";
+"ai.retry" = "إعادة المحاولة";
+"ai.intensity_badge" = "الشدة %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "مشاركة فئة المشاعر";
+"tier.category_desc" = "يرى الصديق فئة المشاعر والشدة فقط";
+"tier.emotions_name" = "مشاركة كلمات المشاعر";
+"tier.emotions_desc" = "يرى الصديق كلمات مشاعر محددة";
+"tier.full_name" = "مشاركة كاملة";
+"tier.full_desc" = "يرى الصديق كل شيء بما في ذلك الملاحظات";
+"ai.share_ai_feedback_toggle" = "مشاركة ملاحظات الذكاء الاصطناعي أيضاً";
+"ai.share_ai_feedback_desc" = "يمكن للأصدقاء أيضاً رؤية رد الذكاء الاصطناعي";
+
+/* FriendFeedView */
+"friend.nav_title" = "الأصدقاء";
+"friend.no_friends" = "لا أصدقاء بعد";
+"friend.add_hint" = "أضف أصدقاء بالبحث عن أسمائهم";
+"friend.add_friend" = "إضافة صديق";
+"friend.empty_feed" = "لم يشارك أي صديق حالته بعد";
+"friend.default_name" = "صديق";
+
+/* FriendSetupView */
+"setup.title" = "إعداد ملف الصديق";
+"setup.subtitle" = "سيرى الأصدقاء هذا الاسم والصورة الرمزية";
+"setup.choose_emoji" = "اختر رمزاً تعبيرياً للصورة الرمزية";
+"setup.nickname_label" = "اسمك المستعار";
+"setup.nickname_placeholder" = "أدخل اسماً مستعاراً...";
+"setup.done" = "تم";
+
+/* FriendManageView */
+"manage.nav_title" = "إدارة الأصدقاء";
+"manage.add_friend" = "إضافة صديق";
+"manage.connected_friends" = "الأصدقاء المتصلون (%d)";
+"manage.disconnect" = "قطع الاتصال";
+"manage.no_friends" = "لا أصدقاء بعد. ابحث بالاسم لإضافة شخص ما.";
+"manage.connected_on" = "اتصل في %@";
+"manage.disconnect_alert" = "قطع الاتصال مع \"%@\"؟";
+"manage.disconnect_message" = "لن تتمكنا من رؤية سجلات الحالة المشتركة لبعضكما البعض.";
+"manage.cancel" = "إلغاء";
+
+/* AddFriendView */
+"search.nav_title" = "إضافة صديق";
+"search.placeholder" = "البحث بالاسم\u2026";
+"search.hint" = "أدخل اسماً للعثور على أشخاص";
+"search.no_results" = "لم يتم العثور على مستخدمين";
+"search.add" = "إضافة";
+"search.requested" = "تم الطلب";
+"search.already_friends" = "أصدقاء";
+
+/* FriendRequests */
+"request.pending_section" = "طلبات الصداقة";
+"request.accept" = "قبول";
+"request.decline" = "رفض";
+"request.from" = "يريد أن يكون صديقك";
+
+/* SettingsView */
+"settings.nav_title" = "الإعدادات";
+"settings.ai_section" = "إعدادات الذكاء الاصطناعي";
+"settings.ai_provider" = "مزود الذكاء الاصطناعي";
+"settings.saved" = "محفوظ";
+"settings.get_key" = "الحصول على مفتاح API \u2192";
+"settings.key_footer" = "يُخزَّن مفتاح API محلياً فقط ولا يُرفع إلى أي خادم.";
+"settings.managed_footer" = "لا حاجة لمفتاح API بعد الاشتراك. ميزات الذكاء الاصطناعي الكاملة مضمّنة. ألغِ في أي وقت.";
+"settings.managed_desc" = "استخدم ذكاءنا الاصطناعي المستضاف \u2014 لا يلزم مفتاح API، يعمل فوراً.";
+"settings.managed_feature1" = "مدعوم بـ Qwen (\u901a\u4e49\u5343\u95ee)";
+"settings.managed_feature2" = "تسجيل دخول كامل وملاحظات المشاعر";
+"settings.managed_feature3" = "تحليل الأنماط وتقارير الرؤى";
+"settings.managed_subscribe" = "اشتراك";
+"settings.managed_per_month" = "شهر";
+"settings.managed_active" = "مشترك \u2014 خدمة الذكاء الاصطناعي نشطة";
+"settings.managed_manage" = "إدارة الاشتراك \u2192";
+"settings.managed_restore" = "استعادة الشراء";
+"settings.reminders_section" = "التذكيرات";
+"settings.enable_reminder" = "تمكين التذكيرات";
+"settings.save_reminder" = "حفظ إعدادات التذكير";
+"settings.reminder_footer_on" = "ستُرسَل التذكيرات كإشعارات محلية في الأوقات المحددة.";
+"settings.reminder_footer_off" = "يرجى السماح بإذن الإشعارات في إعدادات النظام لتلقي التذكيرات.";
+"settings.about_section" = "حول";
+"settings.about_row" = "حول Cathier";
+"settings.version" = "الإصدار";
+"settings.build" = "البناء";
+"settings.data_storage" = "تخزين البيانات";
+"settings.local_only" = "مزامنة iCloud";
+"settings.language_section" = "اللغة";
+"settings.has_key" = "لديّ مفتاح API";
+"settings.no_key" = "استخدام الذكاء الاصطناعي المُدار";
+"settings.context_section" = "عنك (سياق الذكاء الاصطناعي)";
+"settings.context_placeholder" = "أخبر الذكاء الاصطناعي عن خلفيتك \u2014 عملك، ما تمر به\u2026 هذا يجعل الرؤى أكثر صلة.";
+"settings.context_footer" = "مخزَّن محلياً. مضمَّن في موجّه تحليل الأنماط.";
+
+/* AboutView */
+"about.made_by" = "صنعه";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "رفيقك في الوعي العاطفي";
+"about.privacy_title" = "الخصوصية أولاً";
+"about.privacy_detail" = "تبقى بياناتك على الجهاز. تُعالَج ملاحظات الذكاء الاصطناعي من خلال مفتاح API الخاص بك، وليس عبر خوادم خارجية.";
+"about.copyright_label" = "حقوق النشر";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "يوميات اليوم";
+"journal_entry.mood_label" = "كيف تشعر اليوم؟";
+"journal_entry.gains_label" = "مكاسب اليوم";
+"journal_entry.gains_placeholder" = "سجّل مكاسب اليوم وأفكاره وإلهاماته\u2026";
+"journal_entry.share_label" = "مشاركة مع الأصدقاء";
+"journal_entry.share_desc" = "يمكن للأصدقاء رؤية حالتك ومكاسبك";
+"journal_entry.save" = "حفظ يوميات اليوم";
+"journal_entry.edit" = "تحرير";
+"journal_entry.once_a_day" = "إدخال واحد في اليوم";
+"journal_entry.today_title" = "يوميات اليوم";
+"journal_entry.shared_badge" = "مشارَك";
+"journal_entry.private_badge" = "خاص";
+"journal_entry.write_prompt" = "سجّل حالتك ومكاسب اليوم";
+"journal_entry.write_hint" = "مرة واحدة في اليوم \u2014 اترك أثراً لليوم";
+
+/* FeedbackView */
+"feedback.nav_title" = "اقتراحات الميزات";
+"feedback.section_title" = "ملاحظات";
+"feedback.button" = "إرسال اقتراح";
+"feedback.title_label" = "العنوان";
+"feedback.title_placeholder" = "وصف موجز لاقتراحك\u2026";
+"feedback.body_label" = "التفاصيل";
+"feedback.body_footer" = "سيُقدَّم اقتراحك كـ GitHub Issue وستنفّذه الذكاء الاصطناعي تلقائياً.";
+"feedback.token_section" = "إعدادات GitHub";
+"feedback.token_footer" = "يلزم رمز الوصول الشخصي GitHub بنطاق 'repo' لإرسال المشكلات. مخزَّن محلياً فقط.";
+"feedback.submit" = "إرسال";
+"feedback.success" = "تم الإرسال بنجاح!";
+"feedback.view_issue" = "عرض GitHub Issue \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "تفاصيل السجل";
+"detail.done" = "تم";
+"detail.body_section" = "الإحساسات الجسدية";
+"detail.emotions_section" = "المشاعر";
+"detail.trigger_section" = "الحدث المثير";
+"detail.note_section" = "ملاحظة";
+"detail.date_format" = "d MMM yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "رؤى الأنماط";
+"insights.toolbar_button" = "الرؤى";
+"insights.focus_title" = "ماذا تريد أن تفهم؟";
+"insights.focus_triggers" = "مسببات التوتر";
+"insights.focus_growth" = "هل أتحسّن؟";
+"insights.focus_body" = "ما يخبرني به جسمي";
+"insights.focus_surprise" = "فاجئني";
+"insights.analyze" = "تحليل أنماطي";
+"insights.refresh" = "إعادة التحليل";
+"insights.loading" = "جارٍ تحليل تاريخك العاطفي\u2026";
+"insights.empty_title" = "استمر في التسجيل";
+"insights.empty_hint" = "تظهر رؤى الأنماط بعد 7 عمليات تسجيل دخول على الأقل.";
+"insights.load_error" = "تعذّر تحميل عمليات تسجيل الدخول. حاول إعادة تشغيل التطبيق.";
+"insights.history_title" = "التحليلات السابقة";
+"insights.history_empty" = "لا توجد تحليلات بعد";
+"insights.analyzed_at" = "تم التحليل";
+"insights.new_check_ins" = "%d عمليات تسجيل دخول جديدة منذ آخر تحليل";
+"insights.chart_title" = "الشدة عبر الزمن";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 رؤى الأنماط جاهزة";
+"notif.milestone_body" = "سجّلت 30 عملية تسجيل دخول! افتح يومياتك لتحليل أنماطك العاطفية.";
+
+/* Error messages */
+"error.no_api_key" = "الرجاء إدخال مفتاح API في الإعدادات أولاً.";
+"error.not_subscribed" = "الرجاء الاشتراك لاستخدام خدمة الذكاء الاصطناعي.";
+"error.api_error" = "فشل طلب API (HTTP %d)";
+"error.decode_error" = "فشل تحليل استجابة الذكاء الاصطناعي";

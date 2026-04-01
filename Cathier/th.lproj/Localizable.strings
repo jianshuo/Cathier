@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "ตอนนี้";
+"tab.journal" = "บันทึก";
+"tab.friends" = "เพื่อน";
+"tab.settings" = "การตั้งค่า";
+
+/* TodayView */
+"today.nav_title" = "ตอนนี้";
+"today.records" = "บันทึกวันนี้";
+"today.start_scan" = "เริ่มสแกนร่างกาย";
+"today.body_saying" = "ร่างกายของคุณกำลังบอกอะไรตอนนี้?";
+"greeting.morning" = "อรุณสวัสดิ์";
+"greeting.afternoon" = "สวัสดีตอนบ่าย";
+"greeting.evening" = "สวัสดีตอนเย็น";
+"today.no_check_in" = "คุณยังไม่ได้เช็คอินวันนี้ สละเวลาสักครู่เพื่อสแกนร่างกายของคุณ";
+"today.checked_in" = "เช็คอินแล้ว %d ครั้งวันนี้ ทำต่อไป!";
+
+/* JournalView */
+"journal.nav_title" = "บันทึก";
+"journal.delete" = "ลบ";
+"journal.empty" = "ยังไม่มีบันทึก";
+"journal.empty_hint" = "บันทึกของคุณจะปรากฏที่นี่หลังจากเช็คอินครั้งแรก";
+"journal.today" = "วันนี้";
+"journal.yesterday" = "เมื่อวาน";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "ยกเลิก";
+"check_in.step_body_scan" = "สแกนร่างกาย";
+"check_in.step_emotion" = "ระบุอารมณ์";
+"check_in.step_ai" = "AI เพื่อนร่วมทาง";
+
+/* BodyScanView */
+"body_scan.where_title" = "คุณรู้สึกที่ไหน?";
+"body_scan.multiple" = "เลือกได้หลายที่";
+"body_scan.what_title" = "รู้สึกอย่างไร?";
+"body_scan.trigger_title" = "อะไรที่ทำให้เกิดความรู้สึกนี้?";
+"body_scan.trigger_subtitle" = "ไม่บังคับ";
+"body_scan.trigger_placeholder" = "อธิบายเหตุการณ์ ฉาก หรือความคิด\u2026";
+"body_scan.intensity" = "ความเข้มข้น";
+"body_scan.next" = "ถัดไป: ระบุอารมณ์";
+"body_scan.mild" = "เบา";
+"body_scan.intense" = "รุนแรง";
+
+/* EmotionLabelView */
+"emotion.question" = "ความรู้สึกนี้คล้ายกับอารมณ์ไหน?";
+"emotion.specific" = "ระบุให้เจาะจงมากขึ้น\u2026";
+"emotion.custom_prompt" = "หรืออธิบายด้วยคำพูดของคุณเอง";
+"emotion.custom_placeholder" = "พิมพ์อารมณ์...";
+"emotion.gen_ai" = "สร้างข้อเสนอแนะ AI";
+"emotion.skip" = "ข้ามและบันทึกโดยตรง";
+"emotion.selected" = "เลือกแล้ว";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "ความรู้สึกปัจจุบัน";
+"ai.note_label" = "เพิ่มบันทึก (ไม่บังคับ)";
+"ai.note_placeholder" = "บันทึกความคิดเพิ่มเติม...";
+"ai.share_title" = "แชร์กับเพื่อน?";
+"ai.dont_share" = "ไม่แชร์";
+"ai.only_self" = "มองเห็นได้เฉพาะฉัน";
+"ai.companion" = "AI เพื่อนร่วมทาง";
+"ai.save" = "บันทึกรายการ";
+"ai.loading" = "กำลังประมวลผลความรู้สึกของคุณ...";
+"ai.retry" = "ลองอีกครั้ง";
+"ai.intensity_badge" = "ความเข้มข้น %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "แชร์หมวดหมู่อารมณ์";
+"tier.category_desc" = "เพื่อนเห็นเฉพาะหมวดหมู่อารมณ์และความเข้มข้น";
+"tier.emotions_name" = "แชร์คำอารมณ์";
+"tier.emotions_desc" = "เพื่อนเห็นคำอารมณ์เฉพาะเจาะจง";
+"tier.full_name" = "แชร์ทั้งหมด";
+"tier.full_desc" = "เพื่อนเห็นทุกอย่างรวมถึงบันทึก";
+"ai.share_ai_feedback_toggle" = "แชร์ข้อเสนอแนะ AI ด้วย";
+"ai.share_ai_feedback_desc" = "เพื่อนยังสามารถเห็นการตอบสนองของ AI";
+
+/* FriendFeedView */
+"friend.nav_title" = "เพื่อน";
+"friend.no_friends" = "ยังไม่มีเพื่อน";
+"friend.add_hint" = "เพิ่มเพื่อนโดยค้นหาชื่อ";
+"friend.add_friend" = "เพิ่มเพื่อน";
+"friend.empty_feed" = "ยังไม่มีเพื่อนที่แชร์อารมณ์";
+"friend.default_name" = "เพื่อน";
+
+/* FriendSetupView */
+"setup.title" = "ตั้งค่าโปรไฟล์เพื่อน";
+"setup.subtitle" = "เพื่อนจะเห็นชื่อและอวาตาร์นี้";
+"setup.choose_emoji" = "เลือกอีโมจิอวาตาร์";
+"setup.nickname_label" = "ชื่อเล่นของคุณ";
+"setup.nickname_placeholder" = "ใส่ชื่อเล่น...";
+"setup.done" = "เสร็จ";
+
+/* FriendManageView */
+"manage.nav_title" = "จัดการเพื่อน";
+"manage.add_friend" = "เพิ่มเพื่อน";
+"manage.connected_friends" = "เพื่อนที่เชื่อมต่อ (%d)";
+"manage.disconnect" = "ยกเลิกการเชื่อมต่อ";
+"manage.no_friends" = "ยังไม่มีเพื่อน ค้นหาชื่อเพื่อเพิ่มใครสักคน";
+"manage.connected_on" = "เชื่อมต่อเมื่อ %@";
+"manage.disconnect_alert" = "ยกเลิกการเชื่อมต่อกับ \"%@\"?";
+"manage.disconnect_message" = "คุณจะไม่เห็นบันทึกอารมณ์ที่แชร์ของกันและกันอีกต่อไป";
+"manage.cancel" = "ยกเลิก";
+
+/* AddFriendView */
+"search.nav_title" = "เพิ่มเพื่อน";
+"search.placeholder" = "ค้นหาตามชื่อ\u2026";
+"search.hint" = "ใส่ชื่อเพื่อค้นหาผู้คน";
+"search.no_results" = "ไม่พบผู้ใช้";
+"search.add" = "เพิ่ม";
+"search.requested" = "ส่งคำขอแล้ว";
+"search.already_friends" = "เป็นเพื่อนแล้ว";
+
+/* FriendRequests */
+"request.pending_section" = "คำขอเป็นเพื่อน";
+"request.accept" = "ยอมรับ";
+"request.decline" = "ปฏิเสธ";
+"request.from" = "ต้องการเป็นเพื่อนของคุณ";
+
+/* SettingsView */
+"settings.nav_title" = "การตั้งค่า";
+"settings.ai_section" = "การตั้งค่า AI";
+"settings.ai_provider" = "ผู้ให้บริการ AI";
+"settings.saved" = "บันทึกแล้ว";
+"settings.get_key" = "รับ API Key \u2192";
+"settings.key_footer" = "API Key จัดเก็บในเครื่องเท่านั้น ไม่ถูกอัปโหลดไปยังเซิร์ฟเวอร์ใดๆ";
+"settings.managed_footer" = "ไม่ต้องใช้ API Key หลังสมัครสมาชิก รวมฟีเจอร์ AI ครบ ยกเลิกได้ตลอด";
+"settings.managed_desc" = "ใช้ AI ที่โฮสต์ของเรา \u2014 ไม่ต้องใช้ API Key ใช้งานได้ทันที";
+"settings.managed_feature1" = "ขับเคลื่อนโดย Qwen (\u901a\u4e49\u5343\u95ee)";
+"settings.managed_feature2" = "เช็คอินครบและข้อเสนอแนะอารมณ์";
+"settings.managed_feature3" = "การวิเคราะห์รูปแบบและรายงาน Insights";
+"settings.managed_subscribe" = "สมัครสมาชิก";
+"settings.managed_per_month" = "เดือน";
+"settings.managed_active" = "สมัครสมาชิกแล้ว \u2014 บริการ AI ใช้งานได้";
+"settings.managed_manage" = "จัดการสมาชิก \u2192";
+"settings.managed_restore" = "กู้คืนการซื้อ";
+"settings.reminders_section" = "การเตือนความจำ";
+"settings.enable_reminder" = "เปิดการเตือนความจำ";
+"settings.save_reminder" = "บันทึกการตั้งค่าการเตือน";
+"settings.reminder_footer_on" = "การเตือนจะถูกส่งเป็นการแจ้งเตือนในเครื่องตามเวลาที่กำหนด";
+"settings.reminder_footer_off" = "อนุญาตการแจ้งเตือนในการตั้งค่าระบบเพื่อรับการเตือน";
+"settings.about_section" = "เกี่ยวกับ";
+"settings.about_row" = "เกี่ยวกับ Cathier";
+"settings.version" = "เวอร์ชัน";
+"settings.build" = "Build";
+"settings.data_storage" = "การจัดเก็บข้อมูล";
+"settings.local_only" = "ซิงค์ iCloud";
+"settings.language_section" = "ภาษา";
+"settings.has_key" = "ฉันมี API Key";
+"settings.no_key" = "ใช้ AI แบบจัดการ";
+"settings.context_section" = "เกี่ยวกับคุณ (บริบท AI)";
+"settings.context_placeholder" = "บอก AI เกี่ยวกับพื้นหลังของคุณ \u2014 งานของคุณ สิ่งที่คุณกำลังผ่าน\u2026 ทำให้ Insights เกี่ยวข้องมากขึ้น";
+"settings.context_footer" = "จัดเก็บในเครื่อง รวมอยู่ใน prompt การวิเคราะห์รูปแบบ";
+
+/* AboutView */
+"about.made_by" = "สร้างโดย";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "เพื่อนร่วมทางด้านการตระหนักรู้ทางอารมณ์ของคุณ";
+"about.privacy_title" = "ความเป็นส่วนตัวก่อน";
+"about.privacy_detail" = "ข้อมูลของคุณอยู่ในเครื่อง ข้อเสนอแนะ AI ประมวลผลผ่าน API Key ของคุณเอง ไม่ผ่านเซิร์ฟเวอร์ของบุคคลที่สาม";
+"about.copyright_label" = "ลิขสิทธิ์";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "บันทึกวันนี้";
+"journal_entry.mood_label" = "คุณรู้สึกอย่างไรวันนี้?";
+"journal_entry.gains_label" = "สิ่งที่ได้รับวันนี้";
+"journal_entry.gains_placeholder" = "บันทึกสิ่งที่ได้รับ ข้อคิด หรือความคิดวันนี้\u2026";
+"journal_entry.share_label" = "แชร์กับเพื่อน";
+"journal_entry.share_desc" = "เพื่อนสามารถเห็นอารมณ์และสิ่งที่ได้รับของคุณ";
+"journal_entry.save" = "บันทึกบันทึกวันนี้";
+"journal_entry.edit" = "แก้ไข";
+"journal_entry.once_a_day" = "หนึ่งรายการต่อวัน";
+"journal_entry.today_title" = "บันทึกวันนี้";
+"journal_entry.shared_badge" = "แชร์แล้ว";
+"journal_entry.private_badge" = "ส่วนตัว";
+"journal_entry.write_prompt" = "บันทึกอารมณ์และสิ่งที่ได้รับวันนี้";
+"journal_entry.write_hint" = "วันละครั้ง \u2014 ทิ้งรอยไว้สำหรับวันนี้";
+
+/* FeedbackView */
+"feedback.nav_title" = "ข้อเสนอแนะฟีเจอร์";
+"feedback.section_title" = "ข้อเสนอแนะ";
+"feedback.button" = "ส่งข้อเสนอแนะ";
+"feedback.title_label" = "หัวข้อ";
+"feedback.title_placeholder" = "คำอธิบายสั้นๆ ของข้อเสนอแนะ\u2026";
+"feedback.body_label" = "รายละเอียด";
+"feedback.body_footer" = "ข้อเสนอแนะของคุณจะถูกส่งเป็น GitHub Issue และ AI จะนำไปใช้โดยอัตโนมัติ";
+"feedback.token_section" = "การตั้งค่า GitHub";
+"feedback.token_footer" = "ต้องใช้ GitHub Personal Access Token ที่มีขอบเขต 'repo' เพื่อส่ง Issues จัดเก็บในเครื่องเท่านั้น";
+"feedback.submit" = "ส่ง";
+"feedback.success" = "ส่งสำเร็จ!";
+"feedback.view_issue" = "ดู GitHub Issue \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "รายละเอียดบันทึก";
+"detail.done" = "เสร็จ";
+"detail.body_section" = "ความรู้สึกทางกาย";
+"detail.emotions_section" = "อารมณ์";
+"detail.trigger_section" = "เหตุการณ์ที่ก่อให้เกิด";
+"detail.note_section" = "บันทึก";
+"detail.date_format" = "d MMM yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "Insights รูปแบบ";
+"insights.toolbar_button" = "Insights";
+"insights.focus_title" = "คุณต้องการเข้าใจอะไร?";
+"insights.focus_triggers" = "สาเหตุความเครียดของฉัน";
+"insights.focus_growth" = "ฉันดีขึ้นไหม?";
+"insights.focus_body" = "สิ่งที่ร่างกายบอกฉัน";
+"insights.focus_surprise" = "ทำให้ฉันประหลาดใจ";
+"insights.analyze" = "วิเคราะห์รูปแบบของฉัน";
+"insights.refresh" = "วิเคราะห์ใหม่";
+"insights.loading" = "กำลังวิเคราะห์ประวัติอารมณ์ของคุณ\u2026";
+"insights.empty_title" = "บันทึกต่อไป";
+"insights.empty_hint" = "Insights รูปแบบจะปรากฏหลังจากเช็คอินอย่างน้อย 7 ครั้ง";
+"insights.load_error" = "ไม่สามารถโหลดการเช็คอิน ลองเริ่มแอปใหม่";
+"insights.history_title" = "การวิเคราะห์ก่อนหน้า";
+"insights.history_empty" = "ยังไม่มีการวิเคราะห์";
+"insights.analyzed_at" = "วิเคราะห์แล้ว";
+"insights.new_check_ins" = "%d การเช็คอินใหม่นับจากการวิเคราะห์ครั้งล่าสุด";
+"insights.chart_title" = "ความเข้มข้นตามเวลา";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 Insights รูปแบบพร้อมแล้ว";
+"notif.milestone_body" = "คุณบันทึกการเช็คอิน 30 ครั้งแล้ว! เปิดบันทึกเพื่อวิเคราะห์รูปแบบอารมณ์ของคุณ";
+
+/* Error messages */
+"error.no_api_key" = "กรุณาใส่ API Key ในการตั้งค่าก่อน";
+"error.not_subscribed" = "กรุณาสมัครสมาชิกเพื่อใช้บริการ AI";
+"error.api_error" = "คำขอ API ล้มเหลว (HTTP %d)";
+"error.decode_error" = "ไม่สามารถแยกวิเคราะห์การตอบสนอง AI";

@@ -25,8 +25,8 @@ enum DailyMood: String, CaseIterable, Identifiable {
     func label(for language: AppLanguage) -> String {
         switch language {
         case .zh: return labelZh
-        case .en: return labelEn
         case .ja: return labelJa
+        default:  return labelEn
         }
     }
 

@@ -1,0 +1,142 @@
+/* Body parts */
+"呼吸" = "Atem";
+"腹部" = "Bauch";
+"心脏" = "Herz";
+"心轮" = "Herzchakra";
+"眉心" = "Drittes Auge";
+"胃" = "Magen";
+"海底轮" = "Wurzelchakra";
+"头部" = "Kopf";
+"眼睛" = "Augen";
+"脸部" = "Gesicht";
+"喉咙" = "Kehle";
+"头皮" = "Kopfhaut";
+"肩膀" = "Schultern";
+"颈部" = "Nacken";
+"手臂" = "Arme";
+"手掌" = "Handflächen";
+"大腿" = "Oberschenkel";
+"整个身体" = "Ganzer Körper";
+
+/* Sensations */
+"紧绷" = "Angespannt";
+"沉重" = "Schwer";
+"发热" = "Heiß";
+"空洞" = "Leer";
+"酸胀" = "Schmerzend";
+"轻盈" = "Leicht";
+"颤抖" = "Zitternd";
+"麻木" = "Taub";
+"刺痛" = "Kribbeln";
+"收缩" = "Zusammenziehend";
+"压迫" = "Druck";
+"温暖" = "Warm";
+"冰冷" = "Kalt";
+"放松" = "Entspannt";
+"震动" = "Vibrierend";
+"膨胀" = "Ausdehnend";
+
+/* Emotion categories */
+"激情" = "Leidenschaftlich";
+"快乐" = "Froh";
+"平静" = "Ruhig";
+"爱与关怀" = "Liebe & Fürsorge";
+"愤怒" = "Wut";
+"恐惧" = "Angst";
+"悲伤" = "Trauer";
+"惊讶" = "Überraschung";
+
+/* Emotions — Impassioned */
+"热情" = "Begeistert";
+"兴奋" = "Aufgeregt";
+"激动" = "Erregt";
+"狂喜" = "Delirierend";
+"充满激情" = "Leidenschaftlich";
+"欣喜若狂" = "Euphorisch";
+"激动万分" = "Überwältigt";
+"坚定" = "Entschlossen";
+"自信" = "Selbstbewusst";
+"乐观" = "Optimistisch";
+"期待" = "Erwartungsvoll";
+
+/* Emotions — Happy */
+"喜悦" = "Freudig";
+"幸福" = "Glückselig";
+"被逗乐" = "Amüsiert";
+"高兴" = "Erfreut";
+"幸运" = "Glücklich";
+"感恩" = "Dankbar";
+"充满希望" = "Hoffnungsvoll";
+"充满活力" = "Lebendig";
+"愉悦" = "Angenehm";
+
+/* Emotions — Calm */
+"平和" = "Friedlich";
+"满足" = "Zufrieden";
+"宁静" = "Heiter";
+"舒适" = "Behaglich";
+"专注" = "Fokussiert";
+"从容" = "Gelassen";
+"淡然" = "Distanziert";
+"安然" = "Entspannt";
+
+/* Emotions — Love & Care */
+"充满爱" = "Liebevoll";
+"充满柔情" = "Zärtlich";
+"钦佩" = "Bewundernd";
+"同情" = "Mitfühlend";
+"友好" = "Freundlich";
+
+/* Emotions — Anger */
+"狂怒" = "Wütend";
+"愤慨" = "Empört";
+"烦躁" = "Gereizt";
+"恼火" = "Genervt";
+"怨恨" = "Verbittert";
+"不满" = "Unzufrieden";
+"嫉妒" = "Eifersüchtig";
+"挫败" = "Frustriert";
+
+/* Emotions — Fear */
+"紧张" = "Nervös";
+"担心" = "Besorgt";
+"害怕" = "Verängstigt";
+"焦虑" = "Ängstlich";
+"压力大" = "Gestresst";
+"不安" = "Unruhig";
+"慌乱" = "In Panik";
+"惶恐" = "Erschreckt";
+
+/* Emotions — Disheartened */
+"难过" = "Traurig";
+"孤独" = "Einsam";
+"受伤" = "Verletzt";
+"抑郁" = "Deprimiert";
+"精疲力尽" = "Erschöpft";
+"失落" = "Verloren";
+"委屈" = "Ungerecht behandelt";
+"沮丧" = "Niedergeschlagen";
+"哀伤" = "Betrübt";
+"遗憾" = "Bedauernd";
+"无助" = "Hilflos";
+"绝望" = "Verzweifelt";
+
+/* Emotions — Shame */
+"羞愧" = "Beschämt";
+"尴尬" = "Verlegen";
+"内疚" = "Schuldig";
+"后悔" = "Reuig";
+"羞耻" = "Schamhaft";
+"自责" = "Selbstvorwürfe";
+"厌恶" = "Angewidert";
+"反感" = "Abgestoßen";
+
+/* Emotions — Surprise */
+"震惊" = "Schockiert";
+"受惊" = "Erschrocken";
+"惊叹" = "Erstaunt";
+"震撼" = "Verblüfft";
+"惊喜" = "Angenehm überrascht";
+"困惑" = "Verwirrt";
+"好奇" = "Neugierig";
+"意外" = "Unerwartet";

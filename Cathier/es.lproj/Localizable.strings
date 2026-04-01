@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "Ahora";
+"tab.journal" = "Diario";
+"tab.friends" = "Amigos";
+"tab.settings" = "Ajustes";
+
+/* TodayView */
+"today.nav_title" = "Ahora";
+"today.records" = "Registros de hoy";
+"today.start_scan" = "Iniciar exploración corporal";
+"today.body_saying" = "¿Qué te dice tu cuerpo ahora mismo?";
+"greeting.morning" = "Buenos días";
+"greeting.afternoon" = "Buenas tardes";
+"greeting.evening" = "Buenas noches";
+"today.no_check_in" = "No has registrado hoy. Tómate un minuto para explorar tu cuerpo.";
+"today.checked_in" = "Has registrado %d veces hoy. ¡Sigue así!";
+
+/* JournalView */
+"journal.nav_title" = "Diario";
+"journal.delete" = "Eliminar";
+"journal.empty" = "Sin registros aún";
+"journal.empty_hint" = "Tus registros aparecerán aquí después de tu primer check-in.";
+"journal.today" = "Hoy";
+"journal.yesterday" = "Ayer";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "Cancelar";
+"check_in.step_body_scan" = "Exploración corporal";
+"check_in.step_emotion" = "Etiqueta de emoción";
+"check_in.step_ai" = "Compañero IA";
+
+/* BodyScanView */
+"body_scan.where_title" = "¿Dónde lo sientes?";
+"body_scan.multiple" = "Puedes seleccionar varios";
+"body_scan.what_title" = "¿Cómo se siente?";
+"body_scan.trigger_title" = "¿Qué desencadenó este sentimiento?";
+"body_scan.trigger_subtitle" = "Opcional";
+"body_scan.trigger_placeholder" = "Describe un evento, escena o pensamiento\u2026";
+"body_scan.intensity" = "Intensidad";
+"body_scan.next" = "Siguiente: Identificar emociones";
+"body_scan.mild" = "Leve";
+"body_scan.intense" = "Intenso";
+
+/* EmotionLabelView */
+"emotion.question" = "¿A qué emoción se parece este sentimiento?";
+"emotion.specific" = "Más específicamente\u2026";
+"emotion.custom_prompt" = "O descríbelo con tus propias palabras";
+"emotion.custom_placeholder" = "Escribe una emoción...";
+"emotion.gen_ai" = "Generar feedback de IA";
+"emotion.skip" = "Omitir y guardar directamente";
+"emotion.selected" = "Seleccionado";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "Sentimientos actuales";
+"ai.note_label" = "Añadir una nota (opcional)";
+"ai.note_placeholder" = "Registra pensamientos adicionales...";
+"ai.share_title" = "¿Compartir con amigos?";
+"ai.dont_share" = "No compartir";
+"ai.only_self" = "Solo visible para mí";
+"ai.companion" = "Compañero IA";
+"ai.save" = "Guardar registro";
+"ai.loading" = "Procesando tus sentimientos...";
+"ai.retry" = "Reintentar";
+"ai.intensity_badge" = "Intensidad %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "Compartir categoría de emoción";
+"tier.category_desc" = "El amigo solo ve la categoría de emoción e intensidad";
+"tier.emotions_name" = "Compartir palabras de emoción";
+"tier.emotions_desc" = "El amigo ve palabras de emoción específicas";
+"tier.full_name" = "Compartir todo";
+"tier.full_desc" = "El amigo ve todo, incluidas las notas";
+"ai.share_ai_feedback_toggle" = "También compartir feedback de IA";
+"ai.share_ai_feedback_desc" = "Los amigos también pueden ver la respuesta de la IA";
+
+/* FriendFeedView */
+"friend.nav_title" = "Amigos";
+"friend.no_friends" = "Aún sin amigos";
+"friend.add_hint" = "Añade amigos buscando su nombre";
+"friend.add_friend" = "Añadir amigo";
+"friend.empty_feed" = "Ningún amigo ha compartido su estado de ánimo aún";
+"friend.default_name" = "Amigo";
+
+/* FriendSetupView */
+"setup.title" = "Configura tu perfil de amigo";
+"setup.subtitle" = "Los amigos verán este nombre y avatar";
+"setup.choose_emoji" = "Elige un emoji de avatar";
+"setup.nickname_label" = "Tu apodo";
+"setup.nickname_placeholder" = "Ingresa un apodo...";
+"setup.done" = "Listo";
+
+/* FriendManageView */
+"manage.nav_title" = "Gestión de amigos";
+"manage.add_friend" = "Añadir amigo";
+"manage.connected_friends" = "Amigos conectados (%d)";
+"manage.disconnect" = "Desconectar";
+"manage.no_friends" = "Aún sin amigos. Busca por nombre para añadir a alguien.";
+"manage.connected_on" = "Conectado el %@";
+"manage.disconnect_alert" = "¿Desconectar de \"%@\"?";
+"manage.disconnect_message" = "Ya no verán los registros de estado de ánimo compartidos del otro.";
+"manage.cancel" = "Cancelar";
+
+/* AddFriendView */
+"search.nav_title" = "Añadir amigo";
+"search.placeholder" = "Buscar por nombre\u2026";
+"search.hint" = "Ingresa un nombre para encontrar personas";
+"search.no_results" = "No se encontraron usuarios";
+"search.add" = "Añadir";
+"search.requested" = "Solicitado";
+"search.already_friends" = "Amigos";
+
+/* FriendRequests */
+"request.pending_section" = "Solicitudes de amistad";
+"request.accept" = "Aceptar";
+"request.decline" = "Rechazar";
+"request.from" = "quiere ser tu amigo";
+
+/* SettingsView */
+"settings.nav_title" = "Ajustes";
+"settings.ai_section" = "Ajustes de IA";
+"settings.ai_provider" = "Proveedor de IA";
+"settings.saved" = "Guardado";
+"settings.get_key" = "Obtener clave API \u2192";
+"settings.key_footer" = "La clave API se almacena solo localmente y nunca se sube a ningún servidor.";
+"settings.managed_footer" = "No se necesita clave API después de suscribirse. Funciones completas de IA incluidas. Cancela cuando quieras.";
+"settings.managed_desc" = "Usa nuestra IA alojada \u2014 no se requiere clave API, funciona de inmediato.";
+"settings.managed_feature1" = "Desarrollado por Qwen (\u901a\u4e49\u5343\u95ee)";
+"settings.managed_feature2" = "Check-in completo y feedback de emociones";
+"settings.managed_feature3" = "Análisis de patrones e informes de perspectivas";
+"settings.managed_subscribe" = "Suscribirse";
+"settings.managed_per_month" = "mes";
+"settings.managed_active" = "Suscrito \u2014 servicio de IA activo";
+"settings.managed_manage" = "Gestionar suscripción \u2192";
+"settings.managed_restore" = "Restaurar compra";
+"settings.reminders_section" = "Recordatorios";
+"settings.enable_reminder" = "Activar recordatorios";
+"settings.save_reminder" = "Guardar configuración de recordatorios";
+"settings.reminder_footer_on" = "Los recordatorios se enviarán como notificaciones locales a las horas establecidas.";
+"settings.reminder_footer_off" = "Permite el permiso de notificaciones en Ajustes del sistema para recibir recordatorios.";
+"settings.about_section" = "Acerca de";
+"settings.about_row" = "Acerca de Cathier";
+"settings.version" = "Versión";
+"settings.build" = "Compilación";
+"settings.data_storage" = "Almacenamiento de datos";
+"settings.local_only" = "Sincronización con iCloud";
+"settings.language_section" = "Idioma";
+"settings.has_key" = "Tengo una clave API";
+"settings.no_key" = "Usar IA administrada";
+"settings.context_section" = "Sobre ti (contexto de IA)";
+"settings.context_placeholder" = "Cuéntale a la IA sobre tu experiencia: tu trabajo, lo que estás atravesando\u2026 Esto hace que las perspectivas sean más relevantes.";
+"settings.context_footer" = "Almacenado localmente. Incluido en el prompt de análisis de patrones.";
+
+/* AboutView */
+"about.made_by" = "Hecho por";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "Tu compañero de conciencia emocional";
+"about.privacy_title" = "Privacidad primero";
+"about.privacy_detail" = "Tus datos permanecen en el dispositivo. El feedback de IA se procesa a través de tu propia clave API, nunca a través de servidores de terceros.";
+"about.copyright_label" = "Copyright";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "Diario de hoy";
+"journal_entry.mood_label" = "¿Cómo te sientes hoy?";
+"journal_entry.gains_label" = "Logros de hoy";
+"journal_entry.gains_placeholder" = "Registra los logros, ideas o pensamientos de hoy\u2026";
+"journal_entry.share_label" = "Compartir con amigos";
+"journal_entry.share_desc" = "Los amigos pueden ver tu estado de ánimo y logros";
+"journal_entry.save" = "Guardar diario de hoy";
+"journal_entry.edit" = "Editar";
+"journal_entry.once_a_day" = "Una entrada por día";
+"journal_entry.today_title" = "Diario de hoy";
+"journal_entry.shared_badge" = "Compartido";
+"journal_entry.private_badge" = "Privado";
+"journal_entry.write_prompt" = "Registra el estado de ánimo y logros de hoy";
+"journal_entry.write_hint" = "Una vez al día \u2014 deja una huella para hoy";
+
+/* FeedbackView */
+"feedback.nav_title" = "Sugerencias de funciones";
+"feedback.section_title" = "Comentarios";
+"feedback.button" = "Enviar sugerencia";
+"feedback.title_label" = "Título";
+"feedback.title_placeholder" = "Breve descripción de tu sugerencia\u2026";
+"feedback.body_label" = "Detalles";
+"feedback.body_footer" = "Tu sugerencia se enviará como un Issue de GitHub y será implementada automáticamente por IA.";
+"feedback.token_section" = "Ajustes de GitHub";
+"feedback.token_footer" = "Se requiere un token de acceso personal de GitHub con alcance 'repo' para enviar issues. Almacenado solo localmente.";
+"feedback.submit" = "Enviar";
+"feedback.success" = "¡Enviado con éxito!";
+"feedback.view_issue" = "Ver Issue de GitHub \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "Detalle del registro";
+"detail.done" = "Listo";
+"detail.body_section" = "Sensaciones corporales";
+"detail.emotions_section" = "Emociones";
+"detail.trigger_section" = "Evento desencadenante";
+"detail.note_section" = "Nota";
+"detail.date_format" = "d MMM, yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "Perspectivas de patrones";
+"insights.toolbar_button" = "Perspectivas";
+"insights.focus_title" = "¿Qué quieres entender?";
+"insights.focus_triggers" = "Mis factores de estrés";
+"insights.focus_growth" = "¿Estoy mejorando?";
+"insights.focus_body" = "Lo que me dice mi cuerpo";
+"insights.focus_surprise" = "Sorpréndeme";
+"insights.analyze" = "Analizar mis patrones";
+"insights.refresh" = "Volver a analizar";
+"insights.loading" = "Analizando tu historial emocional\u2026";
+"insights.empty_title" = "Sigue registrando";
+"insights.empty_hint" = "Las perspectivas de patrones aparecen después de al menos 7 check-ins.";
+"insights.load_error" = "No se pudieron cargar tus check-ins. Intenta reiniciar la app.";
+"insights.history_title" = "Análisis anteriores";
+"insights.history_empty" = "Aún sin análisis";
+"insights.analyzed_at" = "Analizado";
+"insights.new_check_ins" = "%d nuevos check-ins desde el último análisis";
+"insights.chart_title" = "Intensidad a lo largo del tiempo";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 Perspectivas de patrones listas";
+"notif.milestone_body" = "¡Has registrado 30 check-ins! Abre tu diario para analizar tus patrones emocionales.";
+
+/* Error messages */
+"error.no_api_key" = "Por favor, introduce primero tu clave API en Ajustes.";
+"error.not_subscribed" = "Por favor, suscríbete para usar el servicio de IA.";
+"error.api_error" = "Solicitud de API fallida (HTTP %d)";
+"error.decode_error" = "Error al analizar la respuesta de IA";

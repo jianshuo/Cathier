@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "Bây giờ";
+"tab.journal" = "Nhật ký";
+"tab.friends" = "Bạn bè";
+"tab.settings" = "Cài đặt";
+
+/* TodayView */
+"today.nav_title" = "Bây giờ";
+"today.records" = "Ghi chép hôm nay";
+"today.start_scan" = "Bắt đầu quét cơ thể";
+"today.body_saying" = "Cơ thể bạn đang nói gì lúc này?";
+"greeting.morning" = "Chào buổi sáng";
+"greeting.afternoon" = "Chào buổi chiều";
+"greeting.evening" = "Chào buổi tối";
+"today.no_check_in" = "Bạn chưa check-in hôm nay. Dành một phút để quét cơ thể.";
+"today.checked_in" = "Đã check-in %d lần hôm nay. Tiếp tục nào!";
+
+/* JournalView */
+"journal.nav_title" = "Nhật ký";
+"journal.delete" = "Xóa";
+"journal.empty" = "Chưa có ghi chép";
+"journal.empty_hint" = "Ghi chép của bạn sẽ xuất hiện ở đây sau lần check-in đầu tiên.";
+"journal.today" = "Hôm nay";
+"journal.yesterday" = "Hôm qua";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "Hủy";
+"check_in.step_body_scan" = "Quét cơ thể";
+"check_in.step_emotion" = "Nhãn cảm xúc";
+"check_in.step_ai" = "Bạn đồng hành AI";
+
+/* BodyScanView */
+"body_scan.where_title" = "Bạn cảm thấy ở đâu?";
+"body_scan.multiple" = "Cho phép chọn nhiều";
+"body_scan.what_title" = "Cảm giác như thế nào?";
+"body_scan.trigger_title" = "Điều gì kích hoạt cảm giác này?";
+"body_scan.trigger_subtitle" = "Tùy chọn";
+"body_scan.trigger_placeholder" = "Mô tả một sự kiện, cảnh hoặc suy nghĩ\u2026";
+"body_scan.intensity" = "Cường độ";
+"body_scan.next" = "Tiếp: Xác định cảm xúc";
+"body_scan.mild" = "Nhẹ";
+"body_scan.intense" = "Mạnh";
+
+/* EmotionLabelView */
+"emotion.question" = "Cảm giác này giống cảm xúc nào?";
+"emotion.specific" = "Cụ thể hơn\u2026";
+"emotion.custom_prompt" = "Hoặc mô tả bằng từ của bạn";
+"emotion.custom_placeholder" = "Gõ một cảm xúc...";
+"emotion.gen_ai" = "Tạo phản hồi AI";
+"emotion.skip" = "Bỏ qua và lưu trực tiếp";
+"emotion.selected" = "Đã chọn";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "Cảm xúc hiện tại";
+"ai.note_label" = "Thêm ghi chú (tùy chọn)";
+"ai.note_placeholder" = "Ghi lại những suy nghĩ thêm...";
+"ai.share_title" = "Chia sẻ với bạn bè?";
+"ai.dont_share" = "Không chia sẻ";
+"ai.only_self" = "Chỉ tôi mới thấy";
+"ai.companion" = "Bạn đồng hành AI";
+"ai.save" = "Lưu ghi chép";
+"ai.loading" = "Đang xử lý cảm xúc của bạn...";
+"ai.retry" = "Thử lại";
+"ai.intensity_badge" = "Cường độ %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "Chia sẻ danh mục cảm xúc";
+"tier.category_desc" = "Bạn bè chỉ thấy danh mục cảm xúc và cường độ";
+"tier.emotions_name" = "Chia sẻ từ cảm xúc";
+"tier.emotions_desc" = "Bạn bè thấy các từ cảm xúc cụ thể";
+"tier.full_name" = "Chia sẻ đầy đủ";
+"tier.full_desc" = "Bạn bè thấy tất cả kể cả ghi chú";
+"ai.share_ai_feedback_toggle" = "Cũng chia sẻ phản hồi AI";
+"ai.share_ai_feedback_desc" = "Bạn bè cũng có thể thấy phản hồi của AI";
+
+/* FriendFeedView */
+"friend.nav_title" = "Bạn bè";
+"friend.no_friends" = "Chưa có bạn bè";
+"friend.add_hint" = "Thêm bạn bằng cách tìm kiếm tên";
+"friend.add_friend" = "Thêm bạn";
+"friend.empty_feed" = "Chưa có bạn bè nào chia sẻ tâm trạng";
+"friend.default_name" = "Bạn";
+
+/* FriendSetupView */
+"setup.title" = "Thiết lập hồ sơ bạn bè";
+"setup.subtitle" = "Bạn bè sẽ thấy tên và ảnh đại diện này";
+"setup.choose_emoji" = "Chọn emoji đại diện";
+"setup.nickname_label" = "Biệt danh của bạn";
+"setup.nickname_placeholder" = "Nhập biệt danh...";
+"setup.done" = "Xong";
+
+/* FriendManageView */
+"manage.nav_title" = "Quản lý bạn bè";
+"manage.add_friend" = "Thêm bạn";
+"manage.connected_friends" = "Bạn bè đã kết nối (%d)";
+"manage.disconnect" = "Ngắt kết nối";
+"manage.no_friends" = "Chưa có bạn bè. Tìm kiếm theo tên để thêm ai đó.";
+"manage.connected_on" = "Kết nối vào %@";
+"manage.disconnect_alert" = "Ngắt kết nối với \"%@\"?";
+"manage.disconnect_message" = "Bạn sẽ không còn thấy các ghi chép tâm trạng đã chia sẻ của nhau.";
+"manage.cancel" = "Hủy";
+
+/* AddFriendView */
+"search.nav_title" = "Thêm bạn";
+"search.placeholder" = "Tìm kiếm theo tên\u2026";
+"search.hint" = "Nhập tên để tìm người";
+"search.no_results" = "Không tìm thấy người dùng";
+"search.add" = "Thêm";
+"search.requested" = "Đã yêu cầu";
+"search.already_friends" = "Bạn bè";
+
+/* FriendRequests */
+"request.pending_section" = "Yêu cầu kết bạn";
+"request.accept" = "Chấp nhận";
+"request.decline" = "Từ chối";
+"request.from" = "muốn kết bạn với bạn";
+
+/* SettingsView */
+"settings.nav_title" = "Cài đặt";
+"settings.ai_section" = "Cài đặt AI";
+"settings.ai_provider" = "Nhà cung cấp AI";
+"settings.saved" = "Đã lưu";
+"settings.get_key" = "Lấy API Key \u2192";
+"settings.key_footer" = "API Key chỉ được lưu cục bộ và không bao giờ tải lên bất kỳ máy chủ nào.";
+"settings.managed_footer" = "Không cần API Key sau khi đăng ký. Đầy đủ tính năng AI. Hủy bất cứ lúc nào.";
+"settings.managed_desc" = "Sử dụng AI được lưu trữ của chúng tôi \u2014 không cần API Key, hoạt động ngay.";
+"settings.managed_feature1" = "Được cung cấp bởi Qwen (\u901a\u4e49\u5343\u95ee)";
+"settings.managed_feature2" = "Check-in đầy đủ và phản hồi cảm xúc";
+"settings.managed_feature3" = "Phân tích mẫu và báo cáo insights";
+"settings.managed_subscribe" = "Đăng ký";
+"settings.managed_per_month" = "tháng";
+"settings.managed_active" = "Đã đăng ký \u2014 dịch vụ AI đang hoạt động";
+"settings.managed_manage" = "Quản lý đăng ký \u2192";
+"settings.managed_restore" = "Khôi phục mua hàng";
+"settings.reminders_section" = "Nhắc nhở";
+"settings.enable_reminder" = "Bật nhắc nhở";
+"settings.save_reminder" = "Lưu cài đặt nhắc nhở";
+"settings.reminder_footer_on" = "Nhắc nhở sẽ được gửi dưới dạng thông báo cục bộ vào thời gian đã đặt.";
+"settings.reminder_footer_off" = "Vui lòng cho phép thông báo trong Cài đặt hệ thống để nhận nhắc nhở.";
+"settings.about_section" = "Giới thiệu";
+"settings.about_row" = "Giới thiệu về Cathier";
+"settings.version" = "Phiên bản";
+"settings.build" = "Build";
+"settings.data_storage" = "Lưu trữ dữ liệu";
+"settings.local_only" = "Đồng bộ iCloud";
+"settings.language_section" = "Ngôn ngữ";
+"settings.has_key" = "Tôi có API Key";
+"settings.no_key" = "Dùng AI được quản lý";
+"settings.context_section" = "Về bạn (bối cảnh AI)";
+"settings.context_placeholder" = "Kể cho AI về nền tảng của bạn \u2014 công việc, điều bạn đang trải qua\u2026 Điều này làm cho insights phù hợp hơn.";
+"settings.context_footer" = "Được lưu cục bộ. Bao gồm trong prompt phân tích mẫu.";
+
+/* AboutView */
+"about.made_by" = "Tạo bởi";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "Người bạn đồng hành nhận thức cảm xúc của bạn";
+"about.privacy_title" = "Quyền riêng tư là trên hết";
+"about.privacy_detail" = "Dữ liệu của bạn ở lại trên thiết bị. Phản hồi AI được xử lý qua API Key của bạn, không qua máy chủ của bên thứ ba.";
+"about.copyright_label" = "Bản quyền";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "Nhật ký hôm nay";
+"journal_entry.mood_label" = "Bạn cảm thấy thế nào hôm nay?";
+"journal_entry.gains_label" = "Thành quả hôm nay";
+"journal_entry.gains_placeholder" = "Ghi lại thành quả, nhận thức hoặc suy nghĩ hôm nay\u2026";
+"journal_entry.share_label" = "Chia sẻ với bạn bè";
+"journal_entry.share_desc" = "Bạn bè có thể thấy tâm trạng và thành quả của bạn";
+"journal_entry.save" = "Lưu nhật ký hôm nay";
+"journal_entry.edit" = "Chỉnh sửa";
+"journal_entry.once_a_day" = "Một lần mỗi ngày";
+"journal_entry.today_title" = "Nhật ký hôm nay";
+"journal_entry.shared_badge" = "Đã chia sẻ";
+"journal_entry.private_badge" = "Riêng tư";
+"journal_entry.write_prompt" = "Ghi lại tâm trạng và thành quả hôm nay";
+"journal_entry.write_hint" = "Một lần mỗi ngày \u2014 để lại dấu ấn cho hôm nay";
+
+/* FeedbackView */
+"feedback.nav_title" = "Đề xuất tính năng";
+"feedback.section_title" = "Phản hồi";
+"feedback.button" = "Gửi đề xuất";
+"feedback.title_label" = "Tiêu đề";
+"feedback.title_placeholder" = "Mô tả ngắn về đề xuất của bạn\u2026";
+"feedback.body_label" = "Chi tiết";
+"feedback.body_footer" = "Đề xuất của bạn sẽ được gửi dưới dạng GitHub Issue và AI sẽ tự động thực hiện.";
+"feedback.token_section" = "Cài đặt GitHub";
+"feedback.token_footer" = "Cần GitHub Personal Access Token với phạm vi 'repo' để gửi issues. Chỉ lưu cục bộ.";
+"feedback.submit" = "Gửi";
+"feedback.success" = "Đã gửi thành công!";
+"feedback.view_issue" = "Xem GitHub Issue \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "Chi tiết ghi chép";
+"detail.done" = "Xong";
+"detail.body_section" = "Cảm giác cơ thể";
+"detail.emotions_section" = "Cảm xúc";
+"detail.trigger_section" = "Sự kiện kích hoạt";
+"detail.note_section" = "Ghi chú";
+"detail.date_format" = "d MMM yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "Insights mẫu";
+"insights.toolbar_button" = "Insights";
+"insights.focus_title" = "Bạn muốn hiểu điều gì?";
+"insights.focus_triggers" = "Nguyên nhân căng thẳng của tôi";
+"insights.focus_growth" = "Tôi có đang tốt hơn không?";
+"insights.focus_body" = "Cơ thể nói với tôi điều gì";
+"insights.focus_surprise" = "Hãy làm tôi ngạc nhiên";
+"insights.analyze" = "Phân tích mẫu của tôi";
+"insights.refresh" = "Phân tích lại";
+"insights.loading" = "Đang phân tích lịch sử cảm xúc của bạn\u2026";
+"insights.empty_title" = "Tiếp tục ghi chép";
+"insights.empty_hint" = "Insights mẫu xuất hiện sau ít nhất 7 lần check-in.";
+"insights.load_error" = "Không thể tải check-in của bạn. Thử khởi động lại ứng dụng.";
+"insights.history_title" = "Phân tích trước đây";
+"insights.history_empty" = "Chưa có phân tích";
+"insights.analyzed_at" = "Đã phân tích";
+"insights.new_check_ins" = "%d check-in mới từ lần phân tích cuối";
+"insights.chart_title" = "Cường độ theo thời gian";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 Insights mẫu đã sẵn sàng";
+"notif.milestone_body" = "Bạn đã ghi chép 30 lần check-in! Mở nhật ký để phân tích mẫu cảm xúc của bạn.";
+
+/* Error messages */
+"error.no_api_key" = "Vui lòng nhập API Key của bạn trong Cài đặt trước.";
+"error.not_subscribed" = "Vui lòng đăng ký để sử dụng dịch vụ AI.";
+"error.api_error" = "Yêu cầu API thất bại (HTTP %d)";
+"error.decode_error" = "Không thể phân tích phản hồi AI";

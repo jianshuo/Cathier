@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "지금";
+"tab.journal" = "일기";
+"tab.friends" = "친구";
+"tab.settings" = "설정";
+
+/* TodayView */
+"today.nav_title" = "지금";
+"today.records" = "오늘의 기록";
+"today.start_scan" = "신체 스캔 시작";
+"today.body_saying" = "지금 이 순간, 몸이 무엇을 말하고 있나요?";
+"greeting.morning" = "좋은 아침이에요";
+"greeting.afternoon" = "좋은 오후예요";
+"greeting.evening" = "좋은 저녁이에요";
+"today.no_check_in" = "오늘 아직 체크인하지 않았어요. 잠깐 몸을 스캔해 보세요.";
+"today.checked_in" = "오늘 %d번 체크인했어요. 계속 해봐요!";
+
+/* JournalView */
+"journal.nav_title" = "일기";
+"journal.delete" = "삭제";
+"journal.empty" = "아직 기록이 없어요";
+"journal.empty_hint" = "첫 번째 체크인 후 기록이 여기에 나타납니다.";
+"journal.today" = "오늘";
+"journal.yesterday" = "어제";
+"journal.date_format" = "M월 d일";
+
+/* CheckInFlow */
+"check_in.cancel" = "취소";
+"check_in.step_body_scan" = "신체 스캔";
+"check_in.step_emotion" = "감정 라벨";
+"check_in.step_ai" = "AI 동반자";
+
+/* BodyScanView */
+"body_scan.where_title" = "어디서 느껴지나요?";
+"body_scan.multiple" = "여러 개 선택 가능";
+"body_scan.what_title" = "어떤 느낌인가요?";
+"body_scan.trigger_title" = "무엇이 이 감각을 일으켰나요?";
+"body_scan.trigger_subtitle" = "선택 사항";
+"body_scan.trigger_placeholder" = "사건, 장면, 또는 생각을 설명해 보세요\u2026";
+"body_scan.intensity" = "강도";
+"body_scan.next" = "다음: 감정 파악";
+"body_scan.mild" = "약함";
+"body_scan.intense" = "강함";
+
+/* EmotionLabelView */
+"emotion.question" = "이 감각은 어떤 감정과 비슷한가요?";
+"emotion.specific" = "더 구체적으로\u2026";
+"emotion.custom_prompt" = "또는 직접 표현해 보세요";
+"emotion.custom_placeholder" = "감정을 입력하세요...";
+"emotion.gen_ai" = "AI 피드백 생성";
+"emotion.skip" = "건너뛰고 바로 저장";
+"emotion.selected" = "선택됨";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "현재 감정";
+"ai.note_label" = "메모 추가 (선택 사항)";
+"ai.note_placeholder" = "추가적인 생각을 기록하세요...";
+"ai.share_title" = "친구와 공유할까요?";
+"ai.dont_share" = "공유하지 않기";
+"ai.only_self" = "나만 볼 수 있음";
+"ai.companion" = "AI 동반자";
+"ai.save" = "기록 저장";
+"ai.loading" = "감정을 처리 중이에요...";
+"ai.retry" = "다시 시도";
+"ai.intensity_badge" = "강도 %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "감정 카테고리 공유";
+"tier.category_desc" = "친구는 감정 카테고리와 강도만 볼 수 있어요";
+"tier.emotions_name" = "감정 단어 공유";
+"tier.emotions_desc" = "친구는 구체적인 감정 단어를 볼 수 있어요";
+"tier.full_name" = "전체 공유";
+"tier.full_desc" = "친구는 메모를 포함한 모든 것을 볼 수 있어요";
+"ai.share_ai_feedback_toggle" = "AI 피드백도 공유";
+"ai.share_ai_feedback_desc" = "친구도 AI의 응답을 볼 수 있어요";
+
+/* FriendFeedView */
+"friend.nav_title" = "친구";
+"friend.no_friends" = "아직 친구가 없어요";
+"friend.add_hint" = "이름을 검색해서 친구를 추가하세요";
+"friend.add_friend" = "친구 추가";
+"friend.empty_feed" = "아직 기분을 공유한 친구가 없어요";
+"friend.default_name" = "친구";
+
+/* FriendSetupView */
+"setup.title" = "친구 프로필 설정";
+"setup.subtitle" = "친구는 이 이름과 아바타를 보게 됩니다";
+"setup.choose_emoji" = "아바타 이모지 선택";
+"setup.nickname_label" = "닉네임";
+"setup.nickname_placeholder" = "닉네임을 입력하세요...";
+"setup.done" = "완료";
+
+/* FriendManageView */
+"manage.nav_title" = "친구 관리";
+"manage.add_friend" = "친구 추가";
+"manage.connected_friends" = "연결된 친구 (%d)";
+"manage.disconnect" = "연결 해제";
+"manage.no_friends" = "아직 친구가 없어요. 이름을 검색해서 추가해 보세요.";
+"manage.connected_on" = "%@에 연결됨";
+"manage.disconnect_alert" = "\"%@\"와의 연결을 해제할까요?";
+"manage.disconnect_message" = "서로의 공유된 기분 기록을 더 이상 볼 수 없게 됩니다.";
+"manage.cancel" = "취소";
+
+/* AddFriendView */
+"search.nav_title" = "친구 추가";
+"search.placeholder" = "이름으로 검색\u2026";
+"search.hint" = "이름을 입력해서 사람을 찾아보세요";
+"search.no_results" = "사용자를 찾을 수 없어요";
+"search.add" = "추가";
+"search.requested" = "요청됨";
+"search.already_friends" = "이미 친구";
+
+/* FriendRequests */
+"request.pending_section" = "친구 요청";
+"request.accept" = "수락";
+"request.decline" = "거절";
+"request.from" = "님이 친구 요청을 보냈어요";
+
+/* SettingsView */
+"settings.nav_title" = "설정";
+"settings.ai_section" = "AI 설정";
+"settings.ai_provider" = "AI 제공자";
+"settings.saved" = "저장됨";
+"settings.get_key" = "API 키 받기 \u2192";
+"settings.key_footer" = "API 키는 로컬에만 저장되며 어떤 서버에도 업로드되지 않습니다.";
+"settings.managed_footer" = "구독 후 API 키가 필요 없습니다. 전체 AI 기능 포함. 언제든지 취소 가능.";
+"settings.managed_desc" = "저희 호스팅 AI를 사용하세요 \u2014 API 키 불필요, 바로 작동합니다.";
+"settings.managed_feature1" = "Qwen (\u901a\u4e49\u5343\u95ee) 기반";
+"settings.managed_feature2" = "전체 체크인 및 감정 피드백";
+"settings.managed_feature3" = "패턴 분석 및 인사이트 리포트";
+"settings.managed_subscribe" = "구독하기";
+"settings.managed_per_month" = "월";
+"settings.managed_active" = "구독 중 \u2014 AI 서비스 활성";
+"settings.managed_manage" = "구독 관리 \u2192";
+"settings.managed_restore" = "구매 복원";
+"settings.reminders_section" = "알림";
+"settings.enable_reminder" = "알림 활성화";
+"settings.save_reminder" = "알림 설정 저장";
+"settings.reminder_footer_on" = "알림은 설정된 시간에 로컬 알림으로 전송됩니다.";
+"settings.reminder_footer_off" = "알림을 받으려면 시스템 설정에서 알림 권한을 허용해 주세요.";
+"settings.about_section" = "정보";
+"settings.about_row" = "Cathier 정보";
+"settings.version" = "버전";
+"settings.build" = "빌드";
+"settings.data_storage" = "데이터 저장";
+"settings.local_only" = "iCloud 동기화";
+"settings.language_section" = "언어";
+"settings.has_key" = "API 키가 있어요";
+"settings.no_key" = "관리형 AI 사용";
+"settings.context_section" = "나에 대해 (AI 컨텍스트)";
+"settings.context_placeholder" = "AI에게 배경을 알려주세요 \u2014 직업, 현재 겪고 있는 일\u2026 이렇게 하면 인사이트가 더 관련성 있게 됩니다.";
+"settings.context_footer" = "로컬에 저장됩니다. 패턴 분석 프롬프트에 포함됩니다.";
+
+/* AboutView */
+"about.made_by" = "제작자";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "감정 인식 훈련 동반자";
+"about.privacy_title" = "개인 정보 보호 우선";
+"about.privacy_detail" = "데이터는 기기에 저장됩니다. AI 피드백은 자신의 API 키를 통해 처리되며, 제3자 서버를 거치지 않습니다.";
+"about.copyright_label" = "저작권";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "오늘의 일기";
+"journal_entry.mood_label" = "오늘 기분이 어떤가요?";
+"journal_entry.gains_label" = "오늘의 수확";
+"journal_entry.gains_placeholder" = "오늘의 수확, 인사이트, 생각을 기록하세요\u2026";
+"journal_entry.share_label" = "친구와 공유";
+"journal_entry.share_desc" = "친구는 기분과 수확을 볼 수 있어요";
+"journal_entry.save" = "오늘 일기 저장";
+"journal_entry.edit" = "편집";
+"journal_entry.once_a_day" = "하루에 한 번";
+"journal_entry.today_title" = "오늘의 일기";
+"journal_entry.shared_badge" = "공유됨";
+"journal_entry.private_badge" = "비공개";
+"journal_entry.write_prompt" = "오늘의 기분과 수확을 기록하세요";
+"journal_entry.write_hint" = "하루에 한 번 \u2014 오늘을 위한 흔적을 남겨요";
+
+/* FeedbackView */
+"feedback.nav_title" = "기능 제안";
+"feedback.section_title" = "피드백";
+"feedback.button" = "제안 제출";
+"feedback.title_label" = "제목";
+"feedback.title_placeholder" = "제안에 대한 간략한 설명\u2026";
+"feedback.body_label" = "세부 사항";
+"feedback.body_footer" = "제안은 GitHub Issue로 제출되어 AI가 자동으로 구현합니다.";
+"feedback.token_section" = "GitHub 설정";
+"feedback.token_footer" = "이슈 제출을 위해 'repo' 범위의 GitHub 개인 액세스 토큰이 필요합니다. 로컬에만 저장됩니다.";
+"feedback.submit" = "제출";
+"feedback.success" = "성공적으로 제출됐어요!";
+"feedback.view_issue" = "GitHub Issue 보기 \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "기록 상세";
+"detail.done" = "완료";
+"detail.body_section" = "신체 감각";
+"detail.emotions_section" = "감정";
+"detail.trigger_section" = "유발 사건";
+"detail.note_section" = "메모";
+"detail.date_format" = "yyyy년 M월 d일";
+
+/* InsightsView */
+"insights.nav_title" = "패턴 인사이트";
+"insights.toolbar_button" = "인사이트";
+"insights.focus_title" = "무엇을 이해하고 싶나요?";
+"insights.focus_triggers" = "스트레스 요인";
+"insights.focus_growth" = "나는 나아지고 있나요?";
+"insights.focus_body" = "몸이 나에게 말하는 것";
+"insights.focus_surprise" = "놀라게 해줘";
+"insights.analyze" = "패턴 분석하기";
+"insights.refresh" = "다시 분석";
+"insights.loading" = "감정 기록을 분석 중이에요\u2026";
+"insights.empty_title" = "계속 기록하세요";
+"insights.empty_hint" = "7번 이상 체크인 후 패턴 인사이트가 나타납니다.";
+"insights.load_error" = "체크인을 불러올 수 없어요. 앱을 다시 시작해 보세요.";
+"insights.history_title" = "이전 분석";
+"insights.history_empty" = "아직 분석이 없어요";
+"insights.analyzed_at" = "분석됨";
+"insights.new_check_ins" = "마지막 분석 이후 %d개의 새로운 체크인";
+"insights.chart_title" = "시간별 강도";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 패턴 인사이트 준비됨";
+"notif.milestone_body" = "30번 체크인했어요! 일기를 열어 감정 패턴을 분석해 보세요.";
+
+/* Error messages */
+"error.no_api_key" = "먼저 설정에서 API 키를 입력하세요.";
+"error.not_subscribed" = "AI 서비스를 사용하려면 구독해 주세요.";
+"error.api_error" = "API 요청 실패 (HTTP %d)";
+"error.decode_error" = "AI 응답 분석 실패";

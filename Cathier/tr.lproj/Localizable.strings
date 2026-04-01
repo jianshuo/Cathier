@@ -1,0 +1,229 @@
+/* Tabs */
+"tab.today" = "Şimdi";
+"tab.journal" = "Günlük";
+"tab.friends" = "Arkadaşlar";
+"tab.settings" = "Ayarlar";
+
+/* TodayView */
+"today.nav_title" = "Şimdi";
+"today.records" = "Bugünkü Kayıtlar";
+"today.start_scan" = "Vücut Taramasını Başlat";
+"today.body_saying" = "Vücudunuz şu an size ne söylüyor?";
+"greeting.morning" = "Günaydın";
+"greeting.afternoon" = "İyi günler";
+"greeting.evening" = "İyi akşamlar";
+"today.no_check_in" = "Bugün henüz giriş yapmadınız. Vücudunuzu taramak için bir dakika ayırın.";
+"today.checked_in" = "Bugün %d kez giriş yaptınız. Devam edin!";
+
+/* JournalView */
+"journal.nav_title" = "Günlük";
+"journal.delete" = "Sil";
+"journal.empty" = "Henüz kayıt yok";
+"journal.empty_hint" = "İlk girişinizden sonra kayıtlarınız burada görünecek.";
+"journal.today" = "Bugün";
+"journal.yesterday" = "Dün";
+"journal.date_format" = "d MMM";
+
+/* CheckInFlow */
+"check_in.cancel" = "İptal";
+"check_in.step_body_scan" = "Vücut Taraması";
+"check_in.step_emotion" = "Duygu Etiketi";
+"check_in.step_ai" = "Yapay Zeka Yoldaşı";
+
+/* BodyScanView */
+"body_scan.where_title" = "Nerede hissediyorsunuz?";
+"body_scan.multiple" = "Birden fazla seçim yapılabilir";
+"body_scan.what_title" = "Nasıl hissettiriyor?";
+"body_scan.trigger_title" = "Bu duyguyu ne tetikledi?";
+"body_scan.trigger_subtitle" = "İsteğe bağlı";
+"body_scan.trigger_placeholder" = "Bir olay, sahne veya düşünce anlatın\u2026";
+"body_scan.intensity" = "Yoğunluk";
+"body_scan.next" = "Sonraki: Duyguları Tanımla";
+"body_scan.mild" = "Hafif";
+"body_scan.intense" = "Yoğun";
+
+/* EmotionLabelView */
+"emotion.question" = "Bu his hangi duyguya benziyor?";
+"emotion.specific" = "Daha özel olarak\u2026";
+"emotion.custom_prompt" = "Veya kendi kelimelerinizle anlatın";
+"emotion.custom_placeholder" = "Bir duygu yazın...";
+"emotion.gen_ai" = "Yapay Zeka Geri Bildirimi Oluştur";
+"emotion.skip" = "Atla ve Doğrudan Kaydet";
+"emotion.selected" = "Seçildi";
+
+/* AIFeedbackView */
+"ai.feelings_summary" = "Mevcut Duygular";
+"ai.note_label" = "Not Ekle (isteğe bağlı)";
+"ai.note_placeholder" = "Ek düşünceler kaydedin...";
+"ai.share_title" = "Arkadaşlarla Paylaş?";
+"ai.dont_share" = "Paylaşma";
+"ai.only_self" = "Yalnızca bana görünür";
+"ai.companion" = "Yapay Zeka Yoldaşı";
+"ai.save" = "Kaydı Kaydet";
+"ai.loading" = "Duygularınız işleniyor...";
+"ai.retry" = "Yeniden Dene";
+"ai.intensity_badge" = "Yoğunluk %d/10";
+
+/* Privacy Tier */
+"tier.category_name" = "Duygu kategorisini paylaş";
+"tier.category_desc" = "Arkadaş yalnızca duygu kategorisini ve yoğunluğu görür";
+"tier.emotions_name" = "Duygu kelimelerini paylaş";
+"tier.emotions_desc" = "Arkadaş belirli duygu kelimelerini görür";
+"tier.full_name" = "Tam Paylaşım";
+"tier.full_desc" = "Arkadaş notlar dahil her şeyi görür";
+"ai.share_ai_feedback_toggle" = "Yapay Zeka Geri Bildirimini de Paylaş";
+"ai.share_ai_feedback_desc" = "Arkadaşlar Yapay Zekanın yanıtını da görebilir";
+
+/* FriendFeedView */
+"friend.nav_title" = "Arkadaşlar";
+"friend.no_friends" = "Henüz Arkadaş Yok";
+"friend.add_hint" = "İsimlerini arayarak arkadaş ekleyin";
+"friend.add_friend" = "Arkadaş Ekle";
+"friend.empty_feed" = "Henüz hiç arkadaş ruh halini paylaşmadı";
+"friend.default_name" = "Arkadaş";
+
+/* FriendSetupView */
+"setup.title" = "Arkadaş Profilinizi Kurun";
+"setup.subtitle" = "Arkadaşlar bu ismi ve avatarı görecek";
+"setup.choose_emoji" = "Bir avatar emojisi seçin";
+"setup.nickname_label" = "Takma Adınız";
+"setup.nickname_placeholder" = "Takma ad girin...";
+"setup.done" = "Tamam";
+
+/* FriendManageView */
+"manage.nav_title" = "Arkadaş Yönetimi";
+"manage.add_friend" = "Arkadaş Ekle";
+"manage.connected_friends" = "Bağlı Arkadaşlar (%d)";
+"manage.disconnect" = "Bağlantıyı Kes";
+"manage.no_friends" = "Henüz arkadaş yok. Birini eklemek için isimle arayın.";
+"manage.connected_on" = "%@ tarihinde bağlandı";
+"manage.disconnect_alert" = "\"%@\" ile bağlantıyı kes?";
+"manage.disconnect_message" = "Artık birbirinizin paylaşılan ruh hali kayıtlarını göremeyeceksiniz.";
+"manage.cancel" = "İptal";
+
+/* AddFriendView */
+"search.nav_title" = "Arkadaş Ekle";
+"search.placeholder" = "İsme Göre Ara\u2026";
+"search.hint" = "İnsanları bulmak için isim girin";
+"search.no_results" = "Kullanıcı bulunamadı";
+"search.add" = "Ekle";
+"search.requested" = "İstendi";
+"search.already_friends" = "Arkadaşlar";
+
+/* FriendRequests */
+"request.pending_section" = "Arkadaşlık İstekleri";
+"request.accept" = "Kabul Et";
+"request.decline" = "Reddet";
+"request.from" = "arkadaş olmak istiyor";
+
+/* SettingsView */
+"settings.nav_title" = "Ayarlar";
+"settings.ai_section" = "Yapay Zeka Ayarları";
+"settings.ai_provider" = "Yapay Zeka Sağlayıcısı";
+"settings.saved" = "Kaydedildi";
+"settings.get_key" = "API Anahtarı Al \u2192";
+"settings.key_footer" = "API Anahtarı yalnızca yerel olarak saklanır ve hiçbir sunucuya yüklenmez.";
+"settings.managed_footer" = "Abonelik sonrası API Anahtarı gerekli değil. Tam Yapay Zeka özellikleri dahil. İstediğinizde iptal edin.";
+"settings.managed_desc" = "Barındırılan Yapay Zekamızı kullanın \u2014 API Anahtarı gerekmez, hemen çalışır.";
+"settings.managed_feature1" = "Qwen (\u901a\u4e49\u5343\u95ee) tarafından desteklenmektedir";
+"settings.managed_feature2" = "Tam giriş ve duygu geri bildirimi";
+"settings.managed_feature3" = "Desen analizi ve içgörü raporları";
+"settings.managed_subscribe" = "Abone Ol";
+"settings.managed_per_month" = "ay";
+"settings.managed_active" = "Abone \u2014 Yapay Zeka hizmeti aktif";
+"settings.managed_manage" = "Aboneliği Yönet \u2192";
+"settings.managed_restore" = "Satın Almayı Geri Yükle";
+"settings.reminders_section" = "Hatırlatıcılar";
+"settings.enable_reminder" = "Hatırlatıcıları Etkinleştir";
+"settings.save_reminder" = "Hatırlatıcı Ayarlarını Kaydet";
+"settings.reminder_footer_on" = "Hatırlatıcılar belirlenen saatlerde yerel bildirim olarak gönderilecek.";
+"settings.reminder_footer_off" = "Hatırlatıcı almak için Sistem Ayarlarında bildirim iznine izin verin.";
+"settings.about_section" = "Hakkında";
+"settings.about_row" = "Cathier Hakkında";
+"settings.version" = "Sürüm";
+"settings.build" = "Derleme";
+"settings.data_storage" = "Veri Depolama";
+"settings.local_only" = "iCloud Senkronizasyonu";
+"settings.language_section" = "Dil";
+"settings.has_key" = "API Anahtarım Var";
+"settings.no_key" = "Yönetilen Yapay Zekayı Kullan";
+"settings.context_section" = "Kendiniz Hakkında (Yapay Zeka Bağlamı)";
+"settings.context_placeholder" = "Yapay Zekaya geçmişinizi anlatın \u2014 işiniz, yaşadıklarınız\u2026 Bu içgörüleri daha alakalı hale getirir.";
+"settings.context_footer" = "Yerel olarak saklanır. Desen analizi istemine dahil edilir.";
+
+/* AboutView */
+"about.made_by" = "Yapan";
+"about.creator_name" = "Cathy Zhang";
+"about.app_description" = "Duygusal farkındalık yoldaşınız";
+"about.privacy_title" = "Önce Gizlilik";
+"about.privacy_detail" = "Verileriniz cihazda kalır. Yapay Zeka geri bildirimi kendi API Anahtarınız üzerinden işlenir, asla üçüncü taraf sunucular aracılığıyla değil.";
+"about.copyright_label" = "Telif Hakkı";
+
+/* DailyJournalEntryView */
+"journal_entry.nav_title" = "Bugünkü Günlük";
+"journal_entry.mood_label" = "Bugün nasıl hissediyorsunuz?";
+"journal_entry.gains_label" = "Bugünkü Kazanımlar";
+"journal_entry.gains_placeholder" = "Bugünkü kazanımları, içgörüleri veya düşünceleri kaydedin\u2026";
+"journal_entry.share_label" = "Arkadaşlarla Paylaş";
+"journal_entry.share_desc" = "Arkadaşlar ruh halinizi ve kazanımlarınızı görebilir";
+"journal_entry.save" = "Bugünkü Günlüğü Kaydet";
+"journal_entry.edit" = "Düzenle";
+"journal_entry.once_a_day" = "Günde bir giriş";
+"journal_entry.today_title" = "Bugünkü Günlük";
+"journal_entry.shared_badge" = "Paylaşıldı";
+"journal_entry.private_badge" = "Özel";
+"journal_entry.write_prompt" = "Bugünkü ruh halini ve kazanımları kaydet";
+"journal_entry.write_hint" = "Günde bir kez \u2014 bugün için bir iz bırak";
+
+/* FeedbackView */
+"feedback.nav_title" = "Özellik Önerileri";
+"feedback.section_title" = "Geri Bildirim";
+"feedback.button" = "Öneri Gönder";
+"feedback.title_label" = "Başlık";
+"feedback.title_placeholder" = "Önerinizin kısa açıklaması\u2026";
+"feedback.body_label" = "Ayrıntılar";
+"feedback.body_footer" = "Öneriniz GitHub Issue olarak gönderilecek ve Yapay Zeka tarafından otomatik olarak uygulanacak.";
+"feedback.token_section" = "GitHub Ayarları";
+"feedback.token_footer" = "Issue göndermek için 'repo' kapsamlı GitHub Kişisel Erişim Tokenı gereklidir. Yalnızca yerel olarak saklanır.";
+"feedback.submit" = "Gönder";
+"feedback.success" = "Başarıyla gönderildi!";
+"feedback.view_issue" = "GitHub Issue'yu Görüntüle \u2192";
+
+/* CheckInDetailView */
+"detail.nav_title" = "Kayıt Ayrıntısı";
+"detail.done" = "Tamam";
+"detail.body_section" = "Bedensel Duyumlar";
+"detail.emotions_section" = "Duygular";
+"detail.trigger_section" = "Tetikleyici Olay";
+"detail.note_section" = "Not";
+"detail.date_format" = "d MMM yyyy";
+
+/* InsightsView */
+"insights.nav_title" = "Desen İçgörüleri";
+"insights.toolbar_button" = "İçgörüler";
+"insights.focus_title" = "Ne anlamak istiyorsunuz?";
+"insights.focus_triggers" = "Stres tetikleyicilerim";
+"insights.focus_growth" = "İyileşiyor muyum?";
+"insights.focus_body" = "Vücudum bana ne söylüyor";
+"insights.focus_surprise" = "Beni Şaşırt";
+"insights.analyze" = "Desenlerimi Analiz Et";
+"insights.refresh" = "Yeniden Analiz Et";
+"insights.loading" = "Duygusal geçmişiniz analiz ediliyor\u2026";
+"insights.empty_title" = "Kaydetmeye Devam Et";
+"insights.empty_hint" = "Desen içgörüleri en az 7 girişten sonra görünür.";
+"insights.load_error" = "Girişleriniz yüklenemedi. Uygulamayı yeniden başlatmayı deneyin.";
+"insights.history_title" = "Önceki Analizler";
+"insights.history_empty" = "Henüz analiz yok";
+"insights.analyzed_at" = "Analiz Edildi";
+"insights.new_check_ins" = "Son analizden bu yana %d yeni giriş";
+"insights.chart_title" = "Zaman İçinde Yoğunluk";
+
+/* Notifications */
+"notif.milestone_title" = "🌟 Desen İçgörüleri Hazır";
+"notif.milestone_body" = "30 giriş kaydettiniz! Duygusal desenlerinizi analiz etmek için günlüğünüzü açın.";
+
+/* Error messages */
+"error.no_api_key" = "Lütfen önce Ayarlar'da API Anahtarınızı girin.";
+"error.not_subscribed" = "Yapay Zeka hizmetini kullanmak için lütfen abone olun.";
+"error.api_error" = "API isteği başarısız oldu (HTTP %d)";
+"error.decode_error" = "Yapay Zeka yanıtı ayrıştırılamadı";
