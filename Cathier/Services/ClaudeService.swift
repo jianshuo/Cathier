@@ -227,6 +227,21 @@ enum ClaudeService {
             - 最後に励ましの一文を添えること
             - 日本語で回答してください
             """
+        default:
+            return """
+            You are an experienced emotional pattern analyst with deep background in somatic and cognitive psychology.
+
+            The user has provided a series of emotional check-ins over time. Your task: identify 3-5 meaningful patterns in their data.
+
+            \(focusInstruction)
+
+            Format requirements:
+            - Each pattern: one paragraph, warm and direct tone
+            - Each pattern MUST reference specific evidence (a date, an emotion word, a trigger event) — no vague generalizations
+            - Avoid platitudes like "you seem to experience stress" — give specific, evidence-backed insights
+            - End with one encouraging sentence
+            - Respond in English
+            """
         }
     }
 
@@ -253,6 +268,8 @@ enum ClaudeService {
             header = "Below are \(checkIns.count) emotional check-ins from the user (chronological order):\n"
         case .ja:
             header = "以下はユーザーの\(checkIns.count)件の感情チェックイン記録です（時系列順）：\n"
+        default:
+            header = "Below are \(checkIns.count) emotional check-ins from the user (chronological order):\n"
         }
 
         var lines = [header]
@@ -281,6 +298,7 @@ enum ClaudeService {
             case .zh: contextLabel = "\n【用户背景信息】\n\(contextBrief)\n"
             case .en: contextLabel = "\n[User Context]\n\(contextBrief)\n"
             case .ja: contextLabel = "\n【ユーザー背景情報】\n\(contextBrief)\n"
+            default: contextLabel = "\n[User Context]\n\(contextBrief)\n"
             }
             lines.append(contextLabel)
         }
@@ -290,6 +308,7 @@ enum ClaudeService {
         case .zh: closing = "\n请根据以上记录，给出你的分析。"
         case .en: closing = "\nPlease provide your analysis based on the records above."
         case .ja: closing = "\n上記の記録に基づいて分析を提供してください。"
+        default: closing = "\nPlease provide your analysis based on the records above."
         }
         lines.append(closing)
 
@@ -382,6 +401,34 @@ enum ClaudeService {
             - 言葉は温かくシンプルに。専門用語を多用しない
             - すべての応答は「この人、この瞬間」のために
             - 日本語で応答してください
+            """
+
+        default:
+            return """
+            You are a mental health counselor with over 20 years of clinical experience. You specialize in Somatic Therapy, Cognitive Behavioral Therapy (CBT), and mindfulness practices. You are warm, perceptive, and deeply empathetic, able to read inner emotional states through bodily sensations.
+
+            You believe: the body never lies — behind every physical sensation lies an emotional signal waiting to be seen.
+
+            When the user shares body sensations and emotion labels, respond in four steps with a gentle yet grounded tone:
+
+            Step 1: Empathy & Validation
+            In 1–2 sentences, sincerely acknowledge the user's current experience. Help them feel "seen" and "held." Build connection first; analysis can wait.
+
+            Step 2: Reading the Body Signal
+            Gently interpret: What might this physical sensation be communicating? How might the body and emotions be connected? Speak softly, not diagnostically.
+
+            Step 3: Present-Moment Insight
+            Help the user see their situation more clearly: What psychological state might they be in? What inner needs may be unmet? Avoid judgment; use phrases like "perhaps," "it may be," or "I notice." If history is available, offer trend-based insight.
+
+            Step 4: Grounded Suggestions
+            Offer 2–3 concrete, low-effort suggestions: a breathing exercise, a body movement, a self-compassion phrase, or a small action. Close with a warm, affirming sentence.
+
+            Core principles:
+            - Never judge; never say "you should" or "you're wrong"
+            - Speak from observation, not authority
+            - Keep language warm and simple; avoid jargon
+            - Every response is tailored for this person, in this moment
+            - Please respond in English
             """
         }
     }
@@ -569,6 +616,51 @@ enum ClaudeService {
                 prompt += "\n"
             }
             prompt += "上記の情報をもとに、温かく深みのある応答をお願いします。"
+            return prompt
+
+        default:
+            let parts  = bodyParts.map { lm.display($0) }
+            let emos   = emotions.map { lm.display($0) }
+
+            let partsStr  = parts.isEmpty  ? "unspecified" : parts.joined(separator: ", ")
+            let emosStr   = emos.isEmpty   ? "unclear" : emos.joined(separator: ", ")
+
+            var sensesStr = ""
+            if parsed.perPart.isEmpty && parsed.global.isEmpty {
+                sensesStr = "unspecified"
+            } else if parsed.perPart.isEmpty {
+                sensesStr = parsed.global.map { lm.display($0) }.joined(separator: ", ")
+            } else {
+                let parts2 = parsed.perPart.map { "\(lm.display($0.part)): \($0.sensations.map { lm.display($0) }.joined(separator: ", "))" }
+                sensesStr = parts2.joined(separator: "; ")
+                if !parsed.global.isEmpty { sensesStr += "; " + parsed.global.map { lm.display($0) }.joined(separator: ", ") }
+            }
+
+            let triggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
+            var prompt = """
+            [Current Body Scan]
+            Body areas: \(partsStr)
+            Sensations: \(sensesStr) (Intensity: \(intensity)/10)
+            Emotions: \(emosStr)
+            \(triggerStr.isEmpty ? "" : "Triggering event/scene: \(triggerStr)\n")
+            """
+
+            let history = recentHistory.prefix(5)
+            if !history.isEmpty {
+                prompt += "[Recent History for Trend Analysis]\n"
+                let calendar = Calendar.current
+                for checkIn in history {
+                    let daysAgo = calendar.dateComponents([.day], from: checkIn.date, to: Date()).day ?? 0
+                    let when = daysAgo == 0 ? "earlier today" : "\(daysAgo) day(s) ago"
+                    let hParts  = checkIn.bodyParts.isEmpty  ? "" : "body: \(checkIn.bodyParts.map { lm.display($0) }.joined(separator: ", "))"
+                    let hSenses = checkIn.sensations.isEmpty ? "" : "sensations: \(checkIn.sensations.map { lm.display($0) }.joined(separator: ", ")) (intensity: \(checkIn.intensity)/10)"
+                    let hEmos   = checkIn.emotions.isEmpty   ? "" : "emotions: \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))"
+                    let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "; ")
+                    prompt += "· \(when): \(info)\n"
+                }
+                prompt += "\n"
+            }
+            prompt += "Please provide a warm and insightful response based on the above."
             return prompt
         }
     }
