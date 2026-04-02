@@ -8,6 +8,8 @@ struct AIFeedbackView: View {
     @Environment(LanguageManager.self) private var lm
     let onDismiss: () -> Void
 
+    // Persist last chosen tier; "none" = don't share, defaults to "full"
+    @AppStorage("lastShareTierRaw") private var lastShareTierRaw: String = FriendCheckIn.PrivacyTier.full.rawValue
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
     @State private var shareAIFeedback: Bool = false
 
@@ -52,6 +54,12 @@ struct AIFeedbackView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
+        }
+        .onAppear {
+            selectedTier = FriendCheckIn.PrivacyTier(rawValue: lastShareTierRaw)
+        }
+        .onChange(of: selectedTier) { _, newTier in
+            lastShareTierRaw = newTier?.rawValue ?? "none"
         }
         .task {
             if viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
