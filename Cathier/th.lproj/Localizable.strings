@@ -81,6 +81,8 @@
 "friend.add_friend" = "เพิ่มเพื่อน";
 "friend.empty_feed" = "ยังไม่มีเพื่อนที่แชร์อารมณ์";
 "friend.default_name" = "เพื่อน";
+"ai.read_more" = "อ่านการตีความทั้งหมด";
+"ai.full_interpretation" = "การตีความ AI";
 
 /* FriendSetupView */
 "setup.title" = "ตั้งค่าโปรไฟล์เพื่อน";

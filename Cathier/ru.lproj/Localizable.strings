@@ -81,6 +81,8 @@
 "friend.add_friend" = "Добавить друга";
 "friend.empty_feed" = "Никто из друзей ещё не поделился настроением";
 "friend.default_name" = "Друг";
+"ai.read_more" = "Читать полную интерпретацию";
+"ai.full_interpretation" = "Интерпретация ИИ";
 
 /* FriendSetupView */
 "setup.title" = "Настройка профиля друга";

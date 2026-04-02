@@ -81,6 +81,8 @@
 "friend.add_friend" = "Añadir amigo";
 "friend.empty_feed" = "Ningún amigo ha compartido su estado de ánimo aún";
 "friend.default_name" = "Amigo";
+"ai.read_more" = "Leer interpretación completa";
+"ai.full_interpretation" = "Interpretación IA";
 
 /* FriendSetupView */
 "setup.title" = "Configura tu perfil de amigo";

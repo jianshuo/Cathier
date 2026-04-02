@@ -81,6 +81,8 @@
 "friend.add_friend" = "Freund hinzufügen";
 "friend.empty_feed" = "Noch kein Freund hat eine Stimmung geteilt";
 "friend.default_name" = "Freund";
+"ai.read_more" = "Vollständige Interpretation lesen";
+"ai.full_interpretation" = "KI-Interpretation";
 
 /* FriendSetupView */
 "setup.title" = "Freundesprofil einrichten";

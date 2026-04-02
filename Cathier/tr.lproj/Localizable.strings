@@ -81,6 +81,8 @@
 "friend.add_friend" = "Arkadaş Ekle";
 "friend.empty_feed" = "Henüz hiç arkadaş ruh halini paylaşmadı";
 "friend.default_name" = "Arkadaş";
+"ai.read_more" = "Tam yorumu oku";
+"ai.full_interpretation" = "Yapay Zeka Yorumu";
 
 /* FriendSetupView */
 "setup.title" = "Arkadaş Profilinizi Kurun";

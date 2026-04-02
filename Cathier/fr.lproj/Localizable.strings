@@ -81,6 +81,8 @@
 "friend.add_friend" = "Ajouter un ami";
 "friend.empty_feed" = "Aucun ami n'a partagé d'humeur";
 "friend.default_name" = "Ami";
+"ai.read_more" = "Lire l'interprétation complète";
+"ai.full_interpretation" = "Interprétation IA";
 
 /* FriendSetupView */
 "setup.title" = "Configurer votre profil d'ami";

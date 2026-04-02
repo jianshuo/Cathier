@@ -81,6 +81,8 @@
 "friend.add_friend" = "Thêm bạn";
 "friend.empty_feed" = "Chưa có bạn bè nào chia sẻ tâm trạng";
 "friend.default_name" = "Bạn";
+"ai.read_more" = "Đọc diễn giải đầy đủ";
+"ai.full_interpretation" = "Diễn giải AI";
 
 /* FriendSetupView */
 "setup.title" = "Thiết lập hồ sơ bạn bè";

@@ -81,6 +81,8 @@
 "friend.add_friend" = "친구 추가";
 "friend.empty_feed" = "아직 기분을 공유한 친구가 없어요";
 "friend.default_name" = "친구";
+"ai.read_more" = "전체 해석 보기";
+"ai.full_interpretation" = "AI 해석";
 
 /* FriendSetupView */
 "setup.title" = "친구 프로필 설정";

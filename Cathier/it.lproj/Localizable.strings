@@ -81,6 +81,8 @@
 "friend.add_friend" = "Aggiungi amico";
 "friend.empty_feed" = "Nessun amico ha ancora condiviso un'umore";
 "friend.default_name" = "Amico";
+"ai.read_more" = "Leggi l'interpretazione completa";
+"ai.full_interpretation" = "Interpretazione IA";
 
 /* FriendSetupView */
 "setup.title" = "Configura il tuo profilo amico";

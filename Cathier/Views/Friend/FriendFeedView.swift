@@ -447,6 +447,71 @@ struct SharedJournalFeedRow: View {
     }
 }
 
+// MARK: - Friend AI detail sheet
+
+struct FriendAIDetailView: View {
+    let item: FriendCheckIn
+    let owner: UserProfile?
+    @Environment(LanguageManager.self) private var lm
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+                    // Owner header
+                    HStack(spacing: 10) {
+                        Text(owner?.avatarEmoji ?? "🙂")
+                            .font(.system(size: 28))
+                            .frame(width: 40, height: 40)
+                            .background(Color(.systemGray5))
+                            .clipShape(Circle())
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(owner?.displayName ?? lm.friendDefaultName)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            Text(item.date.feedRelativeString)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+
+                    // Full AI text
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: "sparkles")
+                            .font(.subheadline)
+                            .foregroundColor(.cathierAccent)
+                            .padding(.top, 2)
+                        Text(item.aiFeedback)
+                            .font(.cathierSerif(.body))
+                            .foregroundColor(.primary)
+                            .lineSpacing(4)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                    .padding(14)
+                    .background(Color.cathierAccentLight)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10, style: .continuous)
+                            .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                }
+                .padding(20)
+            }
+            .navigationTitle(lm.aiFullInterpretation)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+        }
+    }
+}
+
 // MARK: - Date helper
 
 private extension Date {
