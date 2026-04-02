@@ -12,7 +12,7 @@ struct AddFriendView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if vm.isLoadingUsers && vm.allUsers.isEmpty {
+                if vm.allUsers.isEmpty {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                 } else {
@@ -37,10 +37,8 @@ struct AddFriendView: View {
 
     private var userList: some View {
         List {
-            if vm.filteredUsers.isEmpty {
-                Text(vm.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty
-                     ? lm.searchHint
-                     : lm.searchNoResults)
+            if vm.filteredUsers.isEmpty && !vm.searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+                Text(lm.searchNoResults)
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                     .listRowBackground(Color.clear)
