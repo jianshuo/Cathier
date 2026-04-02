@@ -19,6 +19,55 @@ platform :ios do
     latest + 1
   end
 
+  # Reject any existing App Store version that is pending (but not yet In Review).
+  # If a version IS In Review, we cannot reject it — raise an error instead of
+  # letting upload_to_app_store fail with a cryptic message.
+  def reject_pending_version_if_needed(api_key:)
+    require "spaceship"
+
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.new(
+      key_id:     api_key[:key_id],
+      issuer_id:  api_key[:issuer_id],
+      key:        Base64.decode64(api_key[:key])
+    )
+
+    app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
+    UI.user_error!("App not found on App Store Connect") unless app
+
+    # Fetch all iOS edit versions (non-live)
+    versions = app.get_app_store_versions(
+      filter: { platform: "IOS" },
+      includes: "appVersionState"
+    )
+
+    # State constants from the Connect API
+    in_review_state   = "IN_REVIEW"
+    rejectable_states = %w[
+      WAITING_FOR_REVIEW
+      PENDING_DEVELOPER_RELEASE
+      DEVELOPER_REJECTED
+      REJECTED
+      PREPARE_FOR_SUBMISSION
+      METADATA_REJECTED
+    ]
+
+    versions.each do |v|
+      state = v.app_version_state
+      next if state.nil? || state == "READY_FOR_SALE" || state == "PROCESSING_FOR_DISTRIBUTION"
+
+      if state == in_review_state
+        UI.user_error!(
+          "Version #{v.version_string} is currently IN_REVIEW — cannot reject it. " \
+          "Wait for the review to finish before submitting a new build."
+        )
+      elsif rejectable_states.include?(state)
+        UI.important("Rejecting version #{v.version_string} (state: #{state}) to make room for the new submission.")
+        v.reject!
+        UI.success("Version #{v.version_string} rejected.")
+      end
+    end
+  end
+
   # Shared signing + build helper to avoid duplication between lanes.
   def sign_and_build(api_key:)
     match(
@@ -85,13 +134,14 @@ platform :ios do
 
     sign_and_build(api_key: api_key)
 
+    reject_pending_version_if_needed(api_key: api_key)
+
     upload_to_app_store(
       api_key:                    api_key,
       skip_metadata:              true,
       skip_screenshots:           true,
       submit_for_review:          true,
       automatic_release:          false,
-      reject_if_possible:         true,
       run_precheck_before_submit: false,
       submission_information: {
         add_id_info_uses_idfa:             false,
