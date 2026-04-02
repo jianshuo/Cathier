@@ -126,13 +126,13 @@ private struct FriendHomeView: View {
     private var feedList: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
-                // Friend avatars row
                 friendAvatarRow
                     .padding(.horizontal, 20)
                     .padding(.vertical, 12)
 
                 Divider()
                     .padding(.horizontal, 20)
+                    .padding(.bottom, 8)
 
                 ForEach(mergedFeed) { item in
                     switch item {
@@ -141,9 +141,9 @@ private struct FriendHomeView: View {
                     case .journal(let journal):
                         SharedJournalFeedRow(journal: journal, profile: vm.currentProfile)
                     }
-                    Divider()
-                        .padding(.leading, 72)
                 }
+
+                Spacer(minLength: 24)
             }
         }
     }
@@ -151,7 +151,6 @@ private struct FriendHomeView: View {
     private var friendAvatarRow: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 16) {
-                // Add friend button inline with avatars
                 Button(action: { showAddFriendView = true }) {
                     VStack(spacing: 4) {
                         Image(systemName: "person.badge.plus")
@@ -237,34 +236,31 @@ private struct FriendHomeView: View {
 struct FriendCheckInCard: View {
     let item: FriendCheckIn
     let owner: UserProfile?
-
-    @State private var expanded = false
     @Environment(LanguageManager.self) private var lm
 
     var body: some View {
-        Button(action: { withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() } }) {
-            VStack(alignment: .leading, spacing: 0) {
-                headerRow
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 14)
-
-                if expanded {
-                    expandedContent
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 16)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            headerRow
+            emotionRow
+            if item.privacyTier != .category, !item.bodyParts.isEmpty {
+                bodyRow
             }
-            .contentShape(Rectangle())
+            if !item.aiFeedback.isEmpty {
+                aiSnippet
+            }
         }
-        .buttonStyle(.plain)
+        .padding(14)
+        .background(Color.cathierSageLight)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 5)
     }
 
     private var headerRow: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Text(owner?.avatarEmoji ?? "🙂")
                 .font(.system(size: 28))
-                .frame(width: 44, height: 44)
+                .frame(width: 40, height: 40)
                 .background(Color(.systemGray5))
                 .clipShape(Circle())
 
@@ -272,103 +268,78 @@ struct FriendCheckInCard: View {
                 Text(owner?.displayName ?? lm.friendDefaultName)
                     .font(.subheadline)
                     .fontWeight(.medium)
-
-                HStack(spacing: 6) {
-                    categoryChip
-                    Text(item.date.absoluteString)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Text(item.date.feedRelativeString)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
+
             Spacer()
-            Image(systemName: expanded ? "chevron.up" : "chevron.down")
+
+            IntensityBadge(intensity: item.intensity, label: lm.aiIntensityBadge(item.intensity))
+        }
+    }
+
+    private var emotionRow: some View {
+        FlowLayout(spacing: 6) {
+            ForEach(visibleEmotions, id: \.self) { label in
+                let color: Color = (item.privacyTier == .category)
+                    ? .cathierSage
+                    : EmotionData.category(for: label)?.color ?? .cathierSage
+                Text(lm.display(label))
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(color.opacity(0.18))
+                    .foregroundColor(color)
+                    .clipShape(Capsule())
+            }
+        }
+    }
+
+    /// For .category tier, deduplicate and show category names; otherwise show emotion words.
+    private var visibleEmotions: [String] {
+        switch item.privacyTier {
+        case .category:
+            var seen = Set<String>()
+            return item.emotions.compactMap { EmotionData.category(for: $0)?.nameZh }
+                .filter { seen.insert($0).inserted }
+        case .emotions, .full:
+            return item.emotions
+        }
+    }
+
+    private var bodyRow: some View {
+        HStack(spacing: 5) {
+            Image(systemName: "figure.stand")
+                .font(.caption2)
+                .foregroundColor(.cathierSage)
+            Text(item.bodyParts.prefix(4).map { lm.display($0) }.joined(separator: "  ·  "))
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
     }
 
-    @ViewBuilder
-    private var categoryChip: some View {
-        if let category = item.emotions.first.flatMap({ EmotionData.category(for: $0) }) {
-            Text(lm.display(category.nameZh))
-                .font(.caption)
-                .fontWeight(.medium)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 3)
-                .background(category.color.opacity(0.15))
-                .foregroundColor(category.color)
-                .clipShape(Capsule())
+    private var aiSnippet: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Image(systemName: "sparkles")
+                .font(.caption2)
+                .foregroundColor(.cathierAccent)
+                .padding(.top, 3)
+            Text(item.aiFeedback.firstSentence)
+                .font(.cathierSerif(.subheadline))
+                .foregroundColor(.primary)
+                .lineSpacing(2)
+                .lineLimit(3)
+                .fixedSize(horizontal: false, vertical: true)
         }
-    }
-
-    @ViewBuilder
-    private var expandedContent: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            // Intensity
-            HStack {
-                IntensityBadge(intensity: item.intensity, label: lm.aiIntensityBadge(item.intensity))
-                Spacer()
-            }
-
-            // Emotions (shown for .emotions and .full tiers)
-            if item.privacyTier != .category && !item.emotions.isEmpty {
-                FlowLayout(spacing: 6) {
-                    ForEach(item.emotions, id: \.self) { emotion in
-                        let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
-                        Text(lm.display(emotion))
-                            .font(.caption)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(color.opacity(0.12))
-                            .foregroundColor(color)
-                            .clipShape(Capsule())
-                    }
-                }
-            }
-
-            // Full tier extras
-            if item.privacyTier == .full {
-                if !item.bodyParts.isEmpty {
-                    Text(item.bodyParts.map { lm.display($0) }.joined(separator: " · "))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                if !item.note.isEmpty {
-                    Text(item.note)
-                        .font(.subheadline)
-                        .foregroundColor(.primary)
-                        .padding(10)
-                        .background(Color(.systemGray6))
-                        .cornerRadius(8)
-                }
-            }
-
-            // AI feedback (shown whenever available)
-            if !item.aiFeedback.isEmpty {
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 4) {
-                        Image(systemName: "sparkles")
-                            .font(.caption2)
-                            .foregroundColor(.cathierAccent)
-                        Text(lm.aiCompanion)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.cathierAccent)
-                    }
-                    Text(item.aiFeedback)
-                        .font(.cathierSerif(.subheadline))
-                        .foregroundColor(.primary)
-                        .lineSpacing(3)
-                }
-                .padding(10)
-                .background(Color.cathierAccentLight)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8, style: .continuous)
-                        .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 1)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            }
-        }
+        .padding(10)
+        .background(Color.cathierAccentLight)
+        .overlay(
+            RoundedRectangle(cornerRadius: 8, style: .continuous)
+                .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 }
 
@@ -377,37 +348,31 @@ struct FriendCheckInCard: View {
 struct SharedJournalFeedRow: View {
     let journal: DailyJournal
     let profile: UserProfile?
-
-    @State private var expanded = false
     @Environment(LanguageManager.self) private var lm
 
     var body: some View {
-        Button(action: { withAnimation(.easeInOut(duration: 0.2)) { expanded.toggle() } }) {
-            VStack(alignment: .leading, spacing: 0) {
-                headerRow
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 14)
-
-                if expanded, !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                    Text(journal.gains)
-                        .font(.subheadline)
-                        .foregroundColor(.primary)
-                        .lineSpacing(3)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 16)
-                        .transition(.opacity.combined(with: .move(edge: .top)))
-                }
+        VStack(alignment: .leading, spacing: 10) {
+            headerRow
+            if !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text(journal.gains)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                    .lineSpacing(2)
+                    .lineLimit(4)
             }
-            .contentShape(Rectangle())
         }
-        .buttonStyle(.plain)
+        .padding(14)
+        .background(Color.cathierSageLight)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .padding(.horizontal, 20)
+        .padding(.vertical, 5)
     }
 
     private var headerRow: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             Text(profile?.avatarEmoji ?? "🙂")
                 .font(.system(size: 28))
-                .frame(width: 44, height: 44)
+                .frame(width: 40, height: 40)
                 .background(Color(.systemGray5))
                 .clipShape(Circle())
 
@@ -415,27 +380,23 @@ struct SharedJournalFeedRow: View {
                 Text(profile?.displayName ?? lm.friendDefaultName)
                     .font(.subheadline)
                     .fontWeight(.medium)
-
-                HStack(spacing: 6) {
-                    if let mood = journal.dailyMood {
-                        Text("\(mood.emoji) \(mood.label(for: lm.currentLanguage))")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color.cathierAccentLight)
-                            .foregroundColor(Color.cathierAccent)
-                            .clipShape(Capsule())
-                    }
-                    Text(journal.date.absoluteString)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
+                Text(journal.date.feedRelativeString)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
+
             Spacer()
-            Image(systemName: expanded ? "chevron.up" : "chevron.down")
-                .font(.caption)
-                .foregroundColor(.secondary)
+
+            if let mood = journal.dailyMood {
+                Text("\(mood.emoji) \(mood.label(for: lm.currentLanguage))")
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(Color.cathierAccentLight)
+                    .foregroundColor(Color.cathierAccent)
+                    .clipShape(Capsule())
+            }
         }
     }
 }
@@ -443,11 +404,25 @@ struct SharedJournalFeedRow: View {
 // MARK: - Date helper
 
 private extension Date {
-    var absoluteString: String {
+    var feedRelativeString: String {
         let formatter = DateFormatter()
         formatter.dateStyle = .short
         formatter.timeStyle = .short
         formatter.doesRelativeDateFormatting = true
         return formatter.string(from: self)
+    }
+}
+
+// MARK: - String helper
+
+private extension String {
+    /// Returns the first sentence (up to the first .。!！?？ or newline), falling back to a 120-char prefix.
+    var firstSentence: String {
+        let terminators = CharacterSet(charactersIn: ".。!！?？\n")
+        if let range = unicodeScalars.indices.first(where: { terminators.contains(unicodeScalars[$0]) }) {
+            let endIndex = unicodeScalars.index(after: range)
+            return String(self[..<endIndex]).trimmingCharacters(in: .whitespaces)
+        }
+        return count > 120 ? String(prefix(120)) + "…" : self
     }
 }
