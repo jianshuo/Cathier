@@ -19,45 +19,24 @@ platform :ios do
     latest + 1
   end
 
-  # Reject any existing App Store version that is pending (but not yet In Review).
-  # If a version IS In Review, we cannot reject it — raise an error instead of
-  # letting upload_to_app_store fail with a cryptic message.
-  def reject_pending_version_if_needed
+  # Guard against submitting while a version is IN_REVIEW — deliver's own
+  # reject_if_possible cannot handle that state and would produce a cryptic error.
+  # All other pending states (WAITING_FOR_REVIEW, DEVELOPER_REJECTED, etc.) are
+  # handled by deliver's built-in reject_if_possible: true.
+  def guard_not_in_review
     require "spaceship"
 
-    # app_store_connect_api_key already configured Spaceship::ConnectAPI.token —
-    # no need to rebuild it here (doing so causes a NoMethodError in jwt/ecdsa).
-
+    # Spaceship::ConnectAPI.token is already set by app_store_connect_api_key.
     app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
     UI.user_error!("App not found on App Store Connect") unless app
 
-    # Fetch all iOS edit versions (non-live)
     versions = app.get_app_store_versions(filter: { platform: "IOS" })
-
-    # State constants from the Connect API
-    in_review_state   = "IN_REVIEW"
-    rejectable_states = %w[
-      WAITING_FOR_REVIEW
-      PENDING_DEVELOPER_RELEASE
-      DEVELOPER_REJECTED
-      REJECTED
-      PREPARE_FOR_SUBMISSION
-      METADATA_REJECTED
-    ]
-
     versions.each do |v|
-      state = v.app_version_state
-      next if state.nil? || state == "READY_FOR_SALE" || state == "PROCESSING_FOR_DISTRIBUTION"
-
-      if state == in_review_state
+      if v.app_version_state == "IN_REVIEW"
         UI.user_error!(
-          "Version #{v.version_string} is currently IN_REVIEW — cannot reject it. " \
-          "Wait for the review to finish before submitting a new build."
+          "Version #{v.version_string} is currently IN_REVIEW — cannot submit a new build. " \
+          "Wait for the review to finish first."
         )
-      elsif rejectable_states.include?(state)
-        UI.important("Rejecting version #{v.version_string} (state: #{state}) to make room for the new submission.")
-        v.reject!
-        UI.success("Version #{v.version_string} rejected.")
       end
     end
   end
@@ -128,7 +107,7 @@ platform :ios do
 
     sign_and_build(api_key: api_key)
 
-    reject_pending_version_if_needed
+    guard_not_in_review
 
     upload_to_app_store(
       api_key:                    api_key,
@@ -136,6 +115,7 @@ platform :ios do
       skip_screenshots:           true,
       submit_for_review:          true,
       automatic_release:          false,
+      reject_if_possible:         true,
       run_precheck_before_submit: false,
       submission_information: {
         add_id_info_uses_idfa:             false,
