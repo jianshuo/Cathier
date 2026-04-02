@@ -255,6 +255,7 @@ struct FriendCheckInCard: View {
     let item: FriendCheckIn
     let owner: UserProfile?
     @Environment(LanguageManager.self) private var lm
+    @State private var showFullAI = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -272,6 +273,9 @@ struct FriendCheckInCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .padding(.horizontal, 20)
         .padding(.vertical, 5)
+        .sheet(isPresented: $showFullAI) {
+            FriendAIDetailView(item: item, owner: owner)
+        }
     }
 
     private var headerRow: some View {
@@ -328,36 +332,60 @@ struct FriendCheckInCard: View {
     }
 
     private var bodyRow: some View {
-        HStack(spacing: 5) {
-            Image(systemName: "figure.stand")
-                .font(.caption2)
-                .foregroundColor(.cathierSage)
-            Text(item.bodyParts.prefix(4).map { lm.display($0) }.joined(separator: "  ·  "))
-                .font(.caption)
-                .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 5) {
+                Image(systemName: "figure.stand")
+                    .font(.caption2)
+                    .foregroundColor(.cathierSage)
+                Text(item.bodyParts.prefix(4).map { lm.display($0) }.joined(separator: "  ·  "))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            if !cleanSensations.isEmpty {
+                Text(cleanSensations.prefix(6).joined(separator: "  ·  "))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .padding(.leading, 16)
+            }
+        }
+    }
+
+    /// Sensation names with the "bodypart:" prefix stripped.
+    private var cleanSensations: [String] {
+        item.sensations.map { s in
+            let parts = s.split(separator: ":", maxSplits: 1)
+            return lm.display(parts.count == 2 ? String(parts[1]) : s)
         }
     }
 
     private var aiSnippet: some View {
-        HStack(alignment: .top, spacing: 8) {
-            Image(systemName: "sparkles")
-                .font(.caption2)
-                .foregroundColor(.cathierAccent)
-                .padding(.top, 3)
-            Text(item.aiFeedback.firstSentence)
-                .font(.cathierSerif(.subheadline))
-                .foregroundColor(.primary)
-                .lineSpacing(2)
-                .lineLimit(3)
-                .fixedSize(horizontal: false, vertical: true)
+        Button(action: { showFullAI = true }) {
+            HStack(alignment: .top, spacing: 8) {
+                Image(systemName: "sparkles")
+                    .font(.caption2)
+                    .foregroundColor(.cathierAccent)
+                    .padding(.top, 3)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(item.aiFeedback.firstSentence)
+                        .font(.cathierSerif(.subheadline))
+                        .foregroundColor(.primary)
+                        .lineSpacing(2)
+                        .lineLimit(3)
+                        .fixedSize(horizontal: false, vertical: true)
+                    Text(lm.aiReadMore)
+                        .font(.caption2)
+                        .foregroundColor(.cathierAccent)
+                }
+            }
+            .padding(10)
+            .background(Color.cathierAccentLight)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
-        .padding(10)
-        .background(Color.cathierAccentLight)
-        .overlay(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
-                .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
-        )
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .buttonStyle(.plain)
     }
 }
 
