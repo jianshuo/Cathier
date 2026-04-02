@@ -231,6 +231,24 @@ private struct FriendHomeView: View {
     }
 }
 
+// MARK: - Per-person card tint palette
+
+/// Five warm, muted tints — same aesthetic family, subtly different per person.
+/// Picked deterministically from the owner's CloudKit record name hash.
+private let cardTintPalette: [Color] = [
+    Color(red: 0.878, green: 0.929, blue: 0.886), // sage    #E0EDE2
+    Color(red: 0.996, green: 0.922, blue: 0.847), // peach   #FEEBD8
+    Color(red: 0.918, green: 0.898, blue: 0.949), // lavender #EAE5F2
+    Color(red: 0.961, green: 0.929, blue: 0.855), // wheat   #F5EDDA
+    Color(red: 0.886, green: 0.929, blue: 0.953), // sky     #E3EEF3
+]
+
+private func cardTint(for profile: UserProfile?) -> Color {
+    guard let profile else { return cardTintPalette[0] }
+    let index = abs(profile.id.recordName.hashValue) % cardTintPalette.count
+    return cardTintPalette[index]
+}
+
 // MARK: - Friend check-in card
 
 struct FriendCheckInCard: View {
@@ -250,7 +268,7 @@ struct FriendCheckInCard: View {
             }
         }
         .padding(14)
-        .background(Color.cathierSageLight)
+        .background(cardTint(for: owner))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .padding(.horizontal, 20)
         .padding(.vertical, 5)
@@ -362,7 +380,7 @@ struct SharedJournalFeedRow: View {
             }
         }
         .padding(14)
-        .background(Color.cathierSageLight)
+        .background(cardTint(for: profile))
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .padding(.horizontal, 20)
         .padding(.vertical, 5)
