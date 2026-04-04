@@ -6,7 +6,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case deepseek = "deepseek"
     case qwen     = "qwen"
     case zhipu    = "zhipu"
-    /// Managed tier — user pays subscription; developer's Qwen key is used server-side
+    /// Managed tier — developer's Qwen key is used server-side
     case managed  = "managed"
 
     var id: String { rawValue }
@@ -85,6 +85,6 @@ enum AIProvider: String, CaseIterable, Identifiable {
     /// Whether this provider uses the Anthropic wire format (vs. OpenAI-compatible)
     var isAnthropicFormat: Bool { self == .claude }
 
-    /// Whether this is the developer-managed subscription tier
+    /// Whether this is the developer-managed tier
     var isManaged: Bool { self == .managed }
 }

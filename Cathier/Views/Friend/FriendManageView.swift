@@ -5,6 +5,7 @@ struct FriendManageView: View {
     @Environment(LanguageManager.self) private var lm
     @State private var removingFriend: UserProfile?
     @State private var showRemoveAlert = false
+    @State private var showErrorAlert = false
 
     var body: some View {
         List {
@@ -61,12 +62,20 @@ struct FriendManageView: View {
         .alert(lm.manageDisconnectAlert(removingFriend?.displayName ?? ""), isPresented: $showRemoveAlert) {
             Button(lm.manageDisconnect, role: .destructive) {
                 if let friend = removingFriend {
-                    Task { await vm.removeFriend(friend) }
+                    Task {
+                        await vm.removeFriend(friend)
+                        if vm.error != nil { showErrorAlert = true }
+                    }
                 }
             }
             Button(lm.manageCancel, role: .cancel) {}
         } message: {
             Text(lm.manageDisconnectMessage)
+        }
+        .alert("操作失败", isPresented: $showErrorAlert) {
+            Button("好", role: .cancel) { vm.error = nil }
+        } message: {
+            Text(vm.error ?? "")
         }
     }
 
@@ -92,7 +101,10 @@ struct FriendManageView: View {
 
             HStack(spacing: 8) {
                 Button(lm.requestDecline) {
-                    Task { try? await vm.declineRequest(request) }
+                    Task {
+                        try? await vm.declineRequest(request)
+                        if vm.error != nil { showErrorAlert = true }
+                    }
                 }
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -100,7 +112,10 @@ struct FriendManageView: View {
                 .buttonStyle(.plain)
 
                 Button(lm.requestAccept) {
-                    Task { try? await vm.acceptRequest(request) }
+                    Task {
+                        do { try await vm.acceptRequest(request) }
+                        catch { vm.error = error.localizedDescription; showErrorAlert = true }
+                    }
                 }
                 .font(.subheadline)
                 .fontWeight(.medium)

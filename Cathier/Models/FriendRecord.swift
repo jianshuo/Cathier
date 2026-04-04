@@ -12,7 +12,10 @@ struct FriendRequestRecord: Identifiable {
     let createdAt: Date
 
     init(fromProfileRef: CKRecord.Reference, toProfileRef: CKRecord.Reference) {
-        self.id = CKRecord.ID(recordName: UUID().uuidString)
+        // Deterministic: same sender+recipient always maps to the same record.
+        let from = fromProfileRef.recordID.recordName
+        let to = toProfileRef.recordID.recordName
+        self.id = CKRecord.ID(recordName: "friendrequest_\(from)_\(to)")
         self.fromProfileRef = fromProfileRef
         self.toProfileRef = toProfileRef
         self.createdAt = Date()
@@ -50,7 +53,10 @@ struct FriendshipRecord: Identifiable {
     let createdAt: Date
 
     init(initiatorRef: CKRecord.Reference, accepterRef: CKRecord.Reference) {
-        self.id = CKRecord.ID(recordName: UUID().uuidString)
+        // Deterministic record name: sorted so A→B and B→A produce the same ID.
+        // Prevents duplicate Friendship records if the user taps Accept multiple times.
+        let ids = [initiatorRef.recordID.recordName, accepterRef.recordID.recordName].sorted()
+        self.id = CKRecord.ID(recordName: "friendship_\(ids[0])_\(ids[1])")
         self.initiatorRef = initiatorRef
         self.accepterRef = accepterRef
         self.createdAt = Date()

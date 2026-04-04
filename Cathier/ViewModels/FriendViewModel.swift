@@ -122,15 +122,15 @@ final class FriendViewModel {
     }
 
     func removeFriend(_ friend: UserProfile) async {
-        guard let profile = currentProfile,
-              let fs = friendship(with: friend)
-        else { return }
-        try? await ck.deleteFriendship(id: fs.id)
-        friendships.removeAll { $0.id == fs.id }
-        friends.removeAll { $0.id == friend.id }
-        friendCheckIns.removeAll { $0.ownerRef.recordID == friend.id }
-        await loadFriendsAndFeed()
-        _ = profile  // suppress warning
+        guard let fs = friendship(with: friend) else { return }
+        do {
+            try await ck.deleteFriendship(id: fs.id)
+            friendships.removeAll { $0.id == fs.id }
+            friends.removeAll { $0.id == friend.id }
+            friendCheckIns.removeAll { $0.ownerRef.recordID == friend.id }
+        } catch {
+            self.error = "删除好友失败：\(error.localizedDescription)"
+        }
     }
 
     // MARK: - Load all users (for Add Friend screen)
@@ -165,12 +165,16 @@ final class FriendViewModel {
     func acceptRequest(_ request: FriendRequestRecord) async throws {
         guard let myProfile = currentProfile else { throw ckError("未登录") }
         let fs = FriendshipRecord(initiatorRef: request.fromProfileRef, accepterRef: myProfile.reference)
+        // Run both CloudKit writes; if either fails, throw before touching local state.
         let saved = try await ck.saveFriendship(fs)
-        friendships.append(saved)
         try await ck.deleteFriendRequest(id: request.id)
+        // Both succeeded — update local state (no reload to avoid CloudKit propagation race).
+        friendships.append(saved)
+        if let senderProfile = pendingRequestSenders.first(where: { $0.id == request.fromProfileRef.recordID }) {
+            friends.append(senderProfile)
+        }
         pendingRequests.removeAll { $0.id == request.id }
         pendingRequestSenders.removeAll { $0.id == request.fromProfileRef.recordID }
-        await loadFriendsAndFeed()
     }
 
     func declineRequest(_ request: FriendRequestRecord) async throws {
