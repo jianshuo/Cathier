@@ -171,6 +171,10 @@ final class FriendViewModel {
         pendingRequests.removeAll { $0.id == request.id }
         pendingRequestSenders.removeAll { $0.id == request.fromProfileRef.recordID }
         await loadFriendsAndFeed()
+        // CloudKit propagation delay can return the deleted request in the refetch above;
+        // remove it again to guarantee the accept button disappears immediately.
+        pendingRequests.removeAll { $0.id == request.id }
+        pendingRequestSenders.removeAll { $0.id == request.fromProfileRef.recordID }
     }
 
     func declineRequest(_ request: FriendRequestRecord) async throws {
