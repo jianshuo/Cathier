@@ -52,6 +52,7 @@ struct FriendFeedView: View {
 private struct FriendHomeView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
+    @Environment(\.scenePhase) private var scenePhase
     @Query(filter: #Predicate<DailyJournal> { $0.isShared }, sort: \DailyJournal.date, order: .reverse)
     private var sharedJournals: [DailyJournal]
 
@@ -96,6 +97,11 @@ private struct FriendHomeView: View {
             AddFriendView()
         }
         .refreshable { await vm.loadFriendsAndFeed() }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await vm.loadFriendsAndFeed() }
+            }
+        }
     }
 
     // Unified feed item merging check-ins and shared journals, sorted latest first.
