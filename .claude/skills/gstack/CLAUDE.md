@@ -65,6 +65,7 @@ gstack/
 │   └── dist/        # Compiled binary
 ├── scripts/         # Build + DX tooling
 │   ├── gen-skill-docs.ts  # Template → SKILL.md generator
+│   ├── resolvers/   # Template resolver modules (preamble, design, review, etc.)
 │   ├── skill-check.ts     # Health dashboard
 │   └── dev-skill.ts       # Watch mode
 ├── test/            # Skill validation + eval tests
@@ -93,6 +94,15 @@ gstack/
 ├── document-release/ # /document-release skill (post-ship doc updates)
 ├── cso/             # /cso skill (OWASP Top 10 + STRIDE security audit)
 ├── design-consultation/ # /design-consultation skill (design system from scratch)
+├── design-shotgun/  # /design-shotgun skill (visual design exploration)
+├── connect-chrome/  # /connect-chrome skill (headed Chrome with side panel)
+├── design/          # Design binary CLI (GPT Image API)
+│   ├── src/         # CLI + commands (generate, variants, compare, serve, etc.)
+│   ├── test/        # Integration tests
+│   └── dist/        # Compiled binary
+├── extension/       # Chrome extension (side panel + activity feed + CSS inspector)
+├── lib/             # Shared libraries (worktree.ts)
+├── docs/designs/    # Design documents
 ├── setup-deploy/    # /setup-deploy skill (one-time deploy config)
 ├── .github/         # CI workflows + Docker image
 │   ├── workflows/   # evals.yml (E2E on Ubicloud), skill-docs.yml, actionlint.yml
@@ -171,17 +181,32 @@ symlink or a real copy. If it's a symlink to your working directory, be aware th
 - During large refactors, remove the symlink (`rm .claude/skills/gstack`) so the
   global install at `~/.claude/skills/gstack/` is used instead
 
+**Prefix setting:** Setup creates real directories (not symlinks) at the top level
+with a SKILL.md symlink inside (e.g., `qa/SKILL.md -> gstack/qa/SKILL.md`). This
+ensures Claude discovers them as top-level skills, not nested under `gstack/`.
+Names are either short (`qa`) or namespaced (`gstack-qa`), controlled by
+`skill_prefix` in `~/.gstack/config.yaml`. When vendoring into a project, run
+`./setup` after symlinking to create the per-skill directories. Pass `--no-prefix`
+or `--prefix` to skip the interactive prompt.
+
 **For plan reviews:** When reviewing plans that modify skill templates or the
 gen-skill-docs pipeline, consider whether the changes should be tested in isolation
 before going live (especially if the user is actively using gstack in other windows).
 
-## Compiled binaries — NEVER commit browse/dist/
+**Upgrade migrations:** When a change modifies on-disk state (directory structure,
+config format, stale files) in ways that could break existing user installs, add a
+migration script to `gstack-upgrade/migrations/`. Read CONTRIBUTING.md's "Upgrade
+migrations" section for the format and testing requirements. The upgrade skill runs
+these automatically after `./setup` during `/gstack-upgrade`.
 
-The `browse/dist/` directory contains compiled Bun binaries (`browse`, `find-browse`,
-~58MB each). These are Mach-O arm64 only — they do NOT work on Linux, Windows, or
-Intel Macs. The `./setup` script already builds from source for every platform, so
-the checked-in binaries are redundant. They are tracked by git due to a historical
-mistake and should eventually be removed with `git rm --cached`.
+## Compiled binaries — NEVER commit browse/dist/ or design/dist/
+
+The `browse/dist/` and `design/dist/` directories contain compiled Bun binaries
+(`browse`, `find-browse`, `design`, ~58MB each). These are Mach-O arm64 only — they
+do NOT work on Linux, Windows, or Intel Macs. The `./setup` script already builds
+from source for every platform, so the checked-in binaries are redundant. They are
+tracked by git due to a historical mistake and should eventually be removed with
+`git rm --cached`.
 
 **NEVER stage or commit these files.** They show up as modified in `git status`
 because they're tracked despite `.gitignore` — ignore them. When staging files,
@@ -204,6 +229,24 @@ Examples of good bisection:
 When the user says "bisect commit" or "bisect and push," split staged/unstaged
 changes into logical commits and push.
 
+## Community PR guardrails
+
+When reviewing or merging community PRs, **always AskUserQuestion** before accepting
+any commit that:
+
+1. **Touches ETHOS.md** — this file is Garry's personal builder philosophy. No edits
+   from external contributors or AI agents, period.
+2. **Removes or softens promotional material** — YC references, founder perspective,
+   and product voice are intentional. PRs that frame these as "unnecessary" or
+   "too promotional" must be rejected.
+3. **Changes Garry's voice** — the tone, humor, directness, and perspective in skill
+   templates, CHANGELOG, and docs are not generic. PRs that rewrite voice to be
+   more "neutral" or "professional" must be rejected.
+
+Even if the agent strongly believes a change improves the project, these three
+categories require explicit user approval via AskUserQuestion. No exceptions.
+No auto-merging. No "I'll just clean this up."
+
 ## CHANGELOG + VERSION style
 
 **VERSION and CHANGELOG are branch-scoped.** Every feature branch that ships gets its
@@ -222,6 +265,23 @@ not what was already on main.
 2. Is the base branch version already released? (If yes, bump and create new entry.)
 3. Does an existing entry on this branch already cover earlier work? (If yes, replace
    it with one unified entry for the final version.)
+
+**Merging main does NOT mean adopting main's version.** When you merge origin/main into
+a feature branch, main may bring new CHANGELOG entries and a higher VERSION. Your branch
+still needs its OWN version bump on top. If main is at v0.13.8.0 and your branch adds
+features, bump to v0.13.9.0 with a new entry. Never jam your changes into an entry that
+already landed on main. Your entry goes on top because your branch lands next.
+
+**After merging main, always check:**
+- Does CHANGELOG have your branch's own entry separate from main's entries?
+- Is VERSION higher than main's VERSION?
+- Is your entry the topmost entry in CHANGELOG (above main's latest)?
+If any answer is no, fix it before continuing.
+
+**After any CHANGELOG edit that moves, adds, or removes entries,** immediately run
+`grep "^## \[" CHANGELOG.md` and verify the full version sequence is contiguous
+with no gaps or duplicates before committing. If a version is missing, the edit
+broke something. Fix it before moving on.
 
 CHANGELOG.md is **for users**, not contributors. Write it like product release notes:
 
@@ -330,4 +390,6 @@ The active skill lives at `~/.claude/skills/gstack/`. After making changes:
 2. Fetch and reset in the skill directory: `cd ~/.claude/skills/gstack && git fetch origin && git reset --hard origin/main`
 3. Rebuild: `cd ~/.claude/skills/gstack && bun run build`
 
-Or copy the binary directly: `cp browse/dist/browse ~/.claude/skills/gstack/browse/dist/browse`
+Or copy the binaries directly:
+- `cp browse/dist/browse ~/.claude/skills/gstack/browse/dist/browse`
+- `cp design/dist/design ~/.claude/skills/gstack/design/dist/design`

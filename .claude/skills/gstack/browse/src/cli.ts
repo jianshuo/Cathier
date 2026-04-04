@@ -291,8 +291,9 @@ async function startServer(extraEnv?: Record<string, string>): Promise<ServerSta
 function acquireServerLock(): (() => void) | null {
   const lockPath = `${config.stateFile}.lock`;
   try {
-    // O_CREAT | O_EXCL — fails if file already exists (atomic check-and-create)
-    const fd = fs.openSync(lockPath, fs.constants.O_CREAT | fs.constants.O_EXCL | fs.constants.O_WRONLY);
+    // 'wx' — create exclusively, fails if file already exists (atomic check-and-create)
+    // Using string flag instead of numeric constants for Bun Windows compatibility
+    const fd = fs.openSync(lockPath, 'wx');
     fs.writeSync(fd, `${process.pid}\n`);
     fs.closeSync(fd);
     return () => { try { fs.unlinkSync(lockPath); } catch {} };
@@ -375,7 +376,9 @@ async function ensureServer(): Promise<ServerState> {
 
 // ─── Command Dispatch ──────────────────────────────────────────
 async function sendCommand(state: ServerState, command: string, args: string[], retries = 0): Promise<void> {
-  const body = JSON.stringify({ command, args });
+  // BROWSE_TAB env var pins commands to a specific tab (set by sidebar-agent per-tab)
+  const browseTab = process.env.BROWSE_TAB;
+  const body = JSON.stringify({ command, args, ...(browseTab ? { tabId: parseInt(browseTab, 10) } : {}) });
 
   try {
     const resp = await fetch(`http://127.0.0.1:${state.port}/command`, {

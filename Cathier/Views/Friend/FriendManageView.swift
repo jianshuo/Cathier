@@ -59,6 +59,8 @@ struct FriendManageView: View {
         }
         .navigationTitle(lm.manageNavTitle)
         .navigationBarTitleDisplayMode(.inline)
+        .task { await vm.loadFriendsAndFeed() }
+        .refreshable { await vm.loadFriendsAndFeed() }
         .alert(lm.manageDisconnectAlert(removingFriend?.displayName ?? ""), isPresented: $showRemoveAlert) {
             Button(lm.manageDisconnect, role: .destructive) {
                 if let friend = removingFriend {

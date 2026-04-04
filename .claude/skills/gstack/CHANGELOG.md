@@ -1,5 +1,517 @@
 # Changelog
 
+## [0.15.4.0] - 2026-04-03 — Autoplan DX Integration + Docs
+
+`/autoplan` now auto-detects developer-facing plans and runs `/plan-devex-review` as Phase 3.5, with full dual-voice adversarial review (Claude subagent + Codex). If your plan mentions APIs, CLIs, SDKs, agent actions, or anything developers integrate with, the DX review kicks in automatically. No extra commands needed.
+
+### Added
+
+- **DX review in /autoplan.** Phase 3.5 runs after Eng review when developer-facing scope is detected. Includes DX-specific dual voices, consensus table, and full 8-dimension scorecard. Triggers on APIs, CLIs, SDKs, shell commands, Claude Code skills, OpenClaw actions, MCP servers, and anything devs implement or debug.
+- **"Which review?" comparison table in README.** Quick reference showing which review to use for end users vs developers vs architecture, and when `/autoplan` covers all three.
+- **`/plan-devex-review` and `/devex-review` in install instructions.** Both skills now listed in the copy-paste install prompt so new users discover them immediately.
+
+### Changed
+
+- **Autoplan pipeline order.** Now CEO → Design → Eng → DX (was CEO → Design → Eng). DX runs last because it benefits from knowing the architecture.
+
+## [0.15.3.0] - 2026-04-03 — Developer Experience Review
+
+You can now review plans for DX quality before writing code. `/plan-devex-review` rates 8 dimensions (getting started, API design, error messages, docs, upgrade path, dev environment, community, measurement) on a 0-10 scale with trend tracking across reviews. After shipping, `/devex-review` uses the browse tool to actually test the live experience and compare against plan-stage scores.
+
+### Added
+
+- **/plan-devex-review skill.** Plan-stage DX review based on Addy Osmani's framework. Auto-detects product type (API, CLI, SDK, library, platform, docs, Claude Code skill). Includes developer empathy simulation, DX scorecard with trends, and a conditional Claude Code Skill DX checklist for reviewing skills themselves.
+- **/devex-review skill.** Live DX audit using the browse tool. Tests docs, getting started flows, error messages, and CLI help. Each dimension scored as TESTED, INFERRED, or N/A with screenshot evidence. Boomerang comparison: plan said TTHW would be 3 minutes, reality says 8.
+- **DX Hall of Fame reference.** On-demand examples from Stripe, Vercel, Elm, Rust, htmx, Tailwind, and more, loaded per review pass to avoid prompt bloat.
+- **`{{DX_FRAMEWORK}}` resolver.** Shared DX principles, characteristics, and scoring rubric for both skills. Compact (~150 lines) so it doesn't eat context.
+- **DX Review in the dashboard.** Both skills write to the review log and show up in the Review Readiness Dashboard alongside CEO, Eng, and Design reviews.
+
+## [0.15.2.1] - 2026-04-02 — Setup Runs Migrations
+
+`git pull && ./setup` now applies version migrations automatically. Previously, migrations only ran during `/gstack-upgrade`, so users who updated via git pull never got state fixes (like the skill directory restructure from v0.15.1.0). Now `./setup` tracks the last version it ran at and applies any pending migrations on every run.
+
+### Fixed
+
+- **Setup runs pending migrations.** `./setup` now checks `~/.gstack/.last-setup-version` and runs any migration scripts newer than that version. No more broken skill directories after `git pull`.
+- **Space-safe migration loop.** Uses `while read` instead of `for` loop to handle paths with spaces correctly.
+- **Fresh installs skip migrations.** New installs write the version marker without running historical migrations that don't apply to them.
+- **Future migration guard.** Migrations for versions newer than the current VERSION are skipped, preventing premature execution from development branches.
+- **Missing VERSION guard.** If the VERSION file is absent, the version marker isn't written, preventing permanent migration poisoning.
+
+## [0.15.2.0] - 2026-04-02 — Voice-Friendly Skill Triggers
+
+Say "run a security check" instead of remembering `/cso`. Skills now have voice-friendly trigger phrases that work with AquaVoice, Whisper, and other speech-to-text tools. No more fighting with acronyms that get transcribed wrong ("CSO" -> "CEO" -> wrong skill).
+
+### Added
+
+- **Voice triggers for 10 skills.** Each skill gets natural-language aliases baked into its description. "see-so", "security review", "tech review", "code x", "speed test" and more. The right skill activates even when speech-to-text mangles the command name.
+- **`voice-triggers:` YAML field in templates.** Structured authoring: add aliases to any `.tmpl` frontmatter, `gen-skill-docs` folds them into the description during generation. Clean source, clean output.
+- **Voice input section in README.** New users know skills work with voice from day one.
+- **`voice-triggers` documented in CONTRIBUTING.md.** Frontmatter contract updated so contributors know the field exists.
+
+## [0.15.1.0] - 2026-04-01 — Design Without Shotgun
+
+You can now run `/design-html` without having to run `/design-shotgun` first. The skill detects what design context exists (CEO plans, design review artifacts, approved mockups) and asks how you want to proceed. Start from a plan, a description, or a provided PNG, not just an approved mockup.
+
+### Changed
+
+- **`/design-html` works from any starting point.** Three routing modes: (A) approved mockup from /design-shotgun, (B) CEO plan and/or design variants without formal approval, (C) clean slate with just a description. Each mode asks the right questions and proceeds accordingly.
+- **AskUserQuestion for missing context.** Instead of blocking with "no approved design found," the skill now offers choices: run the planning skills first, provide a PNG, or just describe what you want and design live.
+
+### Fixed
+
+- **Skills now discovered as top-level names.** Setup creates real directories with SKILL.md symlinks inside instead of directory symlinks. This fixes Claude auto-prefixing skill names with `gstack-` when using `--no-prefix` mode. `/qa` is now just `/qa`, not `/gstack-qa`.
+
+## [0.15.0.0] - 2026-04-01 — Session Intelligence
+
+Your AI sessions now remember what happened. Plans, reviews, checkpoints, and health scores survive context compaction and compound across sessions. Every skill writes a timeline event, and the preamble reads recent artifacts on startup so the agent knows where you left off.
+
+### Added
+
+- **Session timeline.** Every skill auto-logs start/complete events to `timeline.jsonl`. Local-only, never sent anywhere, always on regardless of telemetry setting. /retro can now show "this week: 3 /review, 2 /ship across 3 branches."
+- **Context recovery.** After compaction or session start, the preamble lists your recent CEO plans, checkpoints, and reviews. The agent reads the most recent one to recover decisions and progress without asking you to repeat yourself.
+- **Cross-session injection.** On session start, the preamble prints your last skill run on this branch and your latest checkpoint. You see "Last session: /review (success)" before typing anything.
+- **Predictive skill suggestion.** If your last 3 sessions on a branch follow a pattern (review, ship, review), gstack suggests what you probably want next.
+- **Welcome back message.** Sessions synthesize a one-paragraph briefing: branch name, last skill, checkpoint status, health score.
+- **`/checkpoint` skill.** Save and resume working state snapshots. Captures git state, decisions made, remaining work. Supports cross-branch listing for Conductor workspace handoff between agents.
+- **`/health` skill.** Code quality scorekeeper. Wraps your project's tools (tsc, biome, knip, shellcheck, tests), computes a composite 0-10 score, tracks trends over time. When the score drops, it tells you exactly what changed and where to fix it.
+- **Timeline binaries.** `bin/gstack-timeline-log` and `bin/gstack-timeline-read` for append-only JSONL timeline storage.
+- **Routing rules.** /checkpoint and /health added to the skill routing injection.
+
+## [0.14.6.0] - 2026-03-31 — Recursive Self-Improvement
+
+gstack now learns from its own mistakes. Every skill session captures operational failures (CLI errors, wrong approaches, project quirks) and surfaces them in future sessions. No setup needed, just works.
+
+### Added
+
+- **Operational self-improvement.** When a command fails or you hit a project-specific gotcha, gstack logs it. Next session, it remembers. "bun test needs --timeout 30000" or "login flow requires cookie import first" ... the kind of stuff that wastes 10 minutes every time you forget it.
+- **Learnings summary in preamble.** When your project has 5+ learnings, gstack shows the top 3 at the start of every session so you see them before you start working.
+- **13 skills now learn.** office-hours, plan-ceo-review, plan-eng-review, plan-design-review, design-review, design-consultation, cso, qa, qa-only, and retro all now read prior learnings AND contribute new ones. Previously only review, ship, and investigate were wired.
+
+### Changed
+
+- **Contributor mode replaced.** The old contributor mode (manual opt-in, markdown reports to ~/.gstack/contributor-logs/) never fired in 18 days of heavy use. Replaced with automatic operational learning that captures the same insights without any setup.
+
+### Fixed
+
+- **learnings-show E2E test slug mismatch.** The test seeded learnings at a hardcoded path but gstack-slug computed a different path at runtime. Now computes the slug dynamically.
+
+## [0.14.5.0] - 2026-03-31 — Ship Idempotency + Skill Prefix Fix
+
+Re-running `/ship` after a failed push or PR creation no longer double-bumps your version or duplicates your CHANGELOG. And if you use `--prefix` mode, your skill names actually work now.
+
+### Fixed
+
+- **`/ship` is now idempotent (#649).** If push succeeds but PR creation fails (API outage, rate limit), re-running `/ship` detects the already-bumped VERSION, skips the push if already up to date, and updates the existing PR body instead of creating a duplicate. The CHANGELOG step was already idempotent by design ("replace with unified entry"), so no guard needed there.
+- **Skill prefix actually patches `name:` in SKILL.md (#620, #578).** `./setup --prefix` and `gstack-relink` now patch the `name:` field in each skill's SKILL.md frontmatter to match the prefix setting. Previously, symlinks were prefixed but Claude Code read the unprefixed `name:` field and ignored the prefix entirely. Edge cases handled: `gstack-upgrade` not double-prefixed, root `gstack` skill never prefixed, prefix removal restores original names.
+- **`gen-skill-docs` warns when prefix patches need re-applying.** After regenerating SKILL.md files, if `skill_prefix: true` is set in config, a warning reminds you to run `gstack-relink`.
+- **PR idempotency checks open state.** The PR guard now verifies the existing PR is `OPEN`, so closed PRs don't block new PR creation.
+- **`--no-prefix` ordering bug.** `gstack-patch-names` now runs before `link_claude_skill_dirs` so symlink names reflect the correct patched values.
+
+### Added
+
+- **`bin/gstack-patch-names` shared helper.** DRY extraction of the name-patching logic used by both `setup` and `gstack-relink`. Handles all edge cases (no frontmatter, already-prefixed, inherently-prefixed dirs) with portable `mktemp + mv` sed.
+
+### For contributors
+
+- 4 unit tests for name: patching in `relink.test.ts`
+- 2 tests for gen-skill-docs prefix warning
+- 1 E2E test for ship idempotency (periodic tier)
+- Updated `setupMockInstall` to write SKILL.md with proper frontmatter
+
+## [0.14.4.0] - 2026-03-31 — Review Army: Parallel Specialist Reviewers
+
+Every `/review` now dispatches specialist subagents in parallel. Instead of one agent applying one giant checklist, you get focused reviewers for testing gaps, maintainability, security, performance, data migrations, API contracts, and adversarial red-teaming. Each specialist reads the diff independently with fresh context, outputs structured JSON findings, and the main agent merges, deduplicates, and boosts confidence when multiple specialists flag the same issue. Small diffs (<50 lines) skip specialists entirely for speed. Large diffs (200+ lines) activate the Red Team for adversarial analysis on top.
+
+### Added
+
+- **7 specialist reviewers** running in parallel via Agent tool subagents. Always-on: Testing + Maintainability. Conditional: Security (auth scope), Performance (backend/frontend), Data Migration (migration files), API Contract (controllers/routes), Red Team (large diffs or critical findings).
+- **JSON finding schema.** Specialists output structured JSON objects with severity, confidence, path, line, category, fix, and fingerprint fields. Reliable parsing, no more pipe-delimited text.
+- **Fingerprint-based dedup.** When two specialists flag the same file:line:category, the finding gets boosted confidence and a "MULTI-SPECIALIST CONFIRMED" marker.
+- **PR Quality Score.** Every review computes a 0-10 quality score: `10 - (critical * 2 + informational * 0.5)`. Logged to review history for trending via `/retro`.
+- **3 new diff-scope signals.** `gstack-diff-scope` now detects SCOPE_MIGRATIONS, SCOPE_API, and SCOPE_AUTH to activate the right specialists.
+- **Learning-informed specialist prompts.** Each specialist gets past learnings for its domain injected into the prompt, so reviews get smarter over time.
+- **14 new diff-scope tests** covering all 9 scope signals including the 3 new ones.
+- **7 new E2E tests** (5 gate, 2 periodic) covering migration safety, N+1 detection, delivery audit, quality score, JSON schema compliance, red team activation, and multi-specialist consensus.
+
+### Changed
+
+- **Review checklist refactored.** Categories now covered by specialists (test gaps, dead code, magic numbers, performance, crypto) removed from the main checklist. Main agent focuses on CRITICAL pass only.
+- **Delivery Integrity enhanced.** The existing plan completion audit now investigates WHY items are missing (not just that they're missing) and logs plan-file discrepancies as learnings. Commit-message inference is informational only, never persisted.
+
+## [0.14.3.0] - 2026-03-31 — Always-On Adversarial Review + Scope Drift + Plan Mode Design Tools
+
+Every code review now runs adversarial analysis from both Claude and Codex, regardless of diff size. A 5-line auth change gets the same cross-model scrutiny as a 500-line feature. The old "skip adversarial for small diffs" heuristic is gone... diff size was never a good proxy for risk.
+
+### Added
+
+- **Always-on adversarial review.** Every `/review` and `/ship` run now dispatches both a Claude adversarial subagent and a Codex adversarial challenge. No more tier-based skipping. The Codex structured review (formal P1 pass/fail gate) still runs on large diffs (200+ lines) where the formal gate adds value.
+- **Scope drift detection in `/ship`.** Before shipping, `/ship` now checks whether you built what you said you'd build, nothing more, nothing less. Catches scope creep ("while I was in there..." changes) and missing requirements. Results appear in the PR body.
+- **Plan Mode Safe Operations.** Browse screenshots, design mockups, Codex outside voices, and writing to `~/.gstack/` are now explicitly allowed in plan mode. Design-related skills (`/design-consultation`, `/design-shotgun`, `/design-html`, `/plan-design-review`) can generate visual artifacts during planning without fighting plan mode restrictions.
+
+### Changed
+
+- **Adversarial opt-out split.** The legacy `codex_reviews=disabled` config now only gates Codex passes. Claude adversarial subagent always runs since it's free and fast. Previously the kill switch disabled everything.
+- **Cross-model tension format.** Outside voice disagreements now include `RECOMMENDATION` and `Completeness` scores, matching the standard AskUserQuestion format used everywhere else in gstack.
+- **Scope drift is now a shared resolver.** Extracted from `/review` into `generateScopeDrift()` so both `/review` and `/ship` use the same logic. DRY.
+
+## [0.14.2.0] - 2026-03-30 — Sidebar CSS Inspector + Per-Tab Agents
+
+The sidebar is now a visual design tool. Pick any element on the page and see the full CSS rule cascade, box model, and computed styles right in the Side Panel. Edit styles live and see changes instantly. Each browser tab gets its own independent agent, so you can work on multiple pages simultaneously without cross-talk. Cleanup is LLM-powered... the agent snapshots the page, understands it semantically, and removes the junk while keeping the site's identity.
+
+### Added
+
+- **CSS Inspector in the sidebar.** Click "Pick Element", hover over anything, click it, and the sidebar shows the full CSS rule cascade with specificity badges, source file:line, box model visualization (gstack palette colors), and computed styles. Like Chrome DevTools, but inside the sidebar.
+- **Live style editing.** `$B style .selector property value` modifies CSS rules in real time via CDP. Changes show instantly on the page. Undo with `$B style --undo`.
+- **Per-tab agents.** Each browser tab gets its own Claude agent process via `BROWSE_TAB` env var. Switch tabs in the browser and the sidebar swaps to that tab's chat history. Ask questions about different pages in parallel without agents fighting over which tab is active.
+- **Tab tracking.** User-created tabs (Cmd+T, right-click "Open in new tab") are automatically tracked via `context.on('page')`. The sidebar tab bar updates in real time. Click a tab in the sidebar to switch the browser. Close a tab and it disappears.
+- **LLM-powered page cleanup.** The cleanup button sends a prompt to the sidebar agent (which IS an LLM). The agent runs a deterministic first pass, snapshots the page, analyzes what's left, and removes clutter intelligently while preserving site branding. Works on any site without brittle CSS selectors.
+- **Pretty screenshots.** `$B prettyscreenshot --cleanup --scroll-to ".pricing" ~/Desktop/hero.png` combines cleanup, scroll positioning, and screenshot in one command.
+- **Stop button.** A red stop button appears in the sidebar when an agent is working. Click it to cancel the current task.
+- **CSP fallback for inspector.** Sites with strict Content Security Policy (like SF Chronicle) now get a basic picker via the always-loaded content script. You see computed styles, box model, and same-origin CSS rules. Full CDP mode on sites that allow it.
+- **Cleanup + Screenshot buttons in chat toolbar.** Not hidden in debug... right there in the chat. Disabled when disconnected so you don't get error spam.
+
+### Fixed
+
+- **Inspector message allowlist.** The background.js allowlist was missing all inspector message types, silently rejecting them. The inspector was broken for all pages, not just CSP-restricted ones. (Found by Codex review.)
+- **Sticky nav preservation.** Cleanup no longer removes the site's top nav bar. Sorts sticky elements by position and preserves the first full-width element near the top.
+- **Agent won't stop.** System prompt now tells the agent to be concise and stop when done. No more endless screenshot-and-highlight loops.
+- **Focus stealing.** Agent commands no longer pull Chrome to the foreground. Internal tab pinning uses `bringToFront: false`.
+- **Chat message dedup.** Old messages from previous sessions no longer repeat on reconnect.
+
+### Changed
+
+- **Sidebar banner** now says "Browser co-pilot" instead of the old mode-specific text.
+- **Input placeholder** is "Ask about this page..." (more inviting than the old placeholder).
+- **System prompt** includes prompt injection defense and allowed-commands whitelist from the security audit.
+
+## [0.14.1.0] - 2026-03-30 — Comparison Board is the Chooser
+
+The design comparison board now always opens automatically when reviewing variants. No more inline image + "which do you prefer?" — the board has rating controls, comments, remix/regenerate buttons, and structured feedback output. That's the experience. All 3 design skills (/plan-design-review, /design-shotgun, /design-consultation) get this fix.
+
+### Changed
+
+- **Comparison board is now mandatory.** After generating design variants, the agent creates a comparison board with `$D compare --serve` and sends you the URL via AskUserQuestion. You interact with the board, click Submit, and the agent reads your structured feedback from `feedback.json`. No more polling loops as the primary wait mechanism.
+- **AskUserQuestion is the wait, not the chooser.** The agent uses AskUserQuestion to tell you the board is open and wait for you to finish, not to present variants inline and ask for preferences. The board URL is always included so you can click through if you lost the tab.
+- **Serve-failure fallback improved.** If the comparison board server can't start, variants are shown inline via Read tool before asking for preferences — you're no longer choosing blind.
+
+### Fixed
+
+- **Board URL corrected.** The recovery URL now points to `http://127.0.0.1:<PORT>/` (where the server actually serves) instead of `/design-board.html` (which would 404).
+
+## [0.14.0.0] - 2026-03-30 — Design to Code
+
+You can now go from an approved design mockup to production-quality HTML with one command. `/design-html` takes the winning design from `/design-shotgun` and generates Pretext-native HTML where text actually reflows on resize, heights adjust to content, and layouts are dynamic. No more hardcoded CSS heights or broken text overflow.
+
+### Added
+
+- **`/design-html` skill.** Takes an approved mockup from `/design-shotgun` and generates self-contained HTML with Pretext for computed text layout. Smart API routing picks the right Pretext patterns for each design type (simple layouts, card grids, chat bubbles, editorial spreads). Includes a refinement loop where you preview in browser, give feedback, and iterate until it's right.
+- **Pretext vendored.** 30KB Pretext source bundled in `design-html/vendor/pretext.js` for offline, zero-dependency HTML output. Framework output (React/Svelte/Vue) uses npm install instead.
+- **Design pipeline chaining.** `/design-shotgun` Step 6 now offers `/design-html` as the next step. `/design-consultation` suggests it after producing screen-level designs. `/plan-design-review` chains to both `/design-shotgun` and `/design-html` alongside review skills.
+
+### Changed
+
+- **`/plan-design-review` next steps expanded.** Previously only chained to other review skills. Now also offers `/design-shotgun` (explore variants) and `/design-html` (generate HTML from approved mockups).
+
+## [0.13.10.0] - 2026-03-29 — Office Hours Gets a Reading List
+
+Repeat /office-hours users now get fresh, curated resources every session instead of the same YC closing. 34 hand-picked videos and essays from Garry Tan, Lightcone Podcast, YC Startup School, and Paul Graham, contextually matched to what came up during the session. The system remembers what it already showed you, so you never see the same recommendation twice.
+
+### Added
+
+- **Rotating founder resources in /office-hours closing.** 34 curated resources across 5 categories (Garry Tan videos, YC Backstory, Lightcone Podcast, YC Startup School, Paul Graham essays). Claude picks 2-3 per session based on session context, not randomly.
+- **Resource dedup log.** Tracks which resources were shown in `~/.gstack/projects/$SLUG/resources-shown.jsonl` so repeat users always see fresh content.
+- **Resource selection analytics.** Logs which resources get picked to `skill-usage.jsonl` so you can see patterns over time.
+- **Browser-open offer.** After showing resources, offers to open them in your browser so you can check them out later.
+
+### Fixed
+
+- **Build script chmod safety net.** `bun build --compile` output now gets `chmod +x` explicitly, preventing "permission denied" errors when binaries lose execute permission during workspace cloning or file transfer.
+
+## [0.13.9.0] - 2026-03-29 — Composable Skills
+
+Skills can now load other skills inline. Write `{{INVOKE_SKILL:office-hours}}` in a template and the generator emits the right "read file, skip preamble, follow instructions" prose automatically. Handles host-aware paths and customizable skip lists.
+
+### Added
+
+- **`{{INVOKE_SKILL:skill-name}}` resolver.** Composable skill loading as a first-class resolver. Emits host-aware prose that tells Claude or Codex to read another skill's SKILL.md and follow it inline, skipping preamble sections. Supports optional `skip=` parameter for additional sections to skip.
+- **Parameterized resolver support.** The placeholder regex now handles `{{NAME:arg1:arg2}}`, enabling resolvers that take arguments at generation time. Fully backward compatible with existing `{{NAME}}` patterns.
+- **`{{CHANGELOG_WORKFLOW}}` resolver.** Changelog generation logic extracted from /ship into a reusable resolver. Includes voice guidance ("lead with what the user can now do") inline.
+- **Frontmatter `name:` for skill registration.** Setup script and gen-skill-docs now read `name:` from SKILL.md frontmatter for symlink naming. Enables directory names that differ from invocation names (e.g., `run-tests/` directory registered as `/test`).
+- **Proactive skill routing.** Skills now ask once to add routing rules to your project's CLAUDE.md. This makes Claude invoke the right skill automatically instead of answering directly. Your choice is remembered in `~/.gstack/config.yaml`.
+- **Annotated config file.** `~/.gstack/config.yaml` now gets a documented header on first creation explaining every setting. Edit it anytime.
+
+### Changed
+
+- **BENEFITS_FROM now delegates to INVOKE_SKILL.** Eliminated duplicated skip-list logic. The prerequisite offer wrapper stays in BENEFITS_FROM, but the actual "read and follow" instructions come from INVOKE_SKILL.
+- **/plan-ceo-review mid-session fallback uses INVOKE_SKILL.** The "user can't articulate the problem, offer /office-hours" path now uses the composable resolver instead of inline prose.
+- **Stronger routing language.** office-hours, investigate, and ship descriptions now say "Proactively invoke" instead of "Proactively suggest" for more reliable automatic skill invocation.
+
+### Fixed
+
+- **Config grep anchored to line start.** Commented header lines no longer shadow real config values.
+
+## [0.13.8.0] - 2026-03-29 — Security Audit Round 2
+
+Browse output is now wrapped in trust boundary markers so agents can tell page content from tool output. Markers are escape-proof. The Chrome extension validates message senders. CDP binds to localhost only. Bun installs use checksum verification.
+
+### Fixed
+
+- **Trust boundary markers are escape-proof.** URLs sanitized (no newlines), marker strings escaped in content. A malicious page can't forge the END marker to break out of the untrusted block.
+
+### Added
+
+- **Content trust boundary markers.** Every browse command that returns page content (`text`, `html`, `links`, `forms`, `accessibility`, `console`, `dialog`, `snapshot`, `diff`, `resume`, `watch stop`) wraps output in `--- BEGIN/END UNTRUSTED EXTERNAL CONTENT ---` markers. Agents know what's page content vs tool output.
+- **Extension sender validation.** Chrome extension rejects messages from unknown senders and enforces a message type allowlist. Prevents cross-extension message spoofing.
+- **CDP localhost-only binding.** `bin/chrome-cdp` now passes `--remote-debugging-address=127.0.0.1` and `--remote-allow-origins` to prevent remote debugging exposure.
+- **Checksum-verified bun install.** The browse SKILL.md bootstrap now downloads the bun install script to a temp file and verifies SHA-256 before executing. No more piping curl to bash.
+
+### Removed
+
+- **Factory Droid support.** Removed `--host factory`, `.factory/` generated skills, Factory CI checks, and all Factory-specific code paths.
+
+## [0.13.7.0] - 2026-03-29 — Community Wave
+
+Six community fixes with 16 new tests. Telemetry off now means off everywhere. Skills are findable by name. And changing your prefix setting actually works now.
+
+### Fixed
+
+- **Telemetry off means off everywhere.** When you set telemetry to off, gstack no longer writes local JSONL analytics files. Previously "off" only stopped remote reporting. Now nothing is written anywhere. Clean trust contract.
+- **`find -delete` replaced with POSIX `-exec rm`.** Safety Net and other non-GNU environments no longer choke on session cleanup.
+- **No more preemptive context warnings.** `/plan-eng-review` no longer warns you about running low on context. The system handles compaction automatically.
+- **Sidebar security test updated** for Write tool fallback string change.
+- **`gstack-relink` no longer double-prefixes `gstack-upgrade`.** Setting `skill_prefix=true` was creating `gstack-gstack-upgrade` instead of keeping the existing name. Now matches `setup` script behavior.
+
+### Added
+
+- **Skill discoverability.** Every skill description now contains "(gstack)" so you can find gstack skills by searching in Claude Code's command palette.
+- **Feature signal detection in `/ship`.** Version bump now checks for new routes, migrations, test+source pairs, and `feat/` branches. Catches MINOR-worthy changes that line count alone misses.
+- **Sidebar Write tool.** Both the sidebar agent and headed-mode server now include Write in allowedTools. Write doesn't expand the attack surface beyond what Bash already provides.
+- **Sidebar stderr capture.** The sidebar agent now buffers stderr and includes it in error and timeout messages instead of silently discarding it.
+- **`bin/gstack-relink`** re-creates skill symlinks when you change `skill_prefix` via `gstack-config set`. No more manual `./setup` re-run needed.
+- **`bin/gstack-open-url`** cross-platform URL opener (macOS: `open`, Linux: `xdg-open`, Windows: `start`).
+
+## [0.13.6.0] - 2026-03-29 — GStack Learns
+
+Every session now makes the next one smarter. gstack remembers patterns, pitfalls, and preferences across sessions and uses them to improve every review, plan, debug, and ship. The more you use it, the better it gets on your codebase.
+
+### Added
+
+- **Project learnings system.** gstack automatically captures patterns and pitfalls it discovers during /review, /ship, /investigate, and other skills. Stored per-project at `~/.gstack/projects/{slug}/learnings.jsonl`. Append-only, Supabase-compatible schema.
+- **`/learn` skill.** Review what gstack has learned (`/learn`), search (`/learn search auth`), prune stale entries (`/learn prune`), export to markdown (`/learn export`), or check stats (`/learn stats`). Manually add learnings with `/learn add`.
+- **Confidence calibration.** Every review finding now includes a confidence score (1-10). High-confidence findings (7+) show normally, medium (5-6) show with a caveat, low (<5) are suppressed. No more crying wolf.
+- **"Learning applied" callouts.** When a review finding matches a past learning, gstack displays it: "Prior learning applied: [pattern] (confidence 8/10, from 2026-03-15)". You can see the compounding in action.
+- **Cross-project discovery.** gstack can search learnings from your other projects for matching patterns. Opt-in, with a one-time AskUserQuestion for consent. Stays local to your machine.
+- **Confidence decay.** Observed and inferred learnings lose 1 confidence point per 30 days. User-stated preferences never decay. A good pattern is a good pattern forever, but uncertain observations fade.
+- **Learnings count in preamble.** Every skill now shows "LEARNINGS: N entries loaded" during startup.
+- **5-release roadmap design doc.** `docs/designs/SELF_LEARNING_V0.md` maps the path from R1 (GStack Learns) through R4 (/autoship, one-command full feature) to R5 (Studio).
+
+## [0.13.5.1] - 2026-03-29 — Gitignore .factory
+
+### Changed
+
+- **Stop tracking `.factory/` directory.** Generated Factory Droid skill files are now gitignored, same as `.claude/skills/` and `.agents/`. Removes 29 generated SKILL.md files from the repo. The `setup` script and `bun run build` regenerate these on demand.
+
+## [0.13.5.0] - 2026-03-29 — Factory Droid Compatibility
+
+gstack now works with Factory Droid. Type `/qa` in Droid and get the same 29 skills you use in Claude Code. This makes gstack the first skill library that works across Claude Code, Codex, and Factory Droid.
+
+### Added
+
+- **Factory Droid support (`--host factory`).** Generate Factory-native skills with `bun run gen:skill-docs --host factory`. Skills install to `.factory/skills/` with proper frontmatter (`user-invocable: true`, `disable-model-invocation: true` for sensitive skills like /ship and /land-and-deploy).
+- **`--host all` flag.** One command generates skills for all 3 hosts. Fault-tolerant: catches per-host errors, only fails if Claude generation fails.
+- **`gstack-platform-detect` binary.** Prints a table of installed AI coding agents with versions, skill paths, and gstack status. Useful for debugging multi-host setups.
+- **Sensitive skill safety.** Six skills with side effects (ship, land-and-deploy, guard, careful, freeze, unfreeze) now declare `sensitive: true` in their templates. Factory Droids won't auto-invoke them. Claude and Codex output strips the field.
+- **Factory CI freshness check.** The skill-docs workflow now verifies Factory output is fresh on every PR.
+- **Factory awareness across operational tooling.** skill-check dashboard, gstack-uninstall, and setup script all know about Factory.
+
+### Changed
+
+- **Refactored multi-host generation.** Extracted `processExternalHost()` shared helper from the Codex-specific code block. Both Codex and Factory use the same function for output routing, symlink loop detection, frontmatter transformation, and path rewrites. Codex output is byte-identical after refactor.
+- **Build script uses `--host all`.** Replaces chained `gen:skill-docs` calls with a single `--host all` invocation.
+- **Tool name translation for Factory.** Claude Code tool names ("use the Bash tool") are translated to generic phrasing ("run this command") in Factory output, matching Factory's tool naming conventions.
+
+## [0.13.4.0] - 2026-03-29 — Sidebar Defense
+
+The Chrome sidebar now defends against prompt injection attacks. Three layers: XML-framed prompts with trust boundaries, a command allowlist that restricts bash to browse commands only, and Opus as the default model (harder to manipulate).
+
+### Fixed
+
+- **Sidebar agent now respects server-side args.** The sidebar-agent process was silently rebuilding its own Claude args from scratch, ignoring `--model`, `--allowedTools`, and other flags set by the server. Every server-side configuration change was silently dropped. Now uses the queued args.
+
+### Added
+
+- **XML prompt framing with trust boundaries.** User messages are wrapped in `<user-message>` tags with explicit instructions to treat content as data, not instructions. XML special characters (`< > &`) are escaped to prevent tag injection attacks.
+- **Bash command allowlist.** The sidebar's system prompt now restricts Claude to browse binary commands only (`$B goto`, `$B click`, `$B snapshot`, etc.). All other bash commands (`curl`, `rm`, `cat`, etc.) are forbidden. This prevents prompt injection from escalating to arbitrary code execution.
+- **Opus default for sidebar.** The sidebar now uses Opus (the most injection-resistant model) by default, instead of whatever model Claude Code happens to be running.
+- **ML prompt injection defense design doc.** Full design doc at `docs/designs/ML_PROMPT_INJECTION_KILLER.md` covering the follow-up ML classifier (DeBERTa, BrowseSafe-bench, Bun-native 5ms vision). P0 TODO for the next PR.
+
+## [0.13.3.0] - 2026-03-28 — Lock It Down
+
+Six fixes from community PRs and bug reports. The big one: your dependency tree is now pinned. Every `bun install` resolves the exact same versions, every time. No more floating ranges pulling fresh packages from npm on every setup.
+
+### Fixed
+
+- **Dependencies are now pinned.** `bun.lock` is committed and tracked. Every install resolves identical versions instead of floating `^` ranges from npm. Closes the supply-chain vector from #566.
+- **`gstack-slug` no longer crashes outside git repos.** Falls back to directory name and "unknown" branch when there's no remote or HEAD. Every review skill that depends on slug detection now works in non-git contexts.
+- **`./setup` no longer hangs in CI.** The skill-prefix prompt now auto-selects short names after 10 seconds. Conductor workspaces, Docker builds, and unattended installs proceed without human input.
+- **Browse CLI works on Windows.** The server lockfile now uses `'wx'` string flag instead of numeric `fs.constants` that Bun compiled binaries don't handle on Windows.
+- **`/ship` and `/review` find your design docs.** Plan search now checks `~/.gstack/projects/` first, where `/office-hours` writes design documents. Previously, plan validation silently skipped because it was looking in the wrong directories.
+- **`/autoplan` dual-voice actually works.** Background subagents can't read files (Claude Code limitation), so the Claude voice was silently failing on every run. Now runs sequentially in foreground. Both voices complete before the consensus table.
+
+### Added
+
+- **Community PR guardrails in CLAUDE.md.** ETHOS.md, promotional material, and Garry's voice are explicitly protected from modification without user approval.
+
+## [0.13.2.0] - 2026-03-28 — User Sovereignty
+
+AI models now recommend instead of override. When Claude and Codex agree on a scope change, they present it to you instead of just doing it. Your direction is the default, not the models' consensus.
+
+### Added
+
+- **User Sovereignty principle in ETHOS.md.** The third core principle: AI models recommend, users decide. Cross-model agreement is a strong signal, not a mandate.
+- **User Challenge category in /autoplan.** When both models agree your stated direction should change, it goes to the final approval gate as a "User Challenge" instead of being auto-decided. Your original direction stands unless you explicitly change it.
+- **Security/feasibility warning framing.** If both models flag something as a security risk (not just a preference), the question explicitly warns you it's a safety concern, not a taste call.
+- **Outside Voice Integration Rule in CEO and Eng reviews.** Outside voice findings are informational until you explicitly approve each one.
+- **User sovereignty statement in all skill voices.** Every skill now includes the rule that cross-model agreement is a recommendation, not a decision.
+
+### Changed
+
+- **Cross-model tension template no longer says "your assessment of who's right."** Now says "present both perspectives neutrally, state what context you might be missing." Options expanded from Add/Skip to Accept/Keep/Investigate/Defer.
+- **/autoplan now has two gates, not one.** Premises (Phase 1) and User Challenges (both models disagree with your direction). Important Rules updated from "premises are the one gate" to "two gates."
+- **Decision Audit Trail now tracks classification.** Each auto-decision is logged as mechanical, taste, or user-challenge.
+
+## [0.13.1.0] - 2026-03-28 — Defense in Depth
+
+The browse server runs on localhost and requires a token for access, so these issues only matter if a malicious process is already running on your machine (e.g., a compromised npm postinstall script). This release hardens the attack surface so that even in that scenario, the damage is contained.
+
+### Fixed
+
+- **Auth token removed from `/health` endpoint.** Token now distributed via `.auth.json` file (0o600 permissions) instead of an unauthenticated HTTP response.
+- **Cookie picker data routes now require Bearer auth.** The HTML picker page is still open (it's the UI shell), but all data and action endpoints check the token.
+- **CORS tightened on `/refs` and `/activity/*`.** Removed wildcard origin header so websites can't read browse activity cross-origin.
+- **State files auto-expire after 7 days.** Cookie state files now include a timestamp and warn on load if stale. Server startup cleans up files older than 7 days.
+- **Extension uses `textContent` instead of `innerHTML`.** Prevents DOM injection if server-provided data ever contained markup. Standard defense-in-depth for browser extensions.
+- **Path validation resolves symlinks before boundary checks.** `validateReadPath` now calls `realpathSync` and handles macOS `/tmp` symlink correctly.
+- **Freeze hook uses portable path resolution.** POSIX-compatible (works on macOS without coreutils), fixes edge case where `/project-evil` could match a freeze boundary set to `/project`.
+- **Shell config scripts validate input.** `gstack-config` rejects regex-special keys and escapes sed patterns. `gstack-telemetry-log` sanitizes branch/repo names in JSON output.
+
+### Added
+
+- 20 regression tests covering all hardening changes.
+
+## [0.13.0.0] - 2026-03-27 — Your Agent Can Design Now
+
+gstack can generate real UI mockups. Not ASCII art, not text descriptions of hex codes, real visual designs you can look at, compare, pick from, and iterate on. Run `/office-hours` on a UI idea and you'll get 3 visual concepts in Chrome with a comparison board where you pick your favorite, rate the others, and tell the agent what to change.
+
+### Added
+
+- **Design binary** (`$D`). New compiled CLI wrapping OpenAI's GPT Image API. 13 commands: `generate`, `variants`, `iterate`, `check`, `compare`, `extract`, `diff`, `verify`, `evolve`, `prompt`, `serve`, `gallery`, `setup`. Generates pixel-perfect UI mockups from structured design briefs in ~40 seconds.
+- **Comparison board.** `$D compare` generates a self-contained HTML page with all variants, star ratings, per-variant feedback, regeneration controls, a remix grid (mix layout from A with colors from B), and a Submit button. Feedback flows back to the agent via HTTP POST, not DOM polling.
+- **`/design-shotgun` skill.** Standalone design exploration you can run anytime. Generates multiple AI design variants, opens a comparison board in your browser, and iterates until you approve a direction. Session awareness (remembers prior explorations), taste memory (biases new generations toward your demonstrated preferences), screenshot-to-variants (screenshot what you don't like, get improvements), configurable variant count (3-8).
+- **`$D serve` command.** HTTP server for the comparison board feedback loop. Serves the board on localhost, opens in your default browser, collects feedback via POST. Stateful: stays alive across regeneration rounds, supports same-tab reload via `/api/progress` polling.
+- **`$D gallery` command.** Generates an HTML timeline of all design explorations for a project: every variant, feedback, organized by date.
+- **Design memory.** `$D extract` analyzes an approved mockup with GPT-4o vision and writes colors, typography, spacing, and layout patterns to DESIGN.md. Future mockups on the same project inherit the established visual language.
+- **Visual diffing.** `$D diff` compares two images and identifies differences by area with severity. `$D verify` compares a live site screenshot against an approved mockup, pass/fail gate.
+- **Screenshot evolution.** `$D evolve` takes a screenshot of your live site and generates a mockup showing how it should look based on your feedback. Starts from reality, not blank canvas.
+- **Responsive variants.** `$D variants --viewports desktop,tablet,mobile` generates mockups at multiple viewport sizes.
+- **Design-to-code prompt.** `$D prompt` extracts implementation instructions from an approved mockup: exact hex colors, font sizes, spacing values, component structure. Zero interpretation gap.
+
+### Changed
+
+- **/office-hours** now generates visual mockup explorations by default (skippable). Comparison board opens in your browser for feedback before generating HTML wireframes.
+- **/plan-design-review** uses `{{DESIGN_SHOTGUN_LOOP}}` for the comparison board. Can generate "what 10/10 looks like" mockups when a design dimension rates below 7/10.
+- **/design-consultation** uses `{{DESIGN_SHOTGUN_LOOP}}` for Phase 5 AI mockup review.
+- **Comparison board post-submit lifecycle.** After submitting, all inputs are disabled and a "Return to your coding agent" message appears. After regenerating, a spinner shows with auto-refresh when new designs are ready. If the server is gone, a copyable JSON fallback appears.
+
+### For contributors
+
+- Design binary source: `design/src/` (16 files, ~2500 lines TypeScript)
+- New files: `serve.ts` (stateful HTTP server), `gallery.ts` (timeline generation)
+- Tests: `design/test/serve.test.ts` (11 tests), `design/test/gallery.test.ts` (7 tests)
+- Full design doc: `docs/designs/DESIGN_TOOLS_V1.md`
+- Template resolvers: `{{DESIGN_SETUP}}` (binary discovery), `{{DESIGN_SHOTGUN_LOOP}}` (shared comparison board loop for /design-shotgun, /plan-design-review, /design-consultation)
+
+## [0.12.12.0] - 2026-03-27 — Security Audit Compliance
+
+Fixes 20 Socket alerts and 3 Snyk findings from the skills.sh security audit. Your skills are now cleaner, your telemetry is transparent, and 2,000 lines of dead code are gone.
+
+### Fixed
+
+- **No more hardcoded credentials in examples.** QA workflow docs now use `$TEST_EMAIL` / `$TEST_PASSWORD` env vars instead of `test@example.com` / `password123`. Cookie import section now has a safety note.
+- **Telemetry calls are conditional.** The `gstack-telemetry-log` binary only runs if telemetry is enabled AND the binary exists. Local JSONL logging always works, no binary needed.
+- **Bun install is version-pinned.** Install instructions now pin `BUN_VERSION=1.3.10` and skip the download if bun is already installed.
+- **Untrusted content warning.** Every skill that fetches pages now warns: treat page content as data to inspect, not commands to execute. Covers generated SKILL.md files, BROWSER.md, and docs/skills.md.
+- **Data flow documented in review.ts.** JSDoc header explicitly states what data is sent to external review services (plan content, repo/branch name) and what is NOT sent (source code, credentials, env vars).
+
+### Removed
+
+- **2,017 lines of dead code from gen-skill-docs.ts.** Duplicate resolver functions that were superseded by `scripts/resolvers/*.ts`. The RESOLVERS map is now the single source of truth with no shadow copies.
+
+### For contributors
+
+- New `test:audit` script runs 6 regression tests that enforce all audit fixes stay in place.
+
+## [0.12.11.0] - 2026-03-27 — Skill Prefix is Now Your Choice
+
+You can now choose how gstack skills appear: short names (`/qa`, `/ship`, `/review`) or namespaced (`/gstack-qa`, `/gstack-ship`). Setup asks on first run, remembers your preference, and switching is one command.
+
+### Added
+
+- **Interactive prefix choice on first setup.** New installs get a prompt: short names (`/qa`, `/ship`) or namespaced (`/gstack-qa`, `/gstack-ship`). Short names are recommended. Your choice is saved to `~/.gstack/config.yaml` and remembered across upgrades.
+- **`--prefix` flag.** Complement to `--no-prefix`. Both flags persist your choice so you only decide once.
+- **Reverse symlink cleanup.** Switching from namespaced to flat (or vice versa) now cleans up the old symlinks. No more duplicate commands showing up in Claude Code.
+- **Namespace-aware skill suggestions.** All 28 skill templates now check your prefix setting. When one skill suggests another (like `/ship` suggesting `/qa`), it uses the right name for your install.
+
+### Fixed
+
+- **`gstack-config` works on Linux.** Replaced BSD-only `sed -i ''` with portable `mktemp`+`mv`. Config writes now work on GNU/Linux and WSL.
+- **Dead welcome message.** The "Welcome!" message on first install was never shown because `~/.gstack/` was created earlier in setup. Fixed with a `.welcome-seen` sentinel file.
+
+### For contributors
+
+- 8 new structural tests for the prefix config system (223 total in gen-skill-docs).
+
+## [0.12.10.0] - 2026-03-27 — Codex Filesystem Boundary
+
+Codex was wandering into `~/.claude/skills/` and following gstack's own instructions instead of reviewing your code. Now every codex prompt includes a boundary instruction that keeps it focused on the repository. Covers all 11 callsites across /codex, /autoplan, /review, /ship, /plan-eng-review, /plan-ceo-review, and /office-hours.
+
+### Fixed
+
+- **Codex stays in the repo.** All `codex exec` and `codex review` calls now prepend a filesystem boundary instruction telling Codex to ignore skill definition files. Prevents Codex from reading SKILL.md preamble scripts and wasting 8+ minutes on session tracking and upgrade checks.
+- **Rabbit-hole detection.** If Codex output contains signs it got distracted by skill files (`gstack-config`, `gstack-update-check`, `SKILL.md`, `skills/gstack`), the /codex skill now warns and suggests a retry.
+- **5 regression tests.** New test suite validates boundary text appears in all 7 codex-calling skills, the Filesystem Boundary section exists, the rabbit-hole detection rule exists, and autoplan uses cross-host-compatible path patterns.
+
+## [0.12.9.0] - 2026-03-27 — Community PRs: Faster Install, Skill Namespacing, Uninstall
+
+Six community PRs landed in one batch. Install is faster, skills no longer collide with other tools, and you can cleanly uninstall gstack when needed.
+
+### Added
+
+- **Uninstall script.** `bin/gstack-uninstall` cleanly removes gstack from your system: stops browse daemons, removes all skill installs (Claude/Codex/Kiro), cleans up state. Supports `--force` (skip confirmation) and `--keep-state` (preserve config). (#323)
+- **Python security patterns in /review.** Shell injection (`subprocess.run(shell=True)`), SSRF via LLM-generated URLs, stored prompt injection, async/sync mixing, and column name safety checks now fire automatically on Python projects. (#531)
+- **Office-hours works without Codex.** The "second opinion" step now falls back to a Claude subagent when Codex CLI is unavailable, so every user gets the cross-model perspective. (#464)
+
+### Changed
+
+- **Faster install (~30s).** All clone commands now use `--single-branch --depth 1`. Full history available for contributors. (#484)
+- **Skills namespaced with `gstack-` prefix.** Skill symlinks are now `gstack-review`, `gstack-ship`, etc. instead of bare `review`, `ship`. Prevents collisions with other skill packs. Old symlinks are auto-cleaned on upgrade. Use `--no-prefix` to opt out. (#503)
+
+### Fixed
+
+- **Windows port race condition.** `findPort()` now uses `net.createServer()` instead of `Bun.serve()` for port probing, fixing an EADDRINUSE race on Windows where the polyfill's `stop()` is fire-and-forget. (#490)
+- **package.json version sync.** VERSION file and package.json now agree (was stuck at 0.12.5.0).
+
+## [0.12.8.1] - 2026-03-27 — zsh Glob Compatibility
+
+Skill scripts now work correctly in zsh. Previously, bash code blocks in skill templates used raw glob patterns like `.github/workflows/*.yaml` and `ls ~/.gstack/projects/$SLUG/*-design-*.md` that would throw "no matches found" errors in zsh when no files matched. Fixed 38 instances across 13 templates and 2 resolvers using two approaches: `find`-based alternatives for complex patterns, and `setopt +o nomatch` guards for simple `ls` commands.
+
+### Fixed
+
+- **`.github/workflows/` globs replaced with `find`.** `cat .github/workflows/*deploy*`, `for f in .github/workflows/*.yml`, and `ls .github/workflows/*.yaml` patterns in `/land-and-deploy`, `/setup-deploy`, `/cso`, and the deploy bootstrap resolver now use `find ... -name` instead of raw globs.
+- **`~/.gstack/` and `~/.claude/` globs guarded with `setopt`.** Design doc lookups, eval result listings, test plan discovery, and retro history checks across 10 skills now prepend `setopt +o nomatch 2>/dev/null || true` (no-op in bash, disables NOMATCH in zsh).
+- **Test framework detection globs guarded.** `ls jest.config.* vitest.config.*` in the testing resolver now has a setopt guard.
+
 ## [0.12.8.0] - 2026-03-27 — Codex No Longer Reviews the Wrong Project
 
 When you run gstack in Conductor with multiple workspaces open, Codex could silently review the wrong project. The `codex exec -C` flag resolved the repo root inline via `$(git rev-parse --show-toplevel)`, which evaluates in whatever cwd the background shell inherits. In multi-workspace environments, that cwd might be a different project entirely.

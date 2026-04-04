@@ -52,10 +52,13 @@ struct FriendFeedView: View {
 private struct FriendHomeView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
+    @Environment(\.scenePhase) private var scenePhase
     @Query(filter: #Predicate<DailyJournal> { $0.isShared }, sort: \DailyJournal.date, order: .reverse)
     private var sharedJournals: [DailyJournal]
 
     @State private var showAddFriendView = false
+    @State private var removingFriend: UserProfile?
+    @State private var showRemoveAlert = false
 
     private var hasFeedContent: Bool {
         !vm.friendCheckIns.isEmpty || !sharedJournals.isEmpty
@@ -96,6 +99,21 @@ private struct FriendHomeView: View {
             AddFriendView()
         }
         .refreshable { await vm.loadFriendsAndFeed() }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task { await vm.loadFriendsAndFeed() }
+            }
+        }
+        .alert(lm.manageDisconnectAlert(removingFriend?.displayName ?? ""), isPresented: $showRemoveAlert) {
+            Button(lm.manageDisconnect, role: .destructive) {
+                if let friend = removingFriend {
+                    Task { await vm.removeFriend(friend) }
+                }
+            }
+            Button(lm.manageCancel, role: .cancel) {}
+        } message: {
+            Text(lm.manageDisconnectMessage)
+        }
     }
 
     // Unified feed item merging check-ins and shared journals, sorted latest first.
@@ -180,6 +198,14 @@ private struct FriendHomeView: View {
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                             .frame(width: 52)
+                    }
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            removingFriend = friend
+                            showRemoveAlert = true
+                        } label: {
+                            Label(lm.manageDisconnect, systemImage: "person.fill.xmark")
+                        }
                     }
                 }
             }
