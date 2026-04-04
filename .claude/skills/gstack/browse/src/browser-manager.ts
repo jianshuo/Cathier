@@ -211,7 +211,7 @@ export class BrowserManager {
    * The browser launches headed with a visible window — the user sees
    * every action Claude takes in real time.
    */
-  async launchHeaded(): Promise<void> {
+  async launchHeaded(authToken?: string): Promise<void> {
     // Clear old state before repopulating
     this.pages.clear();
     this.refMap.clear();
@@ -223,6 +223,17 @@ export class BrowserManager {
     if (extensionPath) {
       launchArgs.push(`--disable-extensions-except=${extensionPath}`);
       launchArgs.push(`--load-extension=${extensionPath}`);
+      // Write auth token for extension bootstrap (read via chrome.runtime.getURL)
+      if (authToken) {
+        const fs = require('fs');
+        const path = require('path');
+        const authFile = path.join(extensionPath, '.auth.json');
+        try {
+          fs.writeFileSync(authFile, JSON.stringify({ token: authToken }), { mode: 0o600 });
+        } catch (err: any) {
+          console.warn(`[browse] Could not write .auth.json: ${err.message}`);
+        }
+      }
     }
 
     // Launch headed Chromium via Playwright's persistent context.
@@ -286,6 +297,17 @@ export class BrowserManager {
       }
     };
     await this.context.addInitScript(indicatorScript);
+
+    // Track user-created tabs automatically (Cmd+T, link opens in new tab, etc.)
+    this.context.on('page', (page) => {
+      const id = this.nextTabId++;
+      this.pages.set(id, page);
+      this.activeTabId = id;
+      this.wirePageEvents(page);
+      // Inject indicator on the new tab
+      page.evaluate(indicatorScript).catch(() => {});
+      console.log(`[browse] New tab detected (id=${id}, total=${this.pages.size})`);
+    });
 
     // Persistent context opens a default page — adopt it instead of creating a new one
     const existingPages = this.context.pages();
@@ -399,10 +421,62 @@ export class BrowserManager {
     }
   }
 
-  switchTab(id: number): void {
+  switchTab(id: number, opts?: { bringToFront?: boolean }): void {
     if (!this.pages.has(id)) throw new Error(`Tab ${id} not found`);
     this.activeTabId = id;
     this.activeFrame = null; // Frame context is per-tab
+    // Only bring to front when explicitly requested (user-initiated tab switch).
+    // Internal tab pinning (BROWSE_TAB) should NOT steal focus.
+    if (opts?.bringToFront !== false) {
+      const page = this.pages.get(id);
+      if (page) page.bringToFront().catch(() => {});
+    }
+  }
+
+  /**
+   * Sync activeTabId to match the tab whose URL matches the Chrome extension's
+   * active tab. Called on every /sidebar-tabs poll so manual tab switches in
+   * the browser are detected within ~2s.
+   */
+  syncActiveTabByUrl(activeUrl: string): void {
+    if (!activeUrl || this.pages.size <= 1) return;
+    // Try exact match first, then fuzzy match (origin+pathname, ignoring query/fragment)
+    let fuzzyId: number | null = null;
+    let activeOriginPath = '';
+    try {
+      const u = new URL(activeUrl);
+      activeOriginPath = u.origin + u.pathname;
+    } catch {}
+
+    for (const [id, page] of this.pages) {
+      try {
+        const pageUrl = page.url();
+        // Exact match — best case
+        if (pageUrl === activeUrl && id !== this.activeTabId) {
+          this.activeTabId = id;
+          this.activeFrame = null;
+          return;
+        }
+        // Fuzzy match — origin+pathname (handles query param / fragment differences)
+        if (activeOriginPath && fuzzyId === null && id !== this.activeTabId) {
+          try {
+            const pu = new URL(pageUrl);
+            if (pu.origin + pu.pathname === activeOriginPath) {
+              fuzzyId = id;
+            }
+          } catch {}
+        }
+      } catch {}
+    }
+    // Fall back to fuzzy match
+    if (fuzzyId !== null) {
+      this.activeTabId = fuzzyId;
+      this.activeFrame = null;
+    }
+  }
+
+  getActiveTabId(): number {
+    return this.activeTabId;
   }
 
   getTabCount(): number {
@@ -751,6 +825,20 @@ export class BrowserManager {
       if (extensionPath) {
         launchArgs.push(`--disable-extensions-except=${extensionPath}`);
         launchArgs.push(`--load-extension=${extensionPath}`);
+        // Write auth token for extension bootstrap during handoff
+        if (this.serverPort) {
+          try {
+            const { resolveConfig } = require('./config');
+            const config = resolveConfig();
+            const stateFile = path.join(config.stateDir, 'browse.json');
+            if (fs.existsSync(stateFile)) {
+              const stateData = JSON.parse(fs.readFileSync(stateFile, 'utf-8'));
+              if (stateData.token) {
+                fs.writeFileSync(path.join(extensionPath, '.auth.json'), JSON.stringify({ token: stateData.token }), { mode: 0o600 });
+              }
+            }
+          } catch {}
+        }
         console.log(`[browse] Handoff: loading extension from ${extensionPath}`);
       } else {
         console.log('[browse] Handoff: extension not found — headed mode without side panel');
@@ -851,6 +939,22 @@ export class BrowserManager {
 
   // ─── Console/Network/Dialog/Ref Wiring ────────────────────
   private wirePageEvents(page: Page) {
+    // Track tab close — remove from pages map, switch to another tab
+    page.on('close', () => {
+      for (const [id, p] of this.pages) {
+        if (p === page) {
+          this.pages.delete(id);
+          console.log(`[browse] Tab closed (id=${id}, remaining=${this.pages.size})`);
+          // If the closed tab was active, switch to another
+          if (this.activeTabId === id) {
+            const remaining = [...this.pages.keys()];
+            this.activeTabId = remaining.length > 0 ? remaining[remaining.length - 1] : 0;
+          }
+          break;
+        }
+      }
+    });
+
     // Clear ref map on navigation — refs point to stale elements after page change
     // (lastSnapshot is NOT cleared — it's a text baseline for diffing)
     page.on('framenavigated', (frame) => {

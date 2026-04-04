@@ -57,6 +57,8 @@ private struct FriendHomeView: View {
     private var sharedJournals: [DailyJournal]
 
     @State private var showAddFriendView = false
+    @State private var removingFriend: UserProfile?
+    @State private var showRemoveAlert = false
 
     private var hasFeedContent: Bool {
         !vm.friendCheckIns.isEmpty || !sharedJournals.isEmpty
@@ -101,6 +103,16 @@ private struct FriendHomeView: View {
             if newPhase == .active {
                 Task { await vm.loadFriendsAndFeed() }
             }
+        }
+        .alert(lm.manageDisconnectAlert(removingFriend?.displayName ?? ""), isPresented: $showRemoveAlert) {
+            Button(lm.manageDisconnect, role: .destructive) {
+                if let friend = removingFriend {
+                    Task { await vm.removeFriend(friend) }
+                }
+            }
+            Button(lm.manageCancel, role: .cancel) {}
+        } message: {
+            Text(lm.manageDisconnectMessage)
         }
     }
 
@@ -186,6 +198,14 @@ private struct FriendHomeView: View {
                             .foregroundColor(.secondary)
                             .lineLimit(1)
                             .frame(width: 52)
+                    }
+                    .contextMenu {
+                        Button(role: .destructive) {
+                            removingFriend = friend
+                            showRemoveAlert = true
+                        } label: {
+                            Label(lm.manageDisconnect, systemImage: "person.fill.xmark")
+                        }
                     }
                 }
             }
