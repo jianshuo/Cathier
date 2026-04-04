@@ -649,6 +649,13 @@ describe('Chain', () => {
     expect(result).toContain('[css]');
   });
 
+  test('chain wraps page-content sub-commands with trust markers', async () => {
+    await handleWriteCommand('goto', [baseUrl + '/basic.html'], bm);
+    const result = await handleMetaCommand('chain', ['text'], bm, async () => {});
+    expect(result).toContain('BEGIN UNTRUSTED EXTERNAL CONTENT');
+    expect(result).toContain('END UNTRUSTED EXTERNAL CONTENT');
+  });
+
   test('chain reports real error when write command fails', async () => {
     const commands = JSON.stringify([
       ['goto', 'http://localhost:1/unreachable'],
@@ -1758,7 +1765,7 @@ describe('Path traversal prevention', () => {
       await handleReadCommand('eval', ['../../etc/passwd'], bm);
       expect(true).toBe(false);
     } catch (err: any) {
-      expect(err.message).toContain('Path traversal');
+      expect(err.message).toContain('Path must be within');
     }
   });
 
@@ -1767,7 +1774,7 @@ describe('Path traversal prevention', () => {
       await handleReadCommand('eval', ['/etc/passwd'], bm);
       expect(true).toBe(false);
     } catch (err: any) {
-      expect(err.message).toContain('Absolute path must be within');
+      expect(err.message).toContain('Path must be within');
     }
   });
 
@@ -1939,7 +1946,7 @@ describe('State persistence', () => {
     // Save state
     const saveResult = await handleMetaCommand('state', ['save', 'test-roundtrip'], bm, async () => {});
     expect(saveResult).toContain('State saved');
-    expect(saveResult).toContain('treat as sensitive');
+    expect(saveResult).toContain('Cookies stored in plaintext');
 
     // Navigate away
     await handleWriteCommand('goto', [baseUrl + '/forms.html'], bm);
