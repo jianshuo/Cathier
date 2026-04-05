@@ -12,6 +12,7 @@ struct AIFeedbackView: View {
     @AppStorage("lastShareTierRaw") private var lastShareTierRaw: String = FriendCheckIn.PrivacyTier.full.rawValue
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
     @State private var shareAIFeedback: Bool = false
+    @State private var showExercise = false
 
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
 
@@ -21,6 +22,11 @@ struct AIFeedbackView: View {
             VStack(spacing: 24) {
                 summaryCard
                 aiFeedbackCard
+
+                // Micro-exercise button (shown after AI feedback loads)
+                if !viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
+                    exerciseButton
+                }
 
                 // Note input
                 VStack(alignment: .leading, spacing: 8) {
@@ -68,6 +74,43 @@ struct AIFeedbackView: View {
                 await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
             }
         }
+        .sheet(isPresented: $showExercise) {
+            MicroExerciseView(
+                bodyParts: Array(viewModel.selectedBodyParts),
+                sensations: viewModel.encodedSensations,
+                emotions: viewModel.allEmotions
+            )
+            .environment(lm)
+        }
+    }
+
+    // MARK: - Micro-exercise button
+
+    private var exerciseButton: some View {
+        Button(action: { showExercise = true }) {
+            HStack(spacing: 10) {
+                Image(systemName: "wind")
+                    .font(.subheadline)
+                    .foregroundColor(.cathierSage)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(lm.exerciseTryThis)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    Text(lm.exerciseTryHint)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(14)
+            .background(Color.cathierSageLight)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Share section

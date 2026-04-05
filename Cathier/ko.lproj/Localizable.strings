@@ -64,6 +64,17 @@
 "ai.retry" = "다시 시도";
 "ai.intensity_badge" = "강도 %d/10";
 
+/* Micro Exercise */
+"exercise.nav_title" = "Relaxation Exercise";
+"exercise.loading" = "Creating your exercise…";
+"exercise.retry" = "Try Again";
+"exercise.start" = "Start Exercise";
+"exercise.stop" = "End";
+"exercise.done" = "Exercise Complete";
+"exercise.close" = "Close";
+"exercise.try_this" = "Try This";
+"exercise.try_hint" = "A 1-minute exercise based on what your body is feeling";
+
 /* Privacy Tier */
 "tier.category_name" = "감정 카테고리 공유";
 "tier.category_desc" = "친구는 감정 카테고리와 강도만 볼 수 있어요";

@@ -554,6 +554,80 @@ enum ClaudeService {
                               maxTokens: 800)
     }
 
+    // MARK: - Micro-exercise generation
+
+    static func generateExercise(
+        bodyParts: [String],
+        sensations: [String],
+        emotions: [String],
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let lm = LanguageManager.shared
+        let parsed = parseBodySensations(sensations)
+
+        let system: String
+        let user: String
+
+        switch language {
+        case .zh:
+            system = """
+            你是一位身体觉知教练。根据用户的身体感受和情绪，生成一个简短的1分钟放松练习。
+
+            要求：
+            - 练习必须针对用户具体的身体部位和感受
+            - 用第二人称"你"直接引导
+            - 分3-4个简短步骤，每步一句话
+            - 语气温柔、平静，像轻声引导
+            - 不要加标题或编号，用自然的段落过渡
+            - 总长度控制在100-150字
+            - 用中文回应
+            """
+            let partsStr = bodyParts.isEmpty ? "未指定" : bodyParts.joined(separator: "、")
+            let emosStr = emotions.isEmpty ? "未指定" : emotions.joined(separator: "、")
+            var sensesStr = ""
+            if !parsed.perPart.isEmpty {
+                sensesStr = parsed.perPart.map { "\($0.part)：\($0.sensations.joined(separator: "、"))" }.joined(separator: "；")
+            }
+            user = "身体部位：\(partsStr)\n感受：\(sensesStr.isEmpty ? "未指定" : sensesStr)\n情绪：\(emosStr)"
+
+        case .ja:
+            system = """
+            あなたはボディアウェアネスコーチです。ユーザーの身体の感覚と感情に基づいて、1分間の短いリラクゼーションエクササイズを生成してください。
+
+            要件：
+            - ユーザーの具体的な身体部位と感覚に合わせる
+            - 「あなた」を使って直接ガイドする
+            - 3〜4つの短いステップ、各ステップ1文
+            - 穏やかで静かなトーン
+            - タイトルや番号は不要、自然な段落で
+            - 100〜150文字程度
+            - 日本語で応答
+            """
+            let partsStr = bodyParts.map { lm.display($0) }.joined(separator: "、")
+            let emosStr = emotions.map { lm.display($0) }.joined(separator: "、")
+            user = "身体の部位：\(partsStr.isEmpty ? "未指定" : partsStr)\n感情：\(emosStr.isEmpty ? "不明" : emosStr)"
+
+        default:
+            system = """
+            You are a body awareness coach. Based on the user's body sensations and emotions, generate a short 1-minute relaxation exercise.
+
+            Requirements:
+            - The exercise must target the user's specific body areas and sensations
+            - Use "you" to guide directly
+            - 3-4 short steps, one sentence each
+            - Gentle, calm tone
+            - No titles or numbering, use natural paragraph transitions
+            - Keep total length to 80-120 words
+            - Respond in English
+            """
+            let partsStr = bodyParts.map { lm.display($0) }.joined(separator: ", ")
+            let emosStr = emotions.map { lm.display($0) }.joined(separator: ", ")
+            user = "Body areas: \(partsStr.isEmpty ? "unspecified" : partsStr)\nEmotions: \(emosStr.isEmpty ? "unclear" : emosStr)"
+        }
+
+        return try await call(model: feedbackModel, system: system, user: user, maxTokens: 300)
+    }
+
     /// Parses "bodypart:sensation" encoded strings into grouped entries.
     private static func parseBodySensations(_ sensations: [String]) -> (perPart: [(part: String, sensations: [String])], global: [String]) {
         var perPartDict: [(part: String, sensations: [String])] = []

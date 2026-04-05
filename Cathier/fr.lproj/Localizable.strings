@@ -64,6 +64,17 @@
 "ai.retry" = "Réessayer";
 "ai.intensity_badge" = "Intensité %d/10";
 
+/* Micro Exercise */
+"exercise.nav_title" = "Relaxation Exercise";
+"exercise.loading" = "Creating your exercise…";
+"exercise.retry" = "Try Again";
+"exercise.start" = "Start Exercise";
+"exercise.stop" = "End";
+"exercise.done" = "Exercise Complete";
+"exercise.close" = "Close";
+"exercise.try_this" = "Try This";
+"exercise.try_hint" = "A 1-minute exercise based on what your body is feeling";
+
 /* Privacy Tier */
 "tier.category_name" = "Partager la catégorie d'émotion";
 "tier.category_desc" = "L'ami voit uniquement la catégorie d'émotion et l'intensité";

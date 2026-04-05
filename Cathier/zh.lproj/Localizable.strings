@@ -64,6 +64,17 @@
 "ai.retry" = "重试";
 "ai.intensity_badge" = "强度 %d/10";
 
+/* Micro Exercise */
+"exercise.nav_title" = "放松练习";
+"exercise.loading" = "正在为你生成练习…";
+"exercise.retry" = "再试一次";
+"exercise.start" = "开始练习";
+"exercise.stop" = "结束";
+"exercise.done" = "练习完成";
+"exercise.close" = "关闭";
+"exercise.try_this" = "试试这个";
+"exercise.try_hint" = "1分钟放松练习，针对你刚才的身体感受";
+
 /* Privacy Tier */
 "tier.category_name" = "只分享情绪大类";
 "tier.category_desc" = "好友只看到情绪大类和强度";

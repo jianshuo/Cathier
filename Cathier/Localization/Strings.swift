@@ -74,6 +74,17 @@ extension LanguageManager {
         String(format: localized("ai.intensity_badge"), v)
     }
 
+    // MARK: MicroExerciseView
+    var exerciseNavTitle: String  { localized("exercise.nav_title") }
+    var exerciseLoading: String   { localized("exercise.loading") }
+    var exerciseRetry: String     { localized("exercise.retry") }
+    var exerciseStart: String     { localized("exercise.start") }
+    var exerciseStop: String      { localized("exercise.stop") }
+    var exerciseDone: String      { localized("exercise.done") }
+    var exerciseClose: String     { localized("exercise.close") }
+    var exerciseTryThis: String   { localized("exercise.try_this") }
+    var exerciseTryHint: String   { localized("exercise.try_hint") }
+
     // MARK: Privacy Tier
     var tierCategoryName: String        { localized("tier.category_name") }
     var tierCategoryDesc: String        { localized("tier.category_desc") }

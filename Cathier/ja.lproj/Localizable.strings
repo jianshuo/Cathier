@@ -64,6 +64,17 @@
 "ai.retry" = "再試行";
 "ai.intensity_badge" = "強度 %d/10";
 
+/* Micro Exercise */
+"exercise.nav_title" = "リラクゼーション";
+"exercise.loading" = "エクササイズを作成中…";
+"exercise.retry" = "再試行";
+"exercise.start" = "始める";
+"exercise.stop" = "終了";
+"exercise.done" = "完了しました";
+"exercise.close" = "閉じる";
+"exercise.try_this" = "やってみよう";
+"exercise.try_hint" = "身体の感覚に合わせた1分間のリラクゼーション";
+
 /* Privacy Tier */
 "tier.category_name" = "感情カテゴリのみ";
 "tier.category_desc" = "友達には感情カテゴリと強度のみ表示";
