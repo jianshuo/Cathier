@@ -7,7 +7,7 @@ struct ReactionRecord: Identifiable {
     static let recordType = "Reaction"
 
     /// Supported reaction emojis.
-    static let allEmojis: [String] = ["❤️", "🫶", "🤗", "💐", "🌸", "🥺", "🌟", "💪"]
+    static let allEmojis: [String] = ["❤️", "🫂", "🤗", "🌸", "🥺", "💪"]
 
     let id: CKRecord.ID
     let checkInRef: CKRecord.Reference   // → SharedCheckIn record
