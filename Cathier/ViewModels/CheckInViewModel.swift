@@ -100,8 +100,10 @@ final class CheckInViewModel {
         UserDefaults.standard.set(newTotal, forKey: key)
 
         // Refresh widget with today's summary
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let endOfDay = startOfDay.addingTimeInterval(86400)
         let todayAll = (try? context.fetch(FetchDescriptor<CheckIn>(
-            predicate: #Predicate { Calendar.current.isDateInToday($0.date) }
+            predicate: #Predicate { $0.date >= startOfDay && $0.date < endOfDay }
         ))) ?? []
         WidgetDataStore.writeTodaySummary(
             count: todayAll.count,
