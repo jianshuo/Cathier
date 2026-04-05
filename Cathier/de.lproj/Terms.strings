@@ -11,30 +11,48 @@
 "脸部" = "Gesicht";
 "喉咙" = "Kehle";
 "头皮" = "Kopfhaut";
+"下颌" = "Kiefer";
 "肩膀" = "Schultern";
 "颈部" = "Nacken";
 "手臂" = "Arme";
 "手掌" = "Handflächen";
+"胸口" = "Brust";
+"背部" = "Rücken";
+"腰部" = "Unterer Rücken";
+"骨盆" = "Becken";
 "大腿" = "Oberschenkel";
+"双脚" = "Füße";
 "整个身体" = "Ganzer Körper";
 
 /* Sensations */
 "紧绷" = "Angespannt";
-"沉重" = "Schwer";
-"发热" = "Heiß";
-"空洞" = "Leer";
-"酸胀" = "Schmerzend";
-"轻盈" = "Leicht";
-"颤抖" = "Zitternd";
-"麻木" = "Taub";
-"刺痛" = "Kribbeln";
+"僵硬" = "Steif";
 "收缩" = "Zusammenziehend";
+"绞痛" = "Krampfartig";
+"沉重" = "Schwer";
+"下坠" = "Sinkend";
 "压迫" = "Druck";
+"耗竭" = "Erschöpft";
+"发热" = "Heiß";
+"灼热" = "Brennend";
 "温暖" = "Warm";
 "冰冷" = "Kalt";
-"放松" = "Entspannt";
+"刺痛" = "Kribbeln";
+"隐痛" = "Dumpfer Schmerz";
+"酸胀" = "Schmerzend";
+"麻木" = "Taub";
+"颤抖" = "Zitternd";
 "震动" = "Vibrierend";
+"脉动" = "Pulsierend";
+"涌动" = "Wallend";
+"空洞" = "Leer";
+"游离" = "Treibend";
+"憋闷" = "Beengt";
 "膨胀" = "Ausdehnend";
+"充盈" = "Erfüllt";
+"轻盈" = "Leicht";
+"漂浮" = "Schwebend";
+"放松" = "Entspannt";
 
 /* Emotion categories */
 "激情" = "Leidenschaftlich";

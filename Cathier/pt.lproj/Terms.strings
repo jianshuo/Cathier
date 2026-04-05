@@ -11,30 +11,48 @@
 "脸部" = "Rosto";
 "喉咙" = "Garganta";
 "头皮" = "Couro cabeludo";
+"下颌" = "Mandíbula";
 "肩膀" = "Ombros";
 "颈部" = "Pescoço";
 "手臂" = "Braços";
 "手掌" = "Palmas";
+"胸口" = "Peito";
+"背部" = "Costas";
+"腰部" = "Lombar";
+"骨盆" = "Pelve";
 "大腿" = "Coxas";
+"双脚" = "Pés";
 "整个身体" = "Corpo inteiro";
 
 /* Sensations */
 "紧绷" = "Tenso";
-"沉重" = "Pesado";
-"发热" = "Quente";
-"空洞" = "Vazio";
-"酸胀" = "Dolorido";
-"轻盈" = "Leve";
-"颤抖" = "Tremendo";
-"麻木" = "Dormente";
-"刺痛" = "Formigando";
+"僵硬" = "Rígido";
 "收缩" = "Contraindo";
+"绞痛" = "Cãibra";
+"沉重" = "Pesado";
+"下坠" = "Afundando";
 "压迫" = "Pressão";
+"耗竭" = "Esgotado";
+"发热" = "Quente";
+"灼热" = "Ardente";
 "温暖" = "Morno";
 "冰冷" = "Frio";
-"放松" = "Relaxado";
+"刺痛" = "Formigando";
+"隐痛" = "Dor surda";
+"酸胀" = "Dolorido";
+"麻木" = "Dormente";
+"颤抖" = "Tremendo";
 "震动" = "Vibrando";
+"脉动" = "Pulsante";
+"涌动" = "Surgindo";
+"空洞" = "Vazio";
+"游离" = "Derivando";
+"憋闷" = "Sufocado";
 "膨胀" = "Expandindo";
+"充盈" = "Cheio";
+"轻盈" = "Leve";
+"漂浮" = "Flutuante";
+"放松" = "Relaxado";
 
 /* Emotion categories */
 "激情" = "Apaixonado";

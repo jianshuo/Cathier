@@ -11,30 +11,48 @@
 "脸部" = "Face";
 "喉咙" = "Throat";
 "头皮" = "Scalp";
+"下颌" = "Jaw";
 "肩膀" = "Shoulders";
 "颈部" = "Neck";
 "手臂" = "Arms";
 "手掌" = "Palms";
+"胸口" = "Chest";
+"背部" = "Back";
+"腰部" = "Lower Back";
+"骨盆" = "Pelvis";
 "大腿" = "Thighs";
+"双脚" = "Feet";
 "整个身体" = "Whole Body";
 
 /* Sensations */
 "紧绷" = "Tense";
-"沉重" = "Heavy";
-"发热" = "Hot";
-"空洞" = "Empty";
-"酸胀" = "Aching";
-"轻盈" = "Light";
-"颤抖" = "Trembling";
-"麻木" = "Numb";
-"刺痛" = "Tingling";
+"僵硬" = "Stiff";
 "收缩" = "Contracting";
+"绞痛" = "Cramping";
+"沉重" = "Heavy";
+"下坠" = "Sinking";
 "压迫" = "Pressure";
+"耗竭" = "Drained";
+"发热" = "Hot";
+"灼热" = "Burning";
 "温暖" = "Warm";
 "冰冷" = "Cold";
-"放松" = "Relaxed";
+"刺痛" = "Tingling";
+"隐痛" = "Dull Ache";
+"酸胀" = "Aching";
+"麻木" = "Numb";
+"颤抖" = "Trembling";
 "震动" = "Vibrating";
+"脉动" = "Pulsating";
+"涌动" = "Surging";
+"空洞" = "Empty";
+"游离" = "Drifting";
+"憋闷" = "Stifled";
 "膨胀" = "Expanding";
+"充盈" = "Full";
+"轻盈" = "Light";
+"漂浮" = "Floating";
+"放松" = "Relaxed";
 
 /* Emotion categories */
 "激情" = "Impassioned";

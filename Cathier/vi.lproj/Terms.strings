@@ -11,30 +11,48 @@
 "脸部" = "Mặt";
 "喉咙" = "Cổ họng";
 "头皮" = "Da đầu";
+"下颌" = "Hàm";
 "肩膀" = "Vai";
 "颈部" = "Cổ";
 "手臂" = "Tay";
 "手掌" = "Lòng bàn tay";
+"胸口" = "Ngực";
+"背部" = "Lưng";
+"腰部" = "Thắt lưng";
+"骨盆" = "Xương chậu";
 "大腿" = "Đùi";
+"双脚" = "Bàn chân";
 "整个身体" = "Toàn thân";
 
 /* Sensations */
 "紧绷" = "Căng thẳng";
-"沉重" = "Nặng nề";
-"发热" = "Nóng";
-"空洞" = "Trống rỗng";
-"酸胀" = "Đau nhức";
-"轻盈" = "Nhẹ nhàng";
-"颤抖" = "Run rẩy";
-"麻木" = "Tê liệt";
-"刺痛" = "Ngứa ran";
+"僵硬" = "Cứng đơ";
 "收缩" = "Co lại";
+"绞痛" = "Chuột rút";
+"沉重" = "Nặng nề";
+"下坠" = "Chìm xuống";
 "压迫" = "Áp lực";
+"耗竭" = "Kiệt sức";
+"发热" = "Nóng";
+"灼热" = "Bỏng rát";
 "温暖" = "Ấm áp";
 "冰冷" = "Lạnh";
-"放松" = "Thư giãn";
+"刺痛" = "Ngứa ran";
+"隐痛" = "Đau âm ỉ";
+"酸胀" = "Đau nhức";
+"麻木" = "Tê liệt";
+"颤抖" = "Run rẩy";
 "震动" = "Rung động";
+"脉动" = "Đập thình thịch";
+"涌动" = "Trào dâng";
+"空洞" = "Trống rỗng";
+"游离" = "Trôi dạt";
+"憋闷" = "Ngột ngạt";
 "膨胀" = "Giãn nở";
+"充盈" = "Tràn đầy";
+"轻盈" = "Nhẹ nhàng";
+"漂浮" = "Lơ lửng";
+"放松" = "Thư giãn";
 
 /* Emotion categories */
 "激情" = "Đam mê";
