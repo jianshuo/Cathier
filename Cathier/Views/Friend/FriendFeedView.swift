@@ -281,6 +281,7 @@ struct FriendCheckInCard: View {
     let item: FriendCheckIn
     let owner: UserProfile?
     @Environment(LanguageManager.self) private var lm
+    @Environment(FriendViewModel.self) private var vm
     @State private var showFullAI = false
 
     var body: some View {
@@ -293,6 +294,7 @@ struct FriendCheckInCard: View {
             if !item.aiFeedback.isEmpty {
                 aiSnippet
             }
+            reactionRow
         }
         .padding(14)
         .background(cardTint(for: owner))
@@ -412,6 +414,38 @@ struct FriendCheckInCard: View {
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+
+    private var reactionRow: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(ReactionRecord.allEmojis, id: \.self) { emoji in
+                    let names = vm.reactorNames(emoji: emoji, on: item)
+                    let isMine = vm.myReaction(on: item)?.emoji == emoji
+                    Button {
+                        Task { await vm.toggleReaction(emoji: emoji, on: item) }
+                    } label: {
+                        HStack(spacing: 3) {
+                            Text(emoji)
+                                .font(.system(size: 14))
+                            if !names.isEmpty {
+                                Text(names.joined(separator: " · "))
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(isMine ? .white : .secondary)
+                                    .lineLimit(1)
+                            }
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(isMine ? Color.cathierAccent : Color(.systemGray5))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.top, 2)
     }
 }
 

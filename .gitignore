@@ -51,4 +51,5 @@ secrets.plist
 .claude/skills/gstack/node_modules/
 .claude/skills/gstack/browse/dist/
 .claude/skills/gstack/browse/.version
+.claude/skills/gstack/design/dist/
 .gstack/

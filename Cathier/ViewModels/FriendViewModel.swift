@@ -24,6 +24,9 @@ final class FriendViewModel {
     var pendingRequestSenders: [UserProfile] = []
     var sentRequestRecipientIDs: Set<String> = []
 
+    // Reactions: keyed by check-in recordName → list of reactions
+    var reactions: [String: [ReactionRecord]] = [:]
+
     // All users + local search filter
     var allUsers: [UserProfile] = []
     var isLoadingUsers = false
@@ -116,6 +119,16 @@ final class FriendViewModel {
 
             let allRefs = friends.map { $0.reference } + [profile.reference]
             friendCheckIns = try await ck.fetchFriendCheckIns(friendProfileRefs: allRefs)
+
+            // Load reactions for all visible check-ins
+            let checkInRefs = friendCheckIns.map { CKRecord.Reference(recordID: $0.id, action: .none) }
+            let fetchedReactions = try await ck.fetchReactions(for: checkInRefs)
+            var grouped: [String: [ReactionRecord]] = [:]
+            for r in fetchedReactions {
+                let key = r.checkInRef.recordID.recordName
+                grouped[key, default: []].append(r)
+            }
+            reactions = grouped
         } catch {
             self.error = error.localizedDescription
         }
@@ -195,6 +208,60 @@ final class FriendViewModel {
     func unshareCheckIn(_ checkIn: CheckIn) async throws {
         try await ck.deleteSharedCheckIn(localID: checkIn.id.uuidString)
         checkIn.shareLevel = nil
+    }
+
+    // MARK: - Reactions
+
+    func reactions(for checkIn: FriendCheckIn) -> [ReactionRecord] {
+        reactions[checkIn.id.recordName] ?? []
+    }
+
+    func myReaction(on checkIn: FriendCheckIn) -> ReactionRecord? {
+        guard let myProfile = currentProfile else { return nil }
+        return reactions(for: checkIn).first { $0.fromProfileRef.recordID == myProfile.id }
+    }
+
+    func reactionCount(emoji: String, on checkIn: FriendCheckIn) -> Int {
+        reactions(for: checkIn).filter { $0.emoji == emoji }.count
+    }
+
+    /// Display names of everyone who reacted with a given emoji.
+    /// The current user is shown as "你" (always first if present).
+    func reactorNames(emoji: String, on checkIn: FriendCheckIn) -> [String] {
+        let rs = reactions(for: checkIn).filter { $0.emoji == emoji }
+        let myID = currentProfile?.id
+        return rs
+            .sorted { a, _ in a.fromProfileRef.recordID == myID }  // self first
+            .map { r in
+                r.fromProfileRef.recordID == myID
+                    ? "你"
+                    : (profile(for: r.fromProfileRef)?.displayName ?? "…")
+            }
+    }
+
+    /// Toggle: tap the same emoji removes it; tap a different emoji replaces it; tap with none adds it.
+    func toggleReaction(emoji: String, on checkIn: FriendCheckIn) async {
+        guard let myProfile = currentProfile else { return }
+        let key = checkIn.id.recordName
+        let checkInRef = CKRecord.Reference(recordID: checkIn.id, action: .none)
+        let existing = myReaction(on: checkIn)
+
+        if let existing {
+            // Remove from local state immediately
+            reactions[key]?.removeAll { $0.id == existing.id }
+            try? await ck.deleteReaction(id: existing.id)
+
+            if existing.emoji == emoji { return }  // same emoji → just remove
+        }
+
+        // Add new reaction
+        let newReaction = ReactionRecord(
+            checkInRef: checkInRef,
+            fromProfileRef: myProfile.reference,
+            emoji: emoji
+        )
+        reactions[key, default: []].append(newReaction)
+        try? await ck.saveReaction(newReaction)
     }
 
     // MARK: - Helpers

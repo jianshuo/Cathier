@@ -156,4 +156,27 @@ actor CloudKitService {
             .compactMap { try? $0.1.get() }
             .compactMap { FriendCheckIn(record: $0) }
     }
+
+    // MARK: - Reaction
+
+    /// Save or overwrite a reaction (record name is deterministic — acts as upsert).
+    func saveReaction(_ reaction: ReactionRecord) async throws {
+        _ = try await db.save(reaction.toRecord())
+    }
+
+    func deleteReaction(id: CKRecord.ID) async throws {
+        _ = try await db.deleteRecord(withID: id)
+    }
+
+    /// Fetch all reactions for a batch of check-ins.
+    /// ⚠️ Requires a Queryable index on `checkInRef` in CloudKit Dashboard.
+    func fetchReactions(for checkInRefs: [CKRecord.Reference]) async throws -> [ReactionRecord] {
+        guard !checkInRefs.isEmpty else { return [] }
+        let predicate = NSPredicate(format: "checkInRef IN %@", checkInRefs)
+        let query = CKQuery(recordType: ReactionRecord.recordType, predicate: predicate)
+        let (results, _) = try await db.records(matching: query)
+        return results
+            .compactMap { try? $0.1.get() }
+            .compactMap { ReactionRecord(record: $0) }
+    }
 }
