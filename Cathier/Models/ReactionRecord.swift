@@ -6,8 +6,8 @@ import Foundation
 struct ReactionRecord: Identifiable {
     static let recordType = "Reaction"
 
-    /// Three supported reaction emojis.
-    static let allEmojis: [String] = ["❤️", "🤗", "💪"]
+    /// Supported reaction emojis.
+    static let allEmojis: [String] = ["❤️", "🫶", "🤗", "💐", "🌸", "🥺", "🌟", "💪"]
 
     let id: CKRecord.ID
     let checkInRef: CKRecord.Reference   // → SharedCheckIn record

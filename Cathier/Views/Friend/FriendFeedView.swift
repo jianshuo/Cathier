@@ -391,32 +391,33 @@ struct FriendCheckInCard: View {
     }
 
     private var reactionRow: some View {
-        HStack(spacing: 4) {
-            ForEach(ReactionRecord.allEmojis, id: \.self) { emoji in
-                let names = vm.reactorNames(emoji: emoji, on: item)
-                let isMine = vm.myReaction(on: item)?.emoji == emoji
-                Button {
-                    Task { await vm.toggleReaction(emoji: emoji, on: item) }
-                } label: {
-                    HStack(spacing: 3) {
-                        Text(emoji)
-                            .font(.system(size: 14))
-                        if !names.isEmpty {
-                            Text(names.joined(separator: " · "))
-                                .font(.caption2)
-                                .fontWeight(.medium)
-                                .foregroundColor(isMine ? .white : .secondary)
-                                .lineLimit(1)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 6) {
+                ForEach(ReactionRecord.allEmojis, id: \.self) { emoji in
+                    let names = vm.reactorNames(emoji: emoji, on: item)
+                    let isMine = vm.myReaction(on: item)?.emoji == emoji
+                    Button {
+                        Task { await vm.toggleReaction(emoji: emoji, on: item) }
+                    } label: {
+                        HStack(spacing: 3) {
+                            Text(emoji)
+                                .font(.system(size: 14))
+                            if !names.isEmpty {
+                                Text(names.joined(separator: " · "))
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(isMine ? .white : .secondary)
+                                    .lineLimit(1)
+                            }
                         }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(isMine ? Color.cathierAccent : Color(.systemGray5))
+                        .clipShape(Capsule())
                     }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(isMine ? Color.cathierAccent : Color(.systemGray5))
-                    .clipShape(Capsule())
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
             }
-            Spacer()
         }
         .padding(.top, 2)
     }
