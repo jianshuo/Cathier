@@ -20,6 +20,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0          # full history so fastlane can read commit log
+          fetch-tags: true
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_26.2.app
@@ -61,3 +64,7 @@ jobs:
           else
             bundle exec fastlane beta
           fi
+
+      - name: Push TestFlight tag
+        if: success()
+        run: git push --tags || true

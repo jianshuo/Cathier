@@ -83,13 +83,30 @@ platform :ios do
 
     build_num = sign_and_build(api_key: api_key)
 
+    # Build "What to Test" from recent commits so testers know what changed.
+    # Uses the last TestFlight tag as anchor; falls back to last 10 commits.
+    last_tag = `git describe --tags --abbrev=0 2>/dev/null`.strip
+    if last_tag.empty?
+      commits = `git log -10 --pretty=format:"• %s"`.strip
+    else
+      commits = `git log #{last_tag}..HEAD --pretty=format:"• %s"`.strip
+    end
+    commits = "• No notable changes" if commits.empty?
+
+    changelog = "Build #{build_num}\n\n" \
+                "What changed:\n#{commits}\n\n" \
+                "Please test the above and report any issues. 🙏"
+
     upload_to_testflight(
       api_key:                           api_key,
       skip_waiting_for_build_processing: false,
       distribute_external:               false,
       notify_external_testers:           false,
-      changelog:                         "Build #{build_num} — auto-deployed from main"
+      changelog:                         changelog
     )
+
+    # Tag this build so the next run knows where to start the commit log.
+    sh("git tag testflight/#{build_num} || true")
   end
 
   desc "Build, upload to TestFlight, and submit for App Store review"
