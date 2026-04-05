@@ -10,6 +10,9 @@
 		D42D7A142F764B1A009020D5 /* InstrumentSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42D7A132F764B1A009020D5 /* InstrumentSerif-Regular.ttf */; };
 		D42D7A152F764B1A009020D5 /* InstrumentSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42D7A122F764B1A009020D5 /* InstrumentSerif-Italic.ttf */; };
 		D48A52222F753AC900B11317 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D48A52212F753AC900B11317 /* StoreKit.framework */; };
+		D4F7BF1E2F8235E100AF994E /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7BEFB2F82307D00AF994E /* WidgetKit.framework */; };
+		D4F7BF1F2F8235E100AF994E /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7BEFD2F82307D00AF994E /* SwiftUI.framework */; };
+		D4F7BF2E2F8235E300AF994E /* CathierWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D4F7BF1D2F8235E100AF994E /* CathierWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -20,7 +23,28 @@
 			remoteGlobalIDString = D4B61DBF2F63B0140074205F;
 			remoteInfo = Cathier;
 		};
+		D4F7BF2C2F8235E300AF994E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D4B61DB82F63B0140074205F /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D4F7BF1C2F8235E100AF994E;
+			remoteInfo = CathierWidgetExtension;
+		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		D4F7BF122F82307E00AF994E /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				D4F7BF2E2F8235E300AF994E /* CathierWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		D419152C2F6C604900594512 /* CathierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CathierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -28,6 +52,10 @@
 		D42D7A132F764B1A009020D5 /* InstrumentSerif-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "InstrumentSerif-Regular.ttf"; sourceTree = "<group>"; };
 		D48A52212F753AC900B11317 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D4B61DC02F63B0140074205F /* Cathier.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Cathier.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4F7BEFB2F82307D00AF994E /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		D4F7BEFD2F82307D00AF994E /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		D4F7BF162F82319100AF994E /* CathierWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CathierWidgetExtension.entitlements; sourceTree = "<group>"; };
+		D4F7BF1D2F8235E100AF994E /* CathierWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = CathierWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -37,6 +65,20 @@
 				Info.plist,
 			);
 			target = D4B61DBF2F63B0140074205F /* Cathier */;
+		};
+		D4F7BF152F8230B100AF994E /* Exceptions for "CathierWidget" folder in "Cathier" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				CathierWidget.swift,
+			);
+			target = D4B61DBF2F63B0140074205F /* Cathier */;
+		};
+		D4F7BF322F8235E300AF994E /* Exceptions for "CathierWidget" folder in "CathierWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = D4F7BF1C2F8235E100AF994E /* CathierWidgetExtension */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
@@ -52,6 +94,22 @@
 				D4672FD52F65B67700D13A97 /* Exceptions for "Cathier" folder in "Cathier" target */,
 			);
 			path = Cathier;
+			sourceTree = "<group>";
+		};
+		D4F7BEFF2F82307D00AF994E /* CathierWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D4F7BF152F8230B100AF994E /* Exceptions for "CathierWidget" folder in "Cathier" target */,
+			);
+			path = CathierWidget;
+			sourceTree = "<group>";
+		};
+		D4F7BF202F8235E100AF994E /* CathierWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				D4F7BF322F8235E300AF994E /* Exceptions for "CathierWidget" folder in "CathierWidgetExtension" target */,
+			);
+			path = CathierWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -72,6 +130,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4F7BF1A2F8235E100AF994E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D4F7BF1F2F8235E100AF994E /* SwiftUI.framework in Frameworks */,
+				D4F7BF1E2F8235E100AF994E /* WidgetKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -79,6 +146,8 @@
 			isa = PBXGroup;
 			children = (
 				D48A52212F753AC900B11317 /* StoreKit.framework */,
+				D4F7BEFB2F82307D00AF994E /* WidgetKit.framework */,
+				D4F7BEFD2F82307D00AF994E /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -86,8 +155,11 @@
 		D4B61DB72F63B0140074205F = {
 			isa = PBXGroup;
 			children = (
+				D4F7BF162F82319100AF994E /* CathierWidgetExtension.entitlements */,
 				D4B61DC22F63B0140074205F /* Cathier */,
 				D419152D2F6C604900594512 /* CathierTests */,
+				D4F7BEFF2F82307D00AF994E /* CathierWidget */,
+				D4F7BF202F8235E100AF994E /* CathierWidget */,
 				D48A513E2F75276000B11317 /* Frameworks */,
 				D4B61DC12F63B0140074205F /* Products */,
 				D42D7A122F764B1A009020D5 /* InstrumentSerif-Italic.ttf */,
@@ -100,6 +172,7 @@
 			children = (
 				D4B61DC02F63B0140074205F /* Cathier.app */,
 				D419152C2F6C604900594512 /* CathierTests.xctest */,
+				D4F7BF1D2F8235E100AF994E /* CathierWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -137,10 +210,12 @@
 				D4B61DBC2F63B0140074205F /* Sources */,
 				D4B61DBD2F63B0140074205F /* Frameworks */,
 				D4B61DBE2F63B0140074205F /* Resources */,
+				D4F7BF122F82307E00AF994E /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D4F7BF2D2F8235E300AF994E /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				D4B61DC22F63B0140074205F /* Cathier */,
@@ -152,6 +227,28 @@
 			productReference = D4B61DC02F63B0140074205F /* Cathier.app */;
 			productType = "com.apple.product-type.application";
 		};
+		D4F7BF1C2F8235E100AF994E /* CathierWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D4F7BF2F2F8235E300AF994E /* Build configuration list for PBXNativeTarget "CathierWidgetExtension" */;
+			buildPhases = (
+				D4F7BF192F8235E100AF994E /* Sources */,
+				D4F7BF1A2F8235E100AF994E /* Frameworks */,
+				D4F7BF1B2F8235E100AF994E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				D4F7BF202F8235E100AF994E /* CathierWidget */,
+			);
+			name = CathierWidgetExtension;
+			packageProductDependencies = (
+			);
+			productName = CathierWidgetExtension;
+			productReference = D4F7BF1D2F8235E100AF994E /* CathierWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -159,7 +256,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2640;
 				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					D419152B2F6C604900594512 = {
@@ -168,6 +265,9 @@
 					};
 					D4B61DBF2F63B0140074205F = {
 						CreatedOnToolsVersion = 26.3;
+					};
+					D4F7BF1C2F8235E100AF994E = {
+						CreatedOnToolsVersion = 26.4;
 					};
 				};
 			};
@@ -201,6 +301,7 @@
 			targets = (
 				D4B61DBF2F63B0140074205F /* Cathier */,
 				D419152B2F6C604900594512 /* CathierTests */,
+				D4F7BF1C2F8235E100AF994E /* CathierWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -222,6 +323,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4F7BF1B2F8235E100AF994E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -239,6 +347,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		D4F7BF192F8235E100AF994E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -246,6 +361,11 @@
 			isa = PBXTargetDependency;
 			target = D4B61DBF2F63B0140074205F /* Cathier */;
 			targetProxy = D41915302F6C604900594512 /* PBXContainerItemProxy */;
+		};
+		D4F7BF2D2F8235E300AF994E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D4F7BF1C2F8235E100AF994E /* CathierWidgetExtension */;
+			targetProxy = D4F7BF2C2F8235E300AF994E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -487,6 +607,68 @@
 			};
 			name = Release;
 		};
+		D4F7BF302F8235E300AF994E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 97XBW2A43H;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CathierWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CathierWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wangjianshuo.cathier.Cathier.CathierWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D4F7BF312F8235E300AF994E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 97XBW2A43H;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = CathierWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = CathierWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.wangjianshuo.cathier.Cathier.CathierWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -513,6 +695,15 @@
 			buildConfigurations = (
 				D4B61DCC2F63B0140074205F /* Debug */,
 				D4B61DCD2F63B0140074205F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		D4F7BF2F2F8235E300AF994E /* Build configuration list for PBXNativeTarget "CathierWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D4F7BF302F8235E300AF994E /* Debug */,
+				D4F7BF312F8235E300AF994E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
