@@ -60,7 +60,7 @@ final class CheckInViewModel {
     }
 
     // MARK: - Actions
-    func fetchAIFeedback(recentHistory: [CheckIn] = []) async {
+    func fetchAIFeedback(recentHistory: [CheckIn] = [], emotionFrequency: [(String, Int)] = []) async {
         isLoadingAI = true
         aiError = nil
         do {
@@ -71,6 +71,7 @@ final class CheckInViewModel {
                 emotions: allEmotions,
                 triggerEvent: triggerEvent,
                 recentHistory: recentHistory,
+                emotionFrequency: emotionFrequency,
                 language: LanguageManager.shared.currentLanguage
             )
         } catch {

@@ -315,6 +315,65 @@ enum ClaudeService {
         return lines.joined(separator: "\n")
     }
 
+    // MARK: - Smart history sampling
+
+    /// Select up to `limit` relevant check-ins from a larger pool, prioritizing:
+    /// 1. Entries sharing body parts with the current check-in (up to 3)
+    /// 2. Entries sharing emotions with the current check-in (up to 3)
+    /// 3. Entries from the same weekday as today (up to 2)
+    /// 4. Most recent entries to fill remaining slots
+    /// Deduplicates across all buckets.
+    static func smartSample(
+        from history: [CheckIn],
+        currentBodyParts: [String],
+        currentEmotions: [String],
+        limit: Int = 10
+    ) -> [CheckIn] {
+        guard !history.isEmpty else { return [] }
+
+        var selected: [UUID: CheckIn] = [:]
+        let todayWeekday = Calendar.current.component(.weekday, from: Date())
+        let bodySet = Set(currentBodyParts)
+        let emotionSet = Set(currentEmotions)
+
+        // Priority 1: matching body parts (up to 3)
+        var count1 = 0
+        for c in history where count1 < 3 {
+            if selected[c.id] == nil && !Set(c.bodyParts).isDisjoint(with: bodySet) {
+                selected[c.id] = c
+                count1 += 1
+            }
+        }
+
+        // Priority 2: matching emotions (up to 3)
+        var count2 = 0
+        for c in history where count2 < 3 {
+            if selected[c.id] == nil && !Set(c.emotions).isDisjoint(with: emotionSet) {
+                selected[c.id] = c
+                count2 += 1
+            }
+        }
+
+        // Priority 3: same weekday (up to 2)
+        var count3 = 0
+        for c in history where count3 < 2 {
+            if selected[c.id] == nil && Calendar.current.component(.weekday, from: c.date) == todayWeekday {
+                selected[c.id] = c
+                count3 += 1
+            }
+        }
+
+        // Priority 4: fill remaining with most recent
+        for c in history {
+            guard selected.count < limit else { break }
+            if selected[c.id] == nil {
+                selected[c.id] = c
+            }
+        }
+
+        return selected.values.sorted { $0.date > $1.date }
+    }
+
     // MARK: - Per-session feedback
 
     private static func systemPrompt(for language: AppLanguage) -> String {
@@ -338,6 +397,16 @@ enum ClaudeService {
             - 有时可以只说两三句温暖的话，不必展开分析
             - 有时可以用一个比喻开头，有时直接回应感受，有时从身体切入
             - 语气像朋友间的轻声对话，不像正式的咨询报告
+
+            历史关联：
+            - 如果你发现本次记录与历史记录之间存在关联或重复模式，请自然地提及，引用具体日期和细节
+            - 比如"上次你胸口紧缩也是在周一"或"这已经是连续第三天你提到肩膀了"
+            - 不要每次都强行引用历史，只在有真正有意义的关联时才提
+
+            情绪词汇引导：
+            - 当你注意到用户反复使用宽泛的情绪词（如"焦虑"、"难过"、"烦"）时，可以温和地建议更精确的替代词
+            - 基于身体信号来区分：比如"你说的焦虑，从胸口发紧来看，可能更接近'不安'或'忐忑'"
+            - 以探索的语气，不是纠正："下次可以试试看哪个词更贴合你的感受"
 
             重要原则：
             - 永远不评判，不说"你应该"或"你不对"
@@ -367,6 +436,16 @@ enum ClaudeService {
             - Sometimes lead with a metaphor, sometimes with direct empathy, sometimes from the body
             - Sound like a gentle friend, not a formal clinical report
 
+            History connections:
+            - If you notice patterns or connections to past entries, mention them naturally with specific dates and details
+            - For example: "The last time your chest felt tight was also on a Monday" or "This is the third day in a row you've mentioned your shoulders"
+            - Don't force history references every time, only when there's a genuinely meaningful connection
+
+            Emotion vocabulary coaching:
+            - When you notice the user repeatedly uses broad emotion words (like "anxious", "sad", "stressed"), gently suggest more precise alternatives
+            - Use body signals to differentiate: "What you call anxiety, given the chest tightness, might be closer to 'unease' or 'apprehension'"
+            - Frame as exploration, not correction: "Next time, try seeing which word fits better"
+
             Core principles:
             - Never judge; never say "you should" or "you're wrong"
             - Speak from observation, not authority
@@ -394,6 +473,16 @@ enum ClaudeService {
             - 温かい数文だけで十分な時もある——分析は不要
             - 比喩から始めることも、直接共感することも、身体から入ることもある
             - 優しい友人のように語りかける。フォーマルなカウンセリングレポートではなく
+
+            履歴との関連：
+            - 過去の記録との関連やパターンに気づいた場合、具体的な日付や詳細を添えて自然に言及してください
+            - 例：「前回胸が苦しかったのも月曜日でしたね」「肩について言及するのはこれで3日連続です」
+            - 毎回無理に履歴に言及する必要はありません。本当に意味のある関連がある時だけ
+
+            感情語彙のガイド：
+            - ユーザーが広い感情語（「不安」「悲しい」「イライラ」など）を繰り返し使っていることに気づいたら、より正確な代替語を穏やかに提案してください
+            - 身体のシグナルを使って区別：「あなたが言う不安は、胸の締め付けから見ると『心もとなさ』や『落ち着かなさ』に近いかもしれません」
+            - 探索の姿勢で、訂正ではなく：「次回、どの言葉がしっくりくるか試してみてください」
 
             重要な原則：
             - 絶対に判断しない。「〜すべき」や「あなたは間違っている」は言わない
@@ -423,6 +512,16 @@ enum ClaudeService {
             - Sometimes lead with a metaphor, sometimes with direct empathy, sometimes from the body
             - Sound like a gentle friend, not a formal clinical report
 
+            History connections:
+            - If you notice patterns or connections to past entries, mention them naturally with specific dates and details
+            - For example: "The last time your chest felt tight was also on a Monday" or "This is the third day in a row you've mentioned your shoulders"
+            - Don't force history references every time, only when there's a genuinely meaningful connection
+
+            Emotion vocabulary coaching:
+            - When you notice the user repeatedly uses broad emotion words (like "anxious", "sad", "stressed"), gently suggest more precise alternatives
+            - Use body signals to differentiate: "What you call anxiety, given the chest tightness, might be closer to 'unease' or 'apprehension'"
+            - Frame as exploration, not correction: "Next time, try seeing which word fits better"
+
             Core principles:
             - Never judge; never say "you should" or "you're wrong"
             - Speak from observation, not authority
@@ -440,12 +539,14 @@ enum ClaudeService {
         emotions: [String],
         triggerEvent: String = "",
         recentHistory: [CheckIn] = [],
+        emotionFrequency: [(String, Int)] = [],
         language: AppLanguage = LanguageManager.shared.currentLanguage
     ) async throws -> String {
         let userMessage = buildPrompt(bodyParts: bodyParts, sensations: sensations,
                                       intensity: intensity, emotions: emotions,
                                       triggerEvent: triggerEvent,
                                       recentHistory: recentHistory,
+                                      emotionFrequency: emotionFrequency,
                                       language: language)
         return try await call(model: feedbackModel,
                               system: systemPrompt(for: language),
@@ -480,6 +581,7 @@ enum ClaudeService {
         emotions: [String],
         triggerEvent: String,
         recentHistory: [CheckIn],
+        emotionFrequency: [(String, Int)] = [],
         language: AppLanguage
     ) -> String {
         let lm = LanguageManager.shared
@@ -510,7 +612,7 @@ enum ClaudeService {
             \(triggerStr.isEmpty ? "" : "触发事件/场景：\(triggerStr)\n")
             """
 
-            let history = recentHistory.prefix(5)
+            let history = recentHistory.prefix(10)
             if !history.isEmpty {
                 prompt += "【近期历史记录，供参考趋势分析】\n"
                 let calendar = Calendar.current
@@ -522,6 +624,13 @@ enum ClaudeService {
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "情绪：\(checkIn.emotions.joined(separator: "、"))"
                     let parts = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "，")
                     prompt += "· \(when)：\(parts)\n"
+                }
+                prompt += "\n"
+            }
+            if !emotionFrequency.isEmpty {
+                prompt += "【近期情绪词频次】\n"
+                for (emotion, count) in emotionFrequency {
+                    prompt += "· \(emotion)（\(count)次）\n"
                 }
                 prompt += "\n"
             }
@@ -555,7 +664,7 @@ enum ClaudeService {
             \(enTriggerStr.isEmpty ? "" : "Triggering event/scene: \(enTriggerStr)\n")
             """
 
-            let history = recentHistory.prefix(5)
+            let history = recentHistory.prefix(10)
             if !history.isEmpty {
                 prompt += "[Recent History for Trend Analysis]\n"
                 let calendar = Calendar.current
@@ -567,6 +676,13 @@ enum ClaudeService {
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "emotions: \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))"
                     let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "; ")
                     prompt += "· \(when): \(info)\n"
+                }
+                prompt += "\n"
+            }
+            if !emotionFrequency.isEmpty {
+                prompt += "[Recent Emotion Frequency]\n"
+                for (emotion, count) in emotionFrequency {
+                    prompt += "· \(lm.display(emotion)) (\(count) times)\n"
                 }
                 prompt += "\n"
             }
@@ -600,7 +716,7 @@ enum ClaudeService {
             \(jaTriggerStr.isEmpty ? "" : "きっかけとなった出来事/場面：\(jaTriggerStr)\n")
             """
 
-            let history = recentHistory.prefix(5)
+            let history = recentHistory.prefix(10)
             if !history.isEmpty {
                 prompt += "【最近の履歴（傾向分析用）】\n"
                 let calendar = Calendar.current
@@ -612,6 +728,13 @@ enum ClaudeService {
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "感情：\(checkIn.emotions.map { lm.display($0) }.joined(separator: "、"))"
                     let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "、")
                     prompt += "· \(when)：\(info)\n"
+                }
+                prompt += "\n"
+            }
+            if !emotionFrequency.isEmpty {
+                prompt += "【最近の感情頻度】\n"
+                for (emotion, count) in emotionFrequency {
+                    prompt += "· \(lm.display(emotion))（\(count)回）\n"
                 }
                 prompt += "\n"
             }
@@ -645,7 +768,7 @@ enum ClaudeService {
             \(triggerStr.isEmpty ? "" : "Triggering event/scene: \(triggerStr)\n")
             """
 
-            let history = recentHistory.prefix(5)
+            let history = recentHistory.prefix(10)
             if !history.isEmpty {
                 prompt += "[Recent History for Trend Analysis]\n"
                 let calendar = Calendar.current
@@ -657,6 +780,13 @@ enum ClaudeService {
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "emotions: \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))"
                     let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "; ")
                     prompt += "· \(when): \(info)\n"
+                }
+                prompt += "\n"
+            }
+            if !emotionFrequency.isEmpty {
+                prompt += "[Recent Emotion Frequency]\n"
+                for (emotion, count) in emotionFrequency {
+                    prompt += "· \(lm.display(emotion)) (\(count) times)\n"
                 }
                 prompt += "\n"
             }

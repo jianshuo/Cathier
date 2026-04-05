@@ -64,7 +64,8 @@ struct AIFeedbackView: View {
         .task {
             if viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
                 let history = fetchRecentHistory()
-                await viewModel.fetchAIFeedback(recentHistory: history)
+                let freq = emotionFrequency()
+                await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
             }
         }
     }
@@ -180,8 +181,30 @@ struct AIFeedbackView: View {
         var descriptor = FetchDescriptor<CheckIn>(
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
-        descriptor.fetchLimit = 5
-        return (try? modelContext.fetch(descriptor)) ?? []
+        descriptor.fetchLimit = 20
+        let all = (try? modelContext.fetch(descriptor)) ?? []
+        return ClaudeService.smartSample(
+            from: all,
+            currentBodyParts: Array(viewModel.selectedBodyParts),
+            currentEmotions: viewModel.allEmotions,
+            limit: 10
+        )
+    }
+
+    /// Count emotion frequency from recent check-ins for vocabulary coaching.
+    private func emotionFrequency() -> [(String, Int)] {
+        var descriptor = FetchDescriptor<CheckIn>(
+            sortBy: [SortDescriptor(\.date, order: .reverse)]
+        )
+        descriptor.fetchLimit = 10
+        let recent = (try? modelContext.fetch(descriptor)) ?? []
+        var counts: [String: Int] = [:]
+        for checkIn in recent {
+            for emotion in checkIn.emotions {
+                counts[emotion, default: 0] += 1
+            }
+        }
+        return counts.sorted { $0.value > $1.value }.prefix(3).map { ($0.key, $0.value) }
     }
 
     // MARK: - Save action
