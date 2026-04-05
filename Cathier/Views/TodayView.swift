@@ -8,6 +8,7 @@ struct TodayView: View {
     @State private var showingJournalEntry = false
     @State private var journalToEdit: DailyJournal? = nil
     @Environment(LanguageManager.self) private var lm
+    @Environment(DeepLinkRouter.self) private var router
 
     private var todayCheckIns: [CheckIn] {
         checkIns.filter { Calendar.current.isDateInToday($0.date) }
@@ -55,6 +56,12 @@ struct TodayView: View {
             .navigationTitle(lm.todayNavTitle)
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
+            }
+            .onChange(of: router.triggerCheckIn) { _, triggered in
+                if triggered {
+                    showingCheckIn = true
+                    router.triggerCheckIn = false
+                }
             }
             .sheet(isPresented: $showingJournalEntry) {
                 DailyJournalEntryView(existing: journalToEdit) {

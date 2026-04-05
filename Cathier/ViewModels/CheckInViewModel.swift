@@ -96,7 +96,19 @@ final class CheckInViewModel {
 
         // Update running count for insights staleness and milestone nudge
         let key = "totalCheckInCount"
-        UserDefaults.standard.set(UserDefaults.standard.integer(forKey: key) + 1, forKey: key)
+        let newTotal = UserDefaults.standard.integer(forKey: key) + 1
+        UserDefaults.standard.set(newTotal, forKey: key)
+
+        // Refresh widget with today's summary
+        let startOfDay = Calendar.current.startOfDay(for: Date())
+        let endOfDay = startOfDay.addingTimeInterval(86400)
+        let todayAll = (try? context.fetch(FetchDescriptor<CheckIn>(
+            predicate: #Predicate { $0.date >= startOfDay && $0.date < endOfDay }
+        ))) ?? []
+        WidgetDataStore.writeTodaySummary(
+            count: todayAll.count,
+            latestEmotions: checkIn.emotions
+        )
 
         return checkIn
     }
