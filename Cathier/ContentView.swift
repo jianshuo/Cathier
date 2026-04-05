@@ -27,6 +27,7 @@ struct ContentView: View {
         }
         .tint(.cathierAccent)
         .environment(friendVM)
+        .task { await friendVM.initialize() }
     }
 }
 
