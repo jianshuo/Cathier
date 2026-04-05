@@ -393,7 +393,7 @@ struct FriendCheckInCard: View {
     private var reactionRow: some View {
         HStack(spacing: 4) {
             ForEach(ReactionRecord.allEmojis, id: \.self) { emoji in
-                let count = vm.reactionCount(emoji: emoji, on: item)
+                let names = vm.reactorNames(emoji: emoji, on: item)
                 let isMine = vm.myReaction(on: item)?.emoji == emoji
                 Button {
                     Task { await vm.toggleReaction(emoji: emoji, on: item) }
@@ -401,11 +401,12 @@ struct FriendCheckInCard: View {
                     HStack(spacing: 3) {
                         Text(emoji)
                             .font(.system(size: 14))
-                        if count > 0 {
-                            Text("\(count)")
+                        if !names.isEmpty {
+                            Text(names.joined(separator: " · "))
                                 .font(.caption2)
                                 .fontWeight(.medium)
                                 .foregroundColor(isMine ? .white : .secondary)
+                                .lineLimit(1)
                         }
                     }
                     .padding(.horizontal, 8)

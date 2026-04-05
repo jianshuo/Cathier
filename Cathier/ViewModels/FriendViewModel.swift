@@ -221,6 +221,20 @@ final class FriendViewModel {
         reactions(for: checkIn).filter { $0.emoji == emoji }.count
     }
 
+    /// Display names of everyone who reacted with a given emoji.
+    /// The current user is shown as "你" (always first if present).
+    func reactorNames(emoji: String, on checkIn: FriendCheckIn) -> [String] {
+        let rs = reactions(for: checkIn).filter { $0.emoji == emoji }
+        let myID = currentProfile?.id
+        return rs
+            .sorted { a, _ in a.fromProfileRef.recordID == myID }  // self first
+            .map { r in
+                r.fromProfileRef.recordID == myID
+                    ? "你"
+                    : (profile(for: r.fromProfileRef)?.displayName ?? "…")
+            }
+    }
+
     /// Toggle: tap the same emoji removes it; tap a different emoji replaces it; tap with none adds it.
     func toggleReaction(emoji: String, on checkIn: FriendCheckIn) async {
         guard let myProfile = currentProfile else { return }
