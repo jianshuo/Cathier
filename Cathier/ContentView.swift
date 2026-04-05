@@ -1,14 +1,8 @@
 import SwiftUI
 import SwiftData
 
-// Shared deep-link state — injected via environment so TodayView can react.
-@Observable final class DeepLinkRouter {
-    var triggerCheckIn = false
-}
-
 struct ContentView: View {
     @State private var friendVM = FriendViewModel()
-    @State private var router = DeepLinkRouter()
     @State private var selectedTab = 0
     @Environment(LanguageManager.self) private var lm
 
@@ -33,14 +27,6 @@ struct ContentView: View {
         }
         .tint(.cathierAccent)
         .environment(friendVM)
-        .environment(router)
-        .onOpenURL { url in
-            // cathier://checkin — from widget or other deep links
-            if url.scheme == "cathier", url.host == "checkin" {
-                selectedTab = 0
-                router.triggerCheckIn = true
-            }
-        }
     }
 }
 
