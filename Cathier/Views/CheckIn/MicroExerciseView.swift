@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct MicroExerciseView: View {
     let bodyParts: [String]
@@ -113,16 +114,37 @@ struct MicroExerciseView: View {
                 }
 
             case .running:
-                VStack(spacing: 12) {
-                    Text(formattedTime)
-                        .font(.system(size: 48, weight: .light, design: .rounded))
-                        .monospacedDigit()
-                        .foregroundColor(.cathierAccent)
+                VStack(spacing: 16) {
+                    ZStack {
+                        // Background track
+                        Circle()
+                            .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 16)
 
-                    ProgressView(value: Double(60 - remaining), total: 60)
-                        .tint(.cathierAccent)
-                        .scaleEffect(y: 2)
-                        .clipShape(Capsule())
+                        // Progress ring
+                        Circle()
+                            .trim(from: 0, to: Double(60 - remaining) / 60.0)
+                            .stroke(
+                                AngularGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.cathierAccent.opacity(0.6),
+                                        Color.cathierAccent
+                                    ]),
+                                    center: .center,
+                                    startAngle: .degrees(0),
+                                    endAngle: .degrees(360 * Double(60 - remaining) / 60.0)
+                                ),
+                                style: StrokeStyle(lineWidth: 16, lineCap: .round)
+                            )
+                            .rotationEffect(.degrees(-90))
+                            .animation(.linear(duration: 1), value: remaining)
+
+                        // Time label in center
+                        Text(formattedTime)
+                            .font(.system(size: 48, weight: .light, design: .rounded))
+                            .monospacedDigit()
+                            .foregroundColor(.cathierAccent)
+                    }
+                    .frame(width: 200, height: 200)
 
                     Button(lm.exerciseStop) {
                         timerState = .done
@@ -163,6 +185,8 @@ struct MicroExerciseView: View {
     private func startTimer() {
         remaining = 60
         timerState = .running
+        // Start haptic: short gentle tap
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
         Task {
             while remaining > 0 && timerState == .running {
                 try? await Task.sleep(for: .seconds(1))
@@ -171,6 +195,9 @@ struct MicroExerciseView: View {
             }
             if timerState == .running {
                 timerState = .done
+                // End haptic: distinct double-tap notification
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
             }
         }
     }

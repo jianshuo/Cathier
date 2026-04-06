@@ -10,8 +10,6 @@
 		D42D7A142F764B1A009020D5 /* InstrumentSerif-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42D7A132F764B1A009020D5 /* InstrumentSerif-Regular.ttf */; };
 		D42D7A152F764B1A009020D5 /* InstrumentSerif-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D42D7A122F764B1A009020D5 /* InstrumentSerif-Italic.ttf */; };
 		D48A52222F753AC900B11317 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D48A52212F753AC900B11317 /* StoreKit.framework */; };
-		D4F7BF1E2F8235E100AF994E /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7BEFB2F82307D00AF994E /* WidgetKit.framework */; };
-		D4F7BF1F2F8235E100AF994E /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4F7BEFD2F82307D00AF994E /* SwiftUI.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -60,8 +58,6 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		D419152D2F6C604900594512 /* CathierTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = CathierTests;
 			sourceTree = "<group>";
 		};
@@ -186,9 +182,6 @@
 					};
 					D4B61DBF2F63B0140074205F = {
 						CreatedOnToolsVersion = 26.3;
-					};
-					D4F7BF1C2F8235E100AF994E = {
-						CreatedOnToolsVersion = 26.4;
 					};
 				};
 			};
@@ -501,68 +494,6 @@
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
-		D4F7BF302F8235E300AF994E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 97XBW2A43H;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = CathierWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = CathierWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wangjianshuo.cathier.Cathier.CathierWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D4F7BF312F8235E300AF994E /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 97XBW2A43H;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = CathierWidget/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = CathierWidget;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.4;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wangjianshuo.cathier.Cathier.CathierWidget;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
