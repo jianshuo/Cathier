@@ -1,23 +1,16 @@
 /* Body parts */
-"呼吸" = "Respiro";
-"腹部" = "Addome";
-"心脏" = "Cuore";
-"心轮" = "Chakra del cuore";
-"眉心" = "Terzo occhio";
-"胃" = "Stomaco";
-"海底轮" = "Chakra radice";
 "头部" = "Testa";
 "眼睛" = "Occhi";
 "脸部" = "Viso";
 "喉咙" = "Gola";
-"头皮" = "Cuoio capelluto";
-"下颌" = "Mascella";
-"肩膀" = "Spalle";
 "颈部" = "Collo";
+"肩膀" = "Spalle";
 "手臂" = "Braccia";
 "手掌" = "Palmi";
 "胸口" = "Petto";
+"呼吸" = "Respiro";
 "背部" = "Schiena";
+"腹部" = "Addome";
 "腰部" = "Zona lombare";
 "骨盆" = "Bacino";
 "大腿" = "Cosce";
@@ -28,7 +21,6 @@
 "紧绷" = "Teso";
 "僵硬" = "Rigido";
 "收缩" = "Contrazione";
-"绞痛" = "Crampo";
 "沉重" = "Pesante";
 "下坠" = "Affondante";
 "压迫" = "Pressione";
@@ -42,7 +34,6 @@
 "酸胀" = "Dolorante";
 "麻木" = "Intorpidito";
 "颤抖" = "Tremante";
-"震动" = "Vibrante";
 "脉动" = "Pulsante";
 "涌动" = "Prorompente";
 "空洞" = "Vuoto";
@@ -53,6 +44,27 @@
 "轻盈" = "Leggero";
 "漂浮" = "Galleggiante";
 "放松" = "Rilassato";
+"胀痛" = "Pulsante";
+"嗡鸣" = "Ronzio";
+"昏沉" = "Annebbiato";
+"干涩" = "Secco";
+"湿润" = "Umido";
+"模糊" = "Offuscato";
+"潮红" = "Arrossato";
+"咬紧" = "Serrato";
+"堵塞" = "Bloccato";
+"哽咽" = "Nodo alla gola";
+"出汗" = "Sudato";
+"无力" = "Debole";
+"翻涌" = "Rivoltato";
+"恶心" = "Nausea";
+"浅短" = "Superficiale";
+"急促" = "Rapido";
+"顺畅" = "Fluido";
+"深长" = "Profondo";
+"不规则" = "Irregolare";
+"叹息感" = "Sospirante";
+"扎根感" = "Radicato";
 
 /* Emotion categories */
 "激情" = "Appassionato";

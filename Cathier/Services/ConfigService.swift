@@ -5,8 +5,41 @@ import SwiftUI
 struct EmotionConfig: Codable {
     var version: Int
     var bodyParts: [String]
-    var sensations: [String]
+    var sensations: SensationsData
     var categories: [EmotionCategoryDTO]
+}
+
+/// Supports both old flat array format and new per-body-part dictionary format.
+enum SensationsData: Codable {
+    case flat([String])
+    case perPart([String: [String]])
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        if let dict = try? container.decode([String: [String]].self) {
+            self = .perPart(dict)
+        } else if let arr = try? container.decode([String].self) {
+            self = .flat(arr)
+        } else {
+            self = .flat([])
+        }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        switch self {
+        case .flat(let arr): try container.encode(arr)
+        case .perPart(let dict): try container.encode(dict)
+        }
+    }
+
+    /// Returns sensations for a specific body part, or all sensations if flat.
+    func sensations(for bodyPart: String) -> [String] {
+        switch self {
+        case .flat(let arr): return arr
+        case .perPart(let dict): return dict[bodyPart] ?? []
+        }
+    }
 }
 
 struct EmotionCategoryDTO: Codable {
@@ -59,7 +92,12 @@ final class ConfigService {
     static let shared = ConfigService()
 
     private(set) var bodyParts: [String] = []
-    private(set) var sensations: [String] = []
+    private(set) var sensationsData: SensationsData = .flat([])
+
+    /// Returns sensations specific to a body part (or all if using old flat config).
+    func sensations(for bodyPart: String) -> [String] {
+        sensationsData.sensations(for: bodyPart)
+    }
     private(set) var categories: [EmotionCategory] = []
 
     private let remoteURL = URL(string: "https://raw.githubusercontent.com/jianshuo/Cathier/main/Cathier/emotion_config.json")!
@@ -114,7 +152,7 @@ final class ConfigService {
 
     private func apply(_ config: EmotionConfig) {
         bodyParts = config.bodyParts
-        sensations = config.sensations
+        sensationsData = config.sensations
         categories = config.categories.map { $0.toEmotionCategory() }
     }
 

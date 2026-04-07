@@ -1,23 +1,16 @@
 /* Body parts */
-"呼吸" = "Nefes";
-"腹部" = "Karın";
-"心脏" = "Kalp";
-"心轮" = "Kalp Çakrası";
-"眉心" = "Üçüncü Göz";
-"胃" = "Mide";
-"海底轮" = "Kök Çakrası";
 "头部" = "Baş";
 "眼睛" = "Gözler";
 "脸部" = "Yüz";
 "喉咙" = "Boğaz";
-"头皮" = "Saç derisi";
-"下颌" = "Çene";
-"肩膀" = "Omuzlar";
 "颈部" = "Boyun";
+"肩膀" = "Omuzlar";
 "手臂" = "Kollar";
 "手掌" = "Avuç içleri";
 "胸口" = "Göğüs";
+"呼吸" = "Nefes";
 "背部" = "Sırt";
+"腹部" = "Karın";
 "腰部" = "Bel";
 "骨盆" = "Leğen kemiği";
 "大腿" = "Uyluklar";
@@ -28,7 +21,6 @@
 "紧绷" = "Gergin";
 "僵硬" = "Sert";
 "收缩" = "Kasılan";
-"绞痛" = "Kramp";
 "沉重" = "Ağır";
 "下坠" = "Batan";
 "压迫" = "Baskı";
@@ -42,7 +34,6 @@
 "酸胀" = "Ağrılı";
 "麻木" = "Uyuşuk";
 "颤抖" = "Titreyen";
-"震动" = "Titreşen";
 "脉动" = "Atımlı";
 "涌动" = "Dalgalanan";
 "空洞" = "Boş";
@@ -53,6 +44,27 @@
 "轻盈" = "Hafif";
 "漂浮" = "Yüzen";
 "放松" = "Rahat";
+"胀痛" = "Zonklama";
+"嗡鸣" = "Uğultu";
+"昏沉" = "Puslu";
+"干涩" = "Kuru";
+"湿润" = "Nemli";
+"模糊" = "Bulanık";
+"潮红" = "Kızarma";
+"咬紧" = "Sıkma";
+"堵塞" = "Tıkanık";
+"哽咽" = "Boğazda düğüm";
+"出汗" = "Terli";
+"无力" = "Güçsüz";
+"翻涌" = "Bulanma";
+"恶心" = "Mide bulantısı";
+"浅短" = "Sığ";
+"急促" = "Hızlı";
+"顺畅" = "Akıcı";
+"深长" = "Derin";
+"不规则" = "Düzensiz";
+"叹息感" = "İç çekme";
+"扎根感" = "Kök salmış";
 
 /* Emotion categories */
 "激情" = "Tutkulu";

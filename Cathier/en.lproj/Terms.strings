@@ -1,23 +1,16 @@
 /* Body parts */
-"呼吸" = "Breath";
-"腹部" = "Abdomen";
-"心脏" = "Heart";
-"心轮" = "Heart Chakra";
-"眉心" = "Third Eye";
-"胃" = "Stomach";
-"海底轮" = "Root Chakra";
 "头部" = "Head";
 "眼睛" = "Eyes";
 "脸部" = "Face";
 "喉咙" = "Throat";
-"头皮" = "Scalp";
-"下颌" = "Jaw";
-"肩膀" = "Shoulders";
 "颈部" = "Neck";
+"肩膀" = "Shoulders";
 "手臂" = "Arms";
 "手掌" = "Palms";
 "胸口" = "Chest";
+"呼吸" = "Breath";
 "背部" = "Back";
+"腹部" = "Abdomen";
 "腰部" = "Lower Back";
 "骨盆" = "Pelvis";
 "大腿" = "Thighs";
@@ -28,7 +21,6 @@
 "紧绷" = "Tense";
 "僵硬" = "Stiff";
 "收缩" = "Contracting";
-"绞痛" = "Cramping";
 "沉重" = "Heavy";
 "下坠" = "Sinking";
 "压迫" = "Pressure";
@@ -42,7 +34,6 @@
 "酸胀" = "Aching";
 "麻木" = "Numb";
 "颤抖" = "Trembling";
-"震动" = "Vibrating";
 "脉动" = "Pulsating";
 "涌动" = "Surging";
 "空洞" = "Empty";
@@ -53,6 +44,27 @@
 "轻盈" = "Light";
 "漂浮" = "Floating";
 "放松" = "Relaxed";
+"胀痛" = "Throbbing";
+"嗡鸣" = "Buzzing";
+"昏沉" = "Foggy";
+"干涩" = "Dry";
+"湿润" = "Moist";
+"模糊" = "Blurry";
+"潮红" = "Flushed";
+"咬紧" = "Clenching";
+"堵塞" = "Blocked";
+"哽咽" = "Choked Up";
+"出汗" = "Sweaty";
+"无力" = "Weak";
+"翻涌" = "Churning";
+"恶心" = "Nauseous";
+"浅短" = "Shallow";
+"急促" = "Rapid";
+"顺畅" = "Smooth";
+"深长" = "Deep";
+"不规则" = "Irregular";
+"叹息感" = "Sighing";
+"扎根感" = "Grounded";
 
 /* Emotion categories */
 "激情" = "Impassioned";

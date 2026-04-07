@@ -21,13 +21,6 @@ struct CathierApp: App {
                     .environment(LanguageManager.shared)
                     .task { await ConfigService.shared.refreshFromGitHub() }
                     .task { checkMilestoneNudge() }
-                    .task {
-                        // Heartbeat: fires every second. Gaps in this log = MainActor blocked.
-                        while !Task.isCancelled {
-                            t("💓 MainActor heartbeat")
-                            try? await Task.sleep(for: .seconds(1))
-                        }
-                    }
             } else {
                 ProgressView()
                     .task(priority: .userInitiated) {

@@ -34,7 +34,7 @@ struct BodyScanView: View {
                                 .fontWeight(.medium)
                                 .foregroundColor(.secondary)
                             FlowLayout(spacing: 10) {
-                                ForEach(config.sensations, id: \.self) { sensation in
+                                ForEach(config.sensations(for: part), id: \.self) { sensation in
                                     ChipView(
                                         label: lm.display(sensation),
                                         isSelected: viewModel.bodySensations[part]?.contains(sensation) ?? false
