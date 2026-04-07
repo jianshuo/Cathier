@@ -51,12 +51,15 @@ struct EmotionLabelView: View {
                                 ) {
                                     toggleEmotion(emotion.nameZh)
                                 }
-                                .onLongPressGesture {
-                                    if emotion.descriptionText != nil {
-                                        popoverEmotion = emotion
-                                        showPopover = true
-                                    }
-                                }
+                                .simultaneousGesture(
+                                    LongPressGesture(minimumDuration: 0.5)
+                                        .onEnded { _ in
+                                            if emotion.descriptionText != nil {
+                                                popoverEmotion = emotion
+                                                showPopover = true
+                                            }
+                                        }
+                                )
                                 .popover(isPresented: Binding(
                                     get: { showPopover && popoverEmotion?.id == emotion.id },
                                     set: { if !$0 { showPopover = false; popoverEmotion = nil } }
