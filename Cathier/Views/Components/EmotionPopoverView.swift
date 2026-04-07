@@ -19,7 +19,7 @@ struct EmotionPopoverView: View {
             if let desc = emotion.descriptionText, !desc.isEmpty {
                 Text(desc)
                     .font(.custom("InstrumentSerif-Regular", size: 15))
-                    .foregroundStyle(Color.cathierTextPrimary)
+                    .foregroundStyle(.primary)
                     .lineSpacing(4)
             }
 
@@ -28,12 +28,12 @@ struct EmotionPopoverView: View {
                 HStack(spacing: 4) {
                     Text("相似:")
                         .font(.caption)
-                        .foregroundStyle(Color.cathierTextSecondary)
+                        .foregroundStyle(.secondary)
                     ForEach(Array(similar.enumerated()), id: \.offset) { index, name in
                         if index > 0 {
                             Text("·")
                                 .font(.caption)
-                                .foregroundStyle(Color.cathierTextMuted)
+                                .foregroundStyle(Color(.separator))
                         }
                         Button(name) {
                             onSimilarTap?(name)
@@ -51,7 +51,7 @@ struct EmotionPopoverView: View {
                             if let diff = differs[key] {
                                 Text("vs \(key): \(diff)")
                                     .font(.caption)
-                                    .foregroundStyle(Color.cathierTextSecondary)
+                                    .foregroundStyle(.secondary)
                             }
                         }
                     }
@@ -63,7 +63,7 @@ struct EmotionPopoverView: View {
         .background(Color.cathierSurface)
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.cathierBorder, lineWidth: 1)
+                .stroke(Color(.separator), lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .shadow(color: .black.opacity(0.12), radius: 8, y: 4)
