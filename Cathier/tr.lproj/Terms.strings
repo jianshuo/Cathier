@@ -16,6 +16,13 @@
 "大腿" = "Uyluklar";
 "双脚" = "Ayaklar";
 "整个身体" = "Tüm vücut";
+"顶轮" = "Taç Çakrası";
+"眉心轮" = "Üçüncü Göz Çakrası";
+"喉轮" = "Boğaz Çakrası";
+"心轮" = "Kalp Çakrası";
+"太阳轮" = "Solar Pleksus Çakrası";
+"骶轮" = "Sakral Çakrası";
+"海底轮" = "Kök Çakrası";
 
 /* Sensations */
 "紧绷" = "Gergin";
@@ -65,6 +72,24 @@
 "不规则" = "Düzensiz";
 "叹息感" = "İç çekme";
 "扎根感" = "Kök salmış";
+"开阔" = "Genişlik";
+"光感" = "Işık hissi";
+"空灵" = "Eterik";
+"融化" = "Eriyen";
+"连接感" = "Bağlanma";
+"断裂感" = "Kopukluk";
+"清明" = "Berrak";
+"振动" = "Titreşim";
+"畅通" = "Akış";
+"表达受阻" = "İfade engeli";
+"打开感" = "Açılma";
+"紧缩" = "Daralma";
+"柔软" = "Yumuşak";
+"力量感" = "Güç hissi";
+"空虚" = "Boşluk";
+"流动感" = "Akıcılık";
+"踏实" = "Sağlam";
+"稳定" = "Kararlı";
 
 /* Emotion categories */
 "激情" = "Tutkulu";

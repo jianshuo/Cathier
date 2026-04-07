@@ -16,6 +16,13 @@
 "大腿" = "Thighs";
 "双脚" = "Feet";
 "整个身体" = "Whole Body";
+"顶轮" = "Crown Chakra";
+"眉心轮" = "Third Eye Chakra";
+"喉轮" = "Throat Chakra";
+"心轮" = "Heart Chakra";
+"太阳轮" = "Solar Plexus Chakra";
+"骶轮" = "Sacral Chakra";
+"海底轮" = "Root Chakra";
 
 /* Sensations */
 "紧绷" = "Tense";
@@ -65,6 +72,24 @@
 "不规则" = "Irregular";
 "叹息感" = "Sighing";
 "扎根感" = "Grounded";
+"开阔" = "Expansive";
+"光感" = "Luminous";
+"空灵" = "Ethereal";
+"融化" = "Melting";
+"连接感" = "Connected";
+"断裂感" = "Disconnected";
+"清明" = "Clear";
+"振动" = "Vibrating";
+"畅通" = "Open Flow";
+"表达受阻" = "Expression Blocked";
+"打开感" = "Opening Up";
+"紧缩" = "Constricting";
+"柔软" = "Soft";
+"力量感" = "Empowered";
+"空虚" = "Hollow";
+"流动感" = "Flowing";
+"踏实" = "Grounded & Stable";
+"稳定" = "Steady";
 
 /* Emotion categories */
 "激情" = "Impassioned";

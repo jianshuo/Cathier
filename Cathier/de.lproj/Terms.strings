@@ -16,6 +16,13 @@
 "大腿" = "Oberschenkel";
 "双脚" = "Füße";
 "整个身体" = "Ganzer Körper";
+"顶轮" = "Kronenchakra";
+"眉心轮" = "Stirnchakra";
+"喉轮" = "Halschakra";
+"心轮" = "Herzchakra";
+"太阳轮" = "Solarplexuschakra";
+"骶轮" = "Sakralchakra";
+"海底轮" = "Wurzelchakra";
 
 /* Sensations */
 "紧绷" = "Angespannt";
@@ -65,6 +72,24 @@
 "不规则" = "Unregelmäßig";
 "叹息感" = "Seufzend";
 "扎根感" = "Geerdet";
+"开阔" = "Weite";
+"光感" = "Lichtgefühl";
+"空灵" = "Ätherisch";
+"融化" = "Schmelzend";
+"连接感" = "Verbundenheit";
+"断裂感" = "Abgetrennt";
+"清明" = "Klar";
+"振动" = "Vibrierend";
+"畅通" = "Frei fließend";
+"表达受阻" = "Ausdruck blockiert";
+"打开感" = "Sich öffnend";
+"紧缩" = "Zusammenziehend";
+"柔软" = "Weich";
+"力量感" = "Kraftvoll";
+"空虚" = "Hohl";
+"流动感" = "Fließend";
+"踏实" = "Geerdet und stabil";
+"稳定" = "Stabil";
 
 /* Emotion categories */
 "激情" = "Leidenschaftlich";

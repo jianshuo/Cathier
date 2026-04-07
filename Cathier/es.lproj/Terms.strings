@@ -16,6 +16,13 @@
 "大腿" = "Muslos";
 "双脚" = "Pies";
 "整个身体" = "Todo el cuerpo";
+"顶轮" = "Chakra corona";
+"眉心轮" = "Chakra del tercer ojo";
+"喉轮" = "Chakra de la garganta";
+"心轮" = "Chakra del corazón";
+"太阳轮" = "Chakra del plexo solar";
+"骶轮" = "Chakra sacro";
+"海底轮" = "Chakra raíz";
 
 /* Sensations */
 "紧绷" = "Tenso";
@@ -65,6 +72,24 @@
 "不规则" = "Irregular";
 "叹息感" = "Suspirante";
 "扎根感" = "Arraigado";
+"开阔" = "Expansivo";
+"光感" = "Luminoso";
+"空灵" = "Etéreo";
+"融化" = "Fundiéndose";
+"连接感" = "Conectado";
+"断裂感" = "Desconectado";
+"清明" = "Claro";
+"振动" = "Vibrante";
+"畅通" = "Fluido";
+"表达受阻" = "Expresión bloqueada";
+"打开感" = "Apertura";
+"紧缩" = "Constricción";
+"柔软" = "Suave";
+"力量感" = "Empoderado";
+"空虚" = "Hueco";
+"流动感" = "Fluir";
+"踏实" = "Arraigado y estable";
+"稳定" = "Estable";
 
 /* Emotion categories */
 "激情" = "Apasionado";

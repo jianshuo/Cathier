@@ -16,6 +16,13 @@
 "大腿" = "Đùi";
 "双脚" = "Bàn chân";
 "整个身体" = "Toàn thân";
+"顶轮" = "Luân xa vương miện";
+"眉心轮" = "Luân xa con mắt thứ ba";
+"喉轮" = "Luân xa cổ họng";
+"心轮" = "Luân xa tim";
+"太阳轮" = "Luân xa đám rối mặt trời";
+"骶轮" = "Luân xa xương cùng";
+"海底轮" = "Luân xa gốc";
 
 /* Sensations */
 "紧绷" = "Căng thẳng";
@@ -65,6 +72,24 @@
 "不规则" = "Bất thường";
 "叹息感" = "Thở dài";
 "扎根感" = "Bám rễ";
+"开阔" = "Rộng mở";
+"光感" = "Cảm giác ánh sáng";
+"空灵" = "Thanh thoát";
+"融化" = "Tan chảy";
+"连接感" = "Kết nối";
+"断裂感" = "Đứt rời";
+"清明" = "Sáng suốt";
+"振动" = "Rung động";
+"畅通" = "Thông suốt";
+"表达受阻" = "Biểu đạt bị chặn";
+"打开感" = "Mở ra";
+"紧缩" = "Thắt lại";
+"柔软" = "Mềm mại";
+"力量感" = "Sức mạnh";
+"空虚" = "Trống rỗng";
+"流动感" = "Lưu chuyển";
+"踏实" = "Vững vàng";
+"稳定" = "Ổn định";
 
 /* Emotion categories */
 "激情" = "Đam mê";
