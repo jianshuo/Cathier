@@ -31,7 +31,10 @@ struct EmotionCategoryDTO: Codable {
             emotions: emotions.map {
                 Emotion(id: $0.id, nameZh: $0.nameZh, nameEn: $0.nameEn,
                         nameJa: $0.nameJa ?? $0.nameEn,
-                        emoji: $0.emoji, intensity: $0.intensity)
+                        emoji: $0.emoji, intensity: $0.intensity,
+                        descriptionText: $0.descriptionText,
+                        similarTo: $0.similarTo,
+                        differs: $0.differs)
             }
         )
     }
@@ -44,6 +47,9 @@ struct EmotionDTO: Codable {
     var nameJa: String?
     var emoji: String
     var intensity: Int
+    var descriptionText: String?
+    var similarTo: [String]?
+    var differs: [String: String]?
 }
 
 // MARK: - ConfigService

@@ -13,6 +13,9 @@ struct Emotion: Identifiable {
     let nameJa: String
     let emoji: String
     let intensity: Int  // 1–5
+    let descriptionText: String?
+    let similarTo: [String]?
+    let differs: [String: String]?
 }
 
 struct EmotionCategory: Identifiable {
