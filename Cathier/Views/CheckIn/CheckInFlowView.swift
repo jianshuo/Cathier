@@ -97,21 +97,20 @@ struct ChipView: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 8)
-                .background(isSelected ? color.opacity(0.15) : Color(.systemGray6))
-                .foregroundColor(isSelected ? color : .primary)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(isSelected ? color : Color.clear, lineWidth: 1.5)
-                )
-        }
-        .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.15), value: isSelected)
+        Text(label)
+            .font(.subheadline)
+            .fontWeight(isSelected ? .semibold : .regular)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 8)
+            .background(isSelected ? color.opacity(0.15) : Color(.systemGray6))
+            .foregroundColor(isSelected ? color : .primary)
+            .clipShape(Capsule())
+            .overlay(
+                Capsule()
+                    .stroke(isSelected ? color : Color.clear, lineWidth: 1.5)
+            )
+            .contentShape(Capsule())
+            .onTapGesture { action() }
+            .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
