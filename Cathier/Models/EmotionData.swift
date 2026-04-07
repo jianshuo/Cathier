@@ -40,6 +40,12 @@ enum EmotionData {
         ConfigService.shared.category(for: emotion)
     }
 
+    static func emotion(for name: String) -> Emotion? {
+        ConfigService.shared.categories
+            .flatMap(\.emotions)
+            .first { $0.nameZh == name }
+    }
+
     static func emoji(for emotion: String) -> String {
         ConfigService.shared.categories
             .flatMap(\.emotions)
