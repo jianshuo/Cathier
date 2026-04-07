@@ -47,6 +47,9 @@ secrets.plist
 # iCloud sync artifacts
 *.icloud
 
+# Marketing assets (synced via iCloud, not git)
+marketing/
+
 # gstack — binary and deps are gitignored; teammates run: cd .claude/skills/gstack && ./setup
 .claude/skills/gstack/node_modules/
 .claude/skills/gstack/browse/dist/
