@@ -360,30 +360,49 @@ struct FriendCheckInCard: View {
     }
 
     private var bodyRow: some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack(spacing: 5) {
-                Image(systemName: "figure.stand")
-                    .font(.caption2)
-                    .foregroundColor(.cathierSage)
-                Text(item.bodyParts.prefix(4).map { lm.display($0) }.joined(separator: "  ·  "))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-            if !cleanSensations.isEmpty {
-                Text(cleanSensations.prefix(6).joined(separator: "  ·  "))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .padding(.leading, 16)
+        let grouped = groupedSensations(item.sensations)
+        return VStack(alignment: .leading, spacing: 3) {
+            ForEach(item.bodyParts, id: \.self) { part in
+                HStack(alignment: .top, spacing: 5) {
+                    if part == item.bodyParts.first {
+                        Image(systemName: "figure.stand")
+                            .font(.caption2)
+                            .foregroundColor(.cathierSage)
+                            .frame(width: 12)
+                    } else {
+                        Spacer()
+                            .frame(width: 12)
+                    }
+                    let sensations = grouped[part] ?? []
+                    let partName = lm.display(part)
+                    HStack(spacing: 0) {
+                        Text(partName)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.cathierSage)
+                        if !sensations.isEmpty {
+                            Text("  ")
+                                .font(.caption)
+                            Text(sensations.map { lm.display($0) }.joined(separator: " · "))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .fixedSize(horizontal: false, vertical: true)
+                }
             }
         }
     }
 
-    /// Sensation names with the "bodypart:" prefix stripped.
-    private var cleanSensations: [String] {
-        item.sensations.map { s in
-            let parts = s.split(separator: ":", maxSplits: 1)
-            return lm.display(parts.count == 2 ? String(parts[1]) : s)
+    private func groupedSensations(_ sensations: [String]) -> [String: [String]] {
+        var result: [String: [String]] = [:]
+        for s in sensations {
+            let components = s.split(separator: ":", maxSplits: 1).map(String.init)
+            if components.count == 2 {
+                result[components[0], default: []].append(components[1])
+            }
         }
+        return result
     }
 
     private var aiSnippet: some View {

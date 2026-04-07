@@ -22,16 +22,9 @@ struct CheckInCard: View {
                     IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
                 }
 
-                // Body parts + sensations
+                // Body parts + sensations (grouped per body part)
                 if !checkIn.bodyParts.isEmpty || !checkIn.sensations.isEmpty {
-                    let bodyText = [checkIn.bodyParts, checkIn.sensations]
-                        .flatMap { $0 }
-                        .map { lm.display($0) }
-                        .joined(separator: " · ")
-                    Text(bodyText)
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .lineLimit(1)
+                    bodySensationView
                 }
 
                 // Emotion tags
@@ -93,6 +86,50 @@ struct CheckInCard: View {
         .sheet(isPresented: $showDetail) {
             CheckInDetailView(checkIn: checkIn)
         }
+    }
+
+    private var bodySensationView: some View {
+        let grouped = groupedSensations(checkIn.sensations)
+        return VStack(alignment: .leading, spacing: 4) {
+            ForEach(checkIn.bodyParts, id: \.self) { part in
+                let sensations = grouped[part] ?? []
+                let partName = lm.display(part)
+                HStack(spacing: 0) {
+                    Text(partName)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.cathierAccent)
+                    if !sensations.isEmpty {
+                        Text("  ")
+                        Text(sensations.map { lm.display($0) }.joined(separator: " · "))
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .fixedSize(horizontal: false, vertical: true)
+            }
+            // Legacy data without body part prefix
+            let unmatched = checkIn.sensations
+                .filter { !$0.contains(":") }
+                .map { lm.display($0) }
+            if !unmatched.isEmpty {
+                Text(unmatched.joined(separator: " · "))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    private func groupedSensations(_ sensations: [String]) -> [String: [String]] {
+        var result: [String: [String]] = [:]
+        for s in sensations {
+            let components = s.split(separator: ":", maxSplits: 1).map(String.init)
+            if components.count == 2 {
+                result[components[0], default: []].append(components[1])
+            }
+        }
+        return result
     }
 
     private var timeString: String {
