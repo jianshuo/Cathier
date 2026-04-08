@@ -28,22 +28,19 @@ struct BodyScanView: View {
 
                     sectionHeader(title: lm.bodyScanWhatTitle, subtitle: lm.bodyScanMultiple)
                     ForEach(config.bodyParts.filter { viewModel.selectedBodyParts.contains($0) }, id: \.self) { part in
-                        FlowLayout(spacing: 10) {
-                            HStack(spacing: 8) {
-                                Text(lm.display(part))
-                                    .font(.subheadline)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.secondary)
-                                Rectangle()
-                                    .frame(width: 1.5, height: 16)
-                                    .foregroundColor(Color(.systemGray4))
-                            }
-                            ForEach(config.sensations(for: part), id: \.self) { sensation in
-                                ChipView(
-                                    label: lm.display(sensation),
-                                    isSelected: viewModel.bodySensations[part]?.contains(sensation) ?? false
-                                ) {
-                                    toggleSensation(sensation, for: part)
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(lm.display(part))
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.secondary)
+                            FlowLayout(spacing: 10) {
+                                ForEach(config.sensations(for: part), id: \.self) { sensation in
+                                    ChipView(
+                                        label: lm.display(sensation),
+                                        isSelected: viewModel.bodySensations[part]?.contains(sensation) ?? false
+                                    ) {
+                                        toggleSensation(sensation, for: part)
+                                    }
                                 }
                             }
                         }
