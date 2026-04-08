@@ -658,6 +658,33 @@ enum ClaudeService {
         return (perPartDict, global)
     }
 
+    /// Formats sensation strings (stored as "bodypart:sensation") into a human-readable string
+    /// grouped by body part, consistent across both current check-in and history sections.
+    /// Returns "" when sensations are empty.
+    private static func formatSensationsForPrompt(_ sensations: [String], language: AppLanguage) -> String {
+        guard !sensations.isEmpty else { return "" }
+        let lm = LanguageManager.shared
+        let parsed = parseBodySensations(sensations)
+        if parsed.perPart.isEmpty && parsed.global.isEmpty { return "" }
+        switch language {
+        case .zh:
+            if parsed.perPart.isEmpty { return parsed.global.joined(separator: "、") }
+            var result = parsed.perPart.map { "\($0.part)：\($0.sensations.joined(separator: "、"))" }.joined(separator: "；")
+            if !parsed.global.isEmpty { result += "；" + parsed.global.joined(separator: "、") }
+            return result
+        case .ja:
+            if parsed.perPart.isEmpty { return parsed.global.map { lm.display($0) }.joined(separator: "、") }
+            var result = parsed.perPart.map { "\(lm.display($0.part))：\($0.sensations.map { lm.display($0) }.joined(separator: "、"))" }.joined(separator: "；")
+            if !parsed.global.isEmpty { result += "；" + parsed.global.map { lm.display($0) }.joined(separator: "、") }
+            return result
+        default:
+            if parsed.perPart.isEmpty { return parsed.global.map { lm.display($0) }.joined(separator: ", ") }
+            var result = parsed.perPart.map { "\(lm.display($0.part)): \($0.sensations.map { lm.display($0) }.joined(separator: ", "))" }.joined(separator: "; ")
+            if !parsed.global.isEmpty { result += "; " + parsed.global.map { lm.display($0) }.joined(separator: ", ") }
+            return result
+        }
+    }
+
     private static func buildPrompt(
         bodyParts: [String],
         sensations: [String],
@@ -669,23 +696,13 @@ enum ClaudeService {
         language: AppLanguage
     ) -> String {
         let lm = LanguageManager.shared
-        let parsed = parseBodySensations(sensations)
 
         switch language {
         case .zh:
             let parts  = bodyParts.isEmpty  ? "未指定" : bodyParts.joined(separator: "、")
             let emos   = emotions.isEmpty   ? "说不清楚" : emotions.joined(separator: "、")
-
-            var sensesStr = ""
-            if parsed.perPart.isEmpty && parsed.global.isEmpty {
-                sensesStr = "未指定"
-            } else if parsed.perPart.isEmpty {
-                sensesStr = parsed.global.joined(separator: "、")
-            } else {
-                let parts2 = parsed.perPart.map { "\($0.part)：\($0.sensations.joined(separator: "、"))" }
-                sensesStr = parts2.joined(separator: "；")
-                if !parsed.global.isEmpty { sensesStr += "；" + parsed.global.joined(separator: "、") }
-            }
+            let sensesFormatted = formatSensationsForPrompt(sensations, language: .zh)
+            let sensesStr = sensesFormatted.isEmpty ? "未指定" : sensesFormatted
 
             let triggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
@@ -704,7 +721,8 @@ enum ClaudeService {
                     let daysAgo = calendar.dateComponents([.day], from: checkIn.date, to: Date()).day ?? 0
                     let when = daysAgo == 0 ? "今天早些时候" : "\(daysAgo)天前"
                     let hParts  = checkIn.bodyParts.isEmpty  ? "" : "身体：\(checkIn.bodyParts.joined(separator: "、"))"
-                    let hSenses = checkIn.sensations.isEmpty ? "" : "感受：\(checkIn.sensations.joined(separator: "、"))（强度：\(checkIn.intensity)/10）"
+                    let hSensesStr = formatSensationsForPrompt(checkIn.sensations, language: .zh)
+                    let hSenses = hSensesStr.isEmpty ? "" : "感受：\(hSensesStr)（强度：\(checkIn.intensity)/10）"
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "情绪：\(checkIn.emotions.joined(separator: "、"))"
                     let parts = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "，")
                     prompt += "· \(when)：\(parts)\n"
@@ -727,17 +745,8 @@ enum ClaudeService {
 
             let partsStr  = parts.isEmpty  ? "unspecified" : parts.joined(separator: ", ")
             let emosStr   = emos.isEmpty   ? "unclear" : emos.joined(separator: ", ")
-
-            var enSensesStr = ""
-            if parsed.perPart.isEmpty && parsed.global.isEmpty {
-                enSensesStr = "unspecified"
-            } else if parsed.perPart.isEmpty {
-                enSensesStr = parsed.global.map { lm.display($0) }.joined(separator: ", ")
-            } else {
-                let parts2 = parsed.perPart.map { "\(lm.display($0.part)): \($0.sensations.map { lm.display($0) }.joined(separator: ", "))" }
-                enSensesStr = parts2.joined(separator: "; ")
-                if !parsed.global.isEmpty { enSensesStr += "; " + parsed.global.map { lm.display($0) }.joined(separator: ", ") }
-            }
+            let enSensesFormatted = formatSensationsForPrompt(sensations, language: .en)
+            let enSensesStr = enSensesFormatted.isEmpty ? "unspecified" : enSensesFormatted
 
             let enTriggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
@@ -756,7 +765,8 @@ enum ClaudeService {
                     let daysAgo = calendar.dateComponents([.day], from: checkIn.date, to: Date()).day ?? 0
                     let when = daysAgo == 0 ? "earlier today" : "\(daysAgo) day(s) ago"
                     let hParts  = checkIn.bodyParts.isEmpty  ? "" : "body: \(checkIn.bodyParts.map { lm.display($0) }.joined(separator: ", "))"
-                    let hSenses = checkIn.sensations.isEmpty ? "" : "sensations: \(checkIn.sensations.map { lm.display($0) }.joined(separator: ", ")) (intensity: \(checkIn.intensity)/10)"
+                    let hSensesStr = formatSensationsForPrompt(checkIn.sensations, language: .en)
+                    let hSenses = hSensesStr.isEmpty ? "" : "sensations: \(hSensesStr) (intensity: \(checkIn.intensity)/10)"
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "emotions: \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))"
                     let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "; ")
                     prompt += "· \(when): \(info)\n"
@@ -779,17 +789,8 @@ enum ClaudeService {
 
             let partsStr  = parts.isEmpty  ? "未指定" : parts.joined(separator: "、")
             let emosStr   = emos.isEmpty   ? "不明" : emos.joined(separator: "、")
-
-            var jaSensesStr = ""
-            if parsed.perPart.isEmpty && parsed.global.isEmpty {
-                jaSensesStr = "未指定"
-            } else if parsed.perPart.isEmpty {
-                jaSensesStr = parsed.global.map { lm.display($0) }.joined(separator: "、")
-            } else {
-                let parts2 = parsed.perPart.map { "\(lm.display($0.part))：\($0.sensations.map { lm.display($0) }.joined(separator: "、"))" }
-                jaSensesStr = parts2.joined(separator: "；")
-                if !parsed.global.isEmpty { jaSensesStr += "；" + parsed.global.map { lm.display($0) }.joined(separator: "、") }
-            }
+            let jaSensesFormatted = formatSensationsForPrompt(sensations, language: .ja)
+            let jaSensesStr = jaSensesFormatted.isEmpty ? "未指定" : jaSensesFormatted
 
             let jaTriggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
@@ -808,7 +809,8 @@ enum ClaudeService {
                     let daysAgo = calendar.dateComponents([.day], from: checkIn.date, to: Date()).day ?? 0
                     let when = daysAgo == 0 ? "今日の早い時間" : "\(daysAgo)日前"
                     let hParts  = checkIn.bodyParts.isEmpty  ? "" : "身体：\(checkIn.bodyParts.map { lm.display($0) }.joined(separator: "、"))"
-                    let hSenses = checkIn.sensations.isEmpty ? "" : "感覚：\(checkIn.sensations.map { lm.display($0) }.joined(separator: "、"))（強度：\(checkIn.intensity)/10）"
+                    let hSensesStr = formatSensationsForPrompt(checkIn.sensations, language: .ja)
+                    let hSenses = hSensesStr.isEmpty ? "" : "感覚：\(hSensesStr)（強度：\(checkIn.intensity)/10）"
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "感情：\(checkIn.emotions.map { lm.display($0) }.joined(separator: "、"))"
                     let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "、")
                     prompt += "· \(when)：\(info)\n"
@@ -831,17 +833,8 @@ enum ClaudeService {
 
             let partsStr  = parts.isEmpty  ? "unspecified" : parts.joined(separator: ", ")
             let emosStr   = emos.isEmpty   ? "unclear" : emos.joined(separator: ", ")
-
-            var sensesStr = ""
-            if parsed.perPart.isEmpty && parsed.global.isEmpty {
-                sensesStr = "unspecified"
-            } else if parsed.perPart.isEmpty {
-                sensesStr = parsed.global.map { lm.display($0) }.joined(separator: ", ")
-            } else {
-                let parts2 = parsed.perPart.map { "\(lm.display($0.part)): \($0.sensations.map { lm.display($0) }.joined(separator: ", "))" }
-                sensesStr = parts2.joined(separator: "; ")
-                if !parsed.global.isEmpty { sensesStr += "; " + parsed.global.map { lm.display($0) }.joined(separator: ", ") }
-            }
+            let sensesFormatted = formatSensationsForPrompt(sensations, language: language)
+            let sensesStr = sensesFormatted.isEmpty ? "unspecified" : sensesFormatted
 
             let triggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
             var prompt = """
@@ -860,7 +853,8 @@ enum ClaudeService {
                     let daysAgo = calendar.dateComponents([.day], from: checkIn.date, to: Date()).day ?? 0
                     let when = daysAgo == 0 ? "earlier today" : "\(daysAgo) day(s) ago"
                     let hParts  = checkIn.bodyParts.isEmpty  ? "" : "body: \(checkIn.bodyParts.map { lm.display($0) }.joined(separator: ", "))"
-                    let hSenses = checkIn.sensations.isEmpty ? "" : "sensations: \(checkIn.sensations.map { lm.display($0) }.joined(separator: ", ")) (intensity: \(checkIn.intensity)/10)"
+                    let hSensesStr = formatSensationsForPrompt(checkIn.sensations, language: language)
+                    let hSenses = hSensesStr.isEmpty ? "" : "sensations: \(hSensesStr) (intensity: \(checkIn.intensity)/10)"
                     let hEmos   = checkIn.emotions.isEmpty   ? "" : "emotions: \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))"
                     let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "; ")
                     prompt += "· \(when): \(info)\n"
