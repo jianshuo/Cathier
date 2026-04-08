@@ -1,13 +1,18 @@
 name: Auto-merge Claude PRs
 
 on:
-  pull_request:
-    types: [opened, reopened]
+  # Trigger after the Build & Deploy workflow completes on a PR
+  workflow_run:
+    workflows: ["Build & Deploy"]
+    types: [completed]
 
 jobs:
   auto-merge:
-    # Only run for PRs on branches created by Claude (branch name starts with 'claude/')
-    if: startsWith(github.head_ref, 'claude/')
+    # Only run when the build succeeded and the PR branch is a Claude branch
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      startsWith(github.event.workflow_run.head_branch, 'claude/')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -15,14 +20,18 @@ jobs:
       actions: write
 
     steps:
-      - name: Auto-merge Claude PR
-        run: gh pr merge "${{ github.event.pull_request.number }}" --squash --delete-branch
+      - name: Find PR for this branch
+        id: find-pr
+        run: |
+          PR_NUMBER=$(gh pr list --head "${{ github.event.workflow_run.head_branch }}" --json number --jq '.[0].number')
+          echo "pr_number=$PR_NUMBER" >> "$GITHUB_OUTPUT"
         env:
           GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}
           GH_REPO: ${{ github.repository }}
 
-      - name: Trigger TestFlight build
-        run: gh workflow run testflight.yml --ref main
+      - name: Auto-merge Claude PR
+        if: steps.find-pr.outputs.pr_number
+        run: gh pr merge "${{ steps.find-pr.outputs.pr_number }}" --squash --delete-branch
         env:
           GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}
           GH_REPO: ${{ github.repository }}

@@ -3,6 +3,8 @@ name: Build & Deploy
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
   workflow_dispatch:
     inputs:
       destination:
@@ -23,6 +25,7 @@ jobs:
         with:
           fetch-depth: 0          # full history so fastlane can read commit log
           fetch-tags: true
+          token: ${{ secrets.FEEDBACK_PAT }}
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_26.2.app
@@ -48,9 +51,21 @@ jobs:
         env:
           QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
 
+      # PRs: build only (verify it compiles)
+      - name: Build for verification
+        if: github.event_name == 'pull_request'
+        run: |
+          xcodebuild build \
+            -project Cathier.xcodeproj \
+            -scheme Cathier \
+            -destination 'generic/platform=iOS' \
+            -skipPackagePluginValidation \
+            CODE_SIGNING_ALLOWED=NO
+
       # Push to main always goes to TestFlight.
       # Manual dispatch uses the chosen destination.
       - name: Run fastlane
+        if: github.event_name != 'pull_request'
         env:
           MATCH_PASSWORD:       ${{ secrets.MATCH_PASSWORD }}
           MATCH_GIT_BASIC_AUTH: ${{ secrets.MATCH_GIT_BASIC_AUTH }}
@@ -66,5 +81,5 @@ jobs:
           fi
 
       - name: Push TestFlight tag
-        if: success()
+        if: success() && github.event_name != 'pull_request'
         run: git push --tags || true
