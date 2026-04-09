@@ -19,7 +19,6 @@ struct CathierApp: App {
                     .modelContainer(container)
                     .environment(ConfigService.shared)
                     .environment(LanguageManager.shared)
-                    .task { await ConfigService.shared.refreshFromGitHub() }
                     .task { checkMilestoneNudge() }
             } else {
                 ProgressView()

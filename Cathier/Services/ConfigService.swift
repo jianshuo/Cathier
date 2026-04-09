@@ -100,33 +100,9 @@ final class ConfigService {
     }
     private(set) var categories: [EmotionCategory] = []
 
-    private let remoteURL = URL(string: "https://raw.githubusercontent.com/jianshuo/Cathier/main/Cathier/emotion_config.json")!
-    private let cacheURL: URL = {
-        // cachesDirectory is NEVER iCloud-synced. Using documentDirectory caused a
-        // 3-second main-thread block when iCloud had the file but it wasn't downloaded.
-        FileManager.default
-            .urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("emotion_config_cache.json")
-    }()
-
     init() {
         t("ConfigService.init() — START")
-        // Load bundle synchronously (always local, < 5 ms).
-        t("ConfigService: loading from bundle — START")
         loadFromBundle()
-        t("ConfigService: loading from bundle — END")
-        // Check cache asynchronously so we never block the main thread.
-        Task.detached(priority: .utility) {
-            t("ConfigService: loading from cache (background) — START")
-            guard let data = try? Data(contentsOf: self.cacheURL),
-                  let config = try? JSONDecoder().decode(EmotionConfig.self, from: data) else {
-                t("ConfigService: no valid cache found")
-                return
-            }
-            t("ConfigService: applying cache (background) — START")
-            await MainActor.run { self.apply(config) }
-            t("ConfigService: applying cache (background) — END")
-        }
         t("ConfigService.init() — END")
     }
 
@@ -136,16 +112,6 @@ final class ConfigService {
            let config = try? JSONDecoder().decode(EmotionConfig.self, from: data) {
             apply(config)
         }
-    }
-
-    // MARK: - Remote refresh (async, called at app launch)
-
-    func refreshFromGitHub() async {
-        guard let (data, response) = try? await URLSession.shared.data(from: remoteURL),
-              let http = response as? HTTPURLResponse, http.statusCode == 200,
-              let config = try? JSONDecoder().decode(EmotionConfig.self, from: data) else { return }
-        try? data.write(to: cacheURL, options: .atomic)
-        apply(config)
     }
 
     // MARK: - Apply
