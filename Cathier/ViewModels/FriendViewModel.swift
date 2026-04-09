@@ -77,7 +77,22 @@ final class FriendViewModel {
             }
         } catch {
             t("FriendVM.initialize() — ERROR: \(error)")
-            accountState = .unavailable("iCloud 暂时无法连接，请稍后再试")
+            let message: String
+            if let ckError = error as? CKError {
+                switch ckError.code {
+                case .notAuthenticated:
+                    message = "请在「系统设置」中登录 iCloud"
+                case .networkUnavailable, .networkFailure:
+                    message = "网络连接失败，请检查网络后重试"
+                case .serviceUnavailable, .serverResponseLost:
+                    message = "iCloud 服务暂时不可用，请稍后再试"
+                default:
+                    message = "iCloud 错误：\(ckError.code.rawValue) — \(ckError.localizedDescription)"
+                }
+            } else {
+                message = "连接失败：\(error.localizedDescription)"
+            }
+            accountState = .unavailable(message)
         }
         t("FriendVM.initialize() — DONE")
     }
