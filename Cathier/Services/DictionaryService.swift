@@ -1,16 +1,18 @@
 import Foundation
 
-/// Loads dictionary.json — the rich reference data for emotions (and future body parts / sensations).
-/// Separate from ConfigService so emotion_config.json stays small for the check-in flow.
+/// Universal dictionary entry — all fields optional so one struct works for emotions, sensations, and body parts.
 struct DictionaryEntry: Codable {
+    // Shared
     var nameZh: String
     var nameEn: String
-    var emoji: String
-    var category: String
-    var intensity: Int
     var description: String?
-    var similarTo: [String]?
     var differs: [String: String]?
+
+    // Emotion fields
+    var emoji: String?
+    var category: String?
+    var intensity: Int?
+    var similarTo: [String]?
     var origin: String?
     var experience: String?
     var embodiment: String?
@@ -20,6 +22,21 @@ struct DictionaryEntry: Codable {
     var personalityImpact: String?
     var transformation: String?
     var literaryReference: String?
+
+    // Sensation fields
+    var howItFeels: String?
+    var commonLocations: [String]?
+    var relatedEmotions: [String]?
+    var signalMeaning: String?
+    var selfCare: String?
+    var intensitySpectrum: String?
+
+    // Body part fields
+    var howToLocate: String?
+    var commonSensations: [String]?
+    var emotionalConnection: String?
+    var awarenessGuide: String?
+    var culturalNote: String?
 }
 
 struct DictionarySection: Codable {
@@ -46,32 +63,44 @@ enum DictionaryService {
         return decoded
     }
 
-    static var emotionEntries: [(id: String, entry: DictionaryEntry)] {
-        guard let section = shared.sections["emotions"] else { return [] }
-        return section.entries.map { (id: $0.key, entry: $0.value) }
-            .sorted { $0.entry.category < $1.entry.category || ($0.entry.category == $1.entry.category && $0.entry.intensity > $1.entry.intensity) }
-    }
+    // MARK: - Emotions
 
     static func emotion(for id: String) -> DictionaryEntry? {
         shared.sections["emotions"]?.entries[id]
     }
 
-    /// Group emotions by category, preserving category order from ConfigService.
     static var emotionsByCategory: [(category: String, emotions: [(id: String, entry: DictionaryEntry)])] {
         let all = shared.sections["emotions"]?.entries ?? [:]
         var grouped: [String: [(id: String, entry: DictionaryEntry)]] = [:]
         for (id, entry) in all {
-            grouped[entry.category, default: []].append((id: id, entry: entry))
+            grouped[entry.category ?? "", default: []].append((id: id, entry: entry))
         }
-        // Sort emotions within each category by intensity descending
         for key in grouped.keys {
-            grouped[key]?.sort { $0.entry.intensity > $1.entry.intensity }
+            grouped[key]?.sort { ($0.entry.intensity ?? 0) > ($1.entry.intensity ?? 0) }
         }
-        // Maintain a stable category order
         let categoryOrder = ConfigService.shared.categories.map(\.nameZh)
         return categoryOrder.compactMap { cat in
             guard let emotions = grouped[cat], !emotions.isEmpty else { return nil }
             return (category: cat, emotions: emotions)
         }
+    }
+
+    // MARK: - Body Parts
+
+    static var bodyPartEntries: [(id: String, entry: DictionaryEntry)] {
+        let all = shared.sections["bodyParts"]?.entries ?? [:]
+        let order = ConfigService.shared.bodyParts
+        return order.compactMap { name in
+            guard let entry = all[name] else { return nil }
+            return (id: name, entry: entry)
+        }
+    }
+
+    // MARK: - Sensations
+
+    static var sensationEntries: [(id: String, entry: DictionaryEntry)] {
+        let all = shared.sections["sensations"]?.entries ?? [:]
+        return all.map { (id: $0.key, entry: $0.value) }
+            .sorted { $0.entry.nameZh < $1.entry.nameZh }
     }
 }

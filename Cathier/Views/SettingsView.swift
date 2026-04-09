@@ -101,7 +101,7 @@ struct SettingsView: View {
                         EmotionExplorerView()
                             .environment(ConfigService.shared)
                     } label: {
-                        Label("情绪词典", systemImage: "book.closed")
+                        Label("觉察词典", systemImage: "book.closed")
                             .foregroundColor(.primary)
                     }
                 } header: {
