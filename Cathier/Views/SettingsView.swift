@@ -95,6 +95,19 @@ struct SettingsView: View {
                         .font(.caption)
                 }
 
+                // MARK: - Emotion Dictionary
+                Section {
+                    NavigationLink {
+                        EmotionExplorerView()
+                            .environment(ConfigService.shared)
+                    } label: {
+                        Label("情绪词典", systemImage: "book.closed")
+                            .foregroundColor(.primary)
+                    }
+                } header: {
+                    Text("探索")
+                }
+
                 // MARK: - Feedback
                 Section(lm.feedbackSectionTitle) {
                     Button {
