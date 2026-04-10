@@ -1,0 +1,100 @@
+/* AI Feedback — Step 3 page-specific overrides */
+
+.summary-card {
+  padding: var(--space-md);
+}
+
+.summary-row {
+  display: flex;
+  align-items: baseline;
+  gap: 16rpx;
+  margin-bottom: 16rpx;
+  font-size: 26rpx;
+}
+
+.summary-row-wrap {
+  flex-wrap: wrap;
+}
+
+.summary-label {
+  font-size: 24rpx;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 64rpx;
+}
+
+.summary-value {
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.sensation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.intensity-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--accent-light);
+  color: var(--accent);
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.ai-dot {
+  width: 12rpx;
+  height: 12rpx;
+  border-radius: 50%;
+  background-color: var(--accent);
+  margin-right: 12rpx;
+}
+
+.ai-dot-error {
+  background-color: var(--danger);
+}
+
+.loading-hint {
+  display: block;
+  text-align: center;
+  font-size: 26rpx;
+  margin-top: 8rpx;
+}
+
+.ai-error-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.error-text {
+  font-size: 28rpx;
+  color: var(--danger);
+  margin-bottom: 24rpx;
+  text-align: center;
+}
+
+.retry-btn {
+  width: auto;
+  padding: 16rpx 64rpx;
+}
+
+.action-buttons {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.btn-saved {
+  background-color: var(--success) !important;
+}
+
+.done-btn {
+  /* inherits btn-secondary from global */
+}

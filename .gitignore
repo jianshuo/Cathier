@@ -50,6 +50,13 @@ secrets.plist
 # Marketing assets (synced via iCloud, not git)
 marketing/
 
+# WeChat Mini Program
+cathier-miniprogram/node_modules/
+cathier-miniprogram/miniprogram_npm/
+cathier-miniprogram/cloudfunctions/*/node_modules/
+cathier-miniprogram/cloudfunctions/*/package-lock.json
+cathier-miniprogram/.ide/
+
 # gstack — binary and deps are gitignored; teammates run: cd .claude/skills/gstack && ./setup
 .claude/skills/gstack/node_modules/
 .claude/skills/gstack/browse/dist/

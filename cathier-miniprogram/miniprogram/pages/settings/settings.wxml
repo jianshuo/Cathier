@@ -1,0 +1,67 @@
+<view class="container">
+  <text class="page-heading">设置</text>
+
+  <!-- Context Brief -->
+  <view class="card">
+    <text class="section-title">关于自己</text>
+    <text class="section-subtitle">帮助 AI 更好地理解你的情况</text>
+    <textarea
+      class="context-textarea"
+      placeholder="例如：我是一名程序员，最近工作压力较大..."
+      value="{{contextBrief}}"
+      bindinput="onContextBriefInput"
+      maxlength="500"
+      auto-height
+    />
+  </view>
+
+  <!-- Reminder Settings -->
+  <view class="card settings-card">
+    <text class="section-title">提醒</text>
+    <view class="setting-row">
+      <text class="setting-label">每日提醒</text>
+      <switch
+        checked="{{reminderEnabled}}"
+        bindchange="onReminderToggle"
+        color="#F2700A"
+      />
+    </view>
+    <view class="setting-row" wx:if="{{reminderEnabled}}">
+      <text class="setting-label">提醒时间</text>
+      <picker mode="time" value="{{reminderTime}}" bindchange="onReminderTimeChange">
+        <text class="setting-value text-accent">{{reminderTime}}</text>
+      </picker>
+    </view>
+  </view>
+
+  <!-- Stats -->
+  <view class="card settings-card">
+    <text class="section-title">统计</text>
+    <view class="setting-row">
+      <text class="setting-label">总觉察次数</text>
+      <text class="stats-value text-accent">{{totalCheckIns}}</text>
+    </view>
+  </view>
+
+  <!-- About & Actions -->
+  <view class="card settings-card">
+    <view class="setting-row setting-row-tap" bindtap="onAbout">
+      <text class="setting-label">关于觉察</text>
+      <text class="setting-arrow text-muted">›</text>
+    </view>
+    <view class="setting-row setting-row-tap" bindtap="onFeedback">
+      <text class="setting-label">意见反馈</text>
+      <text class="setting-arrow text-muted">›</text>
+    </view>
+    <view class="setting-row setting-row-danger" bindtap="onClearData">
+      <text class="setting-label-danger">清除本地缓存</text>
+    </view>
+  </view>
+
+  <!-- Disclaimer -->
+  <view class="disclaimer-section">
+    <text class="disclaimer">本小程序不提供医疗建议，AI反馈仅供参考</text>
+    <text class="disclaimer">如有心理健康问题，请咨询专业人士</text>
+    <text class="version-text text-muted">版本 {{version}}</text>
+  </view>
+</view>

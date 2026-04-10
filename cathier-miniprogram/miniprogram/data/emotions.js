@@ -1,0 +1,830 @@
+module.exports = {
+  "categories": [
+    {
+      "id": "impassioned",
+      "name": "激情",
+      "valence": "positive",
+      "emotions": [
+        {
+          "id": "enthusiastic",
+          "name": "热情",
+          "definition": "由内而发的强烈兴趣和投入感，想要全力以赴",
+          "similarTo": ["兴奋"],
+          "differs": {"兴奋": "热情更持久、有方向感；兴奋更短暂、更生理性"},
+          "intensity": 4,
+          "emoji": "🔥"
+        },
+        {
+          "id": "excited",
+          "name": "兴奋",
+          "definition": "面对期待之事时的高度唤醒状态，心跳加速、坐不住",
+          "similarTo": ["激动", "热情"],
+          "differs": {"激动": "兴奋偏向愉快的期待；激动可能不完全是正面的", "热情": "兴奋更短暂、更生理性；热情更持久、有方向感"},
+          "intensity": 4,
+          "emoji": "⚡"
+        },
+        {
+          "id": "aroused",
+          "name": "激动",
+          "definition": "情绪被强烈触发后的高度亢奋，难以平静",
+          "similarTo": ["兴奋"],
+          "differs": {"兴奋": "激动的强度更高、更难自控；兴奋更轻快"},
+          "intensity": 4,
+          "emoji": "💥"
+        },
+        {
+          "id": "delirious",
+          "name": "狂喜",
+          "definition": "极度的快乐，感觉整个人都在发光，超越日常体验",
+          "similarTo": ["欣喜若狂"],
+          "differs": {"欣喜若狂": "狂喜更短暂、更像爆发；欣喜若狂更持续"},
+          "intensity": 5,
+          "emoji": "🤯"
+        },
+        {
+          "id": "passionate",
+          "name": "充满激情",
+          "definition": "对某件事有深层的热爱和驱动力，愿意为之燃烧",
+          "similarTo": ["热情"],
+          "differs": {"热情": "充满激情更深沉、更持久；热情更外露"},
+          "intensity": 4,
+          "emoji": "❤️‍🔥"
+        },
+        {
+          "id": "euphoric",
+          "name": "欣喜若狂",
+          "definition": "不可遏制的巨大喜悦，感觉世界都在为你庆祝",
+          "similarTo": ["狂喜"],
+          "differs": {"狂喜": "欣喜若狂持续更久；狂喜更像一瞬间的巅峰"},
+          "intensity": 5,
+          "emoji": "🌟"
+        },
+        {
+          "id": "thrilled",
+          "name": "激动万分",
+          "definition": "被某个消息或事件激起的极度兴奋，全身都在响应",
+          "similarTo": ["兴奋", "激动"],
+          "differs": {"兴奋": "激动万分有明确的触发事件；兴奋可以没有原因", "激动": "激动万分有明确的触发事件；激动更泛化"},
+          "intensity": 4,
+          "emoji": "🎉"
+        },
+        {
+          "id": "determined",
+          "name": "坚定",
+          "definition": "内心清晰地知道方向，不会被动摇的确定感",
+          "similarTo": ["自信"],
+          "differs": {"自信": "坚定侧重意志力和决心；自信侧重对能力的信任"},
+          "intensity": 3,
+          "emoji": "💪"
+        },
+        {
+          "id": "confident",
+          "name": "自信",
+          "definition": "对自己的能力和判断有充分的信任感",
+          "similarTo": ["坚定"],
+          "differs": {"坚定": "自信来自能力评估；坚定来自价值选择"},
+          "intensity": 3,
+          "emoji": "😎"
+        },
+        {
+          "id": "optimistic",
+          "name": "乐观",
+          "definition": "相信事情会往好的方向发展的倾向",
+          "similarTo": ["充满希望"],
+          "differs": {"充满希望": "乐观是一种性格倾向；充满希望更针对具体的事"},
+          "intensity": 3,
+          "emoji": "🌞"
+        },
+        {
+          "id": "anticipating",
+          "name": "期待",
+          "definition": "对即将发生的事情怀有积极的想象和盼望",
+          "similarTo": ["兴奋"],
+          "differs": {"兴奋": "期待指向未来、还没发生；兴奋是当下的感受"},
+          "intensity": 3,
+          "emoji": "🤩"
+        }
+      ]
+    },
+    {
+      "id": "happy",
+      "name": "快乐",
+      "valence": "positive",
+      "emotions": [
+        {
+          "id": "joyful",
+          "name": "喜悦",
+          "definition": "发自内心的快乐，像有光从心里透出来",
+          "similarTo": ["高兴"],
+          "differs": {"高兴": "喜悦更深层、更安静；高兴更外显、更即时"},
+          "intensity": 4,
+          "emoji": "😄"
+        },
+        {
+          "id": "blissful",
+          "name": "幸福",
+          "definition": "对当下生活状态的深层满意和感恩",
+          "similarTo": ["满足"],
+          "differs": {"满足": "幸福更全面、更深沉；满足更具体、更当下"},
+          "intensity": 4,
+          "emoji": "😊"
+        },
+        {
+          "id": "amused",
+          "name": "被逗乐",
+          "definition": "被有趣的事情逗笑，轻松愉快的感觉",
+          "similarTo": ["愉悦"],
+          "differs": {"愉悦": "被逗乐有明确的外部触发（笑点）；愉悦更弥散"},
+          "intensity": 3,
+          "emoji": "😆"
+        },
+        {
+          "id": "delighted",
+          "name": "高兴",
+          "definition": "遇到好事时自然产生的愉快反应",
+          "similarTo": ["喜悦"],
+          "differs": {"喜悦": "高兴更即时、更表层；喜悦更深层"},
+          "intensity": 4,
+          "emoji": "🥰"
+        },
+        {
+          "id": "lucky",
+          "name": "幸运",
+          "definition": "感觉被好运眷顾，事情出乎意料地顺利",
+          "similarTo": ["感恩"],
+          "differs": {"感恩": "幸运侧重\"运气好\"；感恩侧重\"感谢\""},
+          "intensity": 3,
+          "emoji": "🍀"
+        },
+        {
+          "id": "grateful",
+          "name": "感恩",
+          "definition": "对所拥有的或他人的帮助心怀感谢",
+          "similarTo": ["幸福"],
+          "differs": {"幸福": "感恩有明确的对象；幸福是一种整体状态"},
+          "intensity": 3,
+          "emoji": "🙏"
+        },
+        {
+          "id": "hopeful",
+          "name": "充满希望",
+          "definition": "相信某件具体的事会有好结果",
+          "similarTo": ["乐观"],
+          "differs": {"乐观": "充满希望针对具体的事；乐观是一种整体态度"},
+          "intensity": 3,
+          "emoji": "🌈"
+        },
+        {
+          "id": "alive",
+          "name": "充满活力",
+          "definition": "身体和精神都处于饱满状态，想要动起来",
+          "similarTo": ["兴奋"],
+          "differs": {"兴奋": "充满活力偏身体层面的能量感；兴奋偏情绪层面"},
+          "intensity": 3,
+          "emoji": "✨"
+        },
+        {
+          "id": "pleasant",
+          "name": "愉悦",
+          "definition": "舒适而温和的快乐，不强烈但很舒服",
+          "similarTo": ["高兴"],
+          "differs": {"高兴": "愉悦更轻柔、更持续；高兴更明确"},
+          "intensity": 3,
+          "emoji": "😁"
+        },
+        {
+          "id": "warm",
+          "name": "温暖",
+          "definition": "被善意、关怀包围时内心柔软的感受",
+          "similarTo": ["幸福"],
+          "differs": {"幸福": "温暖通常与人际关系有关；幸福范围更广"},
+          "intensity": 2,
+          "emoji": "🌤"
+        }
+      ]
+    },
+    {
+      "id": "calm",
+      "name": "平静",
+      "valence": "positive",
+      "emotions": [
+        {
+          "id": "peaceful",
+          "name": "平和",
+          "definition": "内心没有波澜，一切都恰到好处",
+          "similarTo": ["宁静"],
+          "differs": {"宁静": "平和侧重心态上的不争；宁静侧重环境的安静"},
+          "intensity": 2,
+          "emoji": "🕊"
+        },
+        {
+          "id": "relaxed",
+          "name": "放松",
+          "definition": "紧绷感消散后身心松弛的状态",
+          "similarTo": ["舒适"],
+          "differs": {"舒适": "放松是从紧绷到松弛的变化；舒适是一种稳定状态"},
+          "intensity": 2,
+          "emoji": "😌"
+        },
+        {
+          "id": "contented",
+          "name": "满足",
+          "definition": "当下所拥有的已经足够，不需要更多",
+          "similarTo": ["平和"],
+          "differs": {"平和": "满足有\"够了\"的判断；平和没有判断"},
+          "intensity": 2,
+          "emoji": "🙂"
+        },
+        {
+          "id": "serene",
+          "name": "宁静",
+          "definition": "内外都很安静，像湖面无风",
+          "similarTo": ["平和"],
+          "differs": {"平和": "宁静更有画面感、更寂静；平和更偏心态"},
+          "intensity": 2,
+          "emoji": "🌿"
+        },
+        {
+          "id": "comfortable",
+          "name": "舒适",
+          "definition": "身体和环境都让人觉得恰好、不需调整",
+          "similarTo": ["放松"],
+          "differs": {"放松": "舒适偏物理感受；放松偏从紧绷中释放"},
+          "intensity": 2,
+          "emoji": "🛋"
+        },
+        {
+          "id": "focused",
+          "name": "专注",
+          "definition": "全部注意力集中在一件事上，其他杂念消失",
+          "similarTo": ["从容"],
+          "differs": {"从容": "专注是注意力的聚焦；从容是节奏的掌控"},
+          "intensity": 2,
+          "emoji": "🎯"
+        },
+        {
+          "id": "composed",
+          "name": "从容",
+          "definition": "不慌不忙，掌握着自己的节奏",
+          "similarTo": ["平和"],
+          "differs": {"平和": "从容有\"掌控感\"；平和是\"无所求\""},
+          "intensity": 2,
+          "emoji": "🌅"
+        },
+        {
+          "id": "detached",
+          "name": "淡然",
+          "definition": "对外界的变化不太在意，保持距离感",
+          "similarTo": ["从容"],
+          "differs": {"从容": "淡然有情感上的疏离；从容是主动的沉稳"},
+          "intensity": 1,
+          "emoji": "🌫"
+        },
+        {
+          "id": "at_ease",
+          "name": "安然",
+          "definition": "一切都安好，内心没有不安的因素",
+          "similarTo": ["平和"],
+          "differs": {"平和": "安然更强调\"安全感\"；平和更强调\"平衡\""},
+          "intensity": 1,
+          "emoji": "🌙"
+        }
+      ]
+    },
+    {
+      "id": "regard",
+      "name": "爱与关怀",
+      "valence": "positive",
+      "emotions": [
+        {
+          "id": "loving",
+          "name": "充满爱",
+          "definition": "对某人或某事怀有深厚而温柔的感情",
+          "similarTo": ["充满柔情"],
+          "differs": {"充满柔情": "充满爱范围更广（亲情/友情/爱情）；柔情更细腻"},
+          "intensity": 4,
+          "emoji": "❤️"
+        },
+        {
+          "id": "affectionate",
+          "name": "充满柔情",
+          "definition": "心变得很软，想要温柔地对待对方",
+          "similarTo": ["充满爱"],
+          "differs": {"充满爱": "柔情是爱的一种表现方式，更细腻、更温柔"},
+          "intensity": 4,
+          "emoji": "💕"
+        },
+        {
+          "id": "admiration",
+          "name": "钦佩",
+          "definition": "对他人的品质或成就由衷地敬重",
+          "similarTo": ["友好"],
+          "differs": {"友好": "钦佩含有\"仰望\"的成分；友好是平等的善意"},
+          "intensity": 3,
+          "emoji": "👏"
+        },
+        {
+          "id": "compassion",
+          "name": "同情",
+          "definition": "感受到他人的痛苦，想要帮助或安慰",
+          "similarTo": ["充满爱"],
+          "differs": {"充满爱": "同情由他人的苦难触发；充满爱不需要苦难"},
+          "intensity": 3,
+          "emoji": "🤲"
+        },
+        {
+          "id": "friendly",
+          "name": "友好",
+          "definition": "对他人怀有善意和亲近感",
+          "similarTo": ["温暖"],
+          "differs": {"温暖": "友好更偏社交层面的态度；温暖更偏内心感受"},
+          "intensity": 2,
+          "emoji": "🙂"
+        }
+      ]
+    },
+    {
+      "id": "anger",
+      "name": "愤怒",
+      "valence": "negative",
+      "emotions": [
+        {
+          "id": "fury",
+          "name": "狂怒",
+          "definition": "愤怒到了极点，理性几乎被淹没",
+          "similarTo": ["愤慨"],
+          "differs": {"愤慨": "狂怒更失控、更个人化；愤慨有道义上的正当感"},
+          "intensity": 5,
+          "emoji": "😡"
+        },
+        {
+          "id": "outrage",
+          "name": "愤慨",
+          "definition": "对不公正之事的强烈愤怒，觉得\"这不应该\"",
+          "similarTo": ["狂怒"],
+          "differs": {"狂怒": "愤慨含有道德判断；狂怒是纯粹的情绪爆发"},
+          "intensity": 5,
+          "emoji": "🤬"
+        },
+        {
+          "id": "irritated",
+          "name": "烦躁",
+          "definition": "被反复的小刺激磨得心烦意乱",
+          "similarTo": ["恼火"],
+          "differs": {"恼火": "烦躁更弥散、找不到具体原因；恼火有明确的对象"},
+          "intensity": 3,
+          "emoji": "😤"
+        },
+        {
+          "id": "annoyed",
+          "name": "恼火",
+          "definition": "被某人或某事惹恼，不耐烦",
+          "similarTo": ["烦躁"],
+          "differs": {"烦躁": "恼火有明确的触发点；烦躁可能原因不明"},
+          "intensity": 3,
+          "emoji": "😠"
+        },
+        {
+          "id": "resentful",
+          "name": "怨恨",
+          "definition": "觉得被亏待后长期积累的不满和敌意",
+          "similarTo": ["不满"],
+          "differs": {"不满": "怨恨是长期积累的、带有敌意；不满更轻、更即时"},
+          "intensity": 4,
+          "emoji": "😒"
+        },
+        {
+          "id": "discontent",
+          "name": "不满",
+          "definition": "对现状或结果觉得不够好、不符合期望",
+          "similarTo": ["烦躁"],
+          "differs": {"烦躁": "不满是一种评判；烦躁是一种身体状态"},
+          "intensity": 2,
+          "emoji": "😑"
+        },
+        {
+          "id": "jealous",
+          "name": "嫉妒",
+          "definition": "看到他人拥有自己想要的东西时的痛苦感",
+          "similarTo": ["不满"],
+          "differs": {"不满": "嫉妒指向具体的人和他拥有的东西；不满更泛化"},
+          "intensity": 3,
+          "emoji": "💢"
+        },
+        {
+          "id": "frustrated",
+          "name": "挫败",
+          "definition": "努力了但没有得到想要的结果，感到无力",
+          "similarTo": ["沮丧"],
+          "differs": {"沮丧": "挫败侧重\"努力无效\"；沮丧侧重\"情绪低落\""},
+          "intensity": 3,
+          "emoji": "🤦"
+        }
+      ]
+    },
+    {
+      "id": "fear",
+      "name": "恐惧",
+      "valence": "negative",
+      "emotions": [
+        {
+          "id": "nervous",
+          "name": "紧张",
+          "definition": "面对压力情境时身体绷紧、心跳加速",
+          "similarTo": ["焦虑"],
+          "differs": {"焦虑": "紧张通常有明确的情境且短暂；焦虑更持久弥散"},
+          "intensity": 3,
+          "emoji": "😬"
+        },
+        {
+          "id": "worried",
+          "name": "担心",
+          "definition": "对某件具体的事情放心不下",
+          "similarTo": ["焦虑"],
+          "differs": {"焦虑": "担心有明确对象；焦虑可能说不清在担心什么"},
+          "intensity": 3,
+          "emoji": "😟"
+        },
+        {
+          "id": "afraid",
+          "name": "害怕",
+          "definition": "面对具体的威胁时想要退缩或逃避",
+          "similarTo": ["惶恐"],
+          "differs": {"惶恐": "害怕有明确的威胁对象；惶恐更弥散、更深层"},
+          "intensity": 4,
+          "emoji": "😨"
+        },
+        {
+          "id": "anxious",
+          "name": "焦虑",
+          "definition": "对不确定的未来持续担忧，常伴随身体紧绷",
+          "similarTo": ["担心", "紧张"],
+          "differs": {"担心": "担心有明确对象；焦虑可能说不清在担心什么", "紧张": "紧张通常有明确的情境且短暂；焦虑更持久弥散"},
+          "intensity": 4,
+          "emoji": "😰"
+        },
+        {
+          "id": "stressed",
+          "name": "压力大",
+          "definition": "感觉任务或责任超出了自己的承受能力",
+          "similarTo": ["焦虑"],
+          "differs": {"焦虑": "压力大有具体的负荷来源；焦虑可能没有"},
+          "intensity": 4,
+          "emoji": "😫"
+        },
+        {
+          "id": "uneasy",
+          "name": "不安",
+          "definition": "隐约觉得有什么不对，但说不清楚",
+          "similarTo": ["焦虑"],
+          "differs": {"焦虑": "不安更模糊、更直觉性；焦虑更认知层面"},
+          "intensity": 3,
+          "emoji": "😧"
+        },
+        {
+          "id": "panicked",
+          "name": "慌乱",
+          "definition": "突然失去了对局面的掌控，不知道该怎么办",
+          "similarTo": ["害怕"],
+          "differs": {"害怕": "慌乱侧重\"不知所措\"；害怕侧重\"想逃避\""},
+          "intensity": 5,
+          "emoji": "😱"
+        },
+        {
+          "id": "terrified",
+          "name": "惶恐",
+          "definition": "被深层的恐惧笼罩，感到极度不安全",
+          "similarTo": ["害怕"],
+          "differs": {"害怕": "惶恐更深层、更持久；害怕更即时"},
+          "intensity": 5,
+          "emoji": "🫨"
+        }
+      ]
+    },
+    {
+      "id": "sad",
+      "name": "悲伤",
+      "valence": "negative",
+      "emotions": [
+        {
+          "id": "sad",
+          "name": "难过",
+          "definition": "遇到不好的事情后心里不舒服",
+          "similarTo": ["沮丧"],
+          "differs": {"沮丧": "难过更朴素直接；沮丧带有\"泄气\"的感觉"},
+          "intensity": 3,
+          "emoji": "😢"
+        },
+        {
+          "id": "lonely",
+          "name": "孤独",
+          "definition": "缺少陪伴或理解，感到与世界隔绝",
+          "similarTo": ["失落"],
+          "differs": {"失落": "孤独是关系层面的匮乏；失落是期望落空"},
+          "intensity": 4,
+          "emoji": "🥀"
+        },
+        {
+          "id": "hurt",
+          "name": "受伤",
+          "definition": "被他人的言行刺痛了，内心有创口",
+          "similarTo": ["委屈"],
+          "differs": {"委屈": "受伤更强调\"痛\"；委屈更强调\"不公平\""},
+          "intensity": 4,
+          "emoji": "💔"
+        },
+        {
+          "id": "depressed",
+          "name": "抑郁",
+          "definition": "长时间的情绪低沉，对什么都提不起兴趣",
+          "similarTo": ["沮丧"],
+          "differs": {"沮丧": "抑郁更深、更持久、更全面；沮丧更短暂"},
+          "intensity": 5,
+          "emoji": "😞"
+        },
+        {
+          "id": "exhausted",
+          "name": "精疲力尽",
+          "definition": "身体和心理的能量都被耗完了",
+          "similarTo": ["压力大"],
+          "differs": {"压力大": "精疲力尽是结果（已经耗完）；压力大是过程（正在承受）"},
+          "intensity": 4,
+          "emoji": "😩"
+        },
+        {
+          "id": "lost",
+          "name": "失落",
+          "definition": "期望没有实现，心里空了一块",
+          "similarTo": ["遗憾"],
+          "differs": {"遗憾": "失落更偏情绪感受；遗憾更偏认知判断（\"可惜了\"）"},
+          "intensity": 3,
+          "emoji": "🌧"
+        },
+        {
+          "id": "aggrieved",
+          "name": "委屈",
+          "definition": "受到了不公平的对待，但没有被理解",
+          "similarTo": ["受伤"],
+          "differs": {"受伤": "委屈含有\"不公平\"的判断；受伤是纯粹的痛"},
+          "intensity": 3,
+          "emoji": "😿"
+        },
+        {
+          "id": "dejected",
+          "name": "沮丧",
+          "definition": "事情不顺利后泄了气，提不起劲",
+          "similarTo": ["难过", "挫败"],
+          "differs": {"难过": "沮丧是难过+无力的混合", "挫败": "挫败侧重\"努力白费\"；沮丧侧重情绪低落"},
+          "intensity": 4,
+          "emoji": "😔"
+        },
+        {
+          "id": "sorrowful",
+          "name": "哀伤",
+          "definition": "深沉的悲痛，通常与重大的失去有关",
+          "similarTo": ["难过"],
+          "differs": {"难过": "哀伤更深沉、更庄重；难过更日常"},
+          "intensity": 4,
+          "emoji": "😭"
+        },
+        {
+          "id": "regret",
+          "name": "遗憾",
+          "definition": "觉得\"如果当初那样就好了\"的惋惜",
+          "similarTo": ["后悔"],
+          "differs": {"后悔": "遗憾接受了结果（\"可惜\"）；后悔想要推翻结果（\"不该\"）"},
+          "intensity": 3,
+          "emoji": "🫤"
+        },
+        {
+          "id": "helpless",
+          "name": "无助",
+          "definition": "想改变但感觉什么都做不了",
+          "similarTo": ["绝望"],
+          "differs": {"绝望": "无助还在挣扎；绝望已经放弃了"},
+          "intensity": 4,
+          "emoji": "🤷"
+        },
+        {
+          "id": "desperate",
+          "name": "绝望",
+          "definition": "看不到任何出路或希望",
+          "similarTo": ["无助"],
+          "differs": {"无助": "绝望是彻底放弃了；无助还有想改变的愿望"},
+          "intensity": 5,
+          "emoji": "🖤"
+        }
+      ]
+    },
+    {
+      "id": "shame",
+      "name": "羞愧",
+      "valence": "negative",
+      "emotions": [
+        {
+          "id": "ashamed",
+          "name": "羞愧",
+          "definition": "觉得自己整个人不好，想要藏起来",
+          "similarTo": ["羞耻"],
+          "differs": {"羞耻": "羞愧偏内心感受；羞耻有更强的社会评判意味"},
+          "intensity": 4,
+          "emoji": "😳"
+        },
+        {
+          "id": "embarrassed",
+          "name": "尴尬",
+          "definition": "在社交场合中感到不自在，想要消失",
+          "similarTo": ["羞愧"],
+          "differs": {"羞愧": "尴尬更短暂、更表层；羞愧更深层"},
+          "intensity": 3,
+          "emoji": "😳"
+        },
+        {
+          "id": "guilty",
+          "name": "内疚",
+          "definition": "觉得自己做了不该做的事，对不起别人",
+          "similarTo": ["自责"],
+          "differs": {"自责": "内疚指向行为（\"我做错了\"）；自责指向自我（\"我不好\"）"},
+          "intensity": 4,
+          "emoji": "😔"
+        },
+        {
+          "id": "remorseful",
+          "name": "后悔",
+          "definition": "对过去的选择感到懊恼，希望能重来",
+          "similarTo": ["遗憾"],
+          "differs": {"遗憾": "后悔想推翻过去的决定；遗憾更温和地接受"},
+          "intensity": 3,
+          "emoji": "😞"
+        },
+        {
+          "id": "shameful",
+          "name": "羞耻",
+          "definition": "觉得自己的某种特质或行为见不得人",
+          "similarTo": ["羞愧"],
+          "differs": {"羞愧": "羞耻有外部评判的压力；羞愧更私人化"},
+          "intensity": 4,
+          "emoji": "🙈"
+        },
+        {
+          "id": "self_blaming",
+          "name": "自责",
+          "definition": "反复批评自己，觉得一切都是自己的错",
+          "similarTo": ["内疚"],
+          "differs": {"内疚": "自责指向自我价值（\"我这个人不行\"）；内疚指向行为"},
+          "intensity": 4,
+          "emoji": "😣"
+        },
+        {
+          "id": "disgusted",
+          "name": "厌恶",
+          "definition": "对某人或某事感到强烈的排斥和反感",
+          "similarTo": ["反感"],
+          "differs": {"反感": "厌恶更强烈、更本能；反感更轻、更理性"},
+          "intensity": 3,
+          "emoji": "🤢"
+        },
+        {
+          "id": "repulsed",
+          "name": "反感",
+          "definition": "不喜欢、不想接近的感觉",
+          "similarTo": ["厌恶"],
+          "differs": {"厌恶": "反感更温和；厌恶有生理上的排斥反应"},
+          "intensity": 3,
+          "emoji": "😖"
+        }
+      ]
+    },
+    {
+      "id": "surprise",
+      "name": "惊讶",
+      "valence": "neutral",
+      "emotions": [
+        {
+          "id": "shocked",
+          "name": "震惊",
+          "definition": "完全没有预料到，一时无法消化",
+          "similarTo": ["震撼"],
+          "differs": {"震撼": "震惊偏向\"没想到\"；震撼偏向\"太厉害了\""},
+          "intensity": 4,
+          "emoji": "😲"
+        },
+        {
+          "id": "startled",
+          "name": "受惊",
+          "definition": "被突然的刺激吓了一跳",
+          "similarTo": ["震惊"],
+          "differs": {"震惊": "受惊是瞬间的生理反应；震惊需要时间消化"},
+          "intensity": 3,
+          "emoji": "😯"
+        },
+        {
+          "id": "amazed",
+          "name": "惊叹",
+          "definition": "被某事物的美好或厉害所折服",
+          "similarTo": ["震撼"],
+          "differs": {"震撼": "惊叹含有赞赏；震撼更强调冲击力"},
+          "intensity": 4,
+          "emoji": "🤩"
+        },
+        {
+          "id": "astonished",
+          "name": "震撼",
+          "definition": "被某种力量深深地触动或冲击",
+          "similarTo": ["惊叹"],
+          "differs": {"惊叹": "震撼更深层、更持久；惊叹更即时"},
+          "intensity": 4,
+          "emoji": "😲"
+        },
+        {
+          "id": "pleasantly_surprised",
+          "name": "惊喜",
+          "definition": "意外的好事带来的愉悦",
+          "similarTo": ["高兴"],
+          "differs": {"高兴": "惊喜含有\"没想到\"的成分；高兴不一定意外"},
+          "intensity": 4,
+          "emoji": "🎊"
+        },
+        {
+          "id": "confused",
+          "name": "困惑",
+          "definition": "不理解正在发生什么，找不到头绪",
+          "similarTo": ["不安"],
+          "differs": {"不安": "困惑是认知层面的（\"想不通\"）；不安是情绪层面的"},
+          "intensity": 2,
+          "emoji": "🤔"
+        },
+        {
+          "id": "curious",
+          "name": "好奇",
+          "definition": "想要了解更多、探索未知的欲望",
+          "similarTo": ["期待"],
+          "differs": {"期待": "好奇驱动探索（\"这是什么\"）；期待指向结果（\"快来吧\"）"},
+          "intensity": 2,
+          "emoji": "🧐"
+        },
+        {
+          "id": "unexpected",
+          "name": "意外",
+          "definition": "事情的发展出乎预料",
+          "similarTo": ["震惊"],
+          "differs": {"震惊": "意外更中性；震惊更强烈"},
+          "intensity": 3,
+          "emoji": "😮"
+        }
+      ]
+    }
+  ],
+  "bodyParts": [
+    "头部",
+    "眼睛",
+    "脸部",
+    "喉咙",
+    "颈部",
+    "肩膀",
+    "手臂",
+    "手掌",
+    "胸口",
+    "呼吸",
+    "背部",
+    "腹部",
+    "腰部",
+    "骨盆",
+    "大腿",
+    "双脚",
+    "整个身体",
+    "顶轮",
+    "眉心轮",
+    "喉轮",
+    "心轮",
+    "脐轮",
+    "骶轮",
+    "海底轮"
+  ],
+  "sensations": {
+    "头部": ["沉重", "紧绷", "压迫", "刺痛", "胀痛", "嗡鸣", "发热", "昏沉", "放松"],
+    "眼睛": ["酸胀", "干涩", "刺痛", "发热", "沉重", "湿润", "模糊"],
+    "脸部": ["发热", "灼热", "僵硬", "麻木", "刺痛", "紧绷", "潮红", "咬紧"],
+    "喉咙": ["收缩", "憋闷", "堵塞", "干涩", "刺痛", "紧绷", "哽咽"],
+    "颈部": ["僵硬", "紧绷", "酸胀", "沉重", "隐痛", "刺痛"],
+    "肩膀": ["紧绷", "僵硬", "沉重", "酸胀", "隐痛", "下坠", "放松"],
+    "手臂": ["沉重", "麻木", "酸胀", "无力", "颤抖", "刺痛", "轻盈"],
+    "手掌": ["发热", "冰冷", "出汗", "刺痛", "颤抖", "麻木", "脉动", "温暖"],
+    "胸口": ["紧绷", "压迫", "憋闷", "刺痛", "空洞", "沉重", "膨胀", "充盈", "温暖"],
+    "呼吸": ["浅短", "急促", "憋闷", "顺畅", "深长", "不规则", "叹息感"],
+    "背部": ["僵硬", "沉重", "酸胀", "紧绷", "隐痛", "压迫", "放松"],
+    "腹部": ["紧绷", "涌动", "收缩", "温暖", "空洞", "下坠", "膨胀", "翻涌", "恶心"],
+    "骨盆": ["沉重", "下坠", "紧绷", "温暖", "脉动", "放松", "压迫"],
+    "腰部": ["酸胀", "沉重", "僵硬", "隐痛", "无力", "紧绷"],
+    "大腿": ["沉重", "酸胀", "无力", "颤抖", "紧绷", "麻木", "轻盈"],
+    "双脚": ["沉重", "冰冷", "麻木", "刺痛", "温暖", "扎根感", "漂浮", "轻盈"],
+    "整个身体": ["沉重", "轻盈", "漂浮", "耗竭", "充盈", "颤抖", "温暖", "冰冷", "游离", "放松"],
+    "顶轮": ["开阔", "光感", "脉动", "刺痛", "压迫", "空灵", "融化", "连接感", "断裂感"],
+    "眉心轮": ["脉动", "压迫", "刺痛", "嗡鸣", "温暖", "光感", "紧绷", "清明", "模糊"],
+    "喉轮": ["堵塞", "收缩", "哽咽", "振动", "温暖", "畅通", "干涩", "膨胀", "表达受阻"],
+    "心轮": ["温暖", "膨胀", "充盈", "空洞", "刺痛", "涌动", "打开感", "紧缩", "柔软"],
+    "脐轮": ["灼热", "翻涌", "收缩", "力量感", "空虚", "膨胀", "紧绷", "温暖", "无力"],
+    "骶轮": ["涌动", "温暖", "脉动", "沉重", "流动感", "堵塞", "空洞", "压迫", "柔软"],
+    "海底轮": ["沉重", "下坠", "稳定", "脉动", "温暖", "扎根感", "空虚", "颤抖", "踏实"]
+  }
+}

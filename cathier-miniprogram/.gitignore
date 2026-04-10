@@ -1,0 +1,15 @@
+# Node dependencies (cloud functions)
+node_modules/
+package-lock.json
+
+# WeChat DevTools
+miniprogram_npm/
+.ide/
+*.wxvpkg
+
+# macOS
+.DS_Store
+._*
+
+# Environment / secrets
+.env

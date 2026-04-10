@@ -1,0 +1,91 @@
+/* Settings — page-specific overrides */
+
+.context-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--border);
+  box-sizing: border-box;
+  margin-top: 12rpx;
+  line-height: 1.6;
+}
+
+.settings-card {
+  padding-top: 24rpx;
+  padding-bottom: 0;
+}
+
+.settings-card .section-title {
+  margin-bottom: 8rpx;
+}
+
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.setting-row:last-child {
+  border-bottom: none;
+}
+
+.setting-label {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.setting-value {
+  font-size: 28rpx;
+}
+
+.stats-value {
+  font-size: 36rpx;
+  font-weight: 600;
+}
+
+.setting-row-tap {
+  /* tappable rows */
+}
+
+.setting-row-tap:active {
+  background-color: var(--bg);
+  margin: 0 calc(-1 * var(--space-md));
+  padding-left: var(--space-md);
+  padding-right: var(--space-md);
+  border-radius: var(--radius-tight);
+}
+
+.setting-arrow {
+  font-size: 36rpx;
+}
+
+.setting-row-danger {
+  border-bottom: none;
+}
+
+.setting-label-danger {
+  font-size: 28rpx;
+  color: var(--danger);
+}
+
+.disclaimer-section {
+  padding: 48rpx 20rpx;
+  text-align: center;
+}
+
+.disclaimer-section .disclaimer {
+  display: block;
+  margin-bottom: 8rpx;
+}
+
+.version-text {
+  display: block;
+  font-size: 22rpx;
+  margin-top: 16rpx;
+}

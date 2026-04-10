@@ -1,0 +1,72 @@
+<view class="container today-page">
+  <!-- Greeting -->
+  <view class="greeting-area">
+    <text class="greeting-text">{{greeting}}</text>
+    <text class="greeting-sub" wx:if="{{todayCheckInCount === 0}}">此刻，你想觉察什么？</text>
+    <text class="greeting-sub" wx:else>今日已觉察 {{todayCheckInCount}} 次</text>
+  </view>
+
+  <!-- Hero CTA Button -->
+  <view class="cta-hero" bindtap="onStartCheckIn" hover-class="cta-hero-active">
+    <view class="cta-icon-circle">
+      <text class="cta-icon">❤️</text>
+    </view>
+    <text class="cta-title">开始觉察</text>
+    <text class="cta-subtitle">从身体感受开始，探索内在情绪</text>
+  </view>
+
+  <!-- Today's Check-ins -->
+  <view class="today-section" wx:if="{{todayCheckIns.length > 0}}">
+    <text class="section-title">今日记录</text>
+
+    <view class="checkin-card" wx:for="{{todayCheckIns}}" wx:key="_id">
+      <!-- Top row: time + intensity -->
+      <view class="checkin-top-row">
+        <text class="checkin-time">{{item.time}}</text>
+        <view class="intensity-badge" wx:if="{{item.intensity > 0}}">
+          <text class="intensity-number">{{item.intensity}}</text>
+        </view>
+      </view>
+
+      <!-- Body parts + sensations -->
+      <view wx:if="{{item.bodySummary}}" class="checkin-body-parts">
+        <text class="body-parts-text">{{item.bodySummary}}</text>
+      </view>
+
+      <!-- Emotion chips -->
+      <view class="checkin-emotions" wx:if="{{item.emotions.length > 0}}">
+        <view class="emotion-tag" wx:for="{{item.emotions}}" wx:for-item="em" wx:key="label">
+          <text>{{em.emoji}} {{em.label}}</text>
+        </view>
+      </view>
+
+      <!-- Trigger event -->
+      <view wx:if="{{item.triggerEvent}}" class="checkin-trigger">
+        <text class="trigger-label">触发：</text>
+        <text class="trigger-text">{{item.triggerEvent}}</text>
+      </view>
+
+      <!-- AI feedback preview -->
+      <view wx:if="{{item.feedbackPreview}}" class="checkin-feedback">
+        <text class="feedback-icon">✨</text>
+        <text class="feedback-text">{{item.feedbackPreview}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Stats -->
+  <view class="stats-card" wx:if="{{totalCheckInCount > 0}}">
+    <view class="stats-row">
+      <text class="text-muted">累计觉察</text>
+      <text class="stats-number">{{totalCheckInCount}}</text>
+      <text class="text-muted">次</text>
+    </view>
+  </view>
+
+  <!-- Settings Link -->
+  <view class="settings-link" bindtap="onOpenSettings">
+    <text class="text-muted">设置</text>
+  </view>
+
+  <view class="disclaimer">本小程序不提供医疗建议，AI反馈仅供参考</view>
+</view>

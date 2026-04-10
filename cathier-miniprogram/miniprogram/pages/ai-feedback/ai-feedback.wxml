@@ -1,0 +1,101 @@
+<view class="container">
+  <!-- Step Indicator: 3 segments, all active -->
+  <view class="step-indicator">
+    <view class="step-segment step-segment-active"></view>
+    <view class="step-segment step-segment-active"></view>
+    <view class="step-segment step-segment-active"></view>
+  </view>
+
+  <text class="page-heading">觉察反馈</text>
+
+  <!-- Summary Card -->
+  <view class="card summary-card" wx:if="{{checkInData}}">
+    <text class="section-label">本次觉察</text>
+
+    <!-- Body sensations structured display -->
+    <block wx:for="{{checkInData.bodySensationsList}}" wx:key="part">
+      <view class="summary-row" wx:if="{{item.sensations.length > 0}}">
+        <text class="summary-label">{{item.part}}</text>
+        <view class="sensation-tags">
+          <text class="sensation-tag">{{item.sensations}}</text>
+        </view>
+      </view>
+      <view class="summary-row" wx:else>
+        <text class="summary-label">{{item.part}}</text>
+      </view>
+    </block>
+
+    <view class="summary-row" wx:if="{{checkInData.intensity}}">
+      <text class="summary-label">强度</text>
+      <view class="intensity-badge">{{checkInData.intensity}}/10</view>
+    </view>
+
+    <!-- Emotions -->
+    <view class="summary-row summary-row-wrap" wx:if="{{checkInData.emotions.length > 0}}">
+      <text class="summary-label">情绪</text>
+      <view class="chip-wrap">
+        <text
+          wx:for="{{checkInData.emotions}}"
+          wx:key="id"
+          class="chip chip-selected"
+        >{{item.emoji}} {{item.name}}</text>
+      </view>
+    </view>
+
+    <view class="summary-row" wx:if="{{checkInData.trigger}}">
+      <text class="summary-label">触发</text>
+      <text class="summary-value">{{checkInData.trigger}}</text>
+    </view>
+
+    <view class="summary-row" wx:if="{{checkInData.note}}">
+      <text class="summary-label">备注</text>
+      <text class="summary-value">{{checkInData.note}}</text>
+    </view>
+  </view>
+
+  <!-- AI Feedback Card -->
+  <view class="ai-card" wx:if="{{loading}}">
+    <view class="ai-card-header">
+      <view class="ai-dot"></view>
+      <text>AI 觉察反馈</text>
+    </view>
+    <view class="ai-card-body">
+      <view class="loading-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+      <text class="loading-hint text-muted">AI正在感知中...</text>
+    </view>
+  </view>
+
+  <view class="ai-card" wx:elif="{{error}}">
+    <view class="ai-card-header">
+      <view class="ai-dot ai-dot-error"></view>
+      <text>AI 觉察反馈</text>
+    </view>
+    <view class="ai-card-body ai-error-body">
+      <text class="error-text">{{errorMessage || '生成反馈时出现了问题'}}</text>
+      <view class="btn-secondary retry-btn" bindtap="onRetry">重试</view>
+    </view>
+  </view>
+
+  <view class="ai-card" wx:else>
+    <view class="ai-card-header">
+      <view class="ai-dot"></view>
+      <text>AI 觉察反馈</text>
+    </view>
+    <view class="ai-card-body">
+      <text class="text-serif">{{feedback}}</text>
+    </view>
+  </view>
+
+  <!-- Action Buttons (always visible) -->
+  <view class="action-buttons">
+    <view class="btn-primary {{saved ? 'btn-saved' : ''}}" bindtap="onSave">
+      {{saved ? '已保存 ✓' : '保存觉察'}}
+    </view>
+  </view>
+
+  <view class="disclaimer">本小程序不提供医疗建议，AI反馈仅供参考</view>
+</view>

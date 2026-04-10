@@ -1,0 +1,96 @@
+<wxs src="../../utils/array-helper.wxs" module="arr" />
+
+<view class="container">
+  <!-- Step Indicator: 3 segments, first active -->
+  <view class="step-indicator">
+    <view class="step-segment step-segment-active"></view>
+    <view class="step-segment"></view>
+    <view class="step-segment"></view>
+  </view>
+
+  <text class="page-heading">感受身体</text>
+  <text class="page-subheading">此刻，你的身体有什么感觉？</text>
+
+  <!-- Body Parts -->
+  <view class="card">
+    <text class="section-title">身体部位</text>
+    <text class="section-subtitle">选择有感觉的部位（可多选），点击已选部位可切换感觉</text>
+    <view class="chip-wrap">
+      <view
+        wx:for="{{bodyParts}}"
+        wx:key="*this"
+        class="chip {{arr.includes(selectedParts, item) ? 'chip-selected' : ''}}"
+        data-item="{{item}}"
+        bindtap="onTogglePart"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Sensations for focused body part -->
+  <view class="card" wx:if="{{focusedPart && currentSensations.length > 0}}">
+    <text class="section-title">{{focusedPart}} 的感觉</text>
+    <text class="section-subtitle">选择该部位的感觉描述</text>
+    <view class="chip-wrap">
+      <view
+        wx:for="{{currentSensations}}"
+        wx:key="*this"
+        class="chip {{arr.includes(focusedPartSensations, item) ? 'chip-selected' : ''}}"
+        data-item="{{item}}"
+        bindtap="onToggleSensation"
+      >
+        {{item}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Selected body parts with their sensations summary -->
+  <view class="card" wx:if="{{selectedParts.length > 0}}">
+    <text class="section-title">已选部位</text>
+    <text class="section-subtitle">点击部位查看/修改该部位的感觉</text>
+    <view wx:for="{{selectedPartsDetail}}" wx:key="name" class="selected-part-row">
+      <view
+        class="chip {{item.isFocused ? 'chip-selected' : ''}}"
+        data-item="{{item.name}}"
+        bindtap="onFocusPart"
+      >
+        {{item.name}}
+      </view>
+      <view class="sensation-tags" wx:if="{{item.sensations.length > 0}}">
+        <text
+          wx:for="{{item.sensations}}"
+          wx:for-item="s"
+          wx:key="*this"
+          class="sensation-tag"
+        >{{s}}</text>
+      </view>
+      <text wx:else class="text-muted sensation-hint">未选择感觉</text>
+    </view>
+  </view>
+
+  <!-- Intensity Slider -->
+  <view class="card">
+    <text class="section-title">感觉强度</text>
+    <view class="intensity-row">
+      <text class="intensity-label text-muted">微弱</text>
+      <slider
+        min="1"
+        max="10"
+        value="{{intensity}}"
+        activeColor="{{intensity > 6 ? '#C4614A' : '#F2700A'}}"
+        backgroundColor="#E0DDD6"
+        block-size="24"
+        bindchange="onIntensityChange"
+        class="intensity-slider"
+      />
+      <text class="intensity-label text-muted">强烈</text>
+    </view>
+    <text class="intensity-value text-accent">{{intensity}}</text>
+  </view>
+
+  <!-- Next Button -->
+  <view class="btn-primary next-btn" bindtap="onNext">
+    下一步：情绪命名
+  </view>
+</view>

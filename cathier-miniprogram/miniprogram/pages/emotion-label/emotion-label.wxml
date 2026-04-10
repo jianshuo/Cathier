@@ -1,0 +1,98 @@
+<wxs src="../../utils/array-helper.wxs" module="arr" />
+
+<view class="container">
+  <!-- Step Indicator: 3 segments, second active -->
+  <view class="step-indicator">
+    <view class="step-segment step-segment-active"></view>
+    <view class="step-segment step-segment-active"></view>
+    <view class="step-segment"></view>
+  </view>
+
+  <text class="page-heading">情绪命名</text>
+  <text class="page-subheading">你感受到了什么情绪？</text>
+
+  <!-- Emotion Categories -->
+  <view class="card">
+    <text class="section-title">情绪类别</text>
+    <view class="chip-wrap">
+      <view
+        wx:for="{{categories}}"
+        wx:key="id"
+        class="{{item.valence === 'positive' ? 'chip chip-sage' : 'chip'}} {{selectedCategoryId === item.id ? (item.valence === 'positive' ? 'chip-sage-selected' : 'chip-selected') : ''}}"
+        data-id="{{item.id}}"
+        bindtap="onSelectCategory"
+      >
+        {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Specific Emotions for selected category -->
+  <view class="card" wx:if="{{specificEmotions.length > 0}}">
+    <text class="section-title">{{selectedCategoryName}} 的具体情绪</text>
+    <text class="section-subtitle">可以跨类别选择多个情绪</text>
+    <view class="chip-wrap">
+      <view
+        wx:for="{{specificEmotions}}"
+        wx:key="id"
+        class="chip {{arr.includes(selectedEmotionIds, item.id) ? 'chip-selected' : ''}}"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        data-emoji="{{item.emoji}}"
+        bindtap="onToggleEmotion"
+      >
+        <text class="emotion-emoji">{{item.emoji}}</text>
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Selected emotions summary -->
+  <view class="card selected-emotions-card" wx:if="{{selectedEmotions.length > 0}}">
+    <text class="section-title">已选情绪</text>
+    <view class="chip-wrap">
+      <view
+        wx:for="{{selectedEmotions}}"
+        wx:key="id"
+        class="chip chip-selected"
+        data-id="{{item.id}}"
+        data-name="{{item.name}}"
+        data-emoji="{{item.emoji}}"
+        bindtap="onToggleEmotion"
+      >
+        {{item.emoji}} {{item.name}}
+      </view>
+    </view>
+  </view>
+
+  <!-- Trigger Input -->
+  <view class="card">
+    <text class="section-title">触发事件</text>
+    <textarea
+      class="warm-textarea"
+      placeholder="是什么触发了这些感觉？（可选）"
+      value="{{trigger}}"
+      bindinput="onTriggerInput"
+      maxlength="200"
+      auto-height
+    />
+  </view>
+
+  <!-- Note Input -->
+  <view class="card">
+    <text class="section-title">备注</text>
+    <textarea
+      class="warm-textarea"
+      placeholder="想记录些什么？（可选）"
+      value="{{note}}"
+      bindinput="onNoteInput"
+      maxlength="500"
+      auto-height
+    />
+  </view>
+
+  <!-- Next Button -->
+  <view class="btn-primary next-btn" bindtap="onNext">
+    下一步：AI 反馈
+  </view>
+</view>

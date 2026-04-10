@@ -1,0 +1,9 @@
+{
+  "triggers": [
+    {
+      "name": "warmPingTimer",
+      "type": "timer",
+      "config": "0 */5 * * * * *"
+    }
+  ]
+}

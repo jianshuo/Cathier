@@ -1,0 +1,42 @@
+/* Body Scan — Step 1 page-specific overrides */
+
+.selected-part-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.sensation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.sensation-hint {
+  font-size: 24rpx;
+}
+
+.intensity-label {
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
+.intensity-slider {
+  flex: 1;
+  margin: 0 16rpx;
+}
+
+.intensity-value {
+  display: block;
+  text-align: center;
+  font-size: 52rpx;
+  font-weight: 600;
+  margin-top: 8rpx;
+}
+
+.next-btn {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}

@@ -1,0 +1,237 @@
+/* Today page — iOS-matched style */
+
+.today-page {
+  padding-top: 0;
+}
+
+/* --- Greeting --- */
+
+.greeting-area {
+  padding-top: 100rpx;
+  padding-bottom: 40rpx;
+}
+
+.greeting-text {
+  display: block;
+  font-size: 52rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: 8rpx;
+}
+
+.greeting-sub {
+  display: block;
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* --- Hero CTA Button --- */
+
+.cta-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 60rpx 40rpx;
+  background: linear-gradient(135deg, var(--accent), #D96308);
+  border-radius: var(--radius-large);
+  margin-bottom: var(--space-lg);
+  box-sizing: border-box;
+  box-shadow: 0 8rpx 32rpx rgba(242, 112, 10, 0.3),
+              0 2rpx 8rpx rgba(242, 112, 10, 0.15);
+}
+
+.cta-hero-active {
+  opacity: 0.92;
+  transform: scale(0.985);
+}
+
+.cta-icon-circle {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+}
+
+.cta-icon {
+  font-size: 56rpx;
+}
+
+.cta-title {
+  font-size: 38rpx;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 12rpx;
+  letter-spacing: 2rpx;
+}
+
+.cta-subtitle {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* --- Today's Check-ins Section --- */
+
+.today-section {
+  margin-bottom: var(--space-md);
+}
+
+.today-section .section-title {
+  margin-bottom: var(--space-md);
+}
+
+/* --- Check-in Card --- */
+
+.checkin-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+.checkin-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.checkin-time {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+
+.intensity-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48rpx;
+  height: 48rpx;
+  padding: 0 16rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--accent-light);
+}
+
+.intensity-number {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* --- Body Parts --- */
+
+.checkin-body-parts {
+  margin-bottom: 12rpx;
+}
+
+.body-parts-text {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--accent);
+}
+
+/* --- Emotion Tags --- */
+
+.checkin-emotions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+  margin-bottom: 16rpx;
+}
+
+.emotion-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 8rpx 20rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--accent-light);
+  font-size: 24rpx;
+  color: var(--accent);
+}
+
+/* --- Trigger --- */
+
+.checkin-trigger {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 12rpx;
+  font-size: 26rpx;
+  line-height: 1.5;
+}
+
+.trigger-label {
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.trigger-text {
+  color: var(--text-secondary);
+}
+
+/* --- AI Feedback Preview --- */
+
+.checkin-feedback {
+  display: flex;
+  align-items: flex-start;
+  gap: 8rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid var(--border);
+}
+
+.feedback-icon {
+  font-size: 24rpx;
+  flex-shrink: 0;
+  padding-top: 4rpx;
+}
+
+.feedback-text {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* --- Stats Card --- */
+
+.stats-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+.stats-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8rpx;
+  font-size: 28rpx;
+}
+
+.stats-number {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* --- Settings Link --- */
+
+.settings-link {
+  text-align: center;
+  padding: 32rpx;
+  margin-top: 16rpx;
+}

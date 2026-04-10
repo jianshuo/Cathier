@@ -1,0 +1,353 @@
+<view class="container">
+  <text class="page-heading">觉察词典</text>
+
+  <!-- Search Bar -->
+  <view class="search-bar">
+    <input
+      class="search-input"
+      placeholder="搜索情绪、感觉..."
+      value="{{searchQuery}}"
+      bindinput="onSearchInput"
+    />
+  </view>
+
+  <!-- Segmented Control Tabs -->
+  <view class="segmented-control">
+    <view
+      wx:for="{{tabs}}"
+      wx:key="*this"
+      class="segment {{activeTab === index ? 'segment-active' : ''}}"
+      data-index="{{index}}"
+      bindtap="onTabChange"
+    >
+      {{item}}
+    </view>
+  </view>
+
+  <!-- Tab 0: Emotions -->
+  <view wx:if="{{activeTab === 0}}">
+    <view
+      class="card dict-card"
+      wx:for="{{filteredCategories}}"
+      wx:key="id"
+    >
+      <view class="dict-header" data-name="{{item.name}}" bindtap="onToggleCategory">
+        <view class="dict-header-left">
+          <text class="dict-name">{{item.name}}</text>
+          <text class="valence-tag {{item.valence === 'positive' ? 'valence-positive' : item.valence === 'negative' ? 'valence-negative' : 'valence-neutral'}}">{{item.valence === 'positive' ? '正面' : item.valence === 'negative' ? '负面' : '中性'}}</text>
+        </view>
+        <view class="dict-header-right">
+          <text class="text-muted dict-count">{{item.count}} 个</text>
+          <text class="dict-arrow {{expandedCategory === item.name ? 'arrow-expanded' : ''}}">›</text>
+        </view>
+      </view>
+
+      <!-- Expanded: show emotion chips, tap to open detail -->
+      <view class="dict-items" wx:if="{{expandedCategory === item.name}}">
+        <view class="chip-wrap">
+          <view
+            class="chip"
+            wx:for="{{item.emotions}}"
+            wx:for-item="em"
+            wx:key="id"
+            data-id="{{em.id}}"
+            data-cat="{{item.name}}"
+            bindtap="onShowEmotionDetail"
+          >
+            <text class="emotion-emoji">{{em.emoji}}</text>
+            <text>{{em.name}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 1: Body Sensations -->
+  <view wx:if="{{activeTab === 1}}">
+    <view
+      class="card dict-card"
+      wx:for="{{filteredBodyPartSensations}}"
+      wx:key="name"
+    >
+      <view class="dict-header" data-name="{{item.name}}" bindtap="onToggleBodyPart">
+        <view class="dict-header-left">
+          <text class="dict-name">{{item.name}}</text>
+        </view>
+        <view class="dict-header-right">
+          <text class="text-muted dict-count">{{item.sensations.length}} 种感觉</text>
+          <text class="dict-arrow {{expandedBodyPart === item.name ? 'arrow-expanded' : ''}}">›</text>
+        </view>
+      </view>
+      <view class="dict-items" wx:if="{{expandedBodyPart === item.name}}">
+        <view class="chip-wrap">
+          <view class="chip" wx:for="{{item.sensations}}" wx:for-item="s" wx:key="*this"
+            data-name="{{s}}" data-part="{{item.name}}" bindtap="onShowSensationDetail">
+            {{s}}
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Tab 2: Body Parts -->
+  <view wx:if="{{activeTab === 2}}">
+    <view
+      class="card dict-card dict-card-simple"
+      wx:for="{{filteredBodyPartList}}"
+      wx:key="name"
+      data-name="{{item.name}}"
+      bindtap="onShowBodyPartDetail"
+    >
+      <text class="dict-name">{{item.name}}</text>
+      <text class="dict-arrow">›</text>
+    </view>
+  </view>
+
+  <!-- Empty Search States -->
+  <view class="empty-state" wx:if="{{activeTab === 0 && filteredCategories.length === 0}}">
+    <text class="empty-state-text">没有找到匹配的情绪词汇</text>
+  </view>
+  <view class="empty-state" wx:if="{{activeTab === 1 && filteredBodyPartSensations.length === 0}}">
+    <text class="empty-state-text">没有找到匹配的身体感觉</text>
+  </view>
+  <view class="empty-state" wx:if="{{activeTab === 2 && filteredBodyPartList.length === 0}}">
+    <text class="empty-state-text">没有找到匹配的身体部位</text>
+  </view>
+
+  <!-- Detail Popup Overlay -->
+  <view class="popup-mask" wx:if="{{detailVisible}}" bindtap="onCloseDetail"></view>
+  <view class="popup-sheet {{detailVisible ? 'popup-sheet-show' : ''}}" wx:if="{{detailVisible}}">
+    <view class="popup-handle" bindtap="onCloseDetail">
+      <view class="popup-handle-bar"></view>
+    </view>
+
+    <!-- Emotion Detail -->
+    <view wx:if="{{detailType === 'emotion'}}" class="popup-content">
+      <view class="popup-title-row">
+        <text class="popup-emoji">{{detailData.emoji}}</text>
+        <view class="popup-title-info">
+          <text class="popup-title">{{detailData.name}}</text>
+          <view class="popup-meta-row">
+            <text class="popup-category-tag {{detailData.categoryValence === 'positive' ? 'valence-positive' : detailData.categoryValence === 'negative' ? 'valence-negative' : 'valence-neutral'}}">{{detailData.categoryName}}</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- Intensity visual -->
+      <view class="popup-section">
+        <text class="popup-label">情绪强度</text>
+        <view class="intensity-dots-row">
+          <view wx:for="{{detailData.intensityDots}}" wx:key="index"
+            class="intensity-dot {{item.filled ? 'intensity-dot-filled' : ''}}"></view>
+          <text class="intensity-num text-muted">{{detailData.intensity}}/5</text>
+        </view>
+      </view>
+
+      <!-- Definition -->
+      <view class="popup-section">
+        <text class="popup-label">释义</text>
+        <text class="popup-definition">{{detailData.definition}}</text>
+      </view>
+
+      <!-- Similar emotions -->
+      <view class="popup-section" wx:if="{{detailData.similarTo.length > 0}}">
+        <text class="popup-label">相似情绪</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.similarTo}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <!-- Differences -->
+      <view class="popup-section" wx:if="{{detailData.differsList.length > 0}}">
+        <text class="popup-label">与相似情绪的区别</text>
+        <view class="popup-differs" wx:for="{{detailData.differsList}}" wx:key="key">
+          <text class="popup-differs-key">vs {{item.key}}</text>
+          <text class="popup-differs-value">{{item.value}}</text>
+        </view>
+      </view>
+
+      <view class="popup-section-divider" wx:if="{{detailData.origin}}"></view>
+
+      <view class="popup-section" wx:if="{{detailData.origin}}">
+        <text class="popup-label">源起</text>
+        <text class="popup-body-text">{{detailData.origin}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.experience}}">
+        <text class="popup-label">体验</text>
+        <text class="popup-body-text">{{detailData.experience}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.embodiment}}">
+        <text class="popup-label">具身</text>
+        <text class="popup-body-text">{{detailData.embodiment}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.imagery}}">
+        <text class="popup-label">意象</text>
+        <text class="popup-body-text">{{detailData.imagery}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.developmentalStage}}">
+        <text class="popup-label">发展阶段</text>
+        <text class="popup-body-text">{{detailData.developmentalStage}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.formativeEvents}}">
+        <text class="popup-label">塑造事件</text>
+        <text class="popup-body-text">{{detailData.formativeEvents}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.personalityImpact}}">
+        <text class="popup-label">性格影响</text>
+        <text class="popup-body-text">{{detailData.personalityImpact}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.transformation}}">
+        <text class="popup-label">转化</text>
+        <text class="popup-body-text">{{detailData.transformation}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.literaryReference}}">
+        <text class="popup-label">文学引用</text>
+        <view class="popup-quote">
+          <text class="popup-body-text">{{detailData.literaryReference}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Sensation Detail -->
+    <view wx:if="{{detailType === 'sensation'}}" class="popup-content">
+      <view class="popup-title-row">
+        <text class="popup-title">{{detailData.name}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.description}}">
+        <text class="popup-label">描述</text>
+        <text class="popup-body-text">{{detailData.description}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.howItFeels}}">
+        <text class="popup-label">感受</text>
+        <text class="popup-body-text">{{detailData.howItFeels}}</text>
+      </view>
+
+      <view class="popup-section">
+        <text class="popup-label">当前部位</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small chip-selected">{{detailData.bodyPart}}</view>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.commonLocations.length > 0}}">
+        <text class="popup-label">常见位置</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.commonLocations}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.relatedEmotions.length > 0}}">
+        <text class="popup-label">相关情绪</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.relatedEmotions}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.signalMeaning}}">
+        <text class="popup-label">信号含义</text>
+        <text class="popup-body-text">{{detailData.signalMeaning}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.selfCare}}">
+        <text class="popup-label">自我关怀</text>
+        <text class="popup-body-text">{{detailData.selfCare}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.differsList.length > 0}}">
+        <text class="popup-label">与相近感受的区别</text>
+        <view class="popup-differs" wx:for="{{detailData.differsList}}" wx:key="key">
+          <text class="popup-differs-key">vs {{item.key}}</text>
+          <text class="popup-differs-value">{{item.value}}</text>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.intensitySpectrum}}">
+        <text class="popup-label">强度谱</text>
+        <text class="popup-body-text">{{detailData.intensitySpectrum}}</text>
+      </view>
+
+      <view class="popup-section-divider" wx:if="{{detailData.relatedParts.length > 0 || detailData.siblings.length > 0}}"></view>
+
+      <view class="popup-section" wx:if="{{detailData.relatedParts.length > 0}}">
+        <text class="popup-label">这种感觉也会出现在</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.relatedParts}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.siblings.length > 0}}">
+        <text class="popup-label">「{{detailData.bodyPart}}」的其他感觉</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.siblings}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Body Part Detail -->
+    <view wx:if="{{detailType === 'bodyPart'}}" class="popup-content">
+      <view class="popup-title-row">
+        <text class="popup-title">{{detailData.name}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.description}}">
+        <text class="popup-label">描述</text>
+        <text class="popup-body-text">{{detailData.description}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.howToLocate}}">
+        <text class="popup-label">如何定位</text>
+        <text class="popup-body-text">{{detailData.howToLocate}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.commonSensations.length > 0}}">
+        <text class="popup-label">常见感觉</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.commonSensations}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="popup-section">
+        <text class="popup-label">可能出现的感觉（{{detailData.sensations.length}} 种）</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.sensations}}" wx:key="*this">{{item}}</view>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.emotionalConnection}}">
+        <text class="popup-label">情绪联系</text>
+        <text class="popup-body-text">{{detailData.emotionalConnection}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.awarenessGuide}}">
+        <text class="popup-label">觉察引导</text>
+        <text class="popup-body-text">{{detailData.awarenessGuide}}</text>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.relatedEmotions.length > 0}}">
+        <text class="popup-label">常见相关情绪</text>
+        <view class="chip-wrap">
+          <view class="chip chip-small" wx:for="{{detailData.relatedEmotions}}" wx:key="name">
+            {{item.emoji}} {{item.name}}
+          </view>
+        </view>
+      </view>
+
+      <view class="popup-section" wx:if="{{detailData.culturalNote}}">
+        <text class="popup-label">文化注释</text>
+        <view class="popup-quote">
+          <text class="popup-body-text">{{detailData.culturalNote}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

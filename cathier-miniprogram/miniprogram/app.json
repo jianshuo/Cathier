@@ -1,0 +1,45 @@
+{
+  "pages": [
+    "pages/today/today",
+    "pages/journal/journal",
+    "pages/dictionary/dictionary",
+    "pages/body-scan/body-scan",
+    "pages/emotion-label/emotion-label",
+    "pages/ai-feedback/ai-feedback",
+    "pages/settings/settings"
+  ],
+  "tabBar": {
+    "color": "#8B8B8B",
+    "selectedColor": "#8B6F5C",
+    "backgroundColor": "#FFFFFF",
+    "borderStyle": "white",
+    "list": [
+      {
+        "pagePath": "pages/today/today",
+        "text": "此刻",
+        "iconPath": "images/tab-today.png",
+        "selectedIconPath": "images/tab-today-active.png"
+      },
+      {
+        "pagePath": "pages/journal/journal",
+        "text": "日记",
+        "iconPath": "images/tab-journal.png",
+        "selectedIconPath": "images/tab-journal-active.png"
+      },
+      {
+        "pagePath": "pages/dictionary/dictionary",
+        "text": "觉察词典",
+        "iconPath": "images/tab-dict.png",
+        "selectedIconPath": "images/tab-dict-active.png"
+      }
+    ]
+  },
+  "window": {
+    "navigationBarTitleText": "觉察",
+    "navigationBarBackgroundColor": "#F5E6D3",
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#FFF8F0"
+  },
+  "sitemapLocation": "sitemap.json",
+  "style": "v2"
+}

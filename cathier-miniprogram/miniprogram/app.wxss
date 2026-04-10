@@ -1,0 +1,425 @@
+/* ==========================================================================
+   Cathier Design System — WeChat Mini Program Global Stylesheet
+   Aesthetic: Japanese stationery / Moleskine — warm, grounded, quiet
+   ========================================================================== */
+
+/* --- Design Tokens (CSS Custom Properties) --- */
+
+page {
+  /* Background & Surface */
+  --bg: #F7F5F1;
+  --surface: #FFFFFF;
+  --surface-alt: #FAF9F7;
+  --border: #E0DDD6;
+
+  /* Text */
+  --text-primary: #1A1613;
+  --text-secondary: #5C5650;
+  --text-muted: #8A837A;
+
+  /* Accent — bright orange, primary brand */
+  --accent: #F2700A;
+  --accent-light: #FEEBD8;
+  --accent-hover: #D96308;
+
+  /* Sage — secondary, positive states */
+  --sage: #6B8F71;
+  --sage-light: #E0EDE2;
+
+  /* Semantic */
+  --danger: #C4614A;
+  --success: #6B8F71;
+
+  /* Spacing */
+  --space-2xs: 4rpx;
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 32rpx;
+  --space-lg: 40rpx;
+  --space-xl: 48rpx;
+  --space-2xl: 64rpx;
+  --space-3xl: 96rpx;
+
+  /* Radius */
+  --radius-tight: 8rpx;
+  --radius-small: 16rpx;
+  --radius-medium: 24rpx;
+  --radius-large: 40rpx;
+  --radius-full: 9999rpx;
+
+  /* Typography */
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  line-height: 1.6;
+}
+
+
+/* ==========================================================================
+   Page Layout
+   ========================================================================== */
+
+.container {
+  padding: 0 var(--space-lg);
+  padding-top: var(--space-xl);
+  padding-bottom: var(--space-3xl);
+  background-color: var(--bg);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+
+.page-heading {
+  font-size: 48rpx;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.3;
+  margin-bottom: var(--space-xs);
+}
+
+.page-subheading {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: var(--space-xl);
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.section-subtitle {
+  font-size: 26rpx;
+  color: var(--text-muted);
+  line-height: 1.5;
+  margin-bottom: var(--space-md);
+}
+
+.section-label {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin-bottom: var(--space-sm);
+}
+
+.text-serif {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+
+.text-accent {
+  color: var(--accent);
+}
+
+.text-sage {
+  color: var(--sage);
+}
+
+.text-muted {
+  color: var(--text-muted);
+}
+
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+.card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 2rpx 16rpx rgba(26, 22, 19, 0.06),
+              0 1rpx 4rpx rgba(26, 22, 19, 0.04);
+}
+
+.check-in-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+
+/* ==========================================================================
+   AI Feedback Card
+   ========================================================================== */
+
+.ai-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  box-shadow: 0 2rpx 16rpx rgba(26, 22, 19, 0.06),
+              0 1rpx 4rpx rgba(26, 22, 19, 0.04);
+  margin-bottom: var(--space-md);
+}
+
+.ai-card-header {
+  background-color: var(--accent-light);
+  padding: 20rpx var(--space-md);
+  display: flex;
+  align-items: center;
+}
+
+.ai-card-header text {
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+
+.ai-card-body {
+  padding: var(--space-md);
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  font-size: 34rpx;
+  line-height: 1.55;
+  color: var(--text-primary);
+}
+
+
+/* ==========================================================================
+   Chips & Pills
+   ========================================================================== */
+
+.chip-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 14rpx 28rpx;
+  border-radius: var(--radius-full);
+  border: 2rpx solid var(--border);
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  background-color: var(--bg);
+  transition: all 0.2s ease;
+  line-height: 1.4;
+}
+
+.chip-selected {
+  background-color: var(--accent-light);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.chip-sage {
+  background-color: var(--bg);
+  color: var(--text-secondary);
+  border-color: var(--border);
+}
+
+.chip-sage-selected {
+  background-color: var(--sage-light);
+  color: var(--sage);
+  border-color: var(--sage);
+}
+
+.emotion-chip-emoji {
+  display: inline-flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 14rpx 28rpx;
+  border-radius: var(--radius-full);
+  border: 2rpx solid var(--border);
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  background-color: var(--bg);
+  transition: all 0.2s ease;
+}
+
+.sensation-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  border-radius: var(--radius-full);
+  font-size: 24rpx;
+  color: var(--accent);
+  background-color: var(--accent-light);
+  margin-right: var(--space-xs);
+  margin-bottom: var(--space-xs);
+}
+
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: var(--accent);
+  color: #FFFFFF;
+  border: none;
+  border-radius: var(--radius-full);
+  padding: 28rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 500;
+  letter-spacing: 1rpx;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.btn-primary::after {
+  border: none;
+}
+
+.btn-primary:active {
+  background-color: var(--accent-hover);
+}
+
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: transparent;
+  color: var(--accent);
+  border: 2rpx solid var(--accent);
+  border-radius: var(--radius-full);
+  padding: 28rpx;
+  text-align: center;
+  font-size: 32rpx;
+  font-weight: 500;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.btn-secondary::after {
+  border: none;
+}
+
+.btn-secondary:active {
+  background-color: var(--accent-light);
+}
+
+
+/* ==========================================================================
+   Step Indicator — Segmented Bar (NOT dots)
+   ========================================================================== */
+
+.step-indicator {
+  display: flex;
+  gap: 8rpx;
+  margin-bottom: var(--space-md);
+}
+
+.step-segment {
+  flex: 1;
+  height: 8rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--border);
+  transition: background-color 0.35s ease;
+}
+
+.step-segment-active {
+  background-color: var(--accent);
+}
+
+
+/* ==========================================================================
+   Intensity Row (Slider)
+   ========================================================================== */
+
+.intensity-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+}
+
+
+/* ==========================================================================
+   Empty State
+   ========================================================================== */
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-3xl) var(--space-lg);
+  color: var(--text-muted);
+}
+
+.empty-state-icon {
+  font-size: 80rpx;
+  margin-bottom: var(--space-md);
+  opacity: 0.6;
+}
+
+.empty-state-text {
+  font-size: 28rpx;
+  text-align: center;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+
+/* ==========================================================================
+   Disclaimer
+   ========================================================================== */
+
+.disclaimer {
+  font-size: 22rpx;
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-md) var(--space-sm);
+  line-height: 1.8;
+}
+
+
+/* ==========================================================================
+   Loading Animation — Three Pulsing Dots
+   ========================================================================== */
+
+.loading-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  padding: var(--space-xl) 0;
+}
+
+.loading-dots .dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 50%;
+  background-color: var(--accent);
+  animation: pulse-dot 1.4s ease-in-out infinite;
+}
+
+.loading-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse-dot {
+  0%, 80%, 100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

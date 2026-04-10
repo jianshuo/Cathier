@@ -1,0 +1,69 @@
+<view class="container">
+  <text class="page-heading">觉察日记</text>
+
+  <!-- Check-in List -->
+  <view wx:if="{{checkIns.length > 0}}">
+    <view
+      class="check-in-card"
+      wx:for="{{checkIns}}"
+      wx:key="_id"
+      data-id="{{item._id}}"
+      bindtap="onCheckInTap"
+      bindlongpress="onDeleteCheckIn"
+    >
+      <!-- Header: date + intensity -->
+      <view class="checkin-header">
+        <text class="text-muted checkin-date">{{item.dateFormatted}}</text>
+        <view class="intensity-badge" wx:if="{{item.intensity}}">{{item.intensity}}</view>
+      </view>
+
+      <!-- Emotion chips -->
+      <view class="chip-wrap checkin-emotions" wx:if="{{item.emotions.length > 0}}">
+        <view
+          class="chip chip-selected chip-small"
+          wx:for="{{item.emotions}}"
+          wx:for-item="emotion"
+          wx:key="*this"
+        >{{emotion}}</view>
+      </view>
+
+      <!-- Body parts + sensations -->
+      <view wx:if="{{item.bodySummary}}">
+        <text class="body-parts-text text-muted">{{item.bodySummary}}</text>
+      </view>
+
+      <!-- Trigger -->
+      <view class="checkin-trigger" wx:if="{{item.trigger}}">
+        <text class="trigger-text">{{item.trigger}}</text>
+      </view>
+
+      <!-- AI feedback preview -->
+      <view class="checkin-feedback" wx:if="{{item.feedbackPreview}}">
+        <text class="feedback-preview text-serif text-muted">{{item.feedbackPreview}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Empty State -->
+  <view class="empty-state" wx:elif="{{!loading}}">
+    <text class="empty-state-icon">🌱</text>
+    <text class="empty-state-text">还没有觉察记录</text>
+    <view class="empty-cta" bindtap="onStartCheckIn">
+      <text class="text-accent">开始你的第一次觉察</text>
+    </view>
+  </view>
+
+  <!-- Loading -->
+  <view class="loading-footer" wx:if="{{loading}}">
+    <view class="loading-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+  </view>
+
+  <!-- No More -->
+  <view class="no-more-footer" wx:if="{{!hasMore && checkIns.length > 0}}">
+    <text class="text-muted">没有更多了</text>
+  </view>
+</view>

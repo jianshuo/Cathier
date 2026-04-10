@@ -1,0 +1,82 @@
+/* Emotion Label — Step 2 page-specific overrides */
+
+.emotion-emoji {
+  margin-right: 6rpx;
+}
+
+.emotion-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.emotion-item {
+  display: flex;
+  flex-direction: column;
+  padding: 24rpx;
+  border-radius: var(--radius-medium);
+  border: 2rpx solid var(--border);
+  background-color: var(--bg);
+  transition: all 0.2s ease;
+}
+
+.emotion-item-selected {
+  background-color: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.emotion-item-header {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.emotion-emoji-large {
+  font-size: 36rpx;
+}
+
+.emotion-name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.emotion-item-selected .emotion-name {
+  color: var(--accent);
+}
+
+.emotion-definition {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 10rpx;
+  padding-left: 48rpx;
+}
+
+.selected-emotions-card {
+  background-color: var(--accent-light);
+  border: 2rpx solid var(--accent);
+}
+
+.warm-textarea {
+  width: 100%;
+  min-height: 120rpx;
+  padding: 20rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--border);
+  box-sizing: border-box;
+  margin-top: 12rpx;
+  line-height: 1.6;
+}
+
+.warm-textarea:focus {
+  border-color: var(--accent);
+}
+
+.next-btn {
+  margin-top: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
