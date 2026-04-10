@@ -1,5 +1,10 @@
 <view class="container">
-  <text class="page-heading">觉察日记</text>
+  <view class="journal-top-bar">
+    <text class="page-heading">觉察日记</text>
+    <view class="insights-btn" bindtap="onOpenInsights">
+      <text class="insights-btn-text">✨ 情绪洞察</text>
+    </view>
+  </view>
 
   <!-- Check-in List -->
   <view wx:if="{{checkIns.length > 0}}">
@@ -14,22 +19,29 @@
       <!-- Header: date + intensity -->
       <view class="checkin-header">
         <text class="text-muted checkin-date">{{item.dateFormatted}}</text>
-        <view class="intensity-badge" wx:if="{{item.intensity}}">{{item.intensity}}</view>
+        <view class="intensity-badge" wx:if="{{item.intensity}}" style="background-color: {{item.intensityColor}}20;">
+          <text class="intensity-number" style="color: {{item.intensityColor}};">{{item.intensity}}</text>
+          <text class="intensity-label" style="color: {{item.intensityColor}};">{{item.intensityLabel}}</text>
+        </view>
       </view>
 
-      <!-- Emotion chips -->
+      <!-- Emotion chips (per-category color) -->
       <view class="chip-wrap checkin-emotions" wx:if="{{item.emotions.length > 0}}">
         <view
           class="chip chip-selected chip-small"
           wx:for="{{item.emotions}}"
-          wx:for-item="emotion"
-          wx:key="*this"
-        >{{emotion}}</view>
+          wx:for-item="em"
+          wx:key="label"
+          style="background-color: {{em.categoryColor}}20; color: {{em.categoryColor}};"
+        >{{em.emoji}} {{em.label}}</view>
       </view>
 
-      <!-- Body parts + sensations -->
-      <view wx:if="{{item.bodySummary}}">
-        <text class="body-parts-text text-muted">{{item.bodySummary}}</text>
+      <!-- Body parts + sensations (grouped) -->
+      <view wx:if="{{item.bodyGroups.length > 0}}" class="checkin-body-groups">
+        <view class="body-group-row" wx:for="{{item.bodyGroups}}" wx:for-item="bg" wx:key="part">
+          <text class="body-part-name">{{bg.part}}</text>
+          <text class="body-sensations-text" wx:if="{{bg.sensationsText}}">{{bg.sensationsText}}</text>
+        </view>
       </view>
 
       <!-- Trigger -->

@@ -40,6 +40,7 @@
         data-name="{{item.name}}"
         data-emoji="{{item.emoji}}"
         bindtap="onToggleEmotion"
+        bindlongpress="onEmotionLongPress"
       >
         <text class="emotion-emoji">{{item.emoji}}</text>
         <text>{{item.name}}</text>
@@ -94,5 +95,53 @@
   <!-- Next Button -->
   <view class="btn-primary next-btn" bindtap="onNext">
     下一步：AI 反馈
+  </view>
+</view>
+
+<!-- Emotion Detail Bottom Sheet -->
+<view class="popover-overlay {{showPopover ? 'popover-overlay-visible' : ''}}" bindtap="onClosePopover">
+  <view class="popover-sheet {{showPopover ? 'popover-sheet-visible' : ''}}" catchtap="">
+    <view class="popover-handle"></view>
+
+    <!-- Emoji + Name -->
+    <view class="popover-hero" wx:if="{{popoverEmotion}}">
+      <text class="popover-emoji">{{popoverEmotion.emoji}}</text>
+      <text class="popover-name">{{popoverEmotion.name}}</text>
+    </view>
+
+    <!-- Intensity Bars -->
+    <view class="popover-intensity" wx:if="{{popoverEmotion}}">
+      <text class="popover-section-label">强度</text>
+      <view class="intensity-bars">
+        <view class="intensity-bar {{popoverEmotion.intensity >= 1 ? 'intensity-bar-active' : ''}}"></view>
+        <view class="intensity-bar {{popoverEmotion.intensity >= 2 ? 'intensity-bar-active' : ''}}"></view>
+        <view class="intensity-bar {{popoverEmotion.intensity >= 3 ? 'intensity-bar-active' : ''}}"></view>
+        <view class="intensity-bar {{popoverEmotion.intensity >= 4 ? 'intensity-bar-active' : ''}}"></view>
+        <view class="intensity-bar {{popoverEmotion.intensity >= 5 ? 'intensity-bar-active' : ''}}"></view>
+      </view>
+    </view>
+
+    <!-- Definition -->
+    <view class="popover-definition" wx:if="{{popoverEmotion.definition}}">
+      <text class="popover-section-label">释义</text>
+      <text class="popover-definition-text">{{popoverEmotion.definition}}</text>
+    </view>
+
+    <!-- Similar Emotions -->
+    <view class="popover-similar" wx:if="{{popoverDiffers.length > 0}}">
+      <text class="popover-section-label">相似情绪</text>
+      <view class="popover-similar-list">
+        <view class="popover-similar-item" wx:for="{{popoverDiffers}}" wx:key="name">
+          <text class="popover-similar-name">{{item.name}}</text>
+          <text class="popover-similar-diff">{{item.diff}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Dictionary Link -->
+    <view class="popover-link" bindtap="onGoToDictionary" wx:if="{{popoverEmotion}}">
+      <text class="popover-link-text">在词典中查看</text>
+      <text class="popover-link-arrow">›</text>
+    </view>
   </view>
 </view>

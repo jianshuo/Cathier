@@ -1,0 +1,92 @@
+<view class="container">
+  <text class="page-heading">情绪洞察</text>
+  <text class="page-subheading">发现你的情绪模式</text>
+
+  <!-- Locked State: fewer than 7 check-ins -->
+  <view class="empty-state" wx:if="{{!unlocked}}">
+    <text class="empty-state-icon">🔒</text>
+    <text class="empty-state-text">完成至少 7 次觉察记录后解锁情绪洞察</text>
+    <text class="empty-state-text text-muted" style="margin-top: 16rpx;">
+      已完成 {{checkInCount}} / 7 次
+    </text>
+  </view>
+
+  <!-- Unlocked: Analysis UI -->
+  <view wx:else>
+    <!-- Focus Mode Chips -->
+    <text class="section-label">分析视角</text>
+    <view class="chip-wrap" style="margin-bottom: var(--space-lg);">
+      <view
+        wx:for="{{focusModes}}"
+        wx:key="key"
+        class="chip {{selectedMode === index ? 'chip-selected' : ''}}"
+        data-index="{{index}}"
+        bindtap="onSelectMode"
+      >{{item.label}}</view>
+    </view>
+
+    <!-- Start Analysis Button -->
+    <button
+      class="btn-primary"
+      bindtap="onStartAnalysis"
+      disabled="{{analyzing}}"
+      style="margin-bottom: var(--space-xl);"
+    >{{analyzing ? '分析中...' : '开始分析'}}</button>
+
+    <!-- Loading Animation -->
+    <view wx:if="{{analyzing}}" class="analysis-loading">
+      <view class="loading-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+      <text class="text-muted analysis-loading-text">正在分析 {{checkInCount}} 条觉察记录...</text>
+    </view>
+
+    <!-- Result Card -->
+    <view wx:if="{{hasResult && !analyzing}}" class="insight-result-card">
+      <view class="insight-result-header">
+        <text>✨ 情绪模式分析</text>
+      </view>
+      <view class="insight-result-body">
+        <text class="text-serif">{{narrative}}</text>
+      </view>
+    </view>
+
+    <!-- History Section -->
+    <view wx:if="{{history.length > 0}}" class="history-section">
+      <text class="section-title" style="margin-top: var(--space-xl);">历史洞察</text>
+
+      <view
+        class="history-card"
+        wx:for="{{history}}"
+        wx:key="_id"
+        data-index="{{index}}"
+        bindtap="onToggleHistory"
+      >
+        <view class="history-header">
+          <text class="history-date">{{item.dateStr}}</text>
+          <view class="history-meta">
+            <text class="history-mode-tag">{{item.focusModeLabel}}</text>
+            <text class="text-muted history-count">{{item.checkInCount}}条记录</text>
+          </view>
+        </view>
+        <view class="history-body" wx:if="{{item.expanded}}">
+          <text class="text-serif history-narrative">{{item.narrative}}</text>
+        </view>
+        <view class="history-body" wx:else>
+          <text class="text-serif history-narrative text-muted">{{item.narrativePreview}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- History Loading -->
+    <view wx:if="{{historyLoading}}" class="loading-footer">
+      <view class="loading-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+    </view>
+  </view>
+</view>

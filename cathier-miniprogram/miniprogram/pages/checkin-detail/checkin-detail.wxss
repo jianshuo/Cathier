@@ -1,0 +1,156 @@
+/* Check-in Detail page */
+
+.detail-page {
+  padding-top: var(--space-xl);
+}
+
+/* --- Header --- */
+
+.detail-header {
+  margin-bottom: var(--space-lg);
+}
+
+.detail-date {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+/* --- Intensity Pill --- */
+
+.intensity-section {
+  margin-bottom: var(--space-lg);
+}
+
+.intensity-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 12rpx;
+  padding: 12rpx 28rpx;
+  border-radius: var(--radius-full);
+  font-weight: 600;
+}
+
+.intensity-val {
+  font-size: 36rpx;
+  font-weight: 700;
+}
+
+.intensity-lbl {
+  font-size: 26rpx;
+  font-weight: 500;
+}
+
+/* --- Sections --- */
+
+.detail-section {
+  margin-bottom: var(--space-lg);
+}
+
+.detail-section .section-label {
+  display: block;
+  font-size: 22rpx;
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: var(--space-sm);
+}
+
+/* --- Body Parts --- */
+
+.body-part-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.body-part-item {
+  background-color: var(--surface);
+  border-radius: var(--radius-small);
+  padding: 20rpx var(--space-md);
+}
+
+.body-part-name {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 8rpx;
+}
+
+.sensation-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+/* .sensation-tag is defined globally in app.wxss */
+
+/* --- Emotion Chips (colored by category) --- */
+
+.emotion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12rpx;
+}
+
+.emotion-chip-colored {
+  display: inline-flex;
+  align-items: center;
+  padding: 12rpx 24rpx;
+  border-radius: var(--radius-full);
+  border: 2rpx solid;
+  font-size: 28rpx;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* --- Detail Card (trigger, note) --- */
+
+.detail-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-small);
+  padding: var(--space-md);
+}
+
+.detail-text {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+/* --- Delete Button --- */
+
+.delete-area {
+  margin-top: var(--space-2xl);
+  margin-bottom: var(--space-3xl);
+  padding: 0 var(--space-lg);
+}
+
+.btn-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background-color: transparent;
+  color: var(--danger);
+  border: 2rpx solid var(--danger);
+  border-radius: var(--radius-full);
+  padding: 24rpx;
+  text-align: center;
+  font-size: 30rpx;
+  font-weight: 500;
+  box-sizing: border-box;
+  line-height: 1;
+}
+
+.btn-delete::after {
+  border: none;
+}
+
+.btn-delete:active {
+  background-color: rgba(196, 97, 74, 0.08);
+}

@@ -89,3 +89,105 @@
   font-size: 22rpx;
   margin-top: 16rpx;
 }
+
+/* About modal (bottom sheet) */
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 22, 19, 0.4);
+  z-index: 100;
+}
+
+.popup-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 101;
+  max-height: 70vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+}
+
+.popup-sheet-show {
+  transform: translateY(0);
+}
+
+.popup-handle {
+  display: flex;
+  justify-content: center;
+  padding: 20rpx 0 8rpx;
+}
+
+.popup-handle-bar {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--border);
+}
+
+.about-content {
+  padding: 16rpx 40rpx 60rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.about-title {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4rpx;
+}
+
+.about-subtitle {
+  font-size: 28rpx;
+  margin-bottom: 8rpx;
+}
+
+.about-version {
+  font-size: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.about-desc {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  text-align: center;
+  margin-bottom: 40rpx;
+}
+
+.about-links {
+  width: 100%;
+  background: var(--bg);
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+}
+
+.about-link-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 28rpx 32rpx;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.about-link-row:last-child {
+  border-bottom: none;
+}
+
+.about-link-text {
+  font-size: 28rpx;
+  color: var(--text-primary);
+}
+
+.about-link-arrow {
+  font-size: 36rpx;
+}

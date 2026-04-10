@@ -96,6 +96,11 @@
   margin-bottom: var(--space-sm);
   box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
               0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+  transition: background-color 0.15s ease;
+}
+
+.checkin-card-active {
+  background-color: var(--surface-alt);
 }
 
 .checkin-top-row {
@@ -114,29 +119,47 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6rpx;
   min-width: 48rpx;
   height: 48rpx;
   padding: 0 16rpx;
   border-radius: var(--radius-full);
-  background-color: var(--accent-light);
 }
 
 .intensity-number {
   font-size: 24rpx;
   font-weight: 600;
-  color: var(--accent);
 }
 
-/* --- Body Parts --- */
+.intensity-label {
+  font-size: 20rpx;
+  font-weight: 500;
+}
 
-.checkin-body-parts {
+/* --- Body Parts (grouped) --- */
+
+.checkin-body-groups {
   margin-bottom: 12rpx;
 }
 
-.body-parts-text {
+.body-group-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+  margin-bottom: 4rpx;
+  line-height: 1.6;
+}
+
+.body-part-name {
   font-size: 28rpx;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--accent);
+  flex-shrink: 0;
+}
+
+.body-sensations-text {
+  font-size: 26rpx;
+  color: var(--text-secondary);
 }
 
 /* --- Emotion Tags --- */
@@ -153,8 +176,9 @@
   align-items: center;
   padding: 8rpx 20rpx;
   border-radius: var(--radius-full);
-  background-color: var(--accent-light);
   font-size: 24rpx;
+  /* Default fallback; overridden by per-category inline styles */
+  background-color: var(--accent-light);
   color: var(--accent);
 }
 
@@ -201,6 +225,88 @@
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* --- Daily Journal Section --- */
+
+.journal-section {
+  margin-bottom: var(--space-md);
+}
+
+.journal-section .section-title {
+  margin-bottom: var(--space-md);
+}
+
+.journal-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+.journal-card-active {
+  opacity: 0.85;
+}
+
+.journal-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
+}
+
+.journal-mood-emoji {
+  font-size: 40rpx;
+}
+
+.journal-mood-label {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.journal-gains-preview {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 8rpx;
+}
+
+.journal-edit-hint {
+  font-size: 22rpx;
+  display: block;
+  text-align: right;
+}
+
+.journal-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  background-color: var(--surface);
+  border: 2rpx dashed var(--border);
+  border-radius: var(--radius-medium);
+  padding: 40rpx var(--space-md);
+}
+
+.journal-cta-active {
+  background-color: var(--accent-light);
+  border-color: var(--accent);
+}
+
+.journal-cta-icon {
+  font-size: 36rpx;
+}
+
+.journal-cta-text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
 }
 
 /* --- Stats Card --- */

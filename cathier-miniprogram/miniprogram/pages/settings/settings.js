@@ -3,8 +3,9 @@ Page({
     reminderEnabled: false,
     reminderTime: '21:00',
     contextBrief: '',
-    version: '1.0.0',
-    totalCheckIns: 0
+    version: '1.8',
+    totalCheckIns: 0,
+    showAbout: false
   },
 
   onLoad() {
@@ -60,16 +61,22 @@ Page({
   },
 
   onFeedback() {
-    // TODO: open feedback channel
+    wx.navigateTo({ url: '/pages/feedback/feedback' })
   },
 
   onAbout() {
-    // TODO: navigate to about page or show modal
-    wx.showModal({
-      title: '关于觉察',
-      content: '觉察是一款帮助你感知和理解自身情绪的小程序。通过身体扫描和情绪命名，培养内在觉察力。\n\n版本：' + this.data.version,
-      showCancel: false,
-      confirmText: '好的'
-    })
+    this.setData({ showAbout: true })
+  },
+
+  onCloseAbout() {
+    this.setData({ showAbout: false })
+  },
+
+  onPrivacyPolicy() {
+    wx.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent('https://cathier.app/privacy') + '&title=隐私政策' })
+  },
+
+  onTerms() {
+    wx.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent('https://cathier.app/terms') + '&title=用户协议' })
   }
 })

@@ -1,0 +1,82 @@
+<view class="container detail-page" wx:if="{{!loading}}">
+
+  <!-- Date & Time Header -->
+  <view class="detail-header">
+    <text class="detail-date">{{dateStr}}</text>
+  </view>
+
+  <!-- Intensity Badge -->
+  <view class="intensity-section" wx:if="{{checkIn.intensity > 0}}">
+    <view class="intensity-pill" style="background-color: {{intensityBg}}; color: {{intensityColor}};">
+      <text class="intensity-val">{{checkIn.intensity}}</text>
+      <text class="intensity-lbl">{{intensityLabel}}</text>
+    </view>
+  </view>
+
+  <!-- Body Sensations -->
+  <view class="detail-section" wx:if="{{bodyParts.length > 0}}">
+    <text class="section-label">身体感受</text>
+    <view class="body-part-list">
+      <view class="body-part-item" wx:for="{{bodyParts}}" wx:key="name">
+        <text class="body-part-name">{{item.name}}</text>
+        <view class="sensation-tags" wx:if="{{item.sensations.length > 0}}">
+          <text class="sensation-tag" wx:for="{{item.sensations}}" wx:for-item="s" wx:key="*this">{{s}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- Emotions -->
+  <view class="detail-section" wx:if="{{emotions.length > 0}}">
+    <text class="section-label">情绪标签</text>
+    <view class="emotion-chips">
+      <view class="emotion-chip-colored" wx:for="{{emotions}}" wx:key="name"
+            style="background-color: {{item.bgColor}}; color: {{item.color}}; border-color: {{item.color}};">
+        <text>{{item.emoji}} {{item.name}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Trigger Event -->
+  <view class="detail-section" wx:if="{{triggerEvent}}">
+    <text class="section-label">触发事件</text>
+    <view class="detail-card">
+      <text class="detail-text">{{triggerEvent}}</text>
+    </view>
+  </view>
+
+  <!-- AI Feedback -->
+  <view class="detail-section" wx:if="{{aiFeedback}}">
+    <view class="ai-card">
+      <view class="ai-card-header">
+        <text>✨ AI 觉察反馈</text>
+      </view>
+      <view class="ai-card-body">
+        <text class="text-serif">{{aiFeedback}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Note -->
+  <view class="detail-section" wx:if="{{note}}">
+    <text class="section-label">备注</text>
+    <view class="detail-card">
+      <text class="detail-text">{{note}}</text>
+    </view>
+  </view>
+
+  <!-- Delete Button -->
+  <view class="delete-area">
+    <button class="btn-delete" bindtap="onDelete">删除记录</button>
+  </view>
+
+</view>
+
+<!-- Loading State -->
+<view class="container" wx:if="{{loading}}">
+  <view class="loading-dots">
+    <view class="dot"></view>
+    <view class="dot"></view>
+    <view class="dot"></view>
+  </view>
+</view>

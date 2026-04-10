@@ -86,6 +86,92 @@ async function incrementCheckInCount() {
   })
 }
 
+// --- Daily Journal ---
+
+async function saveDailyJournal({ mood, gains, existingId }) {
+  if (existingId) {
+    // Update existing journal entry
+    await db.collection('daily_journals').doc(existingId).update({
+      data: {
+        mood,
+        gains,
+        updatedAt: db.serverDate()
+      }
+    })
+    return { _id: existingId, mood, gains }
+  }
+
+  // Create new journal entry
+  const result = await db.collection('daily_journals').add({
+    data: {
+      date: db.serverDate(),
+      mood,
+      gains,
+      isShared: false,
+      createdAt: db.serverDate()
+    }
+  })
+  return { _id: result._id, mood, gains }
+}
+
+async function getTodayJournal() {
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const tomorrow = new Date(today)
+  tomorrow.setDate(tomorrow.getDate() + 1)
+
+  const result = await db.collection('daily_journals')
+    .where({
+      createdAt: _.gte(today).and(_.lt(tomorrow))
+    })
+    .orderBy('createdAt', 'desc')
+    .limit(1)
+    .get()
+
+  return result.data.length > 0 ? result.data[0] : null
+}
+
+async function getDailyJournals(page = 0, pageSize = 20) {
+  const result = await db.collection('daily_journals')
+    .orderBy('createdAt', 'desc')
+    .skip(page * pageSize)
+    .limit(pageSize + 1)
+    .get()
+
+  const hasMore = result.data.length > pageSize
+  const data = hasMore ? result.data.slice(0, pageSize) : result.data
+
+  return { data, hasMore }
+}
+
+// --- Pattern Insights ---
+
+async function saveInsight(insightData) {
+  const result = await db.collection('insights').add({
+    data: {
+      date: db.serverDate(),
+      focusMode: insightData.focusMode,
+      narrative: insightData.narrative,
+      checkInCount: insightData.checkInCount || 0,
+      createdAt: db.serverDate()
+    }
+  })
+  return { _id: result._id, ...insightData }
+}
+
+async function getInsights(limit = 20) {
+  const result = await db.collection('insights')
+    .orderBy('createdAt', 'desc')
+    .limit(limit)
+    .get()
+  return result.data || []
+}
+
+async function getCheckInCount() {
+  const result = await db.collection('checkins').count()
+  return result.total || 0
+}
+
 module.exports = {
   saveCheckIn,
   getCheckIns,
@@ -93,5 +179,11 @@ module.exports = {
   deleteCheckIn,
   getUserPrefs,
   updateUserPrefs,
-  incrementCheckInCount
+  incrementCheckInCount,
+  saveDailyJournal,
+  getTodayJournal,
+  getDailyJournals,
+  saveInsight,
+  getInsights,
+  getCheckInCount
 }

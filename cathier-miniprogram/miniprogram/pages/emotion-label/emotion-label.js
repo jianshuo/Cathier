@@ -10,7 +10,10 @@ Page({
     selectedEmotions: [],    // array of { id, name, emoji, categoryName }
     selectedEmotionIds: [],  // flat array of ids for template indexOf checks
     trigger: '',
-    note: ''
+    note: '',
+    showPopover: false,
+    popoverEmotion: null,    // full emotion object
+    popoverDiffers: []       // array of { name, diff } for similar emotions
   },
 
   onLoad(options) {
@@ -78,6 +81,45 @@ Page({
 
   onNoteInput(e) {
     this.setData({ note: e.detail.value })
+  },
+
+  onEmotionLongPress(e) {
+    const emotionId = e.currentTarget.dataset.id
+    // Find the full emotion object from specificEmotions (current category)
+    let emotion = this.data.specificEmotions.find(em => em.id === emotionId)
+    if (!emotion) {
+      // Also search all categories in case it was selected from a different category
+      const categories = this.data.categories
+      for (let i = 0; i < categories.length; i++) {
+        emotion = (categories[i].emotions || []).find(em => em.id === emotionId)
+        if (emotion) break
+      }
+    }
+    if (!emotion) return
+
+    // Build differs list from the differs object
+    const differs = emotion.differs || {}
+    const popoverDiffers = Object.keys(differs).map(name => ({
+      name,
+      diff: differs[name]
+    }))
+
+    this.setData({
+      showPopover: true,
+      popoverEmotion: emotion,
+      popoverDiffers
+    })
+  },
+
+  onClosePopover() {
+    this.setData({ showPopover: false })
+  },
+
+  onGoToDictionary() {
+    this.setData({ showPopover: false })
+    wx.navigateTo({
+      url: '/pages/dictionary/dictionary'
+    })
   },
 
   onNext() {

@@ -3,6 +3,9 @@ module.exports = {
     {
       "id": "impassioned",
       "name": "激情",
+      "nameEn": "Impassioned",
+      "colorHex": "#FF5933",
+      "icon": "bolt.fill",
       "valence": "positive",
       "emotions": [
         {
@@ -109,6 +112,9 @@ module.exports = {
     {
       "id": "happy",
       "name": "快乐",
+      "nameEn": "Happy",
+      "colorHex": "#FFBF00",
+      "icon": "sun.max.fill",
       "valence": "positive",
       "emotions": [
         {
@@ -206,6 +212,9 @@ module.exports = {
     {
       "id": "calm",
       "name": "平静",
+      "nameEn": "Calm",
+      "colorHex": "#33ADE6",
+      "icon": "leaf.fill",
       "valence": "positive",
       "emotions": [
         {
@@ -294,6 +303,9 @@ module.exports = {
     {
       "id": "regard",
       "name": "爱与关怀",
+      "nameEn": "Love / Regard",
+      "colorHex": "#F272A5",
+      "icon": "heart.fill",
       "valence": "positive",
       "emotions": [
         {
@@ -346,6 +358,9 @@ module.exports = {
     {
       "id": "anger",
       "name": "愤怒",
+      "nameEn": "Anger",
+      "colorHex": "#F54538",
+      "icon": "flame.fill",
       "valence": "negative",
       "emotions": [
         {
@@ -425,6 +440,9 @@ module.exports = {
     {
       "id": "fear",
       "name": "恐惧",
+      "nameEn": "Fear",
+      "colorHex": "#AD52DE",
+      "icon": "exclamationmark.triangle.fill",
       "valence": "negative",
       "emotions": [
         {
@@ -504,6 +522,9 @@ module.exports = {
     {
       "id": "sad",
       "name": "悲伤",
+      "nameEn": "Disheartened",
+      "colorHex": "#5C8ABF",
+      "icon": "cloud.drizzle.fill",
       "valence": "negative",
       "emotions": [
         {
@@ -619,6 +640,9 @@ module.exports = {
     {
       "id": "shame",
       "name": "羞愧",
+      "nameEn": "Shame",
+      "colorHex": "#8C6647",
+      "icon": "eye.slash.fill",
       "valence": "negative",
       "emotions": [
         {
@@ -698,6 +722,9 @@ module.exports = {
     {
       "id": "surprise",
       "name": "惊讶",
+      "nameEn": "Surprise",
+      "colorHex": "#FF9400",
+      "icon": "sparkles",
       "valence": "neutral",
       "emotions": [
         {

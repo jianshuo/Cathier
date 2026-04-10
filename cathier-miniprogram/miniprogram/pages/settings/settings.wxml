@@ -64,4 +64,28 @@
     <text class="disclaimer">如有心理健康问题，请咨询专业人士</text>
     <text class="version-text text-muted">版本 {{version}}</text>
   </view>
+
+  <!-- About Modal -->
+  <view class="popup-mask" wx:if="{{showAbout}}" bindtap="onCloseAbout"></view>
+  <view class="popup-sheet {{showAbout ? 'popup-sheet-show' : ''}}" wx:if="{{showAbout}}">
+    <view class="popup-handle" bindtap="onCloseAbout">
+      <view class="popup-handle-bar"></view>
+    </view>
+    <view class="about-content">
+      <text class="about-title">觉察</text>
+      <text class="about-subtitle text-muted">Cathier</text>
+      <text class="about-version text-muted">版本 {{version}}</text>
+      <text class="about-desc">觉察是一款情绪感知训练工具。通过「身体扫描 → 躯体感受标注 → 情绪命名」三步流程，帮助你建立身体感受与情绪的连接，培养内在觉察力。</text>
+      <view class="about-links">
+        <view class="about-link-row" bindtap="onPrivacyPolicy">
+          <text class="about-link-text">隐私政策</text>
+          <text class="about-link-arrow text-muted">›</text>
+        </view>
+        <view class="about-link-row" bindtap="onTerms">
+          <text class="about-link-text">用户协议</text>
+          <text class="about-link-arrow text-muted">›</text>
+        </view>
+      </view>
+    </view>
+  </view>
 </view>

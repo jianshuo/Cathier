@@ -1,5 +1,25 @@
 const { getCheckIns, deleteCheckIn } = require('../../utils/cloud-db')
 
+const CATEGORY_COLORS = {
+  '激情': '#FF5933',
+  '快乐': '#FFBF00',
+  '平静': '#33ADE6',
+  '爱与关怀': '#F272A5',
+  '愤怒': '#F54538',
+  '恐惧': '#AD52DE',
+  '悲伤': '#5C8ABF',
+  '羞愧': '#8C6647',
+  '惊讶': '#FF9400'
+}
+
+function getIntensityInfo(intensity) {
+  if (intensity <= 0) return { color: '', label: '' }
+  if (intensity <= 3) return { color: '#FFBF00', label: '轻微' }
+  if (intensity <= 6) return { color: '#F2700A', label: '中等' }
+  if (intensity <= 8) return { color: '#D96308', label: '较强' }
+  return { color: '#F54538', label: '强烈' }
+}
+
 Page({
   data: {
     checkIns: [],
@@ -43,31 +63,40 @@ Page({
         const date = r.date ? new Date(r.date) : (r.createdAt ? new Date(r.createdAt) : new Date())
         const dateFormatted = `${date.getMonth() + 1}月${date.getDate()}日 ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`
 
-        const emotionNames = (r.emotions || []).map(em => {
-          if (typeof em === 'string') return em
-          return em.emoji ? `${em.emoji} ${em.name}` : em.name
+        const emotions = (r.emotions || []).map(em => {
+          if (typeof em === 'string') return { label: em, emoji: '', categoryColor: '' }
+          const catColor = CATEGORY_COLORS[em.categoryName] || ''
+          return {
+            label: em.name || em.label || '',
+            emoji: em.emoji || '',
+            categoryColor: catColor
+          }
         })
 
-        // Build body summary with sensations: "胸口(紧绷、沉重)、肩膀(僵硬)"
+        // Build body groups for per-line display
         const bs = r.bodySensations || {}
-        const bodySummary = Object.keys(bs).map(part => {
-          const sensations = bs[part]
-          if (sensations && sensations.length > 0) {
-            return `${part}(${sensations.join('、')})`
-          }
-          return part
-        }).join('、')
+        const bodyGroups = Object.keys(bs).map(part => {
+          const sns = bs[part] || []
+          return { part, sensations: sns, sensationsText: sns.join('、') }
+        })
+        const bodySummary = bodyGroups.length > 0 ? 'has_body' : ''
+
+        // Intensity color coding
+        const intensityInfo = getIntensityInfo(r.intensity || 0)
+
         const feedbackPreview = (r.aiFeedback || '').substring(0, 50)
 
         return {
           _id: r._id,
           dateFormatted,
-          emotions: emotionNames,
+          emotions,
+          bodyGroups,
           bodySummary,
           intensity: r.intensity || 0,
+          intensityColor: intensityInfo.color,
+          intensityLabel: intensityInfo.label,
           trigger: r.triggerEvent || r.trigger || '',
-          feedbackPreview: feedbackPreview ? feedbackPreview + (r.aiFeedback && r.aiFeedback.length > 50 ? '...' : '') : '',
-          category: emotionNames.length > 0 ? emotionNames[0] : ''
+          feedbackPreview: feedbackPreview ? feedbackPreview + (r.aiFeedback && r.aiFeedback.length > 50 ? '...' : '') : ''
         }
       })
 
@@ -91,6 +120,10 @@ Page({
     const id = e.currentTarget.dataset.id
     // Could navigate to detail page in future
     console.log('Tapped check-in:', id)
+  },
+
+  onOpenInsights() {
+    wx.navigateTo({ url: '/pages/insights/insights' })
   },
 
   onDeleteCheckIn(e) {

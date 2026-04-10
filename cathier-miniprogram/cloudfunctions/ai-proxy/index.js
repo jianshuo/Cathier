@@ -47,6 +47,9 @@ function formatBodySensations(bodySensations) {
  */
 function buildUserMessage(event) {
   const lines = ['我的觉察记录：']
+  if (event.contextBrief) {
+    lines.push(`关于我：${event.contextBrief}`)
+  }
   lines.push(`身体感受：${formatBodySensations(event.bodySensations)}`)
   lines.push(`情绪：${Array.isArray(event.emotions) ? event.emotions.join('、') : '无'}`)
   lines.push(`强度：${event.intensity || '?'}/10`)

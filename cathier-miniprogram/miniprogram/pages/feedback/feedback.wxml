@@ -1,0 +1,20 @@
+<view class="container">
+  <text class="page-heading">意见反馈</text>
+  <text class="page-subheading">你的反馈帮助我们做得更好</text>
+
+  <view class="card">
+    <textarea
+      class="feedback-textarea"
+      placeholder="请描述你遇到的问题或建议..."
+      value="{{feedbackText}}"
+      bindinput="onInput"
+      maxlength="1000"
+      auto-height
+    />
+    <text class="char-count text-muted">{{feedbackText.length || 0}}/1000</text>
+  </view>
+
+  <button class="btn-primary" bindtap="onSubmit" disabled="{{!feedbackText || submitting}}">
+    {{submitting ? '提交中...' : '提交反馈'}}
+  </button>
+</view>

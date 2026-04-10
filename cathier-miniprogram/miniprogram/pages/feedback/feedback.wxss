@@ -1,0 +1,19 @@
+.feedback-textarea {
+  width: 100%;
+  min-height: 240rpx;
+  padding: 24rpx;
+  font-size: 28rpx;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--border);
+  box-sizing: border-box;
+  line-height: 1.7;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  font-size: 22rpx;
+  margin-top: 12rpx;
+}

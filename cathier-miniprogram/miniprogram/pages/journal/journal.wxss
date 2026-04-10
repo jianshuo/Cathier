@@ -1,5 +1,27 @@
 /* Journal — check-in list page-specific overrides */
 
+.journal-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.insights-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10rpx 24rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--accent-light);
+  border: 2rpx solid var(--accent);
+}
+
+.insights-btn-text {
+  font-size: 24rpx;
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .checkin-header {
   display: flex;
   justify-content: space-between;
@@ -15,13 +37,23 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 48rpx;
+  gap: 6rpx;
+  min-width: 48rpx;
   height: 48rpx;
-  border-radius: 50%;
-  background-color: var(--accent-light);
-  color: var(--accent);
+  padding: 0 16rpx;
+  border-radius: var(--radius-full, 999rpx);
   font-size: 24rpx;
   font-weight: 600;
+}
+
+.intensity-number {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.intensity-label {
+  font-size: 20rpx;
+  font-weight: 500;
 }
 
 .checkin-emotions {
@@ -33,9 +65,30 @@
   font-size: 24rpx;
 }
 
-.body-parts-text {
+/* --- Body Parts (grouped) --- */
+
+.checkin-body-groups {
+  margin-bottom: 12rpx;
+}
+
+.body-group-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8rpx;
+  margin-bottom: 4rpx;
+  line-height: 1.6;
+}
+
+.body-part-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.body-sensations-text {
   font-size: 24rpx;
-  margin-bottom: 8rpx;
+  color: var(--text-secondary);
 }
 
 .checkin-trigger {

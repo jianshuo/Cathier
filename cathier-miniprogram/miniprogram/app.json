@@ -6,7 +6,12 @@
     "pages/body-scan/body-scan",
     "pages/emotion-label/emotion-label",
     "pages/ai-feedback/ai-feedback",
-    "pages/settings/settings"
+    "pages/settings/settings",
+    "pages/checkin-detail/checkin-detail",
+    "pages/journal-entry/journal-entry",
+    "pages/insights/insights",
+    "pages/feedback/feedback",
+    "pages/webview/webview"
   ],
   "tabBar": {
     "color": "#8B8B8B",

@@ -80,3 +80,163 @@
   margin-top: var(--space-lg);
   margin-bottom: var(--space-lg);
 }
+
+/* --- Emotion Detail Popover / Bottom Sheet --- */
+
+.popover-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(26, 22, 19, 0);
+  z-index: 1000;
+  pointer-events: none;
+  transition: background-color 0.3s ease;
+}
+
+.popover-overlay-visible {
+  background-color: rgba(26, 22, 19, 0.45);
+  pointer-events: auto;
+}
+
+.popover-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface);
+  border-radius: var(--radius-large) var(--radius-large) 0 0;
+  padding: 16rpx var(--space-lg) var(--space-2xl);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 75vh;
+  overflow-y: auto;
+  z-index: 1001;
+}
+
+.popover-sheet-visible {
+  transform: translateY(0);
+}
+
+.popover-handle {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--border);
+  margin: 0 auto 32rpx;
+}
+
+/* Hero: emoji + name */
+.popover-hero {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-bottom: var(--space-lg);
+}
+
+.popover-emoji {
+  font-size: 72rpx;
+}
+
+.popover-name {
+  font-size: 48rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: 'Noto Serif SC', 'Songti SC', 'STSong', serif;
+}
+
+/* Intensity bars */
+.popover-intensity {
+  margin-bottom: var(--space-md);
+}
+
+.popover-section-label {
+  display: block;
+  font-size: 24rpx;
+  color: var(--text-muted);
+  margin-bottom: 12rpx;
+  text-transform: uppercase;
+  letter-spacing: 4rpx;
+}
+
+.intensity-bars {
+  display: flex;
+  gap: 8rpx;
+}
+
+.intensity-bar {
+  width: 64rpx;
+  height: 12rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--border);
+  transition: background-color 0.2s ease;
+}
+
+.intensity-bar-active {
+  background-color: var(--accent);
+}
+
+/* Definition */
+.popover-definition {
+  margin-bottom: var(--space-md);
+}
+
+.popover-definition-text {
+  font-size: 30rpx;
+  color: var(--text-primary);
+  line-height: 1.8;
+}
+
+/* Similar emotions */
+.popover-similar {
+  margin-bottom: var(--space-md);
+}
+
+.popover-similar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16rpx;
+}
+
+.popover-similar-item {
+  padding: 20rpx;
+  background-color: var(--surface-alt);
+  border-radius: var(--radius-small);
+}
+
+.popover-similar-name {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--accent);
+  margin-bottom: 6rpx;
+}
+
+.popover-similar-diff {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Dictionary link */
+.popover-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 24rpx;
+  margin-top: var(--space-sm);
+  border-top: 2rpx solid var(--border);
+}
+
+.popover-link-text {
+  font-size: 30rpx;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.popover-link-arrow {
+  font-size: 36rpx;
+  color: var(--accent);
+}

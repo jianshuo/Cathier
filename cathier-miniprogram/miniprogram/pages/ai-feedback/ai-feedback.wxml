@@ -90,6 +90,13 @@
     </view>
   </view>
 
+  <!-- Micro-exercise Button (shown after AI feedback loads) -->
+  <view class="exercise-entry" wx:if="{{feedback && !loading && !error}}" bindtap="onOpenExercise">
+    <text class="exercise-entry-icon">🧘</text>
+    <text class="exercise-entry-text">试试觉察练习</text>
+    <text class="exercise-entry-arrow">›</text>
+  </view>
+
   <!-- Action Buttons (always visible) -->
   <view class="action-buttons">
     <view class="btn-primary {{saved ? 'btn-saved' : ''}}" bindtap="onSave">
@@ -98,4 +105,24 @@
   </view>
 
   <view class="disclaimer">本小程序不提供医疗建议，AI反馈仅供参考</view>
+</view>
+
+<!-- Micro-exercise Bottom Sheet Overlay -->
+<view class="overlay {{showExercise ? 'overlay-visible' : ''}}" bindtap="onCloseExercise">
+  <view class="exercise-sheet {{showExercise ? 'exercise-sheet-visible' : ''}}" catchtap="">
+    <view class="exercise-sheet-handle"></view>
+    <view class="exercise-header">
+      <text class="exercise-title">{{exerciseData.title}}</text>
+      <view class="exercise-close" bindtap="onCloseExercise">✕</view>
+    </view>
+    <view class="exercise-steps">
+      <view class="exercise-step" wx:for="{{exerciseData.steps}}" wx:key="index">
+        <view class="exercise-step-num">{{index + 1}}</view>
+        <text class="exercise-step-text">{{item}}</text>
+      </view>
+    </view>
+    <view class="exercise-footer">
+      <text class="exercise-hint">完成后，留意身体有什么变化</text>
+    </view>
+  </view>
 </view>

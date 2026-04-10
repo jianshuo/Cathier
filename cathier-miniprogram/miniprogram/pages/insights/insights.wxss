@@ -1,0 +1,109 @@
+/* Insights — Pattern analysis page */
+
+.analysis-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-md) 0;
+}
+
+.analysis-loading-text {
+  font-size: 26rpx;
+  margin-top: var(--space-sm);
+}
+
+/* Result Card */
+.insight-result-card {
+  border-radius: var(--radius-medium);
+  overflow: hidden;
+  box-shadow: 0 2rpx 16rpx rgba(26, 22, 19, 0.06),
+              0 1rpx 4rpx rgba(26, 22, 19, 0.04);
+  margin-bottom: var(--space-lg);
+}
+
+.insight-result-header {
+  background-color: var(--accent-light);
+  padding: 20rpx var(--space-md);
+  display: flex;
+  align-items: center;
+}
+
+.insight-result-header text {
+  font-size: 24rpx;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+
+.insight-result-body {
+  background-color: var(--surface);
+  padding: var(--space-md);
+}
+
+.insight-result-body .text-serif {
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+
+/* History Section */
+.history-section {
+  margin-top: var(--space-md);
+}
+
+.history-card {
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.history-date {
+  font-size: 26rpx;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.history-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.history-mode-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4rpx 16rpx;
+  border-radius: var(--radius-full);
+  font-size: 22rpx;
+  color: var(--accent);
+  background-color: var(--accent-light);
+}
+
+.history-count {
+  font-size: 22rpx;
+}
+
+.history-body {
+  margin-top: 8rpx;
+}
+
+.history-narrative {
+  font-size: 26rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.loading-footer {
+  padding: 32rpx;
+}

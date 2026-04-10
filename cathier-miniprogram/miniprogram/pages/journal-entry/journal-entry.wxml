@@ -1,0 +1,37 @@
+<view class="container journal-entry-page">
+  <!-- Mood Selector -->
+  <view class="section">
+    <text class="section-title">今天的心情</text>
+    <view class="mood-row">
+      <view
+        class="mood-item {{selectedMood === item.value ? 'mood-selected' : ''}}"
+        wx:for="{{moods}}"
+        wx:key="value"
+        bindtap="onSelectMood"
+        data-value="{{item.value}}"
+      >
+        <text class="mood-emoji">{{item.emoji}}</text>
+        <text class="mood-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- Gains / Learnings -->
+  <view class="section">
+    <text class="section-title">今日收获</text>
+    <text class="section-subtitle">记录今天学到的、感悟的、值得珍惜的</text>
+    <textarea
+      class="warm-textarea gains-textarea"
+      placeholder="今天有什么收获或感悟？"
+      value="{{gains}}"
+      bindinput="onGainsInput"
+      maxlength="2000"
+      auto-height
+    />
+  </view>
+
+  <!-- Save Button -->
+  <button class="btn-primary save-btn" bindtap="onSave" disabled="{{saving}}">
+    {{saving ? '保存中...' : (isEdit ? '更新' : '保存')}}
+  </button>
+</view>

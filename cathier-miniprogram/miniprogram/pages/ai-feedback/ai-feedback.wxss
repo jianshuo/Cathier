@@ -98,3 +98,150 @@
 .done-btn {
   /* inherits btn-secondary from global */
 }
+
+/* --- Micro-exercise Entry Button --- */
+
+.exercise-entry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12rpx;
+  margin-top: var(--space-md);
+  padding: 24rpx 32rpx;
+  background-color: var(--sage-light);
+  border-radius: var(--radius-medium);
+  border: 2rpx solid var(--sage);
+}
+
+.exercise-entry-icon {
+  font-size: 36rpx;
+}
+
+.exercise-entry-text {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: var(--sage);
+}
+
+.exercise-entry-arrow {
+  font-size: 36rpx;
+  color: var(--sage);
+  margin-left: 8rpx;
+}
+
+/* --- Overlay & Bottom Sheet --- */
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(26, 22, 19, 0);
+  z-index: 1000;
+  pointer-events: none;
+  transition: background-color 0.3s ease;
+}
+
+.overlay-visible {
+  background-color: rgba(26, 22, 19, 0.45);
+  pointer-events: auto;
+}
+
+.exercise-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--surface);
+  border-radius: var(--radius-large) var(--radius-large) 0 0;
+  padding: 16rpx var(--space-lg) var(--space-2xl);
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  max-height: 80vh;
+  overflow-y: auto;
+  z-index: 1001;
+}
+
+.exercise-sheet-visible {
+  transform: translateY(0);
+}
+
+.exercise-sheet-handle {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: var(--radius-full);
+  background-color: var(--border);
+  margin: 0 auto 24rpx;
+}
+
+.exercise-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.exercise-title {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.exercise-close {
+  width: 56rpx;
+  height: 56rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32rpx;
+  color: var(--text-muted);
+  background-color: var(--bg);
+  border-radius: 50%;
+}
+
+.exercise-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+  margin-bottom: var(--space-lg);
+}
+
+.exercise-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 20rpx;
+}
+
+.exercise-step-num {
+  flex-shrink: 0;
+  width: 48rpx;
+  height: 48rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--sage-light);
+  color: var(--sage);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.exercise-step-text {
+  font-size: 30rpx;
+  color: var(--text-primary);
+  line-height: 1.7;
+  padding-top: 6rpx;
+}
+
+.exercise-footer {
+  text-align: center;
+  padding-top: var(--space-sm);
+  border-top: 2rpx solid var(--border);
+}
+
+.exercise-hint {
+  font-size: 26rpx;
+  color: var(--text-muted);
+  font-style: italic;
+}

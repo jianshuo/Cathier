@@ -19,23 +19,27 @@
   <view class="today-section" wx:if="{{todayCheckIns.length > 0}}">
     <text class="section-title">今日记录</text>
 
-    <view class="checkin-card" wx:for="{{todayCheckIns}}" wx:key="_id">
+    <view class="checkin-card" wx:for="{{todayCheckIns}}" wx:key="_id" bindtap="onCheckInTap" data-id="{{item._id}}" hover-class="checkin-card-active">
       <!-- Top row: time + intensity -->
       <view class="checkin-top-row">
         <text class="checkin-time">{{item.time}}</text>
-        <view class="intensity-badge" wx:if="{{item.intensity > 0}}">
-          <text class="intensity-number">{{item.intensity}}</text>
+        <view class="intensity-badge" wx:if="{{item.intensity > 0}}" style="background-color: {{item.intensityColor}}20;">
+          <text class="intensity-number" style="color: {{item.intensityColor}};">{{item.intensity}}</text>
+          <text class="intensity-label" style="color: {{item.intensityColor}};">{{item.intensityLabel}}</text>
         </view>
       </view>
 
-      <!-- Body parts + sensations -->
-      <view wx:if="{{item.bodySummary}}" class="checkin-body-parts">
-        <text class="body-parts-text">{{item.bodySummary}}</text>
+      <!-- Body parts + sensations (grouped) -->
+      <view wx:if="{{item.bodyGroups.length > 0}}" class="checkin-body-groups">
+        <view class="body-group-row" wx:for="{{item.bodyGroups}}" wx:for-item="bg" wx:key="part">
+          <text class="body-part-name">{{bg.part}}</text>
+          <text class="body-sensations-text" wx:if="{{bg.sensationsText}}">{{bg.sensationsText}}</text>
+        </view>
       </view>
 
-      <!-- Emotion chips -->
+      <!-- Emotion chips (per-category color) -->
       <view class="checkin-emotions" wx:if="{{item.emotions.length > 0}}">
-        <view class="emotion-tag" wx:for="{{item.emotions}}" wx:for-item="em" wx:key="label">
+        <view class="emotion-tag" wx:for="{{item.emotions}}" wx:for-item="em" wx:key="label" style="background-color: {{em.categoryColor}}20; color: {{em.categoryColor}};">
           <text>{{em.emoji}} {{em.label}}</text>
         </view>
       </view>
@@ -51,6 +55,27 @@
         <text class="feedback-icon">✨</text>
         <text class="feedback-text">{{item.feedbackPreview}}</text>
       </view>
+    </view>
+  </view>
+
+  <!-- Daily Journal -->
+  <view class="journal-section">
+    <text class="section-title">今日收获</text>
+
+    <!-- Existing journal card -->
+    <view class="journal-card" wx:if="{{todayJournal}}" bindtap="onWriteJournal" hover-class="journal-card-active">
+      <view class="journal-card-top">
+        <text class="journal-mood-emoji">{{todayJournal.moodEmoji}}</text>
+        <text class="journal-mood-label">{{todayJournal.moodLabel}}</text>
+      </view>
+      <text class="journal-gains-preview">{{todayJournal.gainsPreview}}</text>
+      <text class="journal-edit-hint text-muted">点击编辑</text>
+    </view>
+
+    <!-- No journal yet — CTA button -->
+    <view class="journal-cta" wx:else bindtap="onWriteJournal" hover-class="journal-cta-active">
+      <text class="journal-cta-icon">📝</text>
+      <text class="journal-cta-text">写下今日收获</text>
     </view>
   </view>
 

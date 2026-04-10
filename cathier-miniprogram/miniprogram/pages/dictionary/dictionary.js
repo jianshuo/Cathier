@@ -59,6 +59,8 @@ Page({
     const categories = (emotions.categories || []).map(cat => ({
       id: cat.id,
       name: cat.name,
+      nameEn: cat.nameEn || '',
+      colorHex: cat.colorHex || '',
       valence: cat.valence,
       count: cat.emotions.length,
       emotions: cat.emotions.map(em => {
@@ -66,6 +68,7 @@ Page({
         return {
           id: em.id,
           name: em.name,
+          nameEn: rich.nameEn || em.nameEn || '',
           emoji: em.emoji,
           definition: em.definition || '',
           similarTo: em.similarTo || [],
@@ -145,6 +148,8 @@ Page({
         ...em,
         categoryName: cat.name,
         categoryValence: cat.valence,
+        categoryColor: cat.colorHex || '',
+        nameEn: em.nameEn || '',
         intensityDots
       }
     })
