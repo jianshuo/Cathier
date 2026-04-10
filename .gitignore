@@ -50,6 +50,12 @@ secrets.plist
 # Marketing assets (synced via iCloud, not git)
 marketing/
 
+# Editor config
+.obsidian/
+
+# Draft design specs
+docs/designs/
+
 # WeChat Mini Program
 cathier-miniprogram/node_modules/
 cathier-miniprogram/miniprogram_npm/
