@@ -97,19 +97,18 @@ struct CheckInCard: View {
             ForEach(checkIn.bodyParts, id: \.self) { part in
                 let sensations = grouped[part] ?? []
                 let partName = lm.display(part)
-                HStack(spacing: 0) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(partName)
                         .font(.subheadline)
                         .fontWeight(.medium)
                         .foregroundColor(.cathierAccent)
                     if !sensations.isEmpty {
-                        Text("  ")
                         Text(sensations.map { lm.display($0) }.joined(separator: " · "))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
-                .fixedSize(horizontal: false, vertical: true)
             }
             // Legacy data without body part prefix
             let unmatched = checkIn.sensations
