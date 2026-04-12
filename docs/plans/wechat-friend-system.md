@@ -58,35 +58,39 @@
 ```
 Note: Each friendship creates 2 records (one per user's `_openid`) so both users can query their friendships. WeChat Cloud DB security rules require `_openid` match for reads.
 
-**Collection: `shared_checkins`**
+**Collection: `checkins` (existing — add 2 fields)**
 ```
 {
-  _id: auto,
-  _openid: auto (sharer),
-  ownerOpenId: String,
-  ownerProfileId: String,
-  date: Date,
-  emotions: Array<{id, name, emoji, categoryName}>,
-  bodySensations: Object ({"胸口": ["紧绷", "沉重"]}),
-  intensity: Number (1-10),
-  triggerEvent: String,
-  note: String,
-  aiFeedback: String,
-  privacyTier: String ("category" | "emotions" | "full"),
-  createdAt: serverDate()
+  // ... existing fields unchanged ...
+  date, bodySensations, intensity, emotions, note, aiFeedback, triggerEvent, createdAt,
+
+  // NEW: sharing control (no separate shared_checkins table)
+  shareLevel: String (null | "category" | "emotions" | "full"),
+    // null = private (default, not visible to friends)
+    // "category" = only emotion category names + intensity visible
+    // "emotions" = emotions + body parts visible
+    // "full" = everything visible including trigger, note, AI feedback
+  sharedAt: Date? (when sharing was enabled, null if private)
 }
 ```
-Privacy tier controls what the reader can see:
-- `category`: only `emotions[].categoryName` (deduplicated), intensity
-- `emotions`: emotions (full), bodySensations, intensity
-- `full`: everything including triggerEvent, note, aiFeedback
+
+**No `shared_checkins` collection.** One table, one record per check-in. The `shareLevel` field controls visibility. The friend feed cloud function queries checkins where `shareLevel != null` and filters returned fields based on the tier.
+
+**Why this works:** WeChat Cloud DB requires `_openid` match for direct reads, so friends can't read each other's checkins directly. The `getFriendFeed` cloud function runs with admin privileges and does the cross-user query + field filtering server-side. The client never sees fields above its tier.
+
+**Benefits over copy approach:**
+- Single source of truth (no data sync issues)
+- User can change sharing level or unshare without deleting a copy
+- Check-in edits (if added later) don't need dual updates
+- Simpler data model, fewer collections to maintain
 
 **Collection: `reactions`**
 ```
 {
   _id: auto,
   _openid: auto (reactor),
-  sharedCheckInId: String,
+  checkinId: String (references checkins._id),
+  checkinOwnerOpenId: String (for querying),
   emoji: String (one of: ❤️ 🤗 🌸 🥺 💪),
   reactorProfileId: String,
   reactorName: String,
@@ -98,25 +102,34 @@ Privacy tier controls what the reader can see:
 ```
 USER A (sharer)                          USER B (friend)
     │                                        │
-    ├─ Creates check-in (local)              │
-    ├─ Selects privacy tier                  │
-    ├─ Saves to `checkins` (private)         │
-    ├─ Copies to `shared_checkins`           │
-    │   (filtered by privacy tier)           │
+    ├─ Creates check-in                      │
+    ├─ Selects shareLevel (tier picker)      │
+    ├─ Saves to `checkins` with shareLevel   │
+    │   (single record, no copy)             │
     │                                        │
-    │                    ┌───────────────────►├─ Queries `friendships` (own _openid)
-    │                    │                   ├─ Gets friend openIds
-    │                    │                   ├─ Queries `shared_checkins`
-    │                    │                   │   WHERE ownerOpenId IN friendOpenIds
-    │                    │                   ├─ Filters display by privacyTier
-    │                    │                   └─ Renders feed
-    │                    │
-    │         INVITE FLOW:
-    │                    │
+    │              CLOUD FUNCTION            │
+    │              getFriendFeed              │
+    │                    │                   │
+    │                    ├─ Query B's friendships
+    │                    ├─ Get friend openIds (includes A)
+    │                    ├─ Query `checkins`
+    │                    │   WHERE _openid IN friendOpenIds
+    │                    │   AND shareLevel != null
+    │                    ├─ Filter fields by shareLevel:
+    │                    │   category → only categories + intensity
+    │                    │   emotions → + emotions + body parts
+    │                    │   full     → everything
+    │                    └──────────────────►├─ Renders feed
+    │                                        │
+    │         INVITE FLOW:                   │
     ├─ Generates invite_code ──────────────►├─ Enters code
-    │                                        ├─ Validates code (cloud function)
+    │                                        ├─ Validates (cloud function)
     │                                        ├─ Creates 2 friendship records
-    │                                        └─ Both users see each other in feed
+    │                                        └─ Both see each other's shared checkins
+    │                                        │
+    │         CHANGE SHARING:                │
+    ├─ Update shareLevel on existing checkin │
+    │   (immediate, no copy/delete needed)   │
 ```
 
 ### Security Rules
@@ -197,7 +210,7 @@ Handles all friend operations that need admin privileges:
 4. `removeFriend` — delete both friendship records
 5. `getFriendFeed` — query friendships, then query shared_checkins for all friend openIds, sort by date desc, paginate
 
-The feed query is the most complex:
+The feed query reads from the single `checkins` collection:
 ```javascript
 // 1. Get my friendships
 const friendships = await db.collection('friendships')
@@ -211,13 +224,34 @@ const friendOpenIds = friendships.data.map(f =>
     : f.initiatorOpenId
 )
 
-// 3. Get shared check-ins from friends
-const feed = await db.collection('shared_checkins')
-  .where({ ownerOpenId: db.command.in(friendOpenIds) })
+// 3. Get shared check-ins from friends (single table, no copy)
+const feed = await db.collection('checkins')
+  .where({
+    _openid: db.command.in(friendOpenIds),
+    shareLevel: db.command.neq(null)  // only shared ones
+  })
   .orderBy('date', 'desc')
   .skip(page * 20)
   .limit(21)
   .get()
+
+// 4. Filter fields server-side by shareLevel
+const filtered = feed.data.map(checkin => {
+  const base = { _id: checkin._id, _openid: checkin._openid,
+    date: checkin.date, intensity: checkin.intensity,
+    shareLevel: checkin.shareLevel, createdAt: checkin.createdAt }
+  if (checkin.shareLevel === 'category') {
+    // Deduplicate to category names only
+    const categories = [...new Set(checkin.emotions.map(e => e.categoryName))]
+    return { ...base, categories }
+  }
+  if (checkin.shareLevel === 'emotions') {
+    return { ...base, emotions: checkin.emotions, bodySensations: checkin.bodySensations }
+  }
+  // 'full' — everything
+  return { ...base, emotions: checkin.emotions, bodySensations: checkin.bodySensations,
+    triggerEvent: checkin.triggerEvent, note: checkin.note, aiFeedback: checkin.aiFeedback }
+})
 ```
 
 ### `react` (new cloud function)
@@ -233,7 +267,8 @@ Toggle a reaction on a shared check-in:
 Add privacy tier picker before the save button:
 - Show only if user has a profile (check `user_profiles`)
 - Default: 不分享
-- On save: if tier is not "private", copy check-in data to `shared_checkins` with selected tier
+- On save: set `shareLevel` field on the checkin record (no copy needed)
+- Changing tier later: update `shareLevel` on the existing record
 
 ### `pages/settings/settings.wxml` + `.js`
 Add "好友" entry in settings that navigates to `/pages/friends/friends`
@@ -248,9 +283,8 @@ Add new pages:
 Add functions:
 - `saveProfile(data)` — create/update user_profiles
 - `getMyProfile()` — get current user's profile
-- `shareCheckIn(checkInData, privacyTier)` — write to shared_checkins
-- `unshareCheckIn(sharedCheckInId)` — delete from shared_checkins
-- `toggleReaction(sharedCheckInId, emoji)` — call react cloud function
+- `updateShareLevel(checkinId, shareLevel)` — update shareLevel on existing checkin (no copy)
+- `toggleReaction(checkinId, emoji)` — call react cloud function
 
 ---
 
@@ -260,14 +294,14 @@ Add functions:
 |-------|------|--------|------------|
 | 1 | User profile (setup + storage) | S | Nothing |
 | 2 | Invite code flow (generate + validate + accept) | M | Phase 1 |
-| 3 | Friend feed (query + display) | M | Phase 2 |
-| 4 | Privacy tier picker in ai-feedback | S | Phase 1 |
-| 5 | Shared check-in write (on save) | S | Phase 4 |
-| 6 | FriendCheckInCard component | M | Phase 3 |
-| 7 | Emoji reactions | S | Phase 6 |
-| 8 | Friend management (list + remove) | S | Phase 2 |
+| 3 | Privacy tier picker in ai-feedback (set shareLevel on save) | S | Phase 1 |
+| 4 | Friend feed cloud function (query + field filter) | M | Phase 2 |
+| 5 | Friend feed page + FriendCheckInCard | M | Phase 4 |
+| 6 | Emoji reactions | S | Phase 5 |
+| 7 | Friend management (list + remove) | S | Phase 2 |
 
-**Total estimated effort:** M-L (human: ~3 days / CC: ~2 hours)
+**Total estimated effort:** M (human: ~2.5 days / CC: ~1.5 hours)
+Note: One fewer phase than the copy approach — no "shared check-in write" step needed.
 
 ---
 
