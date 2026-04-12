@@ -35,6 +35,12 @@
         "selectedIconPath": "images/tab-journal-active.png"
       },
       {
+        "pagePath": "pages/friends/friends",
+        "text": "好友",
+        "iconPath": "images/tab-friends.png",
+        "selectedIconPath": "images/tab-friends-active.png"
+      },
+      {
         "pagePath": "pages/dictionary/dictionary",
         "text": "觉察词典",
         "iconPath": "images/tab-dict.png",

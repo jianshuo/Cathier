@@ -46,10 +46,11 @@
 
 .setup-name-input {
   width: 100%;
-  padding: 20rpx 24rpx;
+  height: 88rpx;
+  padding: 0 24rpx;
   font-size: 30rpx;
   color: var(--text-primary);
-  background-color: var(--bg);
+  background-color: #FFFFFF;
   border-radius: var(--radius-small);
   border: 2rpx solid var(--border);
   box-sizing: border-box;
