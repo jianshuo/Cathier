@@ -53,11 +53,10 @@ struct CheckInCard: View {
                             .font(.caption2)
                             .foregroundColor(.cathierAccent)
                             .padding(.top, 2)
-                        Text(LocalizedStringKey(checkIn.aiFeedback))
+                        Text(checkIn.aiFeedback)
                             .font(.subheadline)
                             .foregroundColor(.primary)
                             .lineLimit(3)
-                            .fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
                         Image(systemName: "chevron.right")
                             .font(.caption2)
@@ -76,7 +75,6 @@ struct CheckInCard: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .lineLimit(2)
-                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
@@ -106,7 +104,6 @@ struct CheckInCard: View {
                         Text(sensations.map { lm.display($0) }.joined(separator: " · "))
                             .font(.subheadline)
                             .foregroundColor(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
@@ -118,7 +115,6 @@ struct CheckInCard: View {
                 Text(unmatched.joined(separator: " · "))
                     .font(.subheadline)
                     .foregroundColor(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

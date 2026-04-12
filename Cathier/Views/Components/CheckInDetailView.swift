@@ -105,7 +105,6 @@ struct CheckInDetailView: View {
                                 .font(.body)
                                 .foregroundColor(.primary)
                                 .lineSpacing(4)
-                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
 
@@ -138,7 +137,6 @@ struct CheckInDetailView: View {
                                 .font(.body)
                                 .foregroundColor(.primary)
                                 .lineSpacing(4)
-                                .fixedSize(horizontal: false, vertical: true)
                         }
                     }
 
@@ -321,13 +319,11 @@ struct CheckInDetailView: View {
     private func chip(_ label: String, color: Color) -> some View {
         Text(label)
             .font(.subheadline)
-            .lineLimit(2)
-            .fixedSize(horizontal: false, vertical: true)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
             .background(color.opacity(0.12))
             .foregroundColor(color)
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .clipShape(Capsule())
     }
 
     private var dateString: String {

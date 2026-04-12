@@ -166,28 +166,43 @@ struct FlowLayout: Layout {
     var spacing: CGFloat = 8
 
     func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let maxWidth = proposal.width ?? .infinity
         let rows = computeRows(proposal: proposal, subviews: subviews)
-        return rows.reduce(CGSize.zero) { result, row in
-            CGSize(
-                width: max(result.width, row.reduce(0) { $0 + $1.sizeThatFits(.unspecified).width } + spacing * CGFloat(row.count - 1)),
-                height: result.height + (row.first?.sizeThatFits(.unspecified).height ?? 0) + (result.height > 0 ? spacing : 0)
-            )
+        var totalHeight: CGFloat = 0
+        var totalWidth: CGFloat = 0
+        for row in rows {
+            let rowWidth = row.reduce(CGFloat(0)) { $0 + clampedSize(of: $1, maxWidth: maxWidth).width } + spacing * CGFloat(max(row.count - 1, 0))
+            let rowHeight = row.map { clampedSize(of: $0, maxWidth: maxWidth).height }.max() ?? 0
+            totalWidth = max(totalWidth, rowWidth)
+            totalHeight += rowHeight + (totalHeight > 0 ? spacing : 0)
         }
+        return CGSize(width: min(totalWidth, maxWidth), height: totalHeight)
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let maxWidth = bounds.width
         let rows = computeRows(proposal: proposal, subviews: subviews)
         var y = bounds.minY
         for row in rows {
             var x = bounds.minX
-            let rowHeight = row.map { $0.sizeThatFits(.unspecified).height }.max() ?? 0
+            let rowHeight = row.map { clampedSize(of: $0, maxWidth: maxWidth).height }.max() ?? 0
             for subview in row {
-                let size = subview.sizeThatFits(.unspecified)
+                let size = clampedSize(of: subview, maxWidth: maxWidth)
                 subview.place(at: CGPoint(x: x, y: y), proposal: ProposedViewSize(size))
                 x += size.width + spacing
             }
             y += rowHeight + spacing
         }
+    }
+
+    /// Returns the subview's natural size, but clamped to maxWidth.
+    private func clampedSize(of subview: LayoutSubview, maxWidth: CGFloat) -> CGSize {
+        let natural = subview.sizeThatFits(.unspecified)
+        if natural.width <= maxWidth {
+            return natural
+        }
+        // Re-measure with constrained width so text wraps
+        return subview.sizeThatFits(ProposedViewSize(width: maxWidth, height: nil))
     }
 
     private func computeRows(proposal: ProposedViewSize, subviews: Subviews) -> [[LayoutSubview]] {
@@ -196,7 +211,7 @@ struct FlowLayout: Layout {
         let maxWidth = proposal.width ?? .infinity
 
         for subview in subviews {
-            let size = subview.sizeThatFits(.unspecified)
+            let size = clampedSize(of: subview, maxWidth: maxWidth)
             if currentRowWidth + size.width + (rows.last?.isEmpty == false ? spacing : 0) > maxWidth,
                rows.last?.isEmpty == false {
                 rows.append([subview])
