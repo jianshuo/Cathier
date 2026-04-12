@@ -57,6 +57,7 @@ struct CheckInCard: View {
                             .font(.subheadline)
                             .foregroundColor(.primary)
                             .lineLimit(3)
+                            .fixedSize(horizontal: false, vertical: true)
                         Spacer(minLength: 0)
                         Image(systemName: "chevron.right")
                             .font(.caption2)
@@ -75,10 +76,12 @@ struct CheckInCard: View {
                             .font(.subheadline)
                             .foregroundColor(.secondary)
                             .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
                     }
                 }
             }
             .padding(14)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(Color(.secondarySystemBackground))
             .cornerRadius(14)
         }
