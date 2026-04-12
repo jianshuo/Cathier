@@ -36,16 +36,18 @@
 
       <!-- Name Input -->
       <text class="section-label">你的昵称</text>
-      <input
-        class="setup-name-input"
-        type="text"
-        placeholder="输入昵称"
-        placeholder-style="color: #8A837A;"
-        value="{{setupName}}"
-        bindinput="onSetupNameInput"
-        maxlength="20"
-        confirm-type="done"
-      />
+      <view class="setup-name-input-wrap">
+        <input
+          class="setup-name-input"
+          type="text"
+          placeholder="输入昵称"
+          placeholder-style="color: #8A837A;"
+          value="{{setupName}}"
+          bindinput="onSetupNameInput"
+          maxlength="20"
+          confirm-type="done"
+        />
+      </view>
 
       <button class="btn-primary setup-btn" bindtap="onCreateProfile">创建档案</button>
     </view>

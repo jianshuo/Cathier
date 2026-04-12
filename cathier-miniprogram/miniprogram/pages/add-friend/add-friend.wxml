@@ -49,14 +49,18 @@
   <view class="card code-section" wx:if="{{activeTab === 'enter-code'}}">
     <text class="section-label">输入好友的邀请码</text>
 
-    <input
-      class="code-input"
-      placeholder="请输入6位邀请码"
-      value="{{inputCode}}"
-      bindinput="onCodeInput"
-      maxlength="6"
-      type="text"
-    />
+    <view class="code-input-wrap">
+      <input
+        class="code-input"
+        placeholder="请输入6位邀请码"
+        placeholder-style="color: #8A837A; font-weight: 400; letter-spacing: 4rpx;"
+        value="{{inputCode}}"
+        bindinput="onCodeInput"
+        maxlength="6"
+        type="text"
+        confirm-type="done"
+      />
+    </view>
 
     <button
       class="btn-primary confirm-btn"

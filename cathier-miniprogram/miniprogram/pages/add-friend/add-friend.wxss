@@ -59,19 +59,22 @@
   width: 100%;
 }
 
+.code-input-wrap {
+  margin: var(--space-md) 0;
+  padding: 28rpx 24rpx;
+  background-color: #FFFFFF;
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--border);
+}
+
 .code-input {
   width: 100%;
-  padding: 28rpx 24rpx;
+  height: 56rpx;
   font-size: 40rpx;
   font-weight: 600;
   letter-spacing: 12rpx;
   text-align: center;
   color: var(--text-primary);
-  background-color: var(--bg);
-  border-radius: var(--radius-small);
-  border: 2rpx solid var(--border);
-  box-sizing: border-box;
-  margin: var(--space-md) 0;
   font-family: 'Menlo', 'Courier New', monospace;
 }
 
