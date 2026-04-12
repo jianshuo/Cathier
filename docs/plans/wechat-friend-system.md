@@ -133,13 +133,13 @@ USER A (sharer)                          USER B (friend)
 ```
 
 ### Security Rules
-- `user_profiles`: read by anyone (for displaying friend names), write only by owner (`_openid` match)
-- `invite_codes`: create by anyone, read by anyone (to validate), update only by cloud function
-- `friendships`: read only by own records (`_openid` match), create via cloud function only
-- `shared_checkins`: read by friends (enforced via cloud function aggregation), write only by owner
-- `reactions`: read by shared_checkin owner and friends, write by anyone with a friendship
+- `user_profiles`: read/write only by owner (`_openid` match). Cross-user reads (friend names) go through cloud function.
+- `invite_codes`: create by owner, read/validate via cloud function only
+- `friendships`: read only by own records (`_openid` match), create/delete via cloud function only
+- `checkins`: read/write only by owner. Cross-user reads (friend feed) go through `getFriendFeed` cloud function which filters fields by shareLevel server-side.
+- `reactions`: read by owner, create/delete via cloud function (validates friendship exists)
 
-Note: WeChat Cloud DB auto-injects `_openid` on create and enforces `_openid` match on read by default. For cross-user reads (friend feed), use **cloud functions** which run with admin privileges and can read any user's data.
+Note: WeChat Cloud DB auto-injects `_openid` on create and enforces `_openid` match on read by default. ALL cross-user operations go through cloud functions which run with admin privileges.
 
 ---
 
@@ -204,7 +204,7 @@ Handles all friend operations that need admin privileges:
 
 **Actions (via `action` parameter):**
 
-1. `generateCode` — create a 6-char code in `invite_codes`, return code
+1. `generateCode` — generate a random 6-char alphanumeric code, check `invite_codes` for collision, retry up to 3 times if duplicate, insert and return code
 2. `validateCode` — check code exists, not expired, not used, not self-invite
 3. `acceptInvite` — mark code as used, create 2 friendship records
 4. `removeFriend` — delete both friendship records
@@ -217,32 +217,62 @@ const friendships = await db.collection('friendships')
   .where({ _openid: event.userInfo.openId })
   .get()
 
-// 2. Extract friend openIds
-const friendOpenIds = friendships.data.map(f =>
-  f.initiatorOpenId === event.userInfo.openId
-    ? f.accepterOpenId
-    : f.initiatorOpenId
-)
+// 2. Extract friend openIds + profileIds
+const friends = friendships.data.map(f => {
+  const isInitiator = f.initiatorOpenId === event.userInfo.openId
+  return {
+    openId: isInitiator ? f.accepterOpenId : f.initiatorOpenId,
+    profileId: isInitiator ? f.accepterProfileId : f.initiatorProfileId,
+  }
+})
+const friendOpenIds = friends.map(f => f.openId)
 
-// 3. Get shared check-ins from friends (single table, no copy)
-const feed = await db.collection('checkins')
-  .where({
-    _openid: db.command.in(friendOpenIds),
-    shareLevel: db.command.neq(null)  // only shared ones
-  })
-  .orderBy('date', 'desc')
-  .skip(page * 20)
-  .limit(21)
-  .get()
+// 3. Fetch friend profiles (for display names + emoji)
+//    WeChat db.command.in() has a max of 10 items — batch if needed
+const profileIds = friends.map(f => f.profileId)
+const profiles = {}
+for (let i = 0; i < profileIds.length; i += 10) {
+  const batch = profileIds.slice(i, i + 10)
+  const res = await db.collection('user_profiles')
+    .where({ _id: db.command.in(batch) })
+    .get()
+  res.data.forEach(p => { profiles[p._openid] = p })
+}
 
-// 4. Filter fields server-side by shareLevel
-const filtered = feed.data.map(checkin => {
-  const base = { _id: checkin._id, _openid: checkin._openid,
+// 4. Get shared check-ins from friends (single table, no copy)
+//    Batch friendOpenIds in groups of 10 (WeChat db.command.in() limit)
+let allFeedItems = []
+for (let i = 0; i < friendOpenIds.length; i += 10) {
+  const batch = friendOpenIds.slice(i, i + 10)
+  const res = await db.collection('checkins')
+    .where({
+      _openid: db.command.in(batch),
+      shareLevel: db.command.neq(null)
+    })
+    .orderBy('date', 'desc')
+    .limit(50)  // over-fetch, then merge-sort + paginate client-side
+    .get()
+  allFeedItems.push(...res.data)
+}
+// Sort merged results and paginate
+allFeedItems.sort((a, b) => new Date(b.date) - new Date(a.date))
+const page = event.page || 0
+const pageItems = allFeedItems.slice(page * 20, (page + 1) * 20 + 1)
+const hasMore = pageItems.length > 20
+const feedPage = hasMore ? pageItems.slice(0, 20) : pageItems
+
+// 5. Filter fields server-side by shareLevel + attach profile info
+const filtered = feedPage.map(checkin => {
+  const profile = profiles[checkin._openid] || {}
+  const base = {
+    _id: checkin._id, ownerOpenId: checkin._openid,
+    ownerName: profile.displayName || '好友',
+    ownerEmoji: profile.avatarEmoji || '🙂',
     date: checkin.date, intensity: checkin.intensity,
-    shareLevel: checkin.shareLevel, createdAt: checkin.createdAt }
+    shareLevel: checkin.shareLevel, createdAt: checkin.createdAt
+  }
   if (checkin.shareLevel === 'category') {
-    // Deduplicate to category names only
-    const categories = [...new Set(checkin.emotions.map(e => e.categoryName))]
+    const categories = [...new Set((checkin.emotions || []).map(e => e.categoryName))]
     return { ...base, categories }
   }
   if (checkin.shareLevel === 'emotions') {
@@ -252,6 +282,7 @@ const filtered = feed.data.map(checkin => {
   return { ...base, emotions: checkin.emotions, bodySensations: checkin.bodySensations,
     triggerEvent: checkin.triggerEvent, note: checkin.note, aiFeedback: checkin.aiFeedback }
 })
+return { data: filtered, hasMore }
 ```
 
 ### `react` (new cloud function)
@@ -354,12 +385,12 @@ Assignment: `tintIndex = hashCode(friendOpenId) % 5`
 
 ---
 
-## Open Questions
+## Resolved Questions
 
-1. **Tab bar:** Should "好友" become a 4th tab (matching iOS), or stay accessible from settings? If 4th tab, WeChat tab bar supports max 5 items. Currently using 3 (此刻/日记/觉察词典). Adding 好友 = 4 tabs, which matches iOS exactly.
+1. **Tab bar:** Keep 3 tabs (此刻/日记/觉察词典). Access friends from settings page link. Adding a 4th tab changes the tab bar layout for all users, including those who don't use friends. If friend usage grows, promote to tab later.
 
-2. **Invite code length:** iOS uses 6-char. Should WeChat match? 6 chars is easy to type and share in chat.
+2. **Invite code length:** 6-char alphanumeric, matching iOS. Easy to type in WeChat chat.
 
-3. **Code expiry:** iOS uses 24 hours. Keep the same?
+3. **Code expiry:** 24 hours, matching iOS.
 
-4. **Feed pagination:** How many items per page? iOS loads all. WeChat should paginate (20 per page suggested).
+4. **Feed pagination:** 20 per page with pull-to-refresh and reach-bottom loading. Cloud function handles pagination via `page` parameter.
