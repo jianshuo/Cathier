@@ -375,20 +375,21 @@ struct FriendCheckInCard: View {
                     }
                     let sensations = grouped[part] ?? []
                     let partName = lm.display(part)
-                    HStack(spacing: 0) {
+                    if sensations.isEmpty {
                         Text(partName)
                             .font(.caption)
                             .fontWeight(.medium)
                             .foregroundColor(.cathierSage)
-                        if !sensations.isEmpty {
-                            Text("  ")
-                                .font(.caption)
-                            Text(sensations.map { lm.display($0) }.joined(separator: " · "))
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                    } else {
+                        (Text(partName)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.cathierSage)
+                        + Text("  " + sensations.map { lm.display($0) }.joined(separator: " · "))
+                            .font(.caption)
+                            .foregroundColor(.secondary))
+                        .fixedSize(horizontal: false, vertical: true)
                     }
-                    .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
