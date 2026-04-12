@@ -1,98 +1,69 @@
 Page({
   data: {
-    activeTab: 'my-code',  // 'my-code' | 'enter-code'
-    myCode: '',
-    myCodeLoading: false,
-    inputCode: '',
-    accepting: false
+    inviteCode: '',
+    codeLoading: false,
+    pendingCodes: []
   },
 
   onLoad() {
     this.generateCode()
+    this.loadPendingCodes()
   },
 
-  // --- Tab Toggle ---
-  onSwitchTab(e) {
-    const tab = e.currentTarget.dataset.tab
-    this.setData({ activeTab: tab })
-    if (tab === 'my-code' && !this.data.myCode) {
-      this.generateCode()
-    }
-  },
-
-  // --- Generate Code ---
   async generateCode() {
-    this.setData({ myCodeLoading: true })
+    this.setData({ codeLoading: true })
     try {
       const res = await wx.cloud.callFunction({
         name: 'friend-manage',
         data: { action: 'generateCode' }
       })
       const code = (res.result && res.result.code) || ''
-      this.setData({ myCode: code, myCodeLoading: false })
+      this.setData({ inviteCode: code, codeLoading: false })
     } catch (err) {
       console.error('Generate code failed:', err)
-      this.setData({ myCodeLoading: false })
+      this.setData({ codeLoading: false })
       wx.showToast({ title: '生成失败，请重试', icon: 'none' })
     }
   },
 
-  // --- Copy Code ---
-  onCopyCode() {
-    if (!this.data.myCode) return
-    wx.setClipboardData({
-      data: this.data.myCode,
-      success: () => {
-        wx.showToast({ title: '已复制', icon: 'success' })
-      }
-    })
+  onGenerateCode() {
+    this.generateCode()
   },
 
-  // --- Share via WeChat ---
-  onShareCode() {
-    // WeChat forward sharing is handled by onShareAppMessage
+  async loadPendingCodes() {
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'friend-manage',
+        data: { action: 'getMyPendingCodes' }
+      })
+      const codes = (res.result && res.result.codes) || []
+      const now = new Date()
+      const formatted = codes.map(c => {
+        const expiry = new Date(c.expiresAt)
+        const hoursLeft = Math.max(0, Math.round((expiry - now) / 3600000))
+        return {
+          code: c.code,
+          expiryText: hoursLeft > 0 ? hoursLeft + '小时后过期' : '即将过期'
+        }
+      })
+      this.setData({ pendingCodes: formatted })
+    } catch (err) {
+      console.error('Load pending codes failed:', err)
+    }
+  },
+
+  onCopyCode() {
+    if (!this.data.inviteCode) return
+    wx.setClipboardData({
+      data: this.data.inviteCode,
+      success: () => wx.showToast({ title: '已复制', icon: 'success' })
+    })
   },
 
   onShareAppMessage() {
     return {
-      title: '我在觉察等你，一起来感受身体吧',
-      path: '/pages/friends/friends?inviteCode=' + this.data.myCode
+      title: '我在「觉察」等你，一起来感受身体感受吧',
+      path: '/pages/friends/friends?inviteCode=' + this.data.inviteCode
     }
-  },
-
-  // --- Enter Code ---
-  onCodeInput(e) {
-    const value = e.detail.value.toUpperCase().replace(/[^A-Z0-9]/g, '')
-    this.setData({ inputCode: value })
-  },
-
-  async onAcceptInvite() {
-    const code = this.data.inputCode.trim()
-    if (code.length !== 6) {
-      wx.showToast({ title: '请输入6位邀请码', icon: 'none' })
-      return
-    }
-
-    this.setData({ accepting: true })
-    try {
-      const res = await wx.cloud.callFunction({
-        name: 'friend-manage',
-        data: { action: 'acceptInvite', code }
-      })
-
-      const result = res.result || {}
-      if (result.success) {
-        wx.showToast({ title: '添加成功', icon: 'success' })
-        setTimeout(() => {
-          wx.navigateBack()
-        }, 1500)
-      } else {
-        wx.showToast({ title: result.message || '邀请码无效', icon: 'none' })
-      }
-    } catch (err) {
-      console.error('Accept invite failed:', err)
-      wx.showToast({ title: '操作失败，请重试', icon: 'none' })
-    }
-    this.setData({ accepting: false })
   }
 })

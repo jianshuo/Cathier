@@ -1,73 +1,47 @@
 <view class="container">
-  <text class="page-heading">添加好友</text>
-  <text class="page-subheading">通过邀请码与好友互相关注</text>
+  <text class="page-heading">邀请好友</text>
+  <text class="page-subheading">发送邀请给微信好友，一起觉察身体感受</text>
 
-  <!-- Tab Toggle -->
-  <view class="tab-toggle">
-    <view
-      class="tab-item {{activeTab === 'my-code' ? 'tab-item-active' : ''}}"
-      data-tab="my-code"
-      bindtap="onSwitchTab"
-    >
-      <text>我的邀请码</text>
-    </view>
-    <view
-      class="tab-item {{activeTab === 'enter-code' ? 'tab-item-active' : ''}}"
-      data-tab="enter-code"
-      bindtap="onSwitchTab"
-    >
-      <text>输入好友码</text>
-    </view>
-  </view>
-
-  <!-- My Code Section -->
-  <view class="card code-section" wx:if="{{activeTab === 'my-code'}}">
-    <text class="section-label">你的邀请码</text>
-
-    <view wx:if="{{myCodeLoading}}" class="loading-dots" style="padding: 48rpx 0;">
+  <!-- Invite Card -->
+  <view class="card invite-card">
+    <view wx:if="{{codeLoading}}" class="loading-dots" style="padding: 48rpx 0;">
       <view class="dot"></view>
       <view class="dot"></view>
       <view class="dot"></view>
     </view>
 
-    <view wx:else class="code-display-wrap">
-      <text class="code-display">{{myCode}}</text>
-      <text class="code-hint text-muted">邀请码24小时内有效</text>
-    </view>
+    <view wx:elif="{{inviteCode}}" class="invite-ready">
+      <text class="invite-label text-muted">你的邀请已准备好</text>
+      <text class="invite-hint text-muted">邀请码 24 小时内有效</text>
 
-    <view class="code-actions">
-      <button class="btn-secondary code-action-btn" bindtap="onCopyCode">
-        复制邀请码
-      </button>
-      <button class="btn-primary code-action-btn" open-type="share">
+      <button class="btn-primary invite-btn" open-type="share">
         发送给好友
       </button>
+
+      <!-- Fallback: manual copy for edge cases -->
+      <view class="manual-code-section">
+        <text class="manual-hint text-muted">或者让好友手动输入邀请码：</text>
+        <view class="manual-code-row" bindtap="onCopyCode">
+          <text class="manual-code">{{inviteCode}}</text>
+          <text class="manual-copy text-accent">复制</text>
+        </view>
+      </view>
+    </view>
+
+    <view wx:else class="invite-error">
+      <text class="text-muted">生成邀请码失败</text>
+      <button class="btn-secondary" bindtap="onGenerateCode">重试</button>
     </view>
   </view>
 
-  <!-- Enter Code Section -->
-  <view class="card code-section" wx:if="{{activeTab === 'enter-code'}}">
-    <text class="section-label">输入好友的邀请码</text>
-
-    <view class="code-input-wrap">
-      <input
-        class="code-input"
-        placeholder="请输入6位邀请码"
-        placeholder-style="color: #8A837A; font-weight: 400; letter-spacing: 4rpx;"
-        value="{{inputCode}}"
-        bindinput="onCodeInput"
-        maxlength="6"
-        type="text"
-        confirm-type="done"
-      />
+  <!-- Pending Invites -->
+  <view class="card" wx:if="{{pendingCodes.length > 0}}">
+    <text class="section-label">待使用的邀请</text>
+    <view class="pending-list">
+      <view class="pending-item" wx:for="{{pendingCodes}}" wx:key="code">
+        <text class="pending-code">{{item.code}}</text>
+        <text class="pending-expiry text-muted">{{item.expiryText}}</text>
+      </view>
     </view>
-
-    <button
-      class="btn-primary confirm-btn"
-      bindtap="onAcceptInvite"
-      disabled="{{accepting || inputCode.length < 6}}"
-    >
-      {{accepting ? '添加中...' : '确认添加'}}
-    </button>
   </view>
 </view>

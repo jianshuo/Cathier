@@ -77,7 +77,8 @@ Page({
     reactionEmojis: REACTION_EMOJIS
   },
 
-  onLoad() {
+  onLoad(options) {
+    this._pendingInviteCode = options.inviteCode || null
     this.initPage()
   },
 
@@ -110,10 +111,62 @@ Page({
         return
       }
       this.setData({ profile })
+
+      // Handle invite code from share card
+      if (this._pendingInviteCode) {
+        await this._handleInviteCode(this._pendingInviteCode)
+        this._pendingInviteCode = null
+      }
+
       await this.loadFriendFeed(true)
     } catch (err) {
       console.error('Init friends page failed:', err)
       this.setData({ state: 'no-profile' })
+    }
+  },
+
+  async _handleInviteCode(code) {
+    try {
+      // First validate
+      const validateRes = await wx.cloud.callFunction({
+        name: 'friend-manage',
+        data: { action: 'validateCode', code }
+      })
+      const vResult = validateRes.result || {}
+      if (!vResult.success) {
+        wx.showToast({ title: vResult.message || '邀请码无效', icon: 'none' })
+        return
+      }
+
+      // Show confirmation
+      const inviterName = vResult.inviterName || '好友'
+      const inviterEmoji = vResult.inviterEmoji || '🙂'
+      const confirmed = await new Promise(resolve => {
+        wx.showModal({
+          title: '好友邀请',
+          content: `${inviterEmoji} ${inviterName} 邀请你成为好友`,
+          confirmText: '接受',
+          cancelText: '拒绝',
+          success: res => resolve(res.confirm)
+        })
+      })
+
+      if (!confirmed) return
+
+      // Accept
+      const acceptRes = await wx.cloud.callFunction({
+        name: 'friend-manage',
+        data: { action: 'acceptInvite', code }
+      })
+      const aResult = acceptRes.result || {}
+      if (aResult.success) {
+        wx.showToast({ title: '添加成功！', icon: 'success' })
+      } else {
+        wx.showToast({ title: aResult.message || '添加失败', icon: 'none' })
+      }
+    } catch (err) {
+      console.error('Handle invite code failed:', err)
+      wx.showToast({ title: '操作失败', icon: 'none' })
     }
   },
 
@@ -138,6 +191,13 @@ Page({
         avatarEmoji: setupEmoji
       })
       this.setData({ profile })
+
+      // If there's a pending invite from share card, handle it now
+      if (this._pendingInviteCode) {
+        await this._handleInviteCode(this._pendingInviteCode)
+        this._pendingInviteCode = null
+      }
+
       await this.loadFriendFeed(true)
     } catch (err) {
       console.error('Create profile failed:', err)

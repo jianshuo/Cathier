@@ -1,83 +1,100 @@
 /* Add Friend page styles */
 
-.tab-toggle {
-  display: flex;
-  background-color: var(--surface);
-  border-radius: var(--radius-full);
-  padding: 4rpx;
-  margin-bottom: var(--space-md);
-  border: 2rpx solid var(--border);
-}
-
-.tab-item {
-  flex: 1;
-  text-align: center;
-  padding: 20rpx 0;
-  border-radius: var(--radius-full);
-  font-size: 28rpx;
-  color: var(--text-muted);
-  transition: all 0.25s ease;
-}
-
-.tab-item-active {
-  background-color: var(--accent);
-  color: #FFFFFF;
-}
-
-.code-section {
+.invite-card {
   padding: var(--space-lg);
 }
 
-.code-display-wrap {
+.invite-ready {
+  text-align: center;
+}
+
+.invite-label {
+  display: block;
+  font-size: 28rpx;
+  margin-bottom: var(--space-xs);
+}
+
+.invite-hint {
+  display: block;
+  font-size: 24rpx;
+  margin-bottom: var(--space-lg);
+}
+
+.invite-btn {
+  margin-bottom: var(--space-xl);
+}
+
+/* Manual code fallback */
+.manual-code-section {
+  border-top: 2rpx solid var(--border);
+  padding-top: var(--space-md);
+}
+
+.manual-hint {
+  display: block;
+  font-size: 22rpx;
+  margin-bottom: var(--space-sm);
+}
+
+.manual-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) 0;
+}
+
+.manual-code {
+  font-size: 40rpx;
+  font-weight: 700;
+  letter-spacing: 12rpx;
+  color: var(--text-primary);
+  font-family: 'Menlo', 'Courier New', monospace;
+}
+
+.manual-copy {
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+/* Invite error */
+.invite-error {
   text-align: center;
   padding: var(--space-lg) 0;
 }
 
-.code-display {
-  display: block;
-  font-size: 72rpx;
-  font-weight: 700;
-  letter-spacing: 16rpx;
-  color: var(--text-primary);
-  font-family: 'Menlo', 'Courier New', monospace;
-  margin-bottom: var(--space-sm);
-}
-
-.code-hint {
-  display: block;
-  font-size: 24rpx;
-}
-
-.code-actions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
+.invite-error .btn-secondary {
   margin-top: var(--space-md);
+  width: auto;
+  display: inline-flex;
+  padding: 16rpx 48rpx;
 }
 
-.code-action-btn {
-  width: 100%;
-}
-
-.code-input-wrap {
-  margin: var(--space-md) 0;
-  padding: 28rpx 24rpx;
-  background-color: #FFFFFF;
-  border-radius: var(--radius-small);
-  border: 2rpx solid var(--border);
-}
-
-.code-input {
-  width: 100%;
-  height: 56rpx;
-  font-size: 40rpx;
-  font-weight: 600;
-  letter-spacing: 12rpx;
-  text-align: center;
-  color: var(--text-primary);
-  font-family: 'Menlo', 'Courier New', monospace;
-}
-
-.confirm-btn {
+/* Pending invites */
+.pending-list {
   margin-top: var(--space-sm);
+}
+
+.pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+  border-bottom: 1rpx solid var(--border);
+}
+
+.pending-item:last-child {
+  border-bottom: none;
+}
+
+.pending-code {
+  font-size: 28rpx;
+  font-weight: 600;
+  letter-spacing: 4rpx;
+  font-family: 'Menlo', 'Courier New', monospace;
+  color: var(--text-secondary);
+}
+
+.pending-expiry {
+  font-size: 22rpx;
 }
