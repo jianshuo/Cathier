@@ -1,0 +1,84 @@
+/* Friend Manage page styles */
+
+.section {
+  margin-bottom: var(--space-lg);
+}
+
+.manage-list {
+  padding: 0;
+}
+
+.manage-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 24rpx var(--space-md);
+  border-bottom: 1rpx solid var(--border);
+}
+
+.manage-item:last-child {
+  border-bottom: none;
+}
+
+.manage-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.manage-avatar {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background-color: var(--sage-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.manage-avatar-emoji {
+  font-size: 28rpx;
+}
+
+.manage-item-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.manage-item-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.manage-item-date {
+  font-size: 22rpx;
+  line-height: 1.4;
+}
+
+.manage-remove-hint {
+  font-size: 22rpx;
+}
+
+.invite-code-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 8rpx;
+  color: var(--text-primary);
+  font-family: 'Menlo', 'Courier New', monospace;
+}
+
+.invite-expiry {
+  font-size: 24rpx;
+}
+
+.empty-add-btn {
+  margin-top: var(--space-md);
+  width: 60%;
+}
+
+.bottom-action {
+  margin-top: var(--space-lg);
+  padding-bottom: var(--space-xl);
+}

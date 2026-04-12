@@ -1,4 +1,4 @@
-const { saveCheckIn, incrementCheckInCount } = require('../../utils/cloud-db')
+const { saveCheckIn, incrementCheckInCount, getMyProfile } = require('../../utils/cloud-db')
 const { addToBuffer } = require('../../utils/local-buffer')
 const { requestReminder } = require('../../utils/subscribe')
 
@@ -11,10 +11,19 @@ Page({
     error: false,
     errorMessage: '',
     showExercise: false,
-    exerciseData: { title: '', steps: [] }
+    exerciseData: { title: '', steps: [] },
+    hasProfile: false,
+    selectedTier: null
   },
 
   onLoad(options) {
+    // Check if user has a friend profile
+    getMyProfile().then(profile => {
+      this.setData({ hasProfile: !!profile })
+    }).catch(err => {
+      console.error('Failed to check profile:', err)
+    })
+
     if (options.checkIn) {
       try {
         const checkInData = JSON.parse(decodeURIComponent(options.checkIn))
@@ -76,6 +85,11 @@ Page({
     })
   },
 
+  onSelectTier(e) {
+    const tier = e.currentTarget.dataset.tier
+    this.setData({ selectedTier: tier || null })
+  },
+
   onSave() {
     if (this.data.saved) return
     const data = this.data.checkInData
@@ -89,7 +103,7 @@ Page({
       triggerEvent: data.trigger || '',
       note: data.note || '',
       aiFeedback: this.data.feedback || '',
-      shareLevel: null
+      shareLevel: this.data.selectedTier
     }
 
     this.setData({ saved: true })

@@ -1,0 +1,69 @@
+<view class="container">
+  <text class="page-heading">添加好友</text>
+  <text class="page-subheading">通过邀请码与好友互相关注</text>
+
+  <!-- Tab Toggle -->
+  <view class="tab-toggle">
+    <view
+      class="tab-item {{activeTab === 'my-code' ? 'tab-item-active' : ''}}"
+      data-tab="my-code"
+      bindtap="onSwitchTab"
+    >
+      <text>我的邀请码</text>
+    </view>
+    <view
+      class="tab-item {{activeTab === 'enter-code' ? 'tab-item-active' : ''}}"
+      data-tab="enter-code"
+      bindtap="onSwitchTab"
+    >
+      <text>输入好友码</text>
+    </view>
+  </view>
+
+  <!-- My Code Section -->
+  <view class="card code-section" wx:if="{{activeTab === 'my-code'}}">
+    <text class="section-label">你的邀请码</text>
+
+    <view wx:if="{{myCodeLoading}}" class="loading-dots" style="padding: 48rpx 0;">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot"></view>
+    </view>
+
+    <view wx:else class="code-display-wrap">
+      <text class="code-display">{{myCode}}</text>
+      <text class="code-hint text-muted">邀请码24小时内有效</text>
+    </view>
+
+    <view class="code-actions">
+      <button class="btn-secondary code-action-btn" bindtap="onCopyCode">
+        复制邀请码
+      </button>
+      <button class="btn-primary code-action-btn" open-type="share">
+        发送给好友
+      </button>
+    </view>
+  </view>
+
+  <!-- Enter Code Section -->
+  <view class="card code-section" wx:if="{{activeTab === 'enter-code'}}">
+    <text class="section-label">输入好友的邀请码</text>
+
+    <input
+      class="code-input"
+      placeholder="请输入6位邀请码"
+      value="{{inputCode}}"
+      bindinput="onCodeInput"
+      maxlength="6"
+      type="text"
+    />
+
+    <button
+      class="btn-primary confirm-btn"
+      bindtap="onAcceptInvite"
+      disabled="{{accepting || inputCode.length < 6}}"
+    >
+      {{accepting ? '添加中...' : '确认添加'}}
+    </button>
+  </view>
+</view>

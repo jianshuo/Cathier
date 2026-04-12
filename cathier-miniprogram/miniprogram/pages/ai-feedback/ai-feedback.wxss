@@ -99,6 +99,16 @@
   /* inherits btn-secondary from global */
 }
 
+/* --- Privacy Tier Picker --- */
+
+.tier-card { margin-bottom: var(--space-md); }
+.tier-options { display: flex; gap: 12rpx; }
+.tier-option { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8rpx; padding: 20rpx 8rpx; border-radius: var(--radius-medium); border: 2rpx solid var(--border); background: var(--bg); }
+.tier-selected { border-color: var(--accent); background: var(--accent-light); }
+.tier-icon { font-size: 36rpx; }
+.tier-label { font-size: 22rpx; color: var(--text-secondary); }
+.tier-selected .tier-label { color: var(--accent); font-weight: 600; }
+
 /* --- Micro-exercise Entry Button --- */
 
 .exercise-entry {

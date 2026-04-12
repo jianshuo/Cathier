@@ -1,0 +1,388 @@
+/* Friends page styles */
+
+/* --- Profile Setup --- */
+
+.setup-section {
+  padding-top: var(--space-lg);
+}
+
+.setup-card {
+  margin-top: var(--space-md);
+}
+
+.emoji-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.emoji-picker-item {
+  width: 80rpx;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-small);
+  background-color: var(--bg);
+  border: 2rpx solid transparent;
+  transition: all 0.2s ease;
+}
+
+.emoji-picker-item-selected {
+  border-color: var(--accent);
+  background-color: var(--accent-light);
+}
+
+.emoji-picker-text {
+  font-size: 40rpx;
+}
+
+.setup-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+}
+
+.setup-name-input {
+  width: 100%;
+  padding: 20rpx 24rpx;
+  font-size: 30rpx;
+  color: var(--text-primary);
+  background-color: var(--bg);
+  border-radius: var(--radius-small);
+  border: 2rpx solid var(--border);
+  box-sizing: border-box;
+  margin-bottom: var(--space-md);
+}
+
+.setup-btn {
+  margin-top: var(--space-sm);
+}
+
+/* --- Avatar Circles --- */
+
+.avatar-circle {
+  width: 52rpx;
+  height: 52rpx;
+  border-radius: 50%;
+  background-color: var(--sage-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-circle-large {
+  width: 96rpx;
+  height: 96rpx;
+}
+
+.avatar-emoji {
+  font-size: 28rpx;
+}
+
+.avatar-emoji-large {
+  font-size: 48rpx;
+}
+
+.avatar-add {
+  background-color: var(--bg);
+  border: 2rpx dashed var(--border);
+}
+
+.avatar-add-icon {
+  font-size: 32rpx;
+  color: var(--text-muted);
+}
+
+/* --- Friend Avatar Row --- */
+
+.friend-avatar-row {
+  display: flex;
+  white-space: nowrap;
+  padding: var(--space-sm) 0 var(--space-md);
+}
+
+.friend-avatar-item {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: var(--space-md);
+  min-width: 80rpx;
+}
+
+.friend-avatar-name {
+  font-size: 22rpx;
+  color: var(--text-secondary);
+  margin-top: var(--space-xs);
+  max-width: 80rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Empty Add Button --- */
+
+.empty-add-btn {
+  margin-top: var(--space-md);
+  width: 60%;
+}
+
+/* --- Friend Check-In Card --- */
+
+.friend-feed {
+  margin-top: var(--space-sm);
+}
+
+.friend-checkin-card {
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-sm);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+.fcard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.fcard-author {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.fcard-avatar {
+  width: 40rpx;
+  height: 40rpx;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.fcard-avatar-emoji {
+  font-size: 24rpx;
+}
+
+.fcard-author-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.fcard-name {
+  font-size: 28rpx;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
+
+.fcard-date {
+  font-size: 22rpx;
+  line-height: 1.3;
+}
+
+/* --- Intensity Badge (reuse from journal) --- */
+
+.intensity-badge {
+  display: flex;
+  align-items: center;
+  gap: 6rpx;
+  padding: 6rpx 16rpx;
+  border-radius: var(--radius-full);
+}
+
+.intensity-number {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.intensity-label {
+  font-size: 22rpx;
+}
+
+/* --- Emotion Chips --- */
+
+.fcard-emotions {
+  margin-bottom: var(--space-sm);
+}
+
+.chip-small {
+  padding: 8rpx 20rpx;
+  font-size: 24rpx;
+  border: none;
+}
+
+/* --- Body Groups --- */
+
+.fcard-body-groups {
+  margin-bottom: var(--space-sm);
+}
+
+.body-group-row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+  margin-bottom: 4rpx;
+}
+
+.body-part-name {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--sage);
+}
+
+.body-sensations-text {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* --- Trigger --- */
+
+.fcard-trigger {
+  display: flex;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
+}
+
+.fcard-trigger-label {
+  font-size: 24rpx;
+  flex-shrink: 0;
+}
+
+.fcard-trigger-text {
+  font-size: 24rpx;
+  color: var(--text-secondary);
+}
+
+/* --- AI Snippet --- */
+
+.fcard-ai {
+  margin-bottom: var(--space-sm);
+}
+
+.fcard-ai-text {
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.fcard-ai-more {
+  margin-top: 4rpx;
+}
+
+.fcard-ai-more text {
+  font-size: 24rpx;
+}
+
+/* --- Reactions --- */
+
+.fcard-reactions {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-sm);
+  padding-top: var(--space-sm);
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.reaction-btn {
+  display: flex;
+  align-items: center;
+  gap: 4rpx;
+  padding: 6rpx 14rpx;
+  border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s ease;
+}
+
+.reaction-btn-active {
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
+.reaction-emoji {
+  font-size: 28rpx;
+}
+
+.reaction-names {
+  font-size: 20rpx;
+  color: var(--text-muted);
+  max-width: 100rpx;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* --- Loading/No More Footer --- */
+
+.loading-footer {
+  padding: var(--space-md) 0;
+}
+
+.no-more-footer {
+  text-align: center;
+  padding: var(--space-md) 0;
+  font-size: 24rpx;
+}
+
+/* --- AI Modal (bottom sheet) --- */
+
+.popup-mask {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(26, 22, 19, 0.4);
+  z-index: 100;
+}
+
+.popup-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--surface);
+  border-radius: 32rpx 32rpx 0 0;
+  z-index: 101;
+  max-height: 70vh;
+  overflow-y: auto;
+  transform: translateY(100%);
+  transition: transform 0.35s ease;
+}
+
+.popup-sheet-show {
+  transform: translateY(0);
+}
+
+.popup-handle {
+  display: flex;
+  justify-content: center;
+  padding: 20rpx 0 8rpx;
+}
+
+.popup-handle-bar {
+  width: 64rpx;
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--border);
+}
+
+.ai-modal-content {
+  padding: 16rpx 40rpx 60rpx;
+}
+
+.ai-modal-title {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-md);
+  display: block;
+}
+
+.ai-modal-text {
+  font-size: 30rpx;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}

@@ -1,0 +1,203 @@
+<view class="container">
+
+  <!-- Loading State -->
+  <view wx:if="{{state === 'loading'}}" class="loading-dots">
+    <view class="dot"></view>
+    <view class="dot"></view>
+    <view class="dot"></view>
+  </view>
+
+  <!-- No Profile: Inline Setup -->
+  <view wx:elif="{{state === 'no-profile'}}" class="setup-section">
+    <text class="page-heading">创建你的档案</text>
+    <text class="page-subheading">好友将看到你的昵称和头像</text>
+
+    <view class="card setup-card">
+      <!-- Emoji Picker -->
+      <text class="section-label">选择头像</text>
+      <view class="emoji-picker-grid">
+        <view
+          class="emoji-picker-item {{setupEmoji === item ? 'emoji-picker-item-selected' : ''}}"
+          wx:for="{{avatarEmojis}}"
+          wx:key="*this"
+          data-emoji="{{item}}"
+          bindtap="onSelectEmoji"
+        >
+          <text class="emoji-picker-text">{{item}}</text>
+        </view>
+      </view>
+
+      <!-- Preview -->
+      <view class="setup-preview">
+        <view class="avatar-circle avatar-circle-large">
+          <text class="avatar-emoji-large">{{setupEmoji}}</text>
+        </view>
+      </view>
+
+      <!-- Name Input -->
+      <text class="section-label">你的昵称</text>
+      <input
+        class="setup-name-input"
+        placeholder="输入昵称"
+        value="{{setupName}}"
+        bindinput="onSetupNameInput"
+        maxlength="20"
+      />
+
+      <button class="btn-primary setup-btn" bindtap="onCreateProfile">创建档案</button>
+    </view>
+  </view>
+
+  <!-- No Friends -->
+  <view wx:elif="{{state === 'no-friends'}}">
+    <text class="page-heading">好友</text>
+    <view class="empty-state">
+      <text class="empty-state-icon">👋</text>
+      <text class="empty-state-text">还没有好友</text>
+      <text class="empty-state-text">邀请朋友一起觉察身体感受</text>
+      <button class="btn-primary empty-add-btn" bindtap="onAddFriend">添加好友</button>
+    </view>
+  </view>
+
+  <!-- Has Friends -->
+  <view wx:elif="{{state === 'has-friends'}}">
+    <text class="page-heading">好友</text>
+
+    <!-- Friend Avatar Row -->
+    <scroll-view class="friend-avatar-row" scroll-x enable-flex>
+      <view class="friend-avatar-item" bindtap="onAddFriend">
+        <view class="avatar-circle avatar-add">
+          <text class="avatar-add-icon">+</text>
+        </view>
+        <text class="friend-avatar-name text-muted">添加</text>
+      </view>
+      <view
+        class="friend-avatar-item"
+        wx:for="{{friends}}"
+        wx:key="openId"
+        bindtap="onManageFriends"
+      >
+        <view class="avatar-circle">
+          <text class="avatar-emoji">{{item.avatarEmoji || '🙂'}}</text>
+        </view>
+        <text class="friend-avatar-name">{{item.displayName}}</text>
+      </view>
+    </scroll-view>
+
+    <!-- Friend Feed -->
+    <view class="friend-feed">
+      <view
+        class="friend-checkin-card"
+        wx:for="{{feedItems}}"
+        wx:key="_id"
+        style="background-color: {{item.tintColor}};"
+      >
+        <!-- Header -->
+        <view class="fcard-header">
+          <view class="fcard-author">
+            <view class="fcard-avatar" style="background-color: {{item.tintColor}};">
+              <text class="fcard-avatar-emoji">{{item.ownerEmoji}}</text>
+            </view>
+            <view class="fcard-author-info">
+              <text class="fcard-name">{{item.ownerName}}</text>
+              <text class="fcard-date text-muted">{{item.dateRelative}}</text>
+            </view>
+          </view>
+          <view class="intensity-badge" wx:if="{{item.intensity}}" style="background-color: {{item.intensityColor}}20;">
+            <text class="intensity-number" style="color: {{item.intensityColor}};">{{item.intensity}}</text>
+            <text class="intensity-label" style="color: {{item.intensityColor}};">{{item.intensityLabel}}</text>
+          </view>
+        </view>
+
+        <!-- Emotion Chips -->
+        <view class="chip-wrap fcard-emotions" wx:if="{{item.emotionChips.length > 0}}">
+          <view
+            class="chip chip-small"
+            wx:for="{{item.emotionChips}}"
+            wx:for-item="ec"
+            wx:key="label"
+            style="background-color: {{ec.color}}20; color: {{ec.color}};"
+          >{{ec.label}}</view>
+        </view>
+
+        <!-- Body Groups (hidden at category tier) -->
+        <view wx:if="{{item.bodyGroups.length > 0}}" class="fcard-body-groups">
+          <view class="body-group-row" wx:for="{{item.bodyGroups}}" wx:for-item="bg" wx:key="part">
+            <text class="body-part-name">{{bg.part}}</text>
+            <text class="body-sensations-text" wx:if="{{bg.sensationsText}}">{{bg.sensationsText}}</text>
+          </view>
+        </view>
+
+        <!-- Trigger (full tier only) -->
+        <view class="fcard-trigger" wx:if="{{item.trigger}}">
+          <text class="fcard-trigger-label text-muted">触发:</text>
+          <text class="fcard-trigger-text">{{item.trigger}}</text>
+        </view>
+
+        <!-- AI Snippet (full tier only) -->
+        <view class="fcard-ai" wx:if="{{item.aiSnippet}}">
+          <text class="fcard-ai-text text-muted">{{item.aiSnippet}}</text>
+          <view
+            class="fcard-ai-more"
+            wx:if="{{item.aiFull.length > 80}}"
+            data-content="{{item.aiFull}}"
+            bindtap="onShowAiModal"
+          >
+            <text class="text-accent">查看完整解读</text>
+          </view>
+        </view>
+
+        <!-- Reactions -->
+        <view class="fcard-reactions">
+          <view
+            class="reaction-btn {{r.reacted ? 'reaction-btn-active' : ''}}"
+            wx:for="{{reactionEmojis}}"
+            wx:for-item="re"
+            wx:key="*this"
+            data-checkin-id="{{item._id}}"
+            data-emoji="{{re}}"
+            bindtap="onReaction"
+          >
+            <text class="reaction-emoji">{{re}}</text>
+            <!-- Show count/names if reacted -->
+            <block wx:for="{{item.reactions}}" wx:for-item="r" wx:key="emoji">
+              <text class="reaction-names" wx:if="{{r.emoji === re && r.count > 0}}">{{r.names || r.count}}</text>
+            </block>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <!-- Loading More -->
+    <view class="loading-footer" wx:if="{{feedLoading}}">
+      <view class="loading-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot"></view>
+      </view>
+    </view>
+
+    <!-- No More -->
+    <view class="no-more-footer" wx:if="{{!feedHasMore && feedItems.length > 0}}">
+      <text class="text-muted">没有更多了</text>
+    </view>
+
+    <!-- Empty Feed (has friends but no shared checkins) -->
+    <view class="empty-state" wx:if="{{!feedLoading && feedItems.length === 0}}">
+      <text class="empty-state-icon">🌿</text>
+      <text class="empty-state-text">好友还没有分享觉察记录</text>
+    </view>
+  </view>
+
+  <!-- AI Full Modal -->
+  <view class="popup-mask" wx:if="{{showAiModal}}" bindtap="onCloseAiModal"></view>
+  <view class="popup-sheet {{showAiModal ? 'popup-sheet-show' : ''}}" wx:if="{{showAiModal}}">
+    <view class="popup-handle" bindtap="onCloseAiModal">
+      <view class="popup-handle-bar"></view>
+    </view>
+    <view class="ai-modal-content">
+      <text class="ai-modal-title">AI 解读</text>
+      <text class="ai-modal-text">{{aiModalContent}}</text>
+    </view>
+  </view>
+</view>

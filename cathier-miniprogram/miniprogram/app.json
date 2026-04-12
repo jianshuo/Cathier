@@ -11,7 +11,10 @@
     "pages/journal-entry/journal-entry",
     "pages/insights/insights",
     "pages/feedback/feedback",
-    "pages/webview/webview"
+    "pages/webview/webview",
+    "pages/friends/friends",
+    "pages/add-friend/add-friend",
+    "pages/friend-manage/friend-manage"
   ],
   "tabBar": {
     "color": "#8B8B8B",

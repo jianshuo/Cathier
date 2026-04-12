@@ -97,6 +97,29 @@
     <text class="exercise-entry-arrow">›</text>
   </view>
 
+  <!-- Privacy Tier Picker (only if user has a friend profile) -->
+  <view class="card tier-card" wx:if="{{hasProfile}}">
+    <text class="section-label">分享给好友</text>
+    <view class="tier-options">
+      <view class="tier-option {{selectedTier === null ? 'tier-selected' : ''}}" bindtap="onSelectTier" data-tier="">
+        <text class="tier-icon">🔒</text>
+        <text class="tier-label">不分享</text>
+      </view>
+      <view class="tier-option {{selectedTier === 'category' ? 'tier-selected' : ''}}" bindtap="onSelectTier" data-tier="category">
+        <text class="tier-icon">📂</text>
+        <text class="tier-label">仅类别</text>
+      </view>
+      <view class="tier-option {{selectedTier === 'emotions' ? 'tier-selected' : ''}}" bindtap="onSelectTier" data-tier="emotions">
+        <text class="tier-icon">💬</text>
+        <text class="tier-label">情绪</text>
+      </view>
+      <view class="tier-option {{selectedTier === 'full' ? 'tier-selected' : ''}}" bindtap="onSelectTier" data-tier="full">
+        <text class="tier-icon">📖</text>
+        <text class="tier-label">完整</text>
+      </view>
+    </view>
+  </view>
+
   <!-- Action Buttons (always visible) -->
   <view class="action-buttons">
     <view class="btn-primary {{saved ? 'btn-saved' : ''}}" bindtap="onSave">

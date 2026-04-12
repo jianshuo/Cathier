@@ -43,6 +43,14 @@
     </view>
   </view>
 
+  <!-- Friends -->
+  <view class="card settings-card">
+    <view class="setting-row setting-row-tap" bindtap="onOpenFriends">
+      <text class="setting-label">好友</text>
+      <text class="setting-arrow text-muted">›</text>
+    </view>
+  </view>
+
   <!-- About & Actions -->
   <view class="card settings-card">
     <view class="setting-row setting-row-tap" bindtap="onAbout">

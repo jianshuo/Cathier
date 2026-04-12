@@ -60,6 +60,10 @@ Page({
     })
   },
 
+  onOpenFriends() {
+    wx.navigateTo({ url: '/pages/friends/friends' })
+  },
+
   onFeedback() {
     wx.navigateTo({ url: '/pages/feedback/feedback' })
   },

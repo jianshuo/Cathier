@@ -172,6 +172,33 @@ async function getCheckInCount() {
   return result.total || 0
 }
 
+// --- User Profile (Friend System) ---
+
+async function saveProfile({ displayName, avatarEmoji }) {
+  const existing = await db.collection('user_profiles').where({}).limit(1).get()
+  if (existing.data.length > 0) {
+    await db.collection('user_profiles').doc(existing.data[0]._id).update({
+      data: { displayName, avatarEmoji }
+    })
+    return { _id: existing.data[0]._id, displayName, avatarEmoji }
+  }
+  const result = await db.collection('user_profiles').add({
+    data: { displayName, avatarEmoji, createdAt: db.serverDate() }
+  })
+  return { _id: result._id, displayName, avatarEmoji }
+}
+
+async function getMyProfile() {
+  const result = await db.collection('user_profiles').where({}).limit(1).get()
+  return result.data.length > 0 ? result.data[0] : null
+}
+
+async function updateShareLevel(checkinId, shareLevel) {
+  await db.collection('checkins').doc(checkinId).update({
+    data: { shareLevel, sharedAt: shareLevel ? db.serverDate() : null }
+  })
+}
+
 module.exports = {
   saveCheckIn,
   getCheckIns,
@@ -185,5 +212,8 @@ module.exports = {
   getDailyJournals,
   saveInsight,
   getInsights,
-  getCheckInCount
+  getCheckInCount,
+  saveProfile,
+  getMyProfile,
+  updateShareLevel
 }

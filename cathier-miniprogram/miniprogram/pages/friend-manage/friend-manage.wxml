@@ -1,0 +1,63 @@
+<view class="container">
+  <text class="page-heading">好友管理</text>
+
+  <!-- Loading -->
+  <view wx:if="{{loading}}" class="loading-dots">
+    <view class="dot"></view>
+    <view class="dot"></view>
+    <view class="dot"></view>
+  </view>
+
+  <view wx:else>
+    <!-- Friends List -->
+    <view class="section" wx:if="{{friends.length > 0}}">
+      <text class="section-title">我的好友</text>
+      <view class="card manage-list">
+        <view
+          class="manage-item"
+          wx:for="{{friends}}"
+          wx:key="friendshipId"
+          data-friendship-id="{{item.friendshipId}}"
+          data-name="{{item.displayName}}"
+          bindlongpress="onRemoveFriend"
+        >
+          <view class="manage-item-left">
+            <view class="manage-avatar">
+              <text class="manage-avatar-emoji">{{item.avatarEmoji || '🙂'}}</text>
+            </view>
+            <view class="manage-item-info">
+              <text class="manage-item-name">{{item.displayName}}</text>
+              <text class="manage-item-date text-muted">{{item.dateFormatted}}</text>
+            </view>
+          </view>
+          <text class="manage-remove-hint text-muted">长按移除</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Empty Friends -->
+    <view class="empty-state" wx:if="{{friends.length === 0}}">
+      <text class="empty-state-icon">👋</text>
+      <text class="empty-state-text">还没有好友</text>
+      <button class="btn-primary empty-add-btn" bindtap="onAddFriend">添加好友</button>
+    </view>
+
+    <!-- Pending Invites -->
+    <view class="section" wx:if="{{pendingInvites.length > 0}}">
+      <text class="section-title">待使用的邀请码</text>
+      <view class="card manage-list">
+        <view class="manage-item" wx:for="{{pendingInvites}}" wx:key="code">
+          <view class="manage-item-left">
+            <text class="invite-code-text">{{item.code}}</text>
+          </view>
+          <text class="invite-expiry text-muted">{{item.expiryText}}</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- Add Friend Button -->
+    <view class="bottom-action" wx:if="{{friends.length > 0}}">
+      <button class="btn-secondary" bindtap="onAddFriend">添加好友</button>
+    </view>
+  </view>
+</view>
