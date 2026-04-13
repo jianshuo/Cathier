@@ -28,11 +28,14 @@ struct BodyScanView: View {
                         ) {
                             toggleBodyPart(part)
                         }
-                        .onLongPressGesture {
-                            if let entry = DictionaryService.bodyPart(for: part) {
-                                sheetItem = SheetItem(entry: entry, kind: .bodyPart)
-                            }
-                        }
+                        .simultaneousGesture(
+                            LongPressGesture(minimumDuration: 0.5)
+                                .onEnded { _ in
+                                    if let entry = DictionaryService.bodyPart(for: part) {
+                                        sheetItem = SheetItem(entry: entry, kind: .bodyPart)
+                                    }
+                                }
+                        )
                     }
                 }
 
@@ -55,11 +58,14 @@ struct BodyScanView: View {
                                     ) {
                                         toggleSensation(sensation, for: part)
                                     }
-                                    .onLongPressGesture {
-                                        if let entry = DictionaryService.sensation(for: sensation) {
-                                            sheetItem = SheetItem(entry: entry, kind: .sensation)
-                                        }
-                                    }
+                                    .simultaneousGesture(
+                                        LongPressGesture(minimumDuration: 0.5)
+                                            .onEnded { _ in
+                                                if let entry = DictionaryService.sensation(for: sensation) {
+                                                    sheetItem = SheetItem(entry: entry, kind: .sensation)
+                                                }
+                                            }
+                                    )
                                 }
                             }
                         }
