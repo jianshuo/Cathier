@@ -1,9 +1,18 @@
 import SwiftUI
 
+private struct SheetItem: Identifiable {
+    let id = UUID()
+    let entry: DictionaryEntry
+    enum Kind { case sensation, bodyPart }
+    let kind: Kind
+}
+
 struct BodyScanView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
+
+    @State private var sheetItem: SheetItem?
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -18,6 +27,11 @@ struct BodyScanView: View {
                             isSelected: viewModel.selectedBodyParts.contains(part)
                         ) {
                             toggleBodyPart(part)
+                        }
+                        .onLongPressGesture {
+                            if let entry = DictionaryService.bodyPart(for: part) {
+                                sheetItem = SheetItem(entry: entry, kind: .bodyPart)
+                            }
                         }
                     }
                 }
@@ -40,6 +54,11 @@ struct BodyScanView: View {
                                         isSelected: viewModel.bodySensations[part]?.contains(sensation) ?? false
                                     ) {
                                         toggleSensation(sensation, for: part)
+                                    }
+                                    .onLongPressGesture {
+                                        if let entry = DictionaryService.sensation(for: sensation) {
+                                            sheetItem = SheetItem(entry: entry, kind: .sensation)
+                                        }
                                     }
                                 }
                             }
@@ -88,6 +107,14 @@ struct BodyScanView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
+        }
+        .sheet(item: $sheetItem) { item in
+            switch item.kind {
+            case .sensation:
+                SensationDictionarySheet(entry: item.entry)
+            case .bodyPart:
+                BodyPartDictionarySheet(entry: item.entry)
+            }
         }
     }
 
