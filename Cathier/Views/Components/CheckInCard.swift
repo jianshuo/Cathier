@@ -95,7 +95,7 @@ struct CheckInCard: View {
             ForEach(checkIn.bodyParts, id: \.self) { part in
                 let sensations = grouped[part] ?? []
                 let partName = lm.display(part)
-                VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 4) {
                     Text(partName)
                         .font(.subheadline)
                         .fontWeight(.medium)
