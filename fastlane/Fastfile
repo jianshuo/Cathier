@@ -131,7 +131,7 @@ platform :ios do
       skip_metadata:              true,
       skip_screenshots:           true,
       submit_for_review:          true,
-      automatic_release:          false,
+      automatic_release:          true,
       reject_if_possible:         true,
       run_precheck_before_submit: false,
       submission_information: {
