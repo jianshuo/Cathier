@@ -59,7 +59,7 @@ struct EmotionLabelView: View {
                                 .simultaneousGesture(
                                     LongPressGesture(minimumDuration: 0.5)
                                         .onEnded { _ in
-                                            if let entry = DictionaryService.emotion(for: emotion.nameZh) {
+                                            if let entry = DictionaryService.emotion(for: emotion.id) {
                                                 sheetEntry = IdentifiableDictionaryEntry(entry: entry, categoryColor: category.color)
                                             }
                                         }
