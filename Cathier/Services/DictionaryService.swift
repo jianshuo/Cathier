@@ -96,11 +96,19 @@ enum DictionaryService {
         }
     }
 
+    static func bodyPart(for name: String) -> DictionaryEntry? {
+        shared.sections["bodyParts"]?.entries[name]
+    }
+
     // MARK: - Sensations
 
     static var sensationEntries: [(id: String, entry: DictionaryEntry)] {
         let all = shared.sections["sensations"]?.entries ?? [:]
         return all.map { (id: $0.key, entry: $0.value) }
             .sorted { $0.entry.nameZh < $1.entry.nameZh }
+    }
+
+    static func sensation(for name: String) -> DictionaryEntry? {
+        shared.sections["sensations"]?.entries[name]
     }
 }
