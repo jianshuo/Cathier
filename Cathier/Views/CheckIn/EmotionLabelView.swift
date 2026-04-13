@@ -1,12 +1,17 @@
 import SwiftUI
 
+private struct IdentifiableDictionaryEntry: Identifiable {
+    let id = UUID()
+    let entry: DictionaryEntry
+    let categoryColor: Color
+}
+
 struct EmotionLabelView: View {
     var onSkip: () -> Void = {}
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
-    @State private var popoverEmotion: Emotion?
-    @State private var showPopover = false
+    @State private var sheetEntry: IdentifiableDictionaryEntry?
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -54,28 +59,11 @@ struct EmotionLabelView: View {
                                 .simultaneousGesture(
                                     LongPressGesture(minimumDuration: 0.5)
                                         .onEnded { _ in
-                                            if emotion.descriptionText != nil {
-                                                popoverEmotion = emotion
-                                                showPopover = true
+                                            if let entry = DictionaryService.emotion(for: emotion.nameZh) {
+                                                sheetEntry = IdentifiableDictionaryEntry(entry: entry, categoryColor: category.color)
                                             }
                                         }
                                 )
-                                .popover(isPresented: Binding(
-                                    get: { showPopover && popoverEmotion?.id == emotion.id },
-                                    set: { if !$0 { showPopover = false; popoverEmotion = nil } }
-                                )) {
-                                    EmotionPopoverView(
-                                        emotion: emotion,
-                                        categoryColor: category.color
-                                    ) { similarName in
-                                        let allEmotions = config.categories.flatMap(\.emotions)
-                                        if let found = allEmotions.first(where: { $0.nameZh == similarName }),
-                                           found.descriptionText != nil {
-                                            popoverEmotion = found
-                                        }
-                                    }
-                                    .presentationCompactAdaptation(.popover)
-                                }
                             }
                         }
                     }
@@ -121,6 +109,9 @@ struct EmotionLabelView: View {
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
+        }
+        .sheet(item: $sheetEntry) { item in
+            EmotionDictionarySheet(entry: item.entry, categoryColor: item.categoryColor)
         }
     }
 
