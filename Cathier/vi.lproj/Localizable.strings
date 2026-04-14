@@ -240,3 +240,16 @@
 "error.not_subscribed" = "Vui lòng đăng ký để sử dụng dịch vụ AI.";
 "error.api_error" = "Yêu cầu API thất bại (HTTP %d)";
 "error.decode_error" = "Không thể phân tích phản hồi AI";
+
+// Personas
+"persona.picker_label" = "Choose AI Companion";
+"persona.psychologist.name" = "Psychologist";
+"persona.psychologist.desc" = "In-depth analysis of body-mind patterns";
+"persona.friend.name" = "Warm Friend";
+"persona.friend.desc" = "A caring friend who listens";
+"persona.philosopher.name" = "Philosopher";
+"persona.philosopher.desc" = "Wisdom through an existential lens";
+"persona.coach.name" = "Growth Coach";
+"persona.coach.desc" = "Turn awareness into action";
+"persona.poet.name" = "Poet";
+"persona.poet.desc" = "See your feelings through imagery";

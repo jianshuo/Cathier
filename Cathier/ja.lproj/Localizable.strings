@@ -240,3 +240,16 @@
 "error.not_subscribed" = "AIサービスを利用するには購読してください。";
 "error.api_error" = "APIリクエストが失敗しました（HTTP %d）";
 "error.decode_error" = "AI応答の解析に失敗しました";
+
+// Personas
+"persona.picker_label" = "AIコンパニオンを選ぶ";
+"persona.psychologist.name" = "心理学者";
+"persona.psychologist.desc" = "心身パターンの深い分析";
+"persona.friend.name" = "温かい友達";
+"persona.friend.desc" = "親しい友人のように寄り添う";
+"persona.philosopher.name" = "哲学者";
+"persona.philosopher.desc" = "存在と知恵の視点から";
+"persona.coach.name" = "成長コーチ";
+"persona.coach.desc" = "気づきを行動に変える";
+"persona.poet.name" = "詩人";
+"persona.poet.desc" = "イメージと比喩で感じ直す";

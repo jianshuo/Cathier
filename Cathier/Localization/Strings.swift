@@ -74,6 +74,9 @@ extension LanguageManager {
         String(format: localized("ai.intensity_badge"), v)
     }
 
+    // MARK: AI Companion Personas
+    var personaPickerLabel: String { localized("persona.picker_label") }
+
     // MARK: MicroExerciseView
     var exerciseNavTitle: String  { localized("exercise.nav_title") }
     var exerciseLoading: String   { localized("exercise.loading") }

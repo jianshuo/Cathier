@@ -240,3 +240,16 @@
 "error.not_subscribed" = "请先订阅以使用 AI 服务";
 "error.api_error" = "API 请求失败（HTTP %d）";
 "error.decode_error" = "解析 AI 响应失败";
+
+// Personas
+"persona.picker_label" = "选择 AI 伴侣";
+"persona.psychologist.name" = "心理学家";
+"persona.psychologist.desc" = "专业深度分析，洞察身心模式";
+"persona.friend.name" = "暖心朋友";
+"persona.friend.desc" = "像好友一样陪你聊聊";
+"persona.philosopher.name" = "哲学家";
+"persona.philosopher.desc" = "从存在与智慧的角度看情绪";
+"persona.coach.name" = "成长教练";
+"persona.coach.desc" = "将觉察转化为行动";
+"persona.poet.name" = "诗人";
+"persona.poet.desc" = "用意象和比喻重新看见你的感受";
