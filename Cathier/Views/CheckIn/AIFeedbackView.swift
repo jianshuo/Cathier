@@ -332,6 +332,53 @@ struct AIFeedbackView: View {
         }
     }
 
+    // MARK: - Persona Picker
+
+    private var personaPicker: some View {
+        Menu {
+            ForEach(AICompanionPersona.allCases) { p in
+                Button(action: {
+                    guard viewModel.persona != p else { return }
+                    viewModel.persona = p
+                    viewModel.aiFeedback = ""
+                    viewModel.aiError = nil
+                    Task {
+                        let history = fetchRecentHistory()
+                        let freq = emotionFrequency()
+                        await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
+                    }
+                }) {
+                    Label {
+                        VStack(alignment: .leading) {
+                            Text(p.displayName(lm))
+                            Text(p.displayDescription(lm))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    } icon: {
+                        Image(systemName: p.icon)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: viewModel.persona.icon)
+                    .font(.caption)
+                Text(viewModel.persona.displayName(lm))
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color.cathierAccent.opacity(0.1))
+            .foregroundColor(.cathierAccent)
+            .clipShape(Capsule())
+        }
+    }
+
     // MARK: - AI Feedback Card
 
     private var aiFeedbackCard: some View {
@@ -343,6 +390,7 @@ struct AIFeedbackView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
+                personaPicker
             }
 
             if viewModel.isLoadingAI {
@@ -350,10 +398,11 @@ struct AIFeedbackView: View {
             } else if let error = viewModel.aiError {
                 errorView(error)
             } else if !viewModel.aiFeedback.isEmpty {
-                Text(viewModel.aiFeedback)
-                    .font(.cathierSerif(.body))
+                MarkdownText(raw: viewModel.aiFeedback,
+                             font: .cathierSerif(.body),
+                             paragraphSpacing: 8,
+                             lineSpacing: 5)
                     .foregroundColor(.primary)
-                    .lineSpacing(5)
                     .transition(.opacity)
             }
         }
