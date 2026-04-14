@@ -43,6 +43,16 @@ final class CheckInViewModel {
     var aiError: String? = nil
     var note: String = ""
 
+    // MARK: - AI Companion Persona
+    var persona: AICompanionPersona {
+        get {
+            AICompanionPersona(rawValue: UserDefaults.standard.string(forKey: "aiCompanionPersona") ?? "") ?? .psychologist
+        }
+        set {
+            UserDefaults.standard.set(newValue.rawValue, forKey: "aiCompanionPersona")
+        }
+    }
+
     // MARK: - Computed
     var allEmotions: [String] {
         var list = Array(selectedEmotions)
@@ -72,7 +82,8 @@ final class CheckInViewModel {
                 triggerEvent: triggerEvent,
                 recentHistory: recentHistory,
                 emotionFrequency: emotionFrequency,
-                language: LanguageManager.shared.currentLanguage
+                language: LanguageManager.shared.currentLanguage,
+                persona: persona
             )
         } catch {
             aiError = error.localizedDescription
