@@ -251,5 +251,5 @@
 "persona.philosopher.desc" = "存在と知恵の視点から";
 "persona.coach.name" = "成長コーチ";
 "persona.coach.desc" = "気づきを行動に変える";
-"persona.poet.name" = "詩人";
-"persona.poet.desc" = "イメージと比喩で感じ直す";
+"persona.journaler.name" = "ジャーナルガイド";
+"persona.journaler.desc" = "5ステップで気づき・リフレーム・行動";

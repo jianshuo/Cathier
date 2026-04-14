@@ -251,5 +251,5 @@
 "persona.philosopher.desc" = "从存在与智慧的角度看情绪";
 "persona.coach.name" = "成长教练";
 "persona.coach.desc" = "将觉察转化为行动";
-"persona.poet.name" = "诗人";
-"persona.poet.desc" = "用意象和比喻重新看见你的感受";
+"persona.journaler.name" = "日记导师";
+"persona.journaler.desc" = "五步法：觉察→解离→调节→重构→行动";
