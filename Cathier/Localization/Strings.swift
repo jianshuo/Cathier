@@ -105,6 +105,7 @@ extension LanguageManager {
     var friendAddFriend: String   { localized("friend.add_friend") }
     var friendEmptyFeed: String   { localized("friend.empty_feed") }
     var friendDefaultName: String { localized("friend.default_name") }
+    var friendRetry: String       { localized("friend.retry") }
     var aiReadMore: String        { localized("ai.read_more") }
     var aiFullInterpretation: String { localized("ai.full_interpretation") }
 

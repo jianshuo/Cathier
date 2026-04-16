@@ -92,6 +92,7 @@
 "friend.add_friend" = "Adicionar amigo";
 "friend.empty_feed" = "Nenhum amigo compartilhou humor ainda";
 "friend.default_name" = "Amigo";
+"friend.retry" = "Tentar novamente";
 "ai.read_more" = "Ler interpretação completa";
 "ai.full_interpretation" = "Interpretação IA";
 

@@ -92,6 +92,7 @@
 "friend.add_friend" = "दोस्त जोड़ें";
 "friend.empty_feed" = "किसी दोस्त ने अभी तक कोई मूड साझा नहीं किया";
 "friend.default_name" = "दोस्त";
+"friend.retry" = "फिर से प्रयास करें";
 "ai.read_more" = "पूरी व्याख्या पढ़ें";
 "ai.full_interpretation" = "AI व्याख्या";
 

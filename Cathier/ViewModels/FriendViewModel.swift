@@ -50,6 +50,11 @@ final class FriendViewModel {
 
     // MARK: - Initialise
 
+    func retry() async {
+        accountState = .loading
+        await initialize()
+    }
+
     func initialize() async {
         guard case .loading = accountState else { return }
         t("FriendVM.initialize() — START")

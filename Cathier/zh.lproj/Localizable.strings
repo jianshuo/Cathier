@@ -92,6 +92,7 @@
 "friend.add_friend" = "添加好友";
 "friend.empty_feed" = "好友还没有分享任何情绪";
 "friend.default_name" = "朋友";
+"friend.retry" = "重试";
 "ai.read_more" = "查看完整解读";
 "ai.full_interpretation" = "AI 解读";
 

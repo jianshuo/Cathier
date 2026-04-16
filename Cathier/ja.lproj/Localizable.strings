@@ -92,6 +92,7 @@
 "friend.add_friend" = "友達を追加";
 "friend.empty_feed" = "友達はまだ感情をシェアしていません";
 "friend.default_name" = "友達";
+"friend.retry" = "再試行";
 "ai.read_more" = "全文を読む";
 "ai.full_interpretation" = "AIの解釈";
 
