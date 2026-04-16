@@ -92,6 +92,7 @@
 "friend.add_friend" = "เพิ่มเพื่อน";
 "friend.empty_feed" = "ยังไม่มีเพื่อนที่แชร์อารมณ์";
 "friend.default_name" = "เพื่อน";
+"friend.retry" = "ลองอีกครั้ง";
 "ai.read_more" = "อ่านการตีความทั้งหมด";
 "ai.full_interpretation" = "การตีความ AI";
 

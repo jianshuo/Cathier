@@ -92,6 +92,7 @@
 "friend.add_friend" = "Thêm bạn";
 "friend.empty_feed" = "Chưa có bạn bè nào chia sẻ tâm trạng";
 "friend.default_name" = "Bạn";
+"friend.retry" = "Thử lại";
 "ai.read_more" = "Đọc diễn giải đầy đủ";
 "ai.full_interpretation" = "Diễn giải AI";
 

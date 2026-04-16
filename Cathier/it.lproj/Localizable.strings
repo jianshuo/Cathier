@@ -92,6 +92,7 @@
 "friend.add_friend" = "Aggiungi amico";
 "friend.empty_feed" = "Nessun amico ha ancora condiviso un'umore";
 "friend.default_name" = "Amico";
+"friend.retry" = "Riprova";
 "ai.read_more" = "Leggi l'interpretazione completa";
 "ai.full_interpretation" = "Interpretazione IA";
 

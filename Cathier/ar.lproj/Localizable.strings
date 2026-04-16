@@ -92,6 +92,7 @@
 "friend.add_friend" = "إضافة صديق";
 "friend.empty_feed" = "لم يشارك أي صديق حالته بعد";
 "friend.default_name" = "صديق";
+"friend.retry" = "إعادة المحاولة";
 "ai.read_more" = "اقرأ التفسير الكامل";
 "ai.full_interpretation" = "تفسير الذكاء الاصطناعي";
 

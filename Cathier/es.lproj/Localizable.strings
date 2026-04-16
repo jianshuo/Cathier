@@ -92,6 +92,7 @@
 "friend.add_friend" = "Añadir amigo";
 "friend.empty_feed" = "Ningún amigo ha compartido su estado de ánimo aún";
 "friend.default_name" = "Amigo";
+"friend.retry" = "Reintentar";
 "ai.read_more" = "Leer interpretación completa";
 "ai.full_interpretation" = "Interpretación IA";
 

@@ -92,6 +92,7 @@
 "friend.add_friend" = "Add Friend";
 "friend.empty_feed" = "No friend has shared any mood yet";
 "friend.default_name" = "Friend";
+"friend.retry" = "Retry";
 "ai.read_more" = "Read full interpretation";
 "ai.full_interpretation" = "AI Interpretation";
 

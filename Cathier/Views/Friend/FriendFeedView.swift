@@ -42,6 +42,13 @@ struct FriendFeedView: View {
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
+            Button(action: {
+                Task { await vm.retry() }
+            }) {
+                Text(lm.friendRetry)
+                    .font(.subheadline)
+                    .foregroundColor(.cathierAccent)
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }

@@ -92,6 +92,7 @@
 "friend.add_friend" = "Freund hinzufügen";
 "friend.empty_feed" = "Noch kein Freund hat eine Stimmung geteilt";
 "friend.default_name" = "Freund";
+"friend.retry" = "Erneut versuchen";
 "ai.read_more" = "Vollständige Interpretation lesen";
 "ai.full_interpretation" = "KI-Interpretation";
 
