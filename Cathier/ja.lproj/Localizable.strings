@@ -254,3 +254,5 @@
 "persona.coach.desc" = "気づきを行動に変える";
 "persona.journaler.name" = "ジャーナルガイド";
 "persona.journaler.desc" = "5ステップで気づき・リフレーム・行動";
+"persona.brainTrainer.name" = "頭脳トレーナー";
+"persona.brainTrainer.desc" = "5つの質問で認知的重み更新";

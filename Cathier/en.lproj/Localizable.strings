@@ -254,3 +254,5 @@
 "persona.coach.desc" = "Turn awareness into action";
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
+"persona.brainTrainer.name" = "Brain Trainer";
+"persona.brainTrainer.desc" = "Five questions to update your cognitive weights";
