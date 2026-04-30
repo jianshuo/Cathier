@@ -39,17 +39,17 @@ enum ClaudeService {
 
     // MARK: - Managed service configuration
     // Production: injected at build time from GitHub secrets → Info.plist.
-    // Local dev: set OPENROUTER_API_KEY in Xcode scheme → Run → Environment Variables.
+    // Local dev: set QWEN_API_KEY in Xcode scheme → Run → Environment Variables.
     private static var managedApiKey: String {
-        let plistKey = Bundle.main.infoDictionary?["OpenRouterApiKey"] as? String ?? ""
+        let plistKey = Bundle.main.infoDictionary?["QwenApiKey"] as? String ?? ""
         if !plistKey.isEmpty { return plistKey }
-        return ProcessInfo.processInfo.environment["OPENROUTER_API_KEY"] ?? ""
+        return ProcessInfo.processInfo.environment["QWEN_API_KEY"] ?? ""
     }
 
     // MARK: - Provider helpers
 
-    // Default to managed OpenRouter — developer's key, free for all users.
-    private static var activeProvider: AIProvider { .openrouter }
+    // Default to managed Qwen — developer's key, free for all users.
+    private static var activeProvider: AIProvider { .managed }
 
     private static var feedbackModel: String  { activeProvider.feedbackModel }
     private static var insightsModel: String  { activeProvider.insightsModel }
@@ -59,7 +59,7 @@ enum ClaudeService {
     private static func call(model: String, system: String, user: String, maxTokens: Int) async throws -> String {
         let provider = activeProvider
 
-        // Use the developer's key injected at build time (OpenRouter).
+        // Use the developer's Qwen key injected at build time.
         let apiKey = managedApiKey
         guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
 

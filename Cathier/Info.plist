@@ -17,7 +17,7 @@
 	</array>
 	<key>GitHubFeedbackPAT</key>
 	<string></string>
-	<key>OpenRouterApiKey</key>
+	<key>QwenApiKey</key>
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>

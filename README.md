@@ -43,7 +43,7 @@ An iOS app for emotion awareness and body-mind check-ins, with AI-assisted refle
 
 - **SwiftUI** + **SwiftData** (iOS 17+)
 - **CloudKit** (public database for friend features)
-- **OpenRouter API** — managed key injected at CI build time; user-supplied key (any OpenRouter-compatible model) also supported
+- **Alibaba Qwen API** (DashScope) — managed key injected at CI build time; user-supplied key (any OpenAI-compatible model) also supported
 - **Swift Charts** (intensity visualization)
 - Xcode 26 / iOS 26.2 deployment target
 - Version 1.8
@@ -132,12 +132,12 @@ Cathier/
 
 ### Local AI Key Setup
 
-AI features use OpenRouter by default. The key is injected via an environment variable so it never appears in source code.
+AI features use Qwen by default. The key is injected via an environment variable so it never appears in source code.
 
-1. Get an API key from [openrouter.ai/keys](https://openrouter.ai/keys)
+1. Get an API key from [dashscope.console.aliyun.com](https://dashscope.console.aliyun.com)
 2. In Xcode: **Product → Scheme → Edit Scheme → Run → Arguments → Environment Variables**, add:
    ```
-   OPENROUTER_API_KEY = sk-or-...
+   QWEN_API_KEY = sk-...
    ```
 3. Rebuild and run.
 

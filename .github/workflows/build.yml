@@ -46,10 +46,10 @@ jobs:
         env:
           FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
-      - name: Inject OpenRouter API key into Info.plist
-        run: /usr/libexec/PlistBuddy -c "Set :OpenRouterApiKey $OPENROUTER_API_KEY" Cathier/Info.plist
+      - name: Inject Qwen API key into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :QwenApiKey $QWEN_API_KEY" Cathier/Info.plist
         env:
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
 
       # PRs: build only (verify it compiles)
       - name: Build for verification
