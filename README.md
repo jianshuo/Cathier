@@ -43,7 +43,7 @@ An iOS app for emotion awareness and body-mind check-ins, with AI-assisted refle
 
 - **SwiftUI** + **SwiftData** (iOS 17+)
 - **CloudKit** (public database for friend features)
-- **Anthropic Claude / Qwen API** (user-supplied key, stored in UserDefaults)
+- **OpenRouter API** — managed key injected at CI build time; user-supplied key (any OpenRouter-compatible model) also supported
 - **Swift Charts** (intensity visualization)
 - Xcode 26 / iOS 26.2 deployment target
 - Version 1.8
@@ -99,7 +99,6 @@ Cathier/
 
 - Xcode 16+
 - An Apple Developer account (for CloudKit)
-- An [Anthropic API key](https://console.anthropic.com/) (optional — required for AI features)
 
 ### Setup
 
@@ -127,14 +126,27 @@ Cathier/
 
 7. Build and run on a simulator or device
 
-8. Enter your Anthropic API key in the **Settings** tab to enable AI features
+8. Set your OpenRouter API key (see below) to enable AI features
 
-9. Optionally fill in the **About You** field in Settings to give Claude context for personalized pattern insights
+9. Optionally fill in the **About You** field in Settings to give the AI context for personalized pattern insights
+
+### Local AI Key Setup
+
+AI features use OpenRouter by default. The key is injected via an environment variable so it never appears in source code.
+
+1. Get an API key from [openrouter.ai/keys](https://openrouter.ai/keys)
+2. In Xcode: **Product → Scheme → Edit Scheme → Run → Arguments → Environment Variables**, add:
+   ```
+   OPENROUTER_API_KEY = sk-or-...
+   ```
+3. Rebuild and run.
+
+Alternatively, select a different provider (Claude, OpenAI, DeepSeek, etc.) in the **Settings** tab and enter your own key directly.
 
 ## Privacy
 
 - Check-in data is stored **locally on device** (SwiftData) and never sent to our servers
-- Emotion/body data is sent to **Anthropic** only to generate AI feedback and pattern insights (stateless, no history stored server-side)
+- Emotion/body data is sent to the **configured AI provider** only to generate feedback and pattern insights (stateless, no history stored server-side)
 - The optional "About You" context brief is stored **locally** in UserDefaults and is only included in pattern analysis prompts
 - Pattern insight history is stored **locally** in UserDefaults
 - Friend features use **Apple CloudKit** — data is governed by Apple's privacy policy
