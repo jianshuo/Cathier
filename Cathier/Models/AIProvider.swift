@@ -45,7 +45,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .deepseek:   return "deepseek-chat"
         case .qwen, .managed: return "qwen-turbo"
         case .zhipu:      return "glm-4-flash"
-        case .openrouter: return "openai/o4-mini"
+        case .openrouter: return "moonshotai/kimi-k2.6"
         }
     }
 
@@ -57,7 +57,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .deepseek:   return "deepseek-chat"
         case .qwen, .managed: return "qwen-plus"
         case .zhipu:      return "glm-4"
-        case .openrouter: return "openai/gpt-4o-2025-04-16"
+        case .openrouter: return "moonshotai/kimi-k2.6"
         }
     }
 
