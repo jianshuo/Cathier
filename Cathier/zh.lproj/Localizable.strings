@@ -254,5 +254,5 @@
 "persona.coach.desc" = "将觉察转化为行动";
 "persona.journaler.name" = "日记导师";
 "persona.journaler.desc" = "五步法：觉察→解离→调节→重构→行动";
-"persona.brainTrainer.name" = "大脑训练师";
-"persona.brainTrainer.desc" = "吃一堑长一智：五问法调整底层认知";
+"persona.brainTrainer.name" = "吃一堑长一智";
+"persona.brainTrainer.desc" = "五问法：将每一次踩坑变成大脑参数的精准更新";
