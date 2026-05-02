@@ -1,0 +1,237 @@
+import SwiftUI
+
+struct BrainTrainerChatView: View {
+    @Environment(CheckInViewModel.self) private var viewModel
+    @Environment(LanguageManager.self) private var lm
+    let onSave: () -> Void
+
+    @State private var inputText = ""
+    @FocusState private var inputFocused: Bool
+
+    private var visibleMessages: [BrainTrainerMessage] {
+        viewModel.brainTrainerMessages.filter { !$0.isInitialContext }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 16) {
+                        ForEach(visibleMessages) { msg in
+                            if msg.role == "assistant" {
+                                assistantBubble(msg)
+                            } else {
+                                userBubble(msg)
+                            }
+                        }
+                        if viewModel.isBrainTrainerLoading {
+                            loadingBubble
+                        }
+                        if let err = viewModel.brainTrainerError {
+                            errorRow(err)
+                        }
+                        Color.clear.frame(height: 1).id("bottom")
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                }
+                .onChange(of: viewModel.brainTrainerMessages.count) { _, _ in
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        proxy.scrollTo("bottom")
+                    }
+                }
+                .onChange(of: viewModel.isBrainTrainerLoading) { _, _ in
+                    withAnimation(.easeInOut(duration: 0.35)) {
+                        proxy.scrollTo("bottom")
+                    }
+                }
+            }
+
+            Divider()
+            inputBar
+            saveButton
+        }
+    }
+
+    // MARK: - Bubbles
+
+    private func assistantBubble(_ msg: BrainTrainerMessage) -> some View {
+        let parsed = parseOptions(msg.content)
+        return VStack(alignment: .leading, spacing: 10) {
+            if !parsed.mainText.isEmpty {
+                MarkdownText(raw: parsed.mainText,
+                             font: .cathierSerif(.body),
+                             paragraphSpacing: 6,
+                             lineSpacing: 4)
+                    .foregroundColor(.primary)
+                    .padding(14)
+                    .background(Color.cathierSurface)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                    )
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            if !parsed.options.isEmpty {
+                optionChips(parsed.options)
+            }
+        }
+    }
+
+    private func userBubble(_ msg: BrainTrainerMessage) -> some View {
+        Text(msg.content)
+            .font(.body)
+            .foregroundColor(.primary)
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(Color.cathierAccentLight)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .frame(maxWidth: .infinity, alignment: .trailing)
+    }
+
+    private var loadingBubble: some View {
+        HStack(spacing: 8) {
+            ProgressView()
+                .tint(.cathierAccent)
+                .scaleEffect(0.8)
+            Text(lm.aiLoading)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12, style: .continuous)
+                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+        )
+    }
+
+    private func errorRow(_ message: String) -> some View {
+        HStack(spacing: 8) {
+            Text(message)
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Button(lm.aiRetry) {
+                Task { await viewModel.startBrainTrainerSession() }
+            }
+            .font(.caption)
+            .foregroundColor(.cathierAccent)
+        }
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+    }
+
+    // MARK: - Option chips
+
+    private func optionChips(_ options: [String]) -> some View {
+        FlowLayout(spacing: 8) {
+            ForEach(Array(options.enumerated()), id: \.offset) { index, option in
+                Button(action: { send(option) }) {
+                    Text("\(index + 1). \(option)")
+                        .font(.subheadline)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
+                        .background(Color.cathierBackground)
+                        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+                        )
+                }
+                .buttonStyle(.plain)
+                .disabled(viewModel.isBrainTrainerLoading)
+            }
+        }
+    }
+
+    // MARK: - Input bar
+
+    private var inputBar: some View {
+        HStack(spacing: 10) {
+            TextField("输入或选择上方选项…", text: $inputText, axis: .vertical)
+                .font(.body)
+                .lineLimit(1...4)
+                .textFieldStyle(.plain)
+                .focused($inputFocused)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 10)
+                .background(Color(.systemGray6))
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+
+            Button(action: submitInput) {
+                Image(systemName: "arrow.up.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(canSend ? .cathierAccent : .secondary)
+            }
+            .disabled(!canSend)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Color.cathierSurface)
+    }
+
+    private var canSend: Bool {
+        !inputText.trimmingCharacters(in: .whitespaces).isEmpty && !viewModel.isBrainTrainerLoading
+    }
+
+    private var saveButton: some View {
+        Button(action: onSave) {
+            Text(lm.aiSave)
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 14)
+                .background(Color.cathierAccent)
+                .clipShape(Capsule())
+        }
+        .padding(.horizontal, 16)
+        .padding(.bottom, 16)
+        .padding(.top, 6)
+        .background(Color.cathierSurface)
+    }
+
+    // MARK: - Helpers
+
+    private func submitInput() {
+        let text = inputText.trimmingCharacters(in: .whitespaces)
+        guard !text.isEmpty else { return }
+        inputText = ""
+        inputFocused = false
+        send(text)
+    }
+
+    private func send(_ text: String) {
+        Task { await viewModel.sendBrainTrainerMessage(text) }
+    }
+
+    // Parse numbered options (e.g. "1. text") out of AI response.
+    // Returns remaining prose + extracted option strings.
+    private func parseOptions(_ text: String) -> (mainText: String, options: [String]) {
+        let lines = text.components(separatedBy: "\n")
+        var options: [String] = []
+        var mainLines: [String] = []
+
+        for line in lines {
+            let trimmed = line.trimmingCharacters(in: .whitespaces)
+            // Match lines like "1. text" or "1、text"
+            if let range = trimmed.range(of: #"^\d+[\.、]\s+"#, options: .regularExpression) {
+                let option = String(trimmed[range.upperBound...]).trimmingCharacters(in: .whitespaces)
+                if !option.isEmpty { options.append(option) }
+            } else {
+                mainLines.append(line)
+            }
+        }
+
+        // Only surface as chips when ≥2 options found
+        guard options.count >= 2 else { return (text, []) }
+
+        let prose = mainLines
+            .joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        return (prose, options)
+    }
+}

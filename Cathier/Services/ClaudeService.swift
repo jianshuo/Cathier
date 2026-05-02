@@ -125,6 +125,61 @@ enum ClaudeService {
         }
     }
 
+    // MARK: - Multi-turn (BrainTrainer)
+
+    static func callBrainTrainer(
+        messages: [(role: String, content: String)],
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let system = AICompanionPersona.brainTrainer.systemPrompt(for: language)
+        return try await callMultiTurn(system: system, messages: messages, maxTokens: 1200)
+    }
+
+    private static func callMultiTurn(
+        system: String,
+        messages: [(role: String, content: String)],
+        maxTokens: Int
+    ) async throws -> String {
+        let provider = activeProvider
+        let apiKey = managedApiKey
+        guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
+
+        var request = URLRequest(url: provider.endpoint)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "content-type")
+
+        let msgArray = messages.map { ["role": $0.role, "content": $0.content] }
+        let body: [String: Any]
+
+        if provider.isAnthropicFormat {
+            request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
+            request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
+            body = ["model": feedbackModel, "max_tokens": maxTokens, "system": system, "messages": msgArray]
+        } else {
+            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
+            var all: [[String: String]] = [["role": "system", "content": system]]
+            all.append(contentsOf: msgArray)
+            body = ["model": feedbackModel, "max_tokens": maxTokens, "messages": all]
+        }
+
+        request.httpBody = try JSONSerialization.data(withJSONObject: body)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
+            if let body = String(data: data, encoding: .utf8) { print("[AIService] HTTP \(statusCode): \(body)") }
+            throw ClaudeError.apiError(statusCode)
+        }
+
+        if provider.isAnthropicFormat {
+            let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
+            return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
+        } else {
+            let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
+            return decoded.choices.first?.message.content ?? ""
+        }
+    }
+
     // MARK: - Pattern Insights
 
     /// Returns a deduplicated sample of check-ins for pattern analysis.

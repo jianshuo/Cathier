@@ -2,6 +2,13 @@ import Foundation
 import SwiftData
 import Observation
 
+struct BrainTrainerMessage: Identifiable {
+    let id = UUID()
+    let role: String       // "user" or "assistant"
+    let content: String
+    let isInitialContext: Bool
+}
+
 enum CheckInStep: CaseIterable {
     case bodyScan
     case emotionLabel
@@ -42,6 +49,11 @@ final class CheckInViewModel {
     var isLoadingAI = false
     var aiError: String? = nil
     var note: String = ""
+
+    // MARK: - BrainTrainer Chat
+    var brainTrainerMessages: [BrainTrainerMessage] = []
+    var isBrainTrainerLoading = false
+    var brainTrainerError: String? = nil
 
     // MARK: - AI Companion Persona
     var persona: AICompanionPersona {
@@ -91,6 +103,55 @@ final class CheckInViewModel {
         isLoadingAI = false
     }
 
+    func startBrainTrainerSession() async {
+        guard brainTrainerMessages.isEmpty else { return }
+        let ctx = BrainTrainerMessage(role: "user", content: buildBrainTrainerContext(), isInitialContext: true)
+        brainTrainerMessages.append(ctx)
+        isBrainTrainerLoading = true
+        brainTrainerError = nil
+        do {
+            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
+            let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
+            brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
+        } catch {
+            brainTrainerError = error.localizedDescription
+        }
+        isBrainTrainerLoading = false
+    }
+
+    func sendBrainTrainerMessage(_ text: String) async {
+        let userMsg = BrainTrainerMessage(role: "user", content: text, isInitialContext: false)
+        brainTrainerMessages.append(userMsg)
+        isBrainTrainerLoading = true
+        brainTrainerError = nil
+        do {
+            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
+            let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
+            brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
+        } catch {
+            brainTrainerError = error.localizedDescription
+            brainTrainerMessages.removeLast()
+        }
+        isBrainTrainerLoading = false
+    }
+
+    var brainTrainerTranscript: String {
+        brainTrainerMessages
+            .filter { !$0.isInitialContext }
+            .map { $0.role == "assistant" ? "AI：\($0.content)" : "我：\($0.content)" }
+            .joined(separator: "\n\n")
+    }
+
+    private func buildBrainTrainerContext() -> String {
+        var parts: [String] = []
+        let event = triggerEvent.trimmingCharacters(in: .whitespaces)
+        if !event.isEmpty { parts.append("触发事件：\(event)") }
+        if !allEmotions.isEmpty { parts.append("情绪：\(allEmotions.joined(separator: "、"))") }
+        if !selectedBodyParts.isEmpty { parts.append("身体部位：\(Array(selectedBodyParts).joined(separator: "、"))") }
+        parts.append("强度：\(Int(intensity))/10")
+        return parts.joined(separator: "\n")
+    }
+
     @discardableResult
     func save(context: ModelContext) -> CheckIn {
         let checkIn = CheckIn(
@@ -127,5 +188,8 @@ final class CheckInViewModel {
         isLoadingAI = false
         aiError = nil
         note = ""
+        brainTrainerMessages = []
+        isBrainTrainerLoading = false
+        brainTrainerError = nil
     }
 }

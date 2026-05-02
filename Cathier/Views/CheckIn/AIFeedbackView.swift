@@ -17,18 +17,75 @@ struct AIFeedbackView: View {
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
 
     var body: some View {
+        if viewModel.persona == .brainTrainer {
+            brainTrainerBody
+        } else {
+            standardBody
+        }
+    }
+
+    // MARK: - BrainTrainer layout (interactive chat)
+
+    private var brainTrainerBody: some View {
+        VStack(spacing: 0) {
+            // Compact header: summary + persona picker
+            ScrollView {
+                VStack(spacing: 16) {
+                    summaryCard
+                    brainTrainerHeader
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 8)
+            }
+            .frame(maxHeight: 260)
+
+            Divider()
+
+            BrainTrainerChatView(onSave: brainTrainerSaveAction)
+                .environment(viewModel)
+                .environment(lm)
+        }
+        .task {
+            await viewModel.startBrainTrainerSession()
+        }
+    }
+
+    private var brainTrainerHeader: some View {
+        HStack(spacing: 6) {
+            Image(systemName: "sparkles")
+                .foregroundColor(.cathierAccent)
+            Text(lm.aiCompanion)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+            Spacer()
+            personaPicker
+        }
+    }
+
+    private func brainTrainerSaveAction() {
+        viewModel.aiFeedback = viewModel.brainTrainerTranscript
+        let checkIn = viewModel.save(context: modelContext)
+        if let tier = selectedTier {
+            let includeAI = tier == .full ? false : shareAIFeedback
+            Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: includeAI) }
+        }
+        onDismiss()
+    }
+
+    // MARK: - Standard layout
+
+    private var standardBody: some View {
         @Bindable var vm = viewModel
-        ScrollView {
+        return ScrollView {
             VStack(spacing: 24) {
                 summaryCard
                 aiFeedbackCard
 
-                // Micro-exercise button (shown after AI feedback loads)
                 if !viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
                     exerciseButton
                 }
 
-                // Note input
                 VStack(alignment: .leading, spacing: 8) {
                     Text(lm.aiNoteLabel)
                         .font(.subheadline)
@@ -41,12 +98,10 @@ struct AIFeedbackView: View {
                         .cornerRadius(10)
                 }
 
-                // Share options (only shown when user has friends)
                 if hasFriends {
                     shareSection
                 }
 
-                // Save button
                 Button(action: saveAction) {
                     Text(lm.aiSave)
                         .font(.headline)
@@ -342,10 +397,16 @@ struct AIFeedbackView: View {
                     viewModel.persona = p
                     viewModel.aiFeedback = ""
                     viewModel.aiError = nil
-                    Task {
-                        let history = fetchRecentHistory()
-                        let freq = emotionFrequency()
-                        await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
+                    viewModel.brainTrainerMessages = []
+                    viewModel.brainTrainerError = nil
+                    if p == .brainTrainer {
+                        Task { await viewModel.startBrainTrainerSession() }
+                    } else {
+                        Task {
+                            let history = fetchRecentHistory()
+                            let freq = emotionFrequency()
+                            await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
+                        }
                     }
                 }) {
                     Label {
