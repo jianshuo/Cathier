@@ -135,6 +135,38 @@ enum ClaudeService {
         return try await callMultiTurn(system: system, messages: messages, maxTokens: 1200)
     }
 
+    static func generateBrainTrainerSummary(
+        messages: [(role: String, content: String)],
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let isZh = language == .zh
+        let system = isZh ? """
+            你是复盘总结专家。用户刚完成了「吃一堑长一智」五步复盘对话。
+            根据对话内容，生成一张简洁的训练卡片，格式如下（用 Markdown 加粗标签）：
+
+            **这次"堑"：** 一句话描述事件
+            **自动输出：** 当时的第一反应
+            **旧权重：** 背后的底层模式
+            **新参数：** 想要训练的新模式
+            **替代动作：** 下次的具体执行动作
+
+            语气简洁，像在记录一张训练卡片。不加鼓励语，不加废话，直接给内容。
+            """ : """
+            You are a reflection summary expert. Summarize the completed 5-step brain training session into a concise training card:
+
+            **The lesson:** One sentence describing what happened
+            **Auto-response:** The immediate reaction
+            **Old weight:** The underlying pattern
+            **New parameter:** The new pattern to train
+            **Next action:** The specific replacement behavior
+
+            Be concise. No encouragement, no filler — just the content.
+            """
+        var msgs = messages.map { (role: $0.role, content: $0.content.replacingOccurrences(of: "<complete/>", with: "")) }
+        msgs.append((role: "user", content: isZh ? "请生成五步复盘总结卡片。" : "Please generate the 5-step summary card."))
+        return try await callMultiTurn(system: system, messages: msgs, maxTokens: 500)
+    }
+
     private static func callMultiTurn(
         system: String,
         messages: [(role: String, content: String)],

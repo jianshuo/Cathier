@@ -13,6 +13,71 @@ struct BrainTrainerChatView: View {
     }
 
     var body: some View {
+        if viewModel.brainTrainerComplete {
+            summaryView
+        } else {
+            chatView
+        }
+    }
+
+    // MARK: - Summary (shown after all 5 steps complete)
+
+    private var summaryView: some View {
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "checkmark.seal.fill")
+                            .foregroundColor(.cathierAccent)
+                        Text("复盘完成")
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.cathierAccent)
+                    }
+
+                    if viewModel.isGeneratingSummary {
+                        HStack(spacing: 10) {
+                            ProgressView().tint(.cathierAccent)
+                            Text("正在生成总结…")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                        .padding(.vertical, 8)
+                    } else if !viewModel.brainTrainerSummary.isEmpty {
+                        MarkdownText(raw: viewModel.brainTrainerSummary,
+                                     font: .cathierSerif(.body),
+                                     paragraphSpacing: 8,
+                                     lineSpacing: 5)
+                            .foregroundColor(.primary)
+                            .transition(.opacity)
+                    } else if let err = viewModel.brainTrainerError {
+                        errorRow(err)
+                    }
+                }
+                .padding(16)
+            }
+            .background(Color.cathierAccentLight)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 1)
+            )
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+
+            Spacer(minLength: 0)
+            saveButton
+        }
+        .task {
+            if viewModel.brainTrainerSummary.isEmpty && !viewModel.isGeneratingSummary {
+                await viewModel.generateBrainTrainerSummary()
+            }
+        }
+    }
+
+    // MARK: - Chat (5-step conversation)
+
+    private var chatView: some View {
         VStack(spacing: 0) {
             ScrollViewReader { proxy in
                 ScrollView {
@@ -56,7 +121,8 @@ struct BrainTrainerChatView: View {
     // MARK: - Bubbles
 
     private func assistantBubble(_ msg: BrainTrainerMessage) -> some View {
-        let parsed = parseOptions(msg.content)
+        let clean = msg.content.replacingOccurrences(of: "<complete/>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let parsed = parseOptions(clean)
         return VStack(alignment: .leading, spacing: 10) {
             if !parsed.mainText.isEmpty {
                 MarkdownText(raw: parsed.mainText,

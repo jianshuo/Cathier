@@ -54,6 +54,9 @@ final class CheckInViewModel {
     var brainTrainerMessages: [BrainTrainerMessage] = []
     var isBrainTrainerLoading = false
     var brainTrainerError: String? = nil
+    var brainTrainerComplete = false
+    var brainTrainerSummary = ""
+    var isGeneratingSummary = false
 
     // MARK: - AI Companion Persona
     var persona: AICompanionPersona {
@@ -128,6 +131,9 @@ final class CheckInViewModel {
             let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
             let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
             brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
+            if reply.contains("<complete/>") {
+                brainTrainerComplete = true
+            }
         } catch {
             brainTrainerError = error.localizedDescription
             brainTrainerMessages.removeLast()
@@ -135,11 +141,25 @@ final class CheckInViewModel {
         isBrainTrainerLoading = false
     }
 
+    func generateBrainTrainerSummary() async {
+        isGeneratingSummary = true
+        brainTrainerError = nil
+        do {
+            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
+            brainTrainerSummary = try await ClaudeService.generateBrainTrainerSummary(messages: apiMsgs)
+        } catch {
+            brainTrainerError = error.localizedDescription
+        }
+        isGeneratingSummary = false
+    }
+
     var brainTrainerTranscript: String {
-        brainTrainerMessages
-            .filter { !$0.isInitialContext }
-            .map { $0.role == "assistant" ? "AI：\($0.content)" : "我：\($0.content)" }
-            .joined(separator: "\n\n")
+        brainTrainerSummary.isEmpty
+            ? brainTrainerMessages
+                .filter { !$0.isInitialContext }
+                .map { $0.role == "assistant" ? "AI：\($0.content)" : "我：\($0.content)" }
+                .joined(separator: "\n\n")
+            : brainTrainerSummary
     }
 
     private func buildBrainTrainerContext() -> String {
@@ -191,5 +211,8 @@ final class CheckInViewModel {
         brainTrainerMessages = []
         isBrainTrainerLoading = false
         brainTrainerError = nil
+        brainTrainerComplete = false
+        brainTrainerSummary = ""
+        isGeneratingSummary = false
     }
 }
