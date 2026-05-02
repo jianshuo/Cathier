@@ -1,8 +1,8 @@
 {
   "pages": [
+    "pages/dictionary/dictionary",
     "pages/today/today",
     "pages/journal/journal",
-    "pages/dictionary/dictionary",
     "pages/body-scan/body-scan",
     "pages/emotion-label/emotion-label",
     "pages/ai-feedback/ai-feedback",
@@ -23,6 +23,12 @@
     "borderStyle": "white",
     "list": [
       {
+        "pagePath": "pages/dictionary/dictionary",
+        "text": "觉察词典",
+        "iconPath": "images/tab-dict.png",
+        "selectedIconPath": "images/tab-dict-active.png"
+      },
+      {
         "pagePath": "pages/today/today",
         "text": "此刻",
         "iconPath": "images/tab-today.png",
@@ -39,12 +45,6 @@
         "text": "好友",
         "iconPath": "images/tab-friends.png",
         "selectedIconPath": "images/tab-friends-active.png"
-      },
-      {
-        "pagePath": "pages/dictionary/dictionary",
-        "text": "觉察词典",
-        "iconPath": "images/tab-dict.png",
-        "selectedIconPath": "images/tab-dict-active.png"
       }
     ]
   },
