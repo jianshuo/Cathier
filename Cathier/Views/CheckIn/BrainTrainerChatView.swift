@@ -208,30 +208,30 @@ struct BrainTrainerChatView: View {
         Task { await viewModel.sendBrainTrainerMessage(text) }
     }
 
-    // Parse numbered options (e.g. "1. text") out of AI response.
-    // Returns remaining prose + extracted option strings.
+    // Parse <options><option>…</option></options> blocks out of AI response.
+    // Returns prose (text outside the block) + extracted option strings.
     private func parseOptions(_ text: String) -> (mainText: String, options: [String]) {
-        let lines = text.components(separatedBy: "\n")
-        var options: [String] = []
-        var mainLines: [String] = []
-
-        for line in lines {
-            let trimmed = line.trimmingCharacters(in: .whitespaces)
-            // Match lines like "1. text" or "1、text"
-            if let range = trimmed.range(of: #"^\d+[\.、]\s+"#, options: .regularExpression) {
-                let option = String(trimmed[range.upperBound...]).trimmingCharacters(in: .whitespaces)
-                if !option.isEmpty { options.append(option) }
-            } else {
-                mainLines.append(line)
-            }
+        guard let blockStart = text.range(of: "<options>"),
+              let blockEnd   = text.range(of: "</options>") else {
+            return (text, [])
         }
 
-        // Only surface as chips when ≥2 options found
-        guard options.count >= 2 else { return (text, []) }
-
-        let prose = mainLines
-            .joined(separator: "\n")
+        let before = String(text[text.startIndex..<blockStart.lowerBound])
             .trimmingCharacters(in: .whitespacesAndNewlines)
+        let after  = String(text[blockEnd.upperBound...])
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let prose  = [before, after].filter { !$0.isEmpty }.joined(separator: "\n\n")
+
+        var options: [String] = []
+        var remaining = String(text[blockStart.upperBound..<blockEnd.lowerBound])
+        while let s = remaining.range(of: "<option>"),
+              let e = remaining.range(of: "</option>") {
+            let option = String(remaining[s.upperBound..<e.lowerBound])
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            if !option.isEmpty { options.append(option) }
+            remaining = String(remaining[e.upperBound...])
+        }
+
         return (prose, options)
     }
 }
