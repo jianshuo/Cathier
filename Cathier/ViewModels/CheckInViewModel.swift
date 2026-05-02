@@ -4,9 +4,21 @@ import Observation
 
 struct BrainTrainerMessage: Identifiable {
     let id = UUID()
-    let role: String       // "user" or "assistant"
-    let content: String
+    let role: String              // "user" or "assistant"
+    let displayContent: String    // shown in chat bubbles
+    let apiContent: String        // sent to the API (may include hidden step annotation)
     let isInitialContext: Bool
+
+    init(role: String, content: String, isInitialContext: Bool, stepAnnotation: Int? = nil) {
+        self.role = role
+        self.displayContent = content
+        self.isInitialContext = isInitialContext
+        if let step = stepAnnotation {
+            self.apiContent = "（第 \(step) 步回答）\(content)"
+        } else {
+            self.apiContent = content
+        }
+    }
 }
 
 enum CheckInStep: CaseIterable {
@@ -113,7 +125,7 @@ final class CheckInViewModel {
         isBrainTrainerLoading = true
         brainTrainerError = nil
         do {
-            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
+            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
             let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
             brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
         } catch {
@@ -123,12 +135,13 @@ final class CheckInViewModel {
     }
 
     func sendBrainTrainerMessage(_ text: String) async {
-        let userMsg = BrainTrainerMessage(role: "user", content: text, isInitialContext: false)
+        let step = brainTrainerMessages.filter { $0.role == "user" && !$0.isInitialContext }.count + 1
+        let userMsg = BrainTrainerMessage(role: "user", content: text, isInitialContext: false, stepAnnotation: step)
         brainTrainerMessages.append(userMsg)
         isBrainTrainerLoading = true
         brainTrainerError = nil
         do {
-            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
+            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
             let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
             brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
             if reply.contains("<complete/>") {
@@ -145,7 +158,7 @@ final class CheckInViewModel {
         isGeneratingSummary = true
         brainTrainerError = nil
         do {
-            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.content) }
+            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
             brainTrainerSummary = try await ClaudeService.generateBrainTrainerSummary(messages: apiMsgs)
         } catch {
             brainTrainerError = error.localizedDescription
@@ -157,7 +170,7 @@ final class CheckInViewModel {
         brainTrainerSummary.isEmpty
             ? brainTrainerMessages
                 .filter { !$0.isInitialContext }
-                .map { $0.role == "assistant" ? "AI：\($0.content)" : "我：\($0.content)" }
+                .map { $0.role == "assistant" ? "AI：\($0.displayContent)" : "我：\($0.displayContent)" }
                 .joined(separator: "\n\n")
             : brainTrainerSummary
     }

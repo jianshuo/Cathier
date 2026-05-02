@@ -121,7 +121,7 @@ struct BrainTrainerChatView: View {
     // MARK: - Bubbles
 
     private func assistantBubble(_ msg: BrainTrainerMessage) -> some View {
-        let clean = msg.content.replacingOccurrences(of: "<complete/>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
+        let clean = msg.displayContent.replacingOccurrences(of: "<complete/>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         let parsed = parseOptions(clean)
         return VStack(alignment: .leading, spacing: 10) {
             if !parsed.mainText.isEmpty {
@@ -146,7 +146,7 @@ struct BrainTrainerChatView: View {
     }
 
     private func userBubble(_ msg: BrainTrainerMessage) -> some View {
-        Text(msg.content)
+        Text(msg.displayContent)
             .font(.body)
             .foregroundColor(.primary)
             .padding(.horizontal, 14)
