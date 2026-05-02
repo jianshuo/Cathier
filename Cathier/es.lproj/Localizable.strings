@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Evento desencadenante";
 "detail.note_section" = "Nota";
 "detail.date_format" = "d MMM, yyyy";
+"detail.copy_ai" = "Copiar retroalimentación IA";
 
 /* InsightsView */
 "insights.nav_title" = "Perspectivas de patrones";

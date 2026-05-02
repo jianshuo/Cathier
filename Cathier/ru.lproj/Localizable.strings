@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Triggering event";
 "detail.note_section" = "Заметка";
 "detail.date_format" = "d MMM yyyy";
+"detail.copy_ai" = "Скопировать ответ ИИ";
 
 /* InsightsView */
 "insights.nav_title" = "Инсайты паттернов";

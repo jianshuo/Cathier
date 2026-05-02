@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Tetikleyici Olay";
 "detail.note_section" = "Not";
 "detail.date_format" = "d MMM yyyy";
+"detail.copy_ai" = "AI Geri Bildirimini Kopyala";
 
 /* InsightsView */
 "insights.nav_title" = "Desen İçgörüleri";

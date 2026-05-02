@@ -211,6 +211,7 @@
 "detail.trigger_section" = "トリガーイベント";
 "detail.note_section" = "メモ";
 "detail.date_format" = "yyyy年M月d日";
+"detail.copy_ai" = "AIフィードバックをコピー";
 
 /* InsightsView */
 "insights.nav_title" = "パターン分析";

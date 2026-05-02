@@ -211,6 +211,7 @@
 "detail.trigger_section" = "ट्रिगर घटना";
 "detail.note_section" = "नोट";
 "detail.date_format" = "d MMM yyyy";
+"detail.copy_ai" = "AI प्रतिक्रिया कॉपी करें";
 
 /* InsightsView */
 "insights.nav_title" = "पैटर्न इनसाइट";

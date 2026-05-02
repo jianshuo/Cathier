@@ -7,6 +7,7 @@ struct CheckInDetailView: View {
     @Environment(FriendViewModel.self) private var friendVM
     @State private var isBusy = false
     @State private var shareError: String?
+    @State private var aiFeedbackCopied = false
 
     var body: some View {
         NavigationStack {
@@ -111,10 +112,22 @@ struct CheckInDetailView: View {
                     // AI feedback — full, no line limit, Markdown rendered
                     if !checkIn.aiFeedback.isEmpty {
                         sectionCard {
-                            Label(lm.aiCompanion, systemImage: "sparkles")
-                                .font(.subheadline)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.cathierAccent)
+                            HStack {
+                                Label(lm.aiCompanion, systemImage: "sparkles")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.cathierAccent)
+                                Spacer()
+                                Button(action: copyAIFeedback) {
+                                    Image(systemName: aiFeedbackCopied ? "checkmark" : "doc.on.doc")
+                                        .font(.caption)
+                                        .foregroundColor(aiFeedbackCopied ? .cathierSage : .secondary)
+                                        .frame(width: 28, height: 28)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(lm.detailCopyAI)
+                                .animation(.easeInOut(duration: 0.2), value: aiFeedbackCopied)
+                            }
                             MarkdownText(raw: checkIn.aiFeedback,
                                          font: .body,
                                          paragraphSpacing: 8,
@@ -277,6 +290,16 @@ struct CheckInDetailView: View {
             shareError = error.localizedDescription
         }
         isBusy = false
+    }
+
+    // MARK: - Copy AI Feedback
+
+    private func copyAIFeedback() {
+        UIPasteboard.general.string = checkIn.aiFeedback
+        withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = false }
+        }
     }
 
     // MARK: - Helpers

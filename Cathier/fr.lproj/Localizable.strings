@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Événement déclencheur";
 "detail.note_section" = "Note";
 "detail.date_format" = "d MMM yyyy";
+"detail.copy_ai" = "Copier le retour IA";
 
 /* InsightsView */
 "insights.nav_title" = "Insights de patterns";

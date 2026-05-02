@@ -211,6 +211,7 @@
 "detail.trigger_section" = "触发事件";
 "detail.note_section" = "备注";
 "detail.date_format" = "yyyy年M月d日";
+"detail.copy_ai" = "复制 AI 反馈";
 
 /* InsightsView */
 "insights.nav_title" = "模式分析";

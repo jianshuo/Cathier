@@ -211,6 +211,7 @@
 "detail.trigger_section" = "เหตุการณ์ที่ก่อให้เกิด";
 "detail.note_section" = "บันทึก";
 "detail.date_format" = "d MMM yyyy";
+"detail.copy_ai" = "คัดลอกข้อเสนอแนะ AI";
 
 /* InsightsView */
 "insights.nav_title" = "Insights รูปแบบ";

@@ -211,6 +211,7 @@
 "detail.trigger_section" = "유발 사건";
 "detail.note_section" = "메모";
 "detail.date_format" = "yyyy년 M월 d일";
+"detail.copy_ai" = "AI 피드백 복사";
 
 /* InsightsView */
 "insights.nav_title" = "패턴 인사이트";

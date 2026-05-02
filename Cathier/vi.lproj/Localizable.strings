@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Sự kiện kích hoạt";
 "detail.note_section" = "Ghi chú";
 "detail.date_format" = "d MMM yyyy";
+"detail.copy_ai" = "Sao chép phản hồi AI";
 
 /* InsightsView */
 "insights.nav_title" = "Insights mẫu";

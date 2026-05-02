@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Auslöseereignis";
 "detail.note_section" = "Notiz";
 "detail.date_format" = "d. MMM yyyy";
+"detail.copy_ai" = "KI-Feedback kopieren";
 
 /* InsightsView */
 "insights.nav_title" = "Muster-Erkenntnisse";

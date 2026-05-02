@@ -213,6 +213,7 @@ extension LanguageManager {
     var detailTriggerSection: String  { localized("detail.trigger_section") }
     var detailNoteSection: String     { localized("detail.note_section") }
     var detailDateFormat: String      { localized("detail.date_format") }
+    var detailCopyAI: String          { localized("detail.copy_ai") }
 
     // MARK: InsightsView
     var insightsNavTitle: String      { localized("insights.nav_title") }

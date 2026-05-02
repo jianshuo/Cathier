@@ -211,6 +211,7 @@
 "detail.trigger_section" = "Trigger Event";
 "detail.note_section" = "Note";
 "detail.date_format" = "MMM d, yyyy";
+"detail.copy_ai" = "Copy AI Feedback";
 
 /* InsightsView */
 "insights.nav_title" = "Pattern Insights";
