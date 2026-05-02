@@ -31,10 +31,11 @@ Pods/
 # Carthage
 Carthia/Build/
 
-# Secrets / environment
+# Secrets / environment — xcscheme stores env vars (QWEN_API_KEY) so never track it
 .env
 *.env
 secrets.plist
+*.xcscheme
 
 # macOS
 .DS_Store
