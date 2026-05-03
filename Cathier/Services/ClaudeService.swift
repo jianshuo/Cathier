@@ -39,11 +39,11 @@ enum ClaudeService {
 
     // MARK: - Managed service configuration
     // Production: injected at build time from GitHub secrets → Info.plist.
-    // Local dev: set ACEDATA_API_KEY in Xcode scheme → Run → Environment Variables.
+    // Local dev: set AZURE_OPENAI_API_KEY in Xcode scheme → Run → Environment Variables.
     private static var managedApiKey: String {
-        let plistKey = Bundle.main.infoDictionary?["AcedataApiKey"] as? String ?? ""
+        let plistKey = Bundle.main.infoDictionary?["AzureOpenAIApiKey"] as? String ?? ""
         if !plistKey.isEmpty { return plistKey }
-        return ProcessInfo.processInfo.environment["ACEDATA_API_KEY"] ?? ""
+        return ProcessInfo.processInfo.environment["AZURE_OPENAI_API_KEY"] ?? ""
     }
 
     // MARK: - Provider helpers
@@ -79,10 +79,15 @@ enum ClaudeService {
                 "messages": [["role": "user", "content": user]],
             ]
         } else {
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
+            if provider.usesAzureAuth {
+                request.setValue(apiKey, forHTTPHeaderField: "api-key")
+            } else {
+                request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
+            }
+            let tokenField = provider.usesMaxCompletionTokens ? "max_completion_tokens" : "max_tokens"
             body = [
                 "model": model,
-                "max_tokens": maxTokens,
+                tokenField: maxTokens,
                 "messages": [
                     ["role": "system", "content": system],
                     ["role": "user", "content": user],
@@ -188,10 +193,15 @@ enum ClaudeService {
             request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
             body = ["model": feedbackModel, "max_tokens": maxTokens, "system": system, "messages": msgArray]
         } else {
-            request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
+            if provider.usesAzureAuth {
+                request.setValue(apiKey, forHTTPHeaderField: "api-key")
+            } else {
+                request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
+            }
+            let tokenField = provider.usesMaxCompletionTokens ? "max_completion_tokens" : "max_tokens"
             var all: [[String: String]] = [["role": "system", "content": system]]
             all.append(contentsOf: msgArray)
-            body = ["model": feedbackModel, "max_tokens": maxTokens, "messages": all]
+            body = ["model": feedbackModel, tokenField: maxTokens, "messages": all]
         }
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)

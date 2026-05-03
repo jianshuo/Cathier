@@ -46,10 +46,10 @@ jobs:
         env:
           FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
-      - name: Inject AceData API key into Info.plist
-        run: /usr/libexec/PlistBuddy -c "Set :AcedataApiKey $ACEDATA_API_KEY" Cathier/Info.plist
+      - name: Inject Azure OpenAI key into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :AzureOpenAIApiKey $AZURE_OPENAI_API_KEY" Cathier/Info.plist
         env:
-          ACEDATA_API_KEY: ${{ secrets.ACEDATA_API_KEY }}
+          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
 
       # PRs: build only (verify it compiles)
       - name: Build for verification

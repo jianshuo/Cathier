@@ -8,6 +8,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case zhipu     = "zhipu"
     case openrouter = "openrouter"
     case acedata   = "acedata"
+    case azure     = "azure"
     /// Managed tier — developer's key is used at build time
     case managed   = "managed"
 
@@ -22,6 +23,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .zhipu:     return "智谱 AI"
         case .openrouter: return "OpenRouter"
         case .acedata:   return "AceData"
+        case .azure:     return "Azure OpenAI"
         case .managed:   return "我没有 API Key"
         }
     }
@@ -36,8 +38,10 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .zhipu:     return URL(string: "https://open.bigmodel.cn/api/paas/v4/chat/completions")!
         case .openrouter:
             return URL(string: "https://openrouter.ai/api/v1/chat/completions")!
-        case .acedata, .managed:
+        case .acedata:
             return URL(string: "https://api.acedata.cloud/openai/chat/completions")!
+        case .azure, .managed:
+            return URL(string: "https://openai-gtp4-baixing.openai.azure.com/openai/deployments/gpt-5/chat/completions?api-version=2025-01-01-preview")!
         }
     }
 
@@ -50,7 +54,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .qwen:       return "qwen-turbo"
         case .zhipu:      return "glm-4-flash"
         case .openrouter: return "moonshotai/kimi-k2.6"
-        case .acedata, .managed: return "gpt-5.5-pro"
+        case .acedata:    return "gpt-5.5-pro"
+        case .azure, .managed: return "gpt-5"
         }
     }
 
@@ -63,7 +68,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .qwen:       return "qwen-plus"
         case .zhipu:      return "glm-4"
         case .openrouter: return "moonshotai/kimi-k2.6"
-        case .acedata, .managed: return "gpt-5.5-pro"
+        case .acedata:    return "gpt-5.5-pro"
+        case .azure, .managed: return "gpt-5"
         }
     }
 
@@ -80,6 +86,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .zhipu:     return "…"
         case .openrouter: return "sk-or-…"
         case .acedata:   return "…"
+        case .azure:     return "…"
         case .managed:   return ""
         }
     }
@@ -94,12 +101,19 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .zhipu:     return URL(string: "https://open.bigmodel.cn")
         case .openrouter: return URL(string: "https://openrouter.ai/keys")
         case .acedata:   return URL(string: "https://acedata.cloud")
+        case .azure:     return URL(string: "https://portal.azure.com")
         case .managed:   return nil
         }
     }
 
     /// Whether this provider uses the Anthropic wire format (vs. OpenAI-compatible)
     var isAnthropicFormat: Bool { self == .claude }
+
+    /// Azure OpenAI authenticates with the `api-key` header instead of `Authorization: Bearer`.
+    var usesAzureAuth: Bool { self == .azure || self == .managed }
+
+    /// Newer reasoning deployments (gpt-5 etc.) require `max_completion_tokens` and reject `max_tokens`.
+    var usesMaxCompletionTokens: Bool { self == .azure || self == .managed }
 
     /// Whether this is the developer-managed tier
     var isManaged: Bool { self == .managed }

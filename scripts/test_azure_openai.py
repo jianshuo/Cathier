@@ -5,9 +5,10 @@ Required env:
   AZURE_OPENAI_API_KEY
 
 Optional env:
-  AZURE_OPENAI_ENDPOINT      default: https://openai-gtp4-baixing.openai.azure.com/
-  AZURE_OPENAI_API_VERSION   default: 2024-05-01-preview
-  AZURE_OPENAI_DEPLOYMENT    or pass --deployment
+  AZURE_OPENAI_URL           full chat completions URL
+  AZURE_OPENAI_ENDPOINT      Azure resource endpoint
+  AZURE_OPENAI_API_VERSION   default: 2025-01-01-preview
+  AZURE_OPENAI_DEPLOYMENT    default: gpt-5
 """
 
 from __future__ import annotations
@@ -22,7 +23,12 @@ import urllib.request
 
 
 DEFAULT_ENDPOINT = "https://openai-gtp4-baixing.openai.azure.com/"
-DEFAULT_API_VERSION = "2024-05-01-preview"
+DEFAULT_DEPLOYMENT = "gpt-5"
+DEFAULT_API_VERSION = "2025-01-01-preview"
+DEFAULT_URL = (
+    "https://openai-gtp4-baixing.openai.azure.com/openai/deployments/"
+    "gpt-5/chat/completions?api-version=2025-01-01-preview"
+)
 
 
 def build_url(endpoint: str, deployment: str, api_version: str) -> str:
@@ -34,13 +40,39 @@ def build_url(endpoint: str, deployment: str, api_version: str) -> str:
     )
 
 
+def with_api_version(url: str, api_version: str) -> str:
+    parts = urllib.parse.urlsplit(url)
+    query = dict(urllib.parse.parse_qsl(parts.query, keep_blank_values=True))
+    query["api-version"] = api_version
+    return urllib.parse.urlunsplit(
+        parts._replace(query=urllib.parse.urlencode(query))
+    )
+
+
+def deployment_from_url(url: str) -> str | None:
+    path_parts = urllib.parse.urlsplit(url).path.strip("/").split("/")
+    try:
+        deployments_index = path_parts.index("deployments")
+    except ValueError:
+        return None
+
+    if deployments_index + 1 >= len(path_parts):
+        return None
+    return urllib.parse.unquote(path_parts[deployments_index + 1])
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Test an Azure OpenAI chat completions deployment."
     )
     parser.add_argument(
+        "--url",
+        default=os.getenv("AZURE_OPENAI_URL", DEFAULT_URL),
+        help="Full Azure OpenAI chat completions URL.",
+    )
+    parser.add_argument(
         "--endpoint",
-        default=os.getenv("AZURE_OPENAI_ENDPOINT", DEFAULT_ENDPOINT),
+        default=os.getenv("AZURE_OPENAI_ENDPOINT"),
         help=f"Azure OpenAI endpoint. Default: {DEFAULT_ENDPOINT}",
     )
     parser.add_argument(
@@ -50,7 +82,7 @@ def main() -> int:
     )
     parser.add_argument(
         "--deployment",
-        default=os.getenv("AZURE_OPENAI_DEPLOYMENT"),
+        default=os.getenv("AZURE_OPENAI_DEPLOYMENT", DEFAULT_DEPLOYMENT),
         help="Azure deployment name, not the model name unless you named it that way.",
     )
     parser.add_argument(
@@ -65,21 +97,22 @@ def main() -> int:
         print("Missing env: AZURE_OPENAI_API_KEY", file=sys.stderr)
         return 2
 
-    if not args.deployment:
-        print(
-            "Missing deployment. Set AZURE_OPENAI_DEPLOYMENT or pass --deployment.",
-            file=sys.stderr,
-        )
-        return 2
+    if args.endpoint:
+        url = build_url(args.endpoint, args.deployment, args.api_version)
+        endpoint_for_print = args.endpoint.rstrip("/")
+        deployment_for_print = args.deployment
+    else:
+        url = with_api_version(args.url, args.api_version)
+        split_url = urllib.parse.urlsplit(url)
+        endpoint_for_print = f"{split_url.scheme}://{split_url.netloc}"
+        deployment_for_print = deployment_from_url(url) or args.deployment
 
-    url = build_url(args.endpoint, args.deployment, args.api_version)
     payload = {
         "messages": [
             {"role": "system", "content": "You are a concise test assistant."},
             {"role": "user", "content": args.message},
         ],
-        "temperature": 0,
-        "max_tokens": 40,
+        "max_completion_tokens": 1024,
     }
 
     request = urllib.request.Request(
@@ -92,9 +125,9 @@ def main() -> int:
         method="POST",
     )
 
-    print(f"Endpoint:   {args.endpoint.rstrip('/')}")
+    print(f"Endpoint:   {endpoint_for_print}")
     print(f"API version:{args.api_version}")
-    print(f"Deployment: {args.deployment}")
+    print(f"Deployment: {deployment_for_print}")
 
     try:
         with urllib.request.urlopen(request, timeout=30) as response:

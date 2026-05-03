@@ -17,7 +17,7 @@
 	</array>
 	<key>GitHubFeedbackPAT</key>
 	<string></string>
-	<key>AcedataApiKey</key>
+	<key>AzureOpenAIApiKey</key>
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>
