@@ -1,0 +1,84 @@
+<view class="container lesson-page">
+  <!-- Intro header -->
+  <view class="lesson-header">
+    <text class="lesson-title">吃一堑，长一智</text>
+    <text class="lesson-subtitle">通过对话，从经历中提炼智慧</text>
+  </view>
+
+  <!-- Summary view -->
+  <view class="summary-view" wx:if="{{showSummary}}">
+    <view class="summary-header">
+      <text class="summary-title-icon">✨</text>
+      <text class="summary-title-text">这次的收获</text>
+    </view>
+
+    <view class="summary-items">
+      <view class="summary-item" wx:for="{{summaryItems}}" wx:key="index">
+        <text class="summary-item-index">{{index + 1}}</text>
+        <text class="summary-item-text">{{item}}</text>
+      </view>
+    </view>
+
+    <view class="summary-empty" wx:if="{{summaryItems.length === 0}}">
+      <text class="text-muted">对话还需要更多内容，请继续聊聊。</text>
+    </view>
+
+    <button class="btn-primary save-btn" wx:if="{{summaryItems.length > 0 && !saved}}" bindtap="onSave">记录这些收获</button>
+    <view class="saved-hint" wx:if="{{saved}}">
+      <text class="text-muted">✓ 已保存</text>
+    </view>
+  </view>
+
+  <!-- Chat view -->
+  <view class="chat-view" wx:if="{{!showSummary}}">
+    <scroll-view class="msg-list" scroll-y scroll-into-view="{{scrollToMsg}}" scroll-with-animation>
+      <view class="msg-spacer"></view>
+
+      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}"
+            class="msg-row {{item.role === 'user' ? 'msg-row-user' : 'msg-row-ai'}}">
+        <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
+          <text class="msg-text">{{item.content}}</text>
+        </view>
+      </view>
+
+      <!-- Loading indicator -->
+      <view class="msg-row msg-row-ai" wx:if="{{loading}}">
+        <view class="bubble-ai bubble-loading">
+          <view class="loading-dots">
+            <view class="dot"></view>
+            <view class="dot"></view>
+            <view class="dot"></view>
+          </view>
+        </view>
+      </view>
+
+      <view class="msg-bottom-pad"></view>
+    </scroll-view>
+
+    <!-- Input area -->
+    <view class="input-area">
+      <view class="summarize-hint" wx:if="{{canSummarize && !loading}}">
+        <text class="summarize-hint-text">聊得差不多了？</text>
+        <text class="summarize-link" bindtap="onSummarize">生成收获总结 →</text>
+      </view>
+
+      <view class="input-row">
+        <textarea
+          class="msg-input"
+          value="{{inputText}}"
+          placeholder="说说你的想法…"
+          placeholder-class="input-placeholder"
+          bindinput="onInput"
+          auto-height
+          maxlength="500"
+          confirm-type="send"
+          bindconfirm="onSend"
+          adjust-position
+        />
+        <view class="send-btn {{sendable && !loading ? 'send-btn-active' : 'send-btn-disabled'}}" bindtap="onSend">
+          <text class="send-icon">↑</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

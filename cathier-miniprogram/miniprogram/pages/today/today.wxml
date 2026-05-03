@@ -58,6 +58,18 @@
     </view>
   </view>
 
+  <!-- 吃一堑长一智 Entry -->
+  <view class="lesson-entry" bindtap="onOpenLessonChat" hover-class="lesson-entry-active">
+    <view class="lesson-entry-left">
+      <text class="lesson-entry-icon">🌱</text>
+      <view class="lesson-entry-text">
+        <text class="lesson-entry-title">吃一堑，长一智</text>
+        <text class="lesson-entry-sub">从挫折或遗憾中提炼智慧</text>
+      </view>
+    </view>
+    <text class="lesson-entry-arrow">→</text>
+  </view>
+
   <!-- Daily Journal -->
   <view class="journal-section">
     <text class="section-title">今日收获</text>

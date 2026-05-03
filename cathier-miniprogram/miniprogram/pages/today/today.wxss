@@ -227,6 +227,57 @@
   overflow: hidden;
 }
 
+/* --- 吃一堑长一智 Entry --- */
+
+.lesson-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--surface);
+  border-radius: var(--radius-medium);
+  padding: var(--space-md);
+  margin-bottom: var(--space-md);
+  box-shadow: 0 2rpx 12rpx rgba(26, 22, 19, 0.05),
+              0 1rpx 3rpx rgba(26, 22, 19, 0.03);
+}
+
+.lesson-entry-active {
+  background-color: var(--surface-alt);
+}
+
+.lesson-entry-left {
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+}
+
+.lesson-entry-icon {
+  font-size: 44rpx;
+  flex-shrink: 0;
+}
+
+.lesson-entry-text {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.lesson-entry-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.lesson-entry-sub {
+  font-size: 24rpx;
+  color: var(--text-muted);
+}
+
+.lesson-entry-arrow {
+  font-size: 32rpx;
+  color: var(--text-muted);
+}
+
 /* --- Daily Journal Section --- */
 
 .journal-section {

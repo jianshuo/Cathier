@@ -184,6 +184,12 @@ Page({
     })
   },
 
+  onOpenLessonChat() {
+    wx.navigateTo({
+      url: '/pages/lesson-chat/lesson-chat'
+    })
+  },
+
   onOpenSettings() {
     wx.navigateTo({
       url: '/pages/settings/settings'

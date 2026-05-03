@@ -14,7 +14,8 @@
     "pages/webview/webview",
     "pages/friends/friends",
     "pages/add-friend/add-friend",
-    "pages/friend-manage/friend-manage"
+    "pages/friend-manage/friend-manage",
+    "pages/lesson-chat/lesson-chat"
   ],
   "tabBar": {
     "color": "#8B8B8B",
