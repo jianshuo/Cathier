@@ -8,11 +8,16 @@ struct JournalView: View {
     @Environment(FriendViewModel.self) private var friendVM
     @State private var showInsights = false
     @State private var searchText = ""
+    @State private var pendingDelete: CheckIn? = nil
+    @State private var deleteTask: Task<Void, Never>? = nil
 
     private var filteredCheckIns: [CheckIn] {
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
-        guard !query.isEmpty else { return checkIns }
-        return checkIns.filter { matches($0, query: query) }
+        var result = query.isEmpty ? checkIns : checkIns.filter { matches($0, query: query) }
+        if let pending = pendingDelete {
+            result = result.filter { $0.id != pending.id }
+        }
+        return result
     }
 
     private func matches(_ c: CheckIn, query: String) -> Bool {
@@ -63,7 +68,7 @@ struct JournalView: View {
     var body: some View {
         NavigationStack {
             Group {
-                if checkIns.isEmpty {
+                if checkIns.isEmpty && pendingDelete == nil {
                     emptyState
                 } else {
                     journalContent
@@ -86,13 +91,32 @@ struct JournalView: View {
                 InsightsView()
                     .environment(lm)
             }
+            .overlay(alignment: .bottom) {
+                if pendingDelete != nil {
+                    undoToast
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .zIndex(1)
+                }
+            }
+            .onDisappear {
+                if let item = pendingDelete {
+                    deleteTask?.cancel()
+                    deleteTask = nil
+                    commitDelete(item)
+                    pendingDelete = nil
+                }
+            }
         }
     }
 
     @ViewBuilder
     private var journalContent: some View {
         if groupedCheckIns.isEmpty {
-            noResultsState
+            if pendingDelete != nil && searchText.isEmpty {
+                Color.clear
+            } else {
+                noResultsState
+            }
         } else {
             List {
                 ForEach(groupedCheckIns, id: \.0) { section, items in
@@ -104,7 +128,7 @@ struct JournalView: View {
                                 .listRowSeparator(.hidden)
                                 .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                                     Button(role: .destructive) {
-                                        delete(checkIn)
+                                        beginSoftDelete(checkIn)
                                     } label: {
                                         Label(lm.journalDelete, systemImage: "trash")
                                     }
@@ -150,12 +174,79 @@ struct JournalView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func delete(_ checkIn: CheckIn) {
+    private func beginSoftDelete(_ checkIn: CheckIn) {
+        // Flush any existing pending delete before starting a new one
+        if let prev = pendingDelete, prev.id != checkIn.id {
+            commitDelete(prev)
+        }
+        deleteTask?.cancel()
+        withAnimation(.easeOut(duration: 0.2)) {
+            pendingDelete = checkIn
+        }
+        deleteTask = Task {
+            do { try await Task.sleep(for: .seconds(3)) } catch { return }
+            withAnimation(.easeOut(duration: 0.2)) {
+                if pendingDelete?.id == checkIn.id {
+                    pendingDelete = nil
+                }
+            }
+            commitDelete(checkIn)
+        }
+    }
+
+    private func undoDelete() {
+        deleteTask?.cancel()
+        deleteTask = nil
+        withAnimation(.easeInOut(duration: 0.2)) {
+            pendingDelete = nil
+        }
+    }
+
+    private func commitDelete(_ checkIn: CheckIn) {
         if checkIn.shareLevel != nil {
             Task { try? await friendVM.unshareCheckIn(checkIn) }
         }
         modelContext.delete(checkIn)
         try? modelContext.save()
+    }
+
+    private var undoToast: some View {
+        HStack(spacing: 0) {
+            Text(undoDeletedLabel)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            Spacer()
+            Button(action: undoDelete) {
+                Text(undoActionLabel)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.cathierAccent)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .shadow(color: .black.opacity(0.10), radius: 12, y: 4)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
+    }
+
+    private var undoDeletedLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "记录已删除"
+        case .ja: return "記録を削除しました"
+        default:  return "Record deleted"
+        }
+    }
+
+    private var undoActionLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "撤销"
+        case .ja: return "元に戻す"
+        default:  return "Undo"
+        }
     }
 
     private func sectionTitle(for date: Date, calendar: Calendar) -> String {
