@@ -72,7 +72,9 @@ final class CheckInViewModel {
     // MARK: - AI Companion Persona
     var persona: AICompanionPersona {
         get {
-            AICompanionPersona(rawValue: UserDefaults.standard.string(forKey: "aiCompanionPersona") ?? "") ?? .psychologist
+            let stored = AICompanionPersona(rawValue: UserDefaults.standard.string(forKey: "aiCompanionPersona") ?? "") ?? .psychologist
+            // brainTrainer is no longer a check-in persona — it has its own home-screen entry.
+            return stored == .brainTrainer ? .psychologist : stored
         }
         set {
             UserDefaults.standard.set(newValue.rawValue, forKey: "aiCompanionPersona")

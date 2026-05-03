@@ -17,60 +17,7 @@ struct AIFeedbackView: View {
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
 
     var body: some View {
-        if viewModel.persona == .brainTrainer {
-            brainTrainerBody
-        } else {
-            standardBody
-        }
-    }
-
-    // MARK: - BrainTrainer layout (interactive chat)
-
-    private var brainTrainerBody: some View {
-        VStack(spacing: 0) {
-            // Compact header: summary + persona picker
-            ScrollView {
-                VStack(spacing: 16) {
-                    summaryCard
-                    brainTrainerHeader
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 16)
-                .padding(.bottom, 8)
-            }
-            .frame(maxHeight: 260)
-
-            Divider()
-
-            BrainTrainerChatView(onSave: brainTrainerSaveAction)
-                .environment(viewModel)
-                .environment(lm)
-        }
-        .onAppear {
-            viewModel.startBrainTrainerSession()
-        }
-    }
-
-    private var brainTrainerHeader: some View {
-        HStack(spacing: 6) {
-            Image(systemName: "sparkles")
-                .foregroundColor(.cathierAccent)
-            Text(lm.aiCompanion)
-                .font(.subheadline)
-                .fontWeight(.semibold)
-            Spacer()
-            personaPicker
-        }
-    }
-
-    private func brainTrainerSaveAction() {
-        viewModel.aiFeedback = viewModel.brainTrainerTranscript
-        let checkIn = viewModel.save(context: modelContext)
-        if let tier = selectedTier {
-            let includeAI = tier == .full ? false : shareAIFeedback
-            Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: includeAI) }
-        }
-        onDismiss()
+        standardBody
     }
 
     // MARK: - Standard layout
@@ -391,22 +338,16 @@ struct AIFeedbackView: View {
 
     private var personaPicker: some View {
         Menu {
-            ForEach(AICompanionPersona.allCases) { p in
+            ForEach(AICompanionPersona.allCases.filter { $0 != .brainTrainer }) { p in
                 Button(action: {
                     guard viewModel.persona != p else { return }
                     viewModel.persona = p
                     viewModel.aiFeedback = ""
                     viewModel.aiError = nil
-                    viewModel.brainTrainerMessages = []
-                    viewModel.brainTrainerError = nil
-                    if p == .brainTrainer {
-                        viewModel.startBrainTrainerSession()
-                    } else {
-                        Task {
-                            let history = fetchRecentHistory()
-                            let freq = emotionFrequency()
-                            await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
-                        }
+                    Task {
+                        let history = fetchRecentHistory()
+                        let freq = emotionFrequency()
+                        await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
                     }
                 }) {
                     Label {

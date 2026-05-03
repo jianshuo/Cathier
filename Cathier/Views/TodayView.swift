@@ -8,6 +8,7 @@ struct TodayView: View {
     @State private var showingJournalEntry = false
     @State private var journalToEdit: DailyJournal? = nil
     @State private var showingInsights = false
+    @State private var showingBrainTrainer = false
     @Environment(LanguageManager.self) private var lm
 
     private var hasNewPatterns: Bool {
@@ -60,6 +61,10 @@ struct TodayView: View {
                     dailyJournalSection
                         .padding(.horizontal, 20)
 
+                    // BrainTrainer entry
+                    brainTrainerSection
+                        .padding(.horizontal, 20)
+
                     Spacer(minLength: 40)
                 }
                 .padding(.top, 8)
@@ -72,11 +77,65 @@ struct TodayView: View {
                 InsightsView()
                     .environment(lm)
             }
+            .sheet(isPresented: $showingBrainTrainer) {
+                BrainTrainerSheet()
+                    .environment(lm)
+            }
             .sheet(isPresented: $showingJournalEntry) {
                 DailyJournalEntryView(existing: journalToEdit) {
                     journalToEdit = nil
                 }
             }
+        }
+    }
+
+    // MARK: - BrainTrainer Section
+
+    private var brainTrainerSection: some View {
+        let title: String
+        let hint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "吃一堑长一智"
+            hint = "踩了坑？花几分钟训练新模型"
+        case .ja:
+            title = "失敗から学ぶ"
+            hint = "つまずいた？数分でモデルを更新"
+        default:
+            title = "Lesson from Setback"
+            hint = "Just tripped up? A quick 5-step review"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            Button(action: { showingBrainTrainer = true }) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.cathierAccent.opacity(0.15))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "gearshape.2.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.cathierAccent)
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(hint)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(16)
+                .background(Color.cathierSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
         }
     }
 
