@@ -50,6 +50,7 @@ final class NotificationService {
             content.title = "体感签到"
             content.body = reminderMessages[i % reminderMessages.count]
             content.sound = .default
+            content.badge = 1
 
             var comps = DateComponents()
             comps.hour = time.hour
@@ -67,6 +68,10 @@ final class NotificationService {
 
     func removeAllReminders() {
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+    }
+
+    func clearBadge() {
+        Task { try? await UNUserNotificationCenter.current().setBadgeCount(0) }
     }
 
     /// One-time nudge delivered when the user reaches 30 check-ins.

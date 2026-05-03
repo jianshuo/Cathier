@@ -70,6 +70,11 @@ struct TodayView: View {
                 .padding(.top, 8)
             }
             .navigationTitle(lm.todayNavTitle)
+            .onAppear {
+                if !todayCheckIns.isEmpty {
+                    NotificationService.shared.clearBadge()
+                }
+            }
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
             }

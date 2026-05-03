@@ -212,6 +212,7 @@ final class CheckInViewModel {
         )
         context.insert(checkIn)
         try? context.save()
+        NotificationService.shared.clearBadge()
 
         let key = "totalCheckInCount"
         let newTotal = UserDefaults.standard.integer(forKey: key) + 1
