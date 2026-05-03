@@ -7,11 +7,33 @@ struct JournalView: View {
     @Environment(LanguageManager.self) private var lm
     @Environment(FriendViewModel.self) private var friendVM
     @State private var showInsights = false
+    @State private var searchText = ""
+
+    private var filteredCheckIns: [CheckIn] {
+        let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
+        guard !query.isEmpty else { return checkIns }
+        return checkIns.filter { matches($0, query: query) }
+    }
+
+    private func matches(_ c: CheckIn, query: String) -> Bool {
+        if c.triggerEvent.lowercased().contains(query) { return true }
+        if c.note.lowercased().contains(query) { return true }
+        if c.aiFeedback.lowercased().contains(query) { return true }
+        for e in c.emotions {
+            if e.lowercased().contains(query) { return true }
+            if lm.display(e).lowercased().contains(query) { return true }
+        }
+        for p in c.bodyParts {
+            if p.lowercased().contains(query) { return true }
+            if lm.display(p).lowercased().contains(query) { return true }
+        }
+        return false
+    }
 
     private var groupedCheckIns: [(String, [CheckIn])] {
         let calendar = Calendar.current
         var groups: [String: [CheckIn]] = [:]
-        for checkIn in checkIns {
+        for checkIn in filteredCheckIns {
             let key = sectionTitle(for: checkIn.date, calendar: calendar)
             groups[key, default: []].append(checkIn)
         }
@@ -22,32 +44,30 @@ struct JournalView: View {
         }
     }
 
+    private var searchPrompt: String {
+        switch lm.currentLanguage {
+        case .zh: return "搜索情绪、事件、笔记…"
+        case .ja: return "感情・出来事・メモを検索…"
+        default:  return "Search emotions, events, notes…"
+        }
+    }
+
+    private var noResultsTitle: String {
+        switch lm.currentLanguage {
+        case .zh: return "没有匹配的记录"
+        case .ja: return "該当する記録なし"
+        default:  return "No matches"
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Group {
                 if checkIns.isEmpty {
                     emptyState
                 } else {
-                    List {
-                        ForEach(groupedCheckIns, id: \.0) { section, items in
-                            Section(section) {
-                                ForEach(items) { checkIn in
-                                    CheckInCard(checkIn: checkIn)
-                                        .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
-                                        .listRowBackground(Color.clear)
-                                        .listRowSeparator(.hidden)
-                                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                                            Button(role: .destructive) {
-                                                delete(checkIn)
-                                            } label: {
-                                                Label(lm.journalDelete, systemImage: "trash")
-                                            }
-                                        }
-                                }
-                            }
-                        }
-                    }
-                    .listStyle(.plain)
+                    journalContent
+                        .searchable(text: $searchText, prompt: searchPrompt)
                 }
             }
             .navigationTitle(lm.journalNavTitle)
@@ -69,6 +89,34 @@ struct JournalView: View {
         }
     }
 
+    @ViewBuilder
+    private var journalContent: some View {
+        if groupedCheckIns.isEmpty {
+            noResultsState
+        } else {
+            List {
+                ForEach(groupedCheckIns, id: \.0) { section, items in
+                    Section(section) {
+                        ForEach(items) { checkIn in
+                            CheckInCard(checkIn: checkIn)
+                                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        delete(checkIn)
+                                    } label: {
+                                        Label(lm.journalDelete, systemImage: "trash")
+                                    }
+                                }
+                        }
+                    }
+                }
+            }
+            .listStyle(.plain)
+        }
+    }
+
     private var emptyState: some View {
         VStack(spacing: 16) {
             Image(systemName: "book.closed")
@@ -83,6 +131,23 @@ struct JournalView: View {
                 .multilineTextAlignment(.center)
         }
         .padding()
+    }
+
+    private var noResultsState: some View {
+        VStack(spacing: 16) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 52))
+                .foregroundColor(.secondary.opacity(0.4))
+            Text(noResultsTitle)
+                .font(.headline)
+                .foregroundColor(.secondary)
+            Text("\u{201C}\(searchText.trimmingCharacters(in: .whitespaces))\u{201D}")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private func delete(_ checkIn: CheckIn) {
