@@ -44,6 +44,11 @@ struct TodayView: View {
                                 .font(.headline)
                                 .padding(.horizontal, 20)
 
+                            if todayCheckIns.count >= 2 {
+                                TodayIntensityArc(checkIns: todayCheckIns)
+                                    .padding(.horizontal, 20)
+                            }
+
                             ForEach(todayCheckIns) { checkIn in
                                 CheckInCard(checkIn: checkIn)
                                     .padding(.horizontal, 20)
@@ -340,5 +345,63 @@ struct TodayView: View {
         case 12..<18: return lm.greetingAfternoon
         default:      return lm.greetingEvening
         }
+    }
+}
+
+// MARK: - Today Intensity Arc
+
+private struct TodayIntensityArc: View {
+    let checkIns: [CheckIn]
+
+    private var sorted: [CheckIn] {
+        checkIns.sorted { $0.date < $1.date }
+    }
+
+    var body: some View {
+        let items = Array(sorted.prefix(10))
+        VStack(alignment: .leading, spacing: 4) {
+            // Dots row with connecting line
+            ZStack {
+                Rectangle()
+                    .fill(Color.secondary.opacity(0.2))
+                    .frame(height: 1)
+                    .frame(maxWidth: .infinity)
+                HStack(spacing: 0) {
+                    ForEach(Array(items.enumerated()), id: \.offset) { idx, ci in
+                        if idx > 0 { Spacer() }
+                        Circle()
+                            .fill(dotColor(ci.intensity))
+                            .frame(width: 10, height: 10)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .frame(height: 10)
+            // Time labels aligned to match dot positions
+            HStack(spacing: 0) {
+                ForEach(Array(items.enumerated()), id: \.offset) { idx, ci in
+                    if idx > 0 { Spacer() }
+                    Text(timeLabel(ci.date))
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundColor(.secondary)
+                }
+            }
+            .frame(maxWidth: .infinity)
+        }
+        .accessibilityHidden(true)
+    }
+
+    private func dotColor(_ intensity: Int) -> Color {
+        switch intensity {
+        case ..<4: return .yellow
+        case ..<7: return .cathierAccent
+        default:   return .red
+        }
+    }
+
+    private func timeLabel(_ date: Date) -> String {
+        let f = DateFormatter()
+        f.dateFormat = "HH:mm"
+        return f.string(from: date)
     }
 }
