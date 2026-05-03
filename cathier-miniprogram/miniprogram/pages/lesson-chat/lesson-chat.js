@@ -1,4 +1,5 @@
 const { saveLessonSummary } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 const INITIAL_MESSAGE = '最近有什么让你感触深刻的经历、挫折或遗憾吗？不妨从那里开始聊聊。'
 
@@ -129,5 +130,17 @@ Page({
 
   onBack() {
     wx.navigateBack()
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '吃一堑，长一智 — 把经历变成智慧'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData({
+      title: '吃一堑，长一智 — 把经历变成智慧'
+    })
   }
 })

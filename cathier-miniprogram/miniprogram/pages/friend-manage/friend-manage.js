@@ -1,3 +1,5 @@
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
+
 Page({
   data: {
     loading: true,
@@ -73,5 +75,16 @@ Page({
 
   onAddFriend() {
     wx.navigateTo({ url: '/pages/add-friend/add-friend' })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '一起在「觉察」里相互陪伴情绪',
+      path: '/pages/friends/friends'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

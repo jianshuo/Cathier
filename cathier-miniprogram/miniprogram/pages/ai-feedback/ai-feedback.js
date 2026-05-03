@@ -1,6 +1,7 @@
 const { saveCheckIn, incrementCheckInCount, getMyProfile } = require('../../utils/cloud-db')
 const { addToBuffer } = require('../../utils/local-buffer')
 const { requestReminder } = require('../../utils/subscribe')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 Page({
   data: {
@@ -197,5 +198,19 @@ Page({
         '不评判任何感觉，只是觉察和接纳'
       ]
     }
+  },
+
+  onShareAppMessage() {
+    const data = this.data.checkInData
+    const emotions = (data && data.emotions || []).slice(0, 3).map(em => em.name || em).join('、')
+    return getDefaultShareData({
+      title: emotions
+        ? '我刚完成了一次情绪觉察：' + emotions
+        : '我刚完成了一次情绪觉察'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

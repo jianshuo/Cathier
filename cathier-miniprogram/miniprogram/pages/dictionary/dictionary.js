@@ -1,5 +1,5 @@
 const app = getApp()
-const { getEmotionShareData } = require('../../utils/share')
+const { getEmotionShareData, getDefaultTimelineData } = require('../../utils/share')
 let dictionary = {}
 try {
   dictionary = require('../../data/dictionary.js')
@@ -275,6 +275,12 @@ Page({
   },
 
   onShareAppMessage() {
-    return getEmotionShareData()
+    return getEmotionShareData(null)
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData({
+      title: '觉察词典 — 探索情绪与身体感受'
+    })
   }
 })

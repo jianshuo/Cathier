@@ -1,3 +1,5 @@
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
+
 Page({
   data: {
     url: ''
@@ -10,5 +12,13 @@ Page({
     if (options.title) {
       wx.setNavigationBarTitle({ title: decodeURIComponent(options.title) })
     }
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData()
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

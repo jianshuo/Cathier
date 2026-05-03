@@ -1,4 +1,5 @@
 const { getCheckIn, deleteCheckIn } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 // Emotion category color map (matches iOS)
 const CATEGORY_COLORS = {
@@ -140,5 +141,18 @@ Page({
         }
       }
     })
+  },
+
+  onShareAppMessage() {
+    const emotionNames = (this.data.emotions || []).slice(0, 3).map(e => e.name).filter(Boolean).join('、')
+    return getDefaultShareData({
+      title: emotionNames
+        ? '一次情绪觉察：' + emotionNames
+        : '一次情绪觉察记录'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

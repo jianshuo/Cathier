@@ -1,4 +1,5 @@
 const { getMyProfile, saveProfile } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 const CATEGORY_COLORS = {
   '激情': '#FF5933',
@@ -360,5 +361,15 @@ Page({
 
   onCloseAiModal() {
     this.setData({ showAiModal: false, aiModalContent: '' })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '一起在「觉察」里相互陪伴情绪'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

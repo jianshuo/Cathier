@@ -1,4 +1,5 @@
 const { saveDailyJournal, getTodayJournal } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 Page({
   data: {
@@ -78,5 +79,15 @@ Page({
     } finally {
       this.setData({ saving: false })
     }
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '写下今日收获，记一段觉察'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

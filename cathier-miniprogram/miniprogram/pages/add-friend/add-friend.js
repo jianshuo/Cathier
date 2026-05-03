@@ -1,3 +1,5 @@
+const { getDefaultTimelineData } = require('../../utils/share')
+
 Page({
   data: {
     inviteCode: '',
@@ -65,5 +67,11 @@ Page({
       title: '我在「觉察」等你，一起来感受身体感受吧',
       path: '/pages/friends/friends?inviteCode=' + this.data.inviteCode
     }
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData({
+      title: '我在「觉察」等你，一起来感受身体感受吧'
+    })
   }
 })

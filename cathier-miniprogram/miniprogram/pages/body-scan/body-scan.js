@@ -1,4 +1,5 @@
 const app = getApp()
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 Page({
   data: {
@@ -120,5 +121,15 @@ Page({
     wx.navigateTo({
       url: '/pages/emotion-label/emotion-label?bodyScan=' + params
     })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '从身体感受开始，一次安静的情绪觉察'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

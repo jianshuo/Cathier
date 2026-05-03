@@ -1,4 +1,5 @@
 const app = getApp()
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 Page({
   data: {
@@ -137,5 +138,15 @@ Page({
     wx.navigateTo({
       url: '/pages/ai-feedback/ai-feedback?checkIn=' + params
     })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '为情绪命名，是觉察的开始'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

@@ -1,4 +1,5 @@
 const { getCheckIns, saveInsight, getInsights, getCheckInCount } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 const FOCUS_MODES = [
   { key: 'stress', label: '压力触发', instruction: '关注什么情境、时间、人物反复触发负面情绪' },
@@ -150,5 +151,15 @@ Page({
     this.setData({
       [key]: !this.data.history[idx].expanded
     })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '在「觉察」里发现自己的情绪模式'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

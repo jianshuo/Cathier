@@ -1,4 +1,5 @@
 const { getUserPrefs, getCheckIns, getTodayJournal } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 const CATEGORY_COLORS = {
   '激情': '#FF5933',
@@ -194,5 +195,15 @@ Page({
     wx.navigateTo({
       url: '/pages/settings/settings'
     })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '我在用「觉察」记录情绪与身体感受，一起来试试'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

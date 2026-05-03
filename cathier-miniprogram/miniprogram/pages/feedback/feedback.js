@@ -1,3 +1,5 @@
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
+
 Page({
   data: {
     feedbackText: '',
@@ -38,5 +40,13 @@ Page({
     }).finally(() => {
       this.setData({ submitting: false })
     })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData()
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

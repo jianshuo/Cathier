@@ -1,4 +1,5 @@
 const { getCheckIns, deleteCheckIn } = require('../../utils/cloud-db')
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
 const CATEGORY_COLORS = {
   '激情': '#FF5933',
@@ -145,5 +146,15 @@ Page({
         }
       }
     })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '在「觉察」里翻看自己的情绪日记，慢慢认识自己'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })

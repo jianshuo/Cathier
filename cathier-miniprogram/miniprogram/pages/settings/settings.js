@@ -1,3 +1,5 @@
+const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
+
 Page({
   data: {
     reminderEnabled: false,
@@ -82,5 +84,15 @@ Page({
 
   onTerms() {
     wx.navigateTo({ url: '/pages/webview/webview?url=' + encodeURIComponent('https://cathier.app/terms') + '&title=用户协议' })
+  },
+
+  onShareAppMessage() {
+    return getDefaultShareData({
+      title: '我在用「觉察」记录情绪与身体感受，一起来试试'
+    })
+  },
+
+  onShareTimeline() {
+    return getDefaultTimelineData()
   }
 })
