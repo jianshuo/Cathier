@@ -12,6 +12,7 @@
 "greeting.morning" = "早上好";
 "greeting.afternoon" = "下午好";
 "greeting.evening" = "晚上好";
+"today.streak_label" = "连续";
 "today.no_check_in" = "你今天还没有签到，花一分钟感受一下身体吧。";
 "today.checked_in" = "今天已签到 %d 次，继续保持。";
 

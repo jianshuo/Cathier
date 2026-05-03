@@ -18,6 +18,7 @@ extension LanguageManager {
     var greetingMorning: String   { localized("greeting.morning") }
     var greetingAfternoon: String { localized("greeting.afternoon") }
     var greetingEvening: String   { localized("greeting.evening") }
+    var streakLabel: String       { localized("today.streak_label") }
     func todayNoCheckIn() -> String { localized("today.no_check_in") }
     func todayCheckedIn(_ count: Int) -> String {
         String(format: localized("today.checked_in"), count)

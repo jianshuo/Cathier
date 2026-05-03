@@ -12,6 +12,7 @@
 "greeting.morning" = "อรุณสวัสดิ์";
 "greeting.afternoon" = "สวัสดีตอนบ่าย";
 "greeting.evening" = "สวัสดีตอนเย็น";
+"today.streak_label" = "ติดต่อ";
 "today.no_check_in" = "คุณยังไม่ได้เช็คอินวันนี้ สละเวลาสักครู่เพื่อสแกนร่างกายของคุณ";
 "today.checked_in" = "เช็คอินแล้ว %d ครั้งวันนี้ ทำต่อไป!";
 

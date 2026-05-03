@@ -12,6 +12,7 @@
 "greeting.morning" = "सुप्रभात";
 "greeting.afternoon" = "शुभ दोपहर";
 "greeting.evening" = "शुभ संध्या";
+"today.streak_label" = "क्रम";
 "today.no_check_in" = "आपने आज चेक-इन नहीं किया। अपने शरीर को स्कैन करने के लिए एक मिनट लें।";
 "today.checked_in" = "आज %d बार चेक-इन किया। जारी रखें!";
 

@@ -12,6 +12,7 @@
 "greeting.morning" = "Günaydın";
 "greeting.afternoon" = "İyi günler";
 "greeting.evening" = "İyi akşamlar";
+"today.streak_label" = "seri";
 "today.no_check_in" = "Bugün henüz giriş yapmadınız. Vücudunuzu taramak için bir dakika ayırın.";
 "today.checked_in" = "Bugün %d kez giriş yaptınız. Devam edin!";
 

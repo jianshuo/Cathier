@@ -12,6 +12,7 @@
 "greeting.morning" = "Guten Morgen";
 "greeting.afternoon" = "Guten Nachmittag";
 "greeting.evening" = "Guten Abend";
+"today.streak_label" = "Serie";
 "today.no_check_in" = "Du hast heute noch nicht eingecheckt. Nimm dir eine Minute, um deinen Körper zu scannen.";
 "today.checked_in" = "Heute %d Mal eingecheckt. Weiter so!";
 

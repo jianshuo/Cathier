@@ -12,6 +12,7 @@
 "greeting.morning" = "Buenos días";
 "greeting.afternoon" = "Buenas tardes";
 "greeting.evening" = "Buenas noches";
+"today.streak_label" = "racha";
 "today.no_check_in" = "No has registrado hoy. Tómate un minuto para explorar tu cuerpo.";
 "today.checked_in" = "Has registrado %d veces hoy. ¡Sigue así!";
 

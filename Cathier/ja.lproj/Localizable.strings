@@ -12,6 +12,7 @@
 "greeting.morning" = "おはようございます";
 "greeting.afternoon" = "こんにちは";
 "greeting.evening" = "こんばんは";
+"today.streak_label" = "連続";
 "today.no_check_in" = "今日はまだチェックインしていません。少し身体を感じてみましょう。";
 "today.checked_in" = "今日は %d 回チェックイン済み。この調子で！";
 

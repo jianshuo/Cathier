@@ -237,17 +237,61 @@ struct TodayView: View {
     // MARK: - Header
 
     private var headerView: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(greetingText)
-                .font(.title2)
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(greetingText)
+                    .font(.title2)
+                    .fontWeight(.semibold)
+                Text(todayCheckIns.isEmpty
+                     ? lm.todayNoCheckIn()
+                     : lm.todayCheckedIn(todayCheckIns.count))
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if streakDays >= 1 {
+                streakBadge
+            }
+        }
+    }
+
+    private var streakBadge: some View {
+        VStack(spacing: 2) {
+            Text("\(streakDays)")
+                .font(.system(.title3, design: .monospaced))
                 .fontWeight(.semibold)
-            Text(todayCheckIns.isEmpty
-                 ? lm.todayNoCheckIn()
-                 : lm.todayCheckedIn(todayCheckIns.count))
-                .font(.subheadline)
+                .foregroundColor(.cathierAccent)
+            Text(lm.streakLabel)
+                .font(.caption2)
                 .foregroundColor(.secondary)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(width: 56)
+        .padding(.vertical, 10)
+        .background(Color.cathierAccentLight)
+        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    private var streakDays: Int {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let dates = Set(checkIns.map { calendar.startOfDay(for: $0.date) })
+
+        // Start from today; if no check-in today, try yesterday (streak still alive)
+        var day = today
+        if !dates.contains(day) {
+            let yesterday = calendar.date(byAdding: .day, value: -1, to: day) ?? day
+            guard dates.contains(yesterday) else { return 0 }
+            day = yesterday
+        }
+
+        var count = 0
+        while dates.contains(day) {
+            count += 1
+            guard let prev = calendar.date(byAdding: .day, value: -1, to: day) else { break }
+            day = prev
+        }
+        return count
     }
 
     // MARK: - Start Button

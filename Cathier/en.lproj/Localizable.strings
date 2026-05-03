@@ -12,6 +12,7 @@
 "greeting.morning" = "Good morning";
 "greeting.afternoon" = "Good afternoon";
 "greeting.evening" = "Good evening";
+"today.streak_label" = "streak";
 "today.no_check_in" = "You haven't checked in today. Take a minute to scan your body.";
 "today.checked_in" = "Checked in %d times today. Keep it up!";
 

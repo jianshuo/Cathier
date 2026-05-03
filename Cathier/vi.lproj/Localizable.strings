@@ -12,6 +12,7 @@
 "greeting.morning" = "Chào buổi sáng";
 "greeting.afternoon" = "Chào buổi chiều";
 "greeting.evening" = "Chào buổi tối";
+"today.streak_label" = "liên tiếp";
 "today.no_check_in" = "Bạn chưa check-in hôm nay. Dành một phút để quét cơ thể.";
 "today.checked_in" = "Đã check-in %d lần hôm nay. Tiếp tục nào!";
 

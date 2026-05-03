@@ -12,6 +12,7 @@
 "greeting.morning" = "좋은 아침이에요";
 "greeting.afternoon" = "좋은 오후예요";
 "greeting.evening" = "좋은 저녁이에요";
+"today.streak_label" = "연속";
 "today.no_check_in" = "오늘 아직 체크인하지 않았어요. 잠깐 몸을 스캔해 보세요.";
 "today.checked_in" = "오늘 %d번 체크인했어요. 계속 해봐요!";
 

@@ -12,6 +12,7 @@
 "greeting.morning" = "Доброе утро";
 "greeting.afternoon" = "Добрый день";
 "greeting.evening" = "Добрый вечер";
+"today.streak_label" = "серия";
 "today.no_check_in" = "Сегодня вы ещё не делали чекин. Уделите минуту сканированию тела.";
 "today.checked_in" = "Сегодня сделано %d чекинов. Продолжайте!";
 

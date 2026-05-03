@@ -12,6 +12,7 @@
 "greeting.morning" = "صباح الخير";
 "greeting.afternoon" = "مساء الخير";
 "greeting.evening" = "مساء النور";
+"today.streak_label" = "متتالية";
 "today.no_check_in" = "لم تسجّل دخولاً اليوم. خذ دقيقة لمسح جسمك.";
 "today.checked_in" = "سجّلت دخولاً %d مرات اليوم. واصل!";
 
