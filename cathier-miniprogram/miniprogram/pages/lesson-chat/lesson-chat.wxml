@@ -1,45 +1,65 @@
 <view class="container lesson-page">
-  <!-- Intro header -->
-  <view class="lesson-header">
-    <text class="lesson-title">吃一堑，长一智</text>
-    <text class="lesson-subtitle">通过对话，从经历中提炼智慧</text>
-  </view>
 
-  <!-- Summary view -->
-  <view class="summary-view" wx:if="{{showSummary}}">
-    <view class="summary-header">
-      <text class="summary-title-icon">✨</text>
-      <text class="summary-title-text">这次的收获</text>
-    </view>
-
-    <view class="summary-items">
-      <view class="summary-item" wx:for="{{summaryItems}}" wx:key="index">
-        <text class="summary-item-index">{{index + 1}}</text>
-        <text class="summary-item-text">{{item}}</text>
+  <!-- =========================== INTRO PHASE =========================== -->
+  <view class="intro-view" wx:if="{{phase === 'intro'}}">
+    <view class="intro-header">
+      <view class="intro-title-row">
+        <text class="intro-title-icon">⚙️</text>
+        <text class="intro-title">刚才踩了什么坑？</text>
       </view>
+      <text class="intro-subtitle">我们花几分钟做一次五步复盘——不复盘事件，而是复盘解释事件的旧模型，训练一个新版本。</text>
     </view>
 
-    <view class="summary-empty" wx:if="{{summaryItems.length === 0}}">
-      <text class="text-muted">对话还需要更多内容，请继续聊聊。</text>
+    <view class="intro-form">
+      <text class="intro-label">一句话描述这次的「堑」</text>
+      <textarea
+        class="intro-input"
+        value="{{triggerEvent}}"
+        placeholder="比如：开会时被问到细节没答上来…"
+        placeholder-class="intro-placeholder"
+        bindinput="onTriggerInput"
+        maxlength="200"
+        auto-height
+        adjust-position
+      />
+      <text class="intro-error" wx:if="{{introError}}">{{introError}}</text>
     </view>
 
-    <button class="btn-primary save-btn" wx:if="{{summaryItems.length > 0 && !saved}}" bindtap="onSave">记录这些收获</button>
-    <view class="saved-hint" wx:if="{{saved}}">
-      <text class="text-muted">✓ 已保存</text>
-    </view>
+    <button
+      class="btn-primary intro-continue {{triggerEvent.length === 0 ? 'btn-disabled' : ''}}"
+      disabled="{{triggerEvent.length === 0}}"
+      bindtap="onStartChat"
+    >开始复盘</button>
   </view>
 
-  <!-- Chat view -->
-  <view class="chat-view" wx:if="{{!showSummary}}">
+  <!-- =========================== CHAT PHASE =========================== -->
+  <view class="chat-view" wx:if="{{phase === 'chat'}}">
     <scroll-view class="msg-list" scroll-y scroll-into-view="{{scrollToMsg}}" scroll-with-animation>
       <view class="msg-spacer"></view>
 
-      <view wx:for="{{messages}}" wx:key="id" id="{{item.id}}"
-            class="msg-row {{item.role === 'user' ? 'msg-row-user' : 'msg-row-ai'}}">
-        <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}">
-          <text class="msg-text">{{item.content}}</text>
+      <block wx:for="{{messages}}" wx:key="id">
+        <view id="{{item.id}}"
+              class="msg-row {{item.role === 'user' ? 'msg-row-user' : 'msg-row-ai'}}">
+          <view class="msg-bubble {{item.role === 'user' ? 'bubble-user' : 'bubble-ai'}}"
+                wx:if="{{item.displayContent}}">
+            <text class="msg-text">{{item.displayContent}}</text>
+          </view>
         </view>
-      </view>
+
+        <!-- Tappable option chips below AI bubble -->
+        <view class="options-row" wx:if="{{item.role === 'ai' && item.options.length > 0}}">
+          <view class="option-chip {{loading ? 'option-chip-disabled' : ''}}"
+                wx:for="{{item.options}}"
+                wx:for-item="opt"
+                wx:for-index="optIdx"
+                wx:key="optIdx"
+                data-option="{{opt}}"
+                bindtap="onTapOption">
+            <text class="option-chip-num">{{optIdx + 1}}.</text>
+            <text class="option-chip-text">{{opt}}</text>
+          </view>
+        </view>
+      </block>
 
       <!-- Loading indicator -->
       <view class="msg-row msg-row-ai" wx:if="{{loading}}">
@@ -57,16 +77,11 @@
 
     <!-- Input area -->
     <view class="input-area">
-      <view class="summarize-hint" wx:if="{{canSummarize && !loading}}">
-        <text class="summarize-hint-text">聊得差不多了？</text>
-        <text class="summarize-link" bindtap="onSummarize">生成收获总结 →</text>
-      </view>
-
       <view class="input-row">
         <textarea
           class="msg-input"
           value="{{inputText}}"
-          placeholder="说说你的想法…"
+          placeholder="输入或选择上方选项…"
           placeholder-class="input-placeholder"
           bindinput="onInput"
           auto-height
@@ -79,6 +94,48 @@
           <text class="send-icon">↑</text>
         </view>
       </view>
+    </view>
+  </view>
+
+  <!-- =========================== SUMMARY PHASE =========================== -->
+  <view class="summary-view" wx:if="{{phase === 'summary'}}">
+    <view class="summary-header">
+      <text class="summary-title-icon">✅</text>
+      <text class="summary-title-text">复盘完成</text>
+    </view>
+
+    <view class="summary-card">
+      <view class="summary-loading" wx:if="{{isGeneratingSummary}}">
+        <view class="loading-dots">
+          <view class="dot"></view>
+          <view class="dot"></view>
+          <view class="dot"></view>
+        </view>
+        <text class="summary-loading-text">正在生成总结…</text>
+      </view>
+
+      <view wx:elif="{{summaryError}}" class="summary-error">
+        <text class="summary-error-text">{{summaryError}}</text>
+        <text class="summary-retry" bindtap="onRetrySummary">重试</text>
+      </view>
+
+      <block wx:elif="{{summaryItems.length > 0}}">
+        <view class="card-row" wx:for="{{summaryItems}}" wx:key="label">
+          <text class="card-label">{{item.label}}</text>
+          <text class="card-content">{{item.content}}</text>
+        </view>
+      </block>
+
+      <view wx:else class="summary-empty">
+        <text class="text-muted">{{summaryRaw || '尚未生成内容'}}</text>
+      </view>
+    </view>
+
+    <button class="btn-primary save-btn"
+            wx:if="{{summaryItems.length > 0 && !saved}}"
+            bindtap="onSave">记录这张训练卡</button>
+    <view class="saved-hint" wx:if="{{saved}}">
+      <text class="text-muted">✓ 已保存</text>
     </view>
   </view>
 </view>

@@ -7,28 +7,89 @@
   padding-top: 0;
 }
 
-/* --- Header --- */
+/* =========================== INTRO =========================== */
 
-.lesson-header {
-  padding: 60rpx var(--space-lg) var(--space-md);
-  flex-shrink: 0;
+.intro-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 60rpx var(--space-lg) var(--space-xl);
 }
 
-.lesson-title {
-  display: block;
+.intro-header {
+  margin-bottom: var(--space-xl);
+}
+
+.intro-title-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  margin-bottom: var(--space-sm);
+}
+
+.intro-title-icon {
+  font-size: 40rpx;
+}
+
+.intro-title {
   font-size: 44rpx;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 8rpx;
 }
 
-.lesson-subtitle {
+.intro-subtitle {
   display: block;
-  font-size: 26rpx;
-  color: var(--text-muted);
+  font-size: 28rpx;
+  color: var(--text-secondary);
+  line-height: 1.6;
 }
 
-/* --- Chat View --- */
+.intro-form {
+  margin-bottom: var(--space-xl);
+}
+
+.intro-label {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.intro-input {
+  width: 100%;
+  box-sizing: border-box;
+  background-color: var(--surface);
+  border: 1rpx solid var(--border);
+  border-radius: var(--radius-medium);
+  padding: 24rpx;
+  font-size: 30rpx;
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 120rpx;
+}
+
+.intro-placeholder {
+  color: var(--text-muted);
+  font-size: 30rpx;
+}
+
+.intro-error {
+  display: block;
+  font-size: 24rpx;
+  color: var(--accent);
+  margin-top: 12rpx;
+}
+
+.intro-continue {
+  margin-top: var(--space-md);
+}
+
+.btn-disabled {
+  opacity: 0.4;
+}
+
+/* =========================== CHAT =========================== */
 
 .chat-view {
   flex: 1;
@@ -50,8 +111,6 @@
   height: 40rpx;
 }
 
-/* --- Message Rows --- */
-
 .msg-row {
   display: flex;
   padding: 12rpx var(--space-lg);
@@ -64,8 +123,6 @@
 .msg-row-ai {
   justify-content: flex-start;
 }
-
-/* --- Bubbles --- */
 
 .msg-bubble {
   max-width: 75%;
@@ -103,32 +160,51 @@
   min-width: 80rpx;
 }
 
-/* --- Input Area --- */
+/* --- Option chips --- */
+
+.options-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  padding: 4rpx var(--space-lg) 12rpx;
+}
+
+.option-chip {
+  display: flex;
+  align-items: center;
+  gap: 8rpx;
+  padding: 14rpx 22rpx;
+  background-color: var(--bg);
+  border: 1rpx solid var(--border);
+  border-radius: var(--radius-full);
+  max-width: 100%;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.option-chip-disabled {
+  opacity: 0.5;
+}
+
+.option-chip-num {
+  font-size: 26rpx;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.option-chip-text {
+  font-size: 28rpx;
+  color: var(--text-primary);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* --- Input area --- */
 
 .input-area {
   flex-shrink: 0;
   padding: var(--space-sm) var(--space-lg) var(--space-xl);
   background-color: var(--bg);
   border-top: 1rpx solid var(--border);
-}
-
-.summarize-hint {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-sm);
-  padding: 16rpx 0;
-}
-
-.summarize-hint-text {
-  font-size: 26rpx;
-  color: var(--text-muted);
-}
-
-.summarize-link {
-  font-size: 26rpx;
-  color: var(--accent);
-  font-weight: 500;
 }
 
 .input-row {
@@ -182,11 +258,11 @@
   line-height: 1;
 }
 
-/* --- Summary View --- */
+/* =========================== SUMMARY =========================== */
 
 .summary-view {
   flex: 1;
-  padding: 0 var(--space-lg) var(--space-3xl);
+  padding: 60rpx var(--space-lg) var(--space-3xl);
   overflow-y: auto;
 }
 
@@ -204,38 +280,75 @@
 .summary-title-text {
   font-size: 36rpx;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--accent);
 }
 
-.summary-items {
+.summary-card {
+  background-color: var(--accent-light);
+  border: 1rpx solid rgba(242, 112, 10, 0.2);
+  border-radius: var(--radius-medium);
+  padding: var(--space-lg);
   margin-bottom: var(--space-xl);
 }
 
-.summary-item {
+.summary-loading {
   display: flex;
-  align-items: flex-start;
-  gap: 24rpx;
-  padding: var(--space-md);
-  background-color: var(--surface);
-  border-radius: var(--radius-medium);
-  margin-bottom: var(--space-sm);
-  box-shadow: 0 2rpx 8rpx rgba(26, 22, 19, 0.05);
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md) 0;
 }
 
-.summary-item-index {
+.summary-loading-text {
   font-size: 28rpx;
-  font-weight: 700;
-  color: var(--accent);
-  min-width: 32rpx;
-  line-height: 1.6;
-  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
-.summary-item-text {
+.summary-error {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-md) 0;
+}
+
+.summary-error-text {
+  font-size: 28rpx;
+  color: var(--text-secondary);
+}
+
+.summary-retry {
+  font-size: 28rpx;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.summary-empty {
+  padding: var(--space-md) 0;
+}
+
+.card-row {
+  margin-bottom: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.card-row:last-child {
+  margin-bottom: 0;
+}
+
+.card-label {
+  display: block;
+  font-size: 26rpx;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 0.5rpx;
+}
+
+.card-content {
+  display: block;
   font-size: 30rpx;
   color: var(--text-primary);
   line-height: 1.65;
-  flex: 1;
 }
 
 .save-btn {
@@ -247,7 +360,16 @@
   padding: var(--space-md);
 }
 
-.summary-empty {
-  text-align: center;
-  padding: var(--space-xl);
+/* Override .loading-dots padding inside small containers (chat bubble, summary card) */
+.bubble-loading .loading-dots,
+.summary-loading .loading-dots {
+  padding: 0;
+  gap: 8rpx;
+}
+
+.bubble-loading .loading-dots .dot,
+.summary-loading .loading-dots .dot {
+  width: 12rpx;
+  height: 12rpx;
+  background-color: var(--text-muted);
 }

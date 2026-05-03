@@ -1,86 +1,223 @@
 const { saveLessonSummary } = require('../../utils/cloud-db')
 const { getDefaultShareData, getDefaultTimelineData } = require('../../utils/share')
 
-const INITIAL_MESSAGE = '最近有什么让你感触深刻的经历、挫折或遗憾吗？不妨从那里开始聊聊。'
+// Strip <options>...</options> and <complete/> from a string for display.
+function stripDisplayMarkers(text) {
+  return String(text || '')
+    .replace(/<options>[\s\S]*?<\/options>/g, '')
+    .replace(/<complete\/>/g, '')
+    .trim()
+}
+
+// Parse <options><option>...</option></options> from an AI reply.
+// Returns { mainText, options[] }.
+function parseOptions(text) {
+  const raw = String(text || '')
+  const blockMatch = raw.match(/<options>([\s\S]*?)<\/options>/)
+  if (!blockMatch) {
+    return { mainText: raw.replace(/<complete\/>/g, '').trim(), options: [] }
+  }
+  const before = raw.slice(0, blockMatch.index)
+  const after = raw.slice(blockMatch.index + blockMatch[0].length)
+  const mainText = (before + '\n\n' + after).replace(/<complete\/>/g, '').trim()
+
+  const options = []
+  const optRegex = /<option>([\s\S]*?)<\/option>/g
+  let m
+  while ((m = optRegex.exec(blockMatch[1])) !== null) {
+    const opt = m[1].trim()
+    if (opt) options.push(opt)
+  }
+  return { mainText, options }
+}
+
+// Parse the 5-section training card. Returns array of { label, content }.
+// Card format: "**Label：** content" lines.
+function parseTrainingCard(raw) {
+  const text = String(raw || '').trim()
+  if (!text) return []
+  const lines = text.split('\n').map(l => l.trim()).filter(Boolean)
+  const items = []
+  for (const line of lines) {
+    const m = line.match(/^\*\*(.+?)[：:]\*\*\s*(.*)$/) || line.match(/^\*\*(.+?)\*\*[：:]\s*(.*)$/)
+    if (m) {
+      const label = m[1].replace(/[：:]$/, '').trim()
+      const content = m[2].trim()
+      if (label) items.push({ label, content })
+    }
+  }
+  return items
+}
 
 Page({
   data: {
+    // 'intro' → enter "the setback" → 'chat' (5 steps) → 'summary'
+    phase: 'intro',
+    triggerEvent: '',
+    introError: '',
+
+    // Chat state. Each visible message: { role, displayContent, options[], id }
     messages: [],
     inputText: '',
-    loading: false,
-    canSummarize: false,
-    showSummary: false,
-    summaryItems: [],
-    saved: false,
     sendable: false,
-    scrollToMsg: ''
+    loading: false,
+    scrollToMsg: '',
+
+    // Step counter — number of user answers (excluding initial context).
+    userStep: 0,
+
+    // Summary state
+    isGeneratingSummary: false,
+    summaryItems: [],
+    summaryRaw: '',
+    summaryError: '',
+    saved: false
   },
 
   onLoad() {
-    this.setData({
-      messages: [
-        { role: 'ai', content: INITIAL_MESSAGE, id: 'init' }
-      ]
-    })
   },
+
+  // --- Intro phase ---
+
+  onTriggerInput(e) {
+    this.setData({ triggerEvent: e.detail.value, introError: '' })
+  },
+
+  onStartChat() {
+    const trigger = (this.data.triggerEvent || '').trim()
+    if (!trigger) {
+      this.setData({ introError: '请用一句话描述这次的「堑」' })
+      return
+    }
+    this.setData({ phase: 'chat' })
+    this._sendInitialContext(trigger)
+  },
+
+  // --- Chat phase ---
 
   onInput(e) {
     const val = e.detail.value || ''
     this.setData({ inputText: val, sendable: val.trim().length > 0 })
   },
 
-  async onSend() {
+  onSend() {
     const text = this.data.inputText.trim()
     if (!text || this.data.loading) return
+    this.setData({ inputText: '', sendable: false })
+    this._sendUserMessage(text)
+  },
 
-    const userMsg = { role: 'user', content: text, id: 'u' + Date.now() }
-    const newMessages = [...this.data.messages, userMsg]
-    const userTurnCount = newMessages.filter(m => m.role === 'user').length
+  onTapOption(e) {
+    if (this.data.loading) return
+    const option = e.currentTarget.dataset.option
+    if (!option) return
+    this._sendUserMessage(option)
+  },
 
+  // Build initial hidden context message and request first AI question.
+  async _sendInitialContext(trigger) {
+    const initId = 'init-' + Date.now()
+    // Hidden context message: not displayed but sent as user message #0.
+    this._initialContext = `触发事件：${trigger}`
+
+    this.setData({ loading: true, scrollToMsg: initId })
+    try {
+      const apiHistory = [
+        { role: 'user', content: this._initialContext }
+      ]
+      const result = await wx.cloud.callFunction({
+        name: 'ai-proxy',
+        data: { type: 'lesson-chat', history: apiHistory },
+        timeout: 30000
+      })
+      const reply = (result.result && result.result.feedback) || ''
+      this._appendAIMessage(reply)
+    } catch (err) {
+      console.error('Lesson chat init error:', err)
+      this._appendAIMessage('连接失败，请稍后重试。')
+    }
+    this.setData({ loading: false })
+  },
+
+  async _sendUserMessage(text) {
+    const userStep = this.data.userStep + 1
+    const userMsg = {
+      id: 'u' + Date.now(),
+      role: 'user',
+      displayContent: text,
+      // API content prepends step annotation so the AI can enforce step progression.
+      apiContent: `（第 ${userStep} 步回答）${text}`,
+      options: []
+    }
+
+    const newMessages = this.data.messages.concat([userMsg])
     this.setData({
       messages: newMessages,
-      inputText: '',
-      sendable: false,
+      userStep,
       loading: true,
       scrollToMsg: userMsg.id
     })
 
-    try {
-      const history = newMessages.map(m => ({
-        role: m.role === 'ai' ? 'assistant' : 'user',
-        content: m.content
-      }))
+    // Build API history: initial hidden context + visible messages (using apiContent for users).
+    const apiHistory = [{ role: 'user', content: this._initialContext || '' }]
+    for (const m of newMessages) {
+      apiHistory.push({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        // For assistant messages we send the original content (with <options>/<complete/>) so the AI sees its own state.
+        content: m.role === 'user' ? m.apiContent : m.rawContent
+      })
+    }
 
+    try {
       const result = await wx.cloud.callFunction({
         name: 'ai-proxy',
-        data: { type: 'lesson-chat', history, turnCount: userTurnCount },
+        data: { type: 'lesson-chat', history: apiHistory },
         timeout: 30000
       })
-
-      const reply = (result.result && result.result.feedback) || '我在听，请继续分享。'
-      const aiMsg = { role: 'ai', content: reply, id: 'a' + Date.now() }
-
-      this.setData({
-        messages: [...this.data.messages, aiMsg],
-        loading: false,
-        canSummarize: userTurnCount >= 3,
-        scrollToMsg: aiMsg.id
-      })
+      const reply = (result.result && result.result.feedback) || '我在听，请继续。'
+      const isComplete = reply.indexOf('<complete/>') !== -1
+      this._appendAIMessage(reply)
+      if (isComplete) {
+        this._enterSummary()
+      }
     } catch (err) {
       console.error('Lesson chat error:', err)
-      const errMsg = { role: 'ai', content: '连接失败，请稍后重试。', id: 'a' + Date.now() }
-      this.setData({ messages: [...this.data.messages, errMsg], loading: false })
+      this._appendAIMessage('连接失败，请稍后重试。')
     }
+    this.setData({ loading: false })
   },
 
-  async onSummarize() {
-    if (this.data.loading) return
-    this.setData({ loading: true })
+  _appendAIMessage(reply) {
+    const parsed = parseOptions(reply)
+    const aiMsg = {
+      id: 'a' + Date.now(),
+      role: 'ai',
+      displayContent: parsed.mainText,
+      rawContent: reply,
+      options: parsed.options
+    }
+    this.setData({
+      messages: this.data.messages.concat([aiMsg]),
+      scrollToMsg: aiMsg.id
+    })
+  },
 
-    const history = this.data.messages.map(m => ({
-      role: m.role === 'ai' ? 'assistant' : 'user',
-      content: m.content
-    }))
+  // --- Summary phase ---
+
+  _enterSummary() {
+    this.setData({ phase: 'summary', isGeneratingSummary: true, summaryError: '' })
+    this._generateSummary()
+  },
+
+  async _generateSummary() {
+    // Build clean history: initial context + user displayContent + assistant rawContent (cleaned in cloud).
+    const history = [{ role: 'user', content: this._initialContext || '' }]
+    for (const m of this.data.messages) {
+      history.push({
+        role: m.role === 'user' ? 'user' : 'assistant',
+        content: m.role === 'user' ? m.displayContent : m.rawContent
+      })
+    }
 
     try {
       const result = await wx.cloud.callFunction({
@@ -88,35 +225,41 @@ Page({
         data: { type: 'lesson-summary', history },
         timeout: 30000
       })
-
       const raw = (result.result && result.result.feedback) || ''
-      const items = this._parseSummaryItems(raw)
-
-      this.setData({ loading: false, showSummary: true, summaryItems: items })
+      const items = parseTrainingCard(raw)
+      this.setData({
+        isGeneratingSummary: false,
+        summaryRaw: raw,
+        summaryItems: items
+      })
     } catch (err) {
       console.error('Lesson summary error:', err)
-      this.setData({ loading: false })
-      wx.showToast({ title: '生成失败，请重试', icon: 'none' })
+      this.setData({
+        isGeneratingSummary: false,
+        summaryError: '生成失败，请重试'
+      })
     }
   },
 
-  _parseSummaryItems(text) {
-    const lines = text.split('\n').filter(l => l.trim())
-    const items = []
-    for (const line of lines) {
-      const cleaned = line.replace(/^[\d]+[.、。\)\s]+/, '').trim()
-      if (cleaned.length > 5) items.push(cleaned)
-    }
-    return items.slice(0, 7)
+  onRetrySummary() {
+    if (this.data.isGeneratingSummary) return
+    this.setData({ isGeneratingSummary: true, summaryError: '' })
+    this._generateSummary()
   },
 
   async onSave() {
     if (this.data.saved) return
-
+    const items = this.data.summaryItems
+    if (!items || items.length === 0) {
+      wx.showToast({ title: '总结尚未生成', icon: 'none' })
+      return
+    }
+    // Persist in the same shape the existing storage expects: array of strings.
+    const stringItems = items.map(it => it.label + '：' + it.content)
     try {
       await saveLessonSummary({
-        items: this.data.summaryItems,
-        conversationLength: this.data.messages.filter(m => m.role === 'user').length,
+        items: stringItems,
+        conversationLength: this.data.userStep,
         date: new Date()
       })
       this.setData({ saved: true })
