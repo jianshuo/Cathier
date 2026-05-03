@@ -27,6 +27,7 @@ enum CheckInStep: CaseIterable {
     case aiFeedback
 }
 
+@MainActor
 @Observable
 final class CheckInViewModel {
     // MARK: - Navigation
@@ -34,17 +35,14 @@ final class CheckInViewModel {
 
     // MARK: - Step 1: Body Scan
     var selectedBodyParts: Set<String> = []
-    /// Maps each selected body part to its chosen sensations.
     var bodySensations: [String: Set<String>] = [:]
     var intensity: Double = 5
     var triggerEvent: String = ""
 
-    /// Flat list of unique sensation names selected across all body parts.
     var allSelectedSensations: [String] {
         Array(Set(bodySensations.values.flatMap { $0 })).sorted()
     }
 
-    /// Encodes per-body-part sensations as "bodypart:sensation" strings for storage.
     var encodedSensations: [String] {
         bodySensations.keys.sorted().flatMap { part in
             (bodySensations[part] ?? []).sorted().map { "\(part):\($0)" }
@@ -69,6 +67,7 @@ final class CheckInViewModel {
     var brainTrainerComplete = false
     var brainTrainerSummary = ""
     var isGeneratingSummary = false
+    private var brainTrainerTask: Task<Void, Never>?
 
     // MARK: - AI Companion Persona
     var persona: AICompanionPersona {
@@ -118,40 +117,52 @@ final class CheckInViewModel {
         isLoadingAI = false
     }
 
-    func startBrainTrainerSession() async {
+    func startBrainTrainerSession() {
         guard brainTrainerMessages.isEmpty else { return }
-        let ctx = BrainTrainerMessage(role: "user", content: buildBrainTrainerContext(), isInitialContext: true)
-        brainTrainerMessages.append(ctx)
-        isBrainTrainerLoading = true
-        brainTrainerError = nil
-        do {
-            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
-            let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
-            brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
-        } catch {
-            brainTrainerError = error.localizedDescription
+        brainTrainerTask?.cancel()
+        brainTrainerTask = Task {
+            let ctx = BrainTrainerMessage(role: "user", content: buildBrainTrainerContext(), isInitialContext: true)
+            brainTrainerMessages.append(ctx)
+            isBrainTrainerLoading = true
+            brainTrainerError = nil
+            do {
+                let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
+                let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
+                guard !Task.isCancelled else { return }
+                brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
+            } catch {
+                guard !Task.isCancelled else { return }
+                brainTrainerError = error.localizedDescription
+            }
+            isBrainTrainerLoading = false
         }
-        isBrainTrainerLoading = false
     }
 
-    func sendBrainTrainerMessage(_ text: String) async {
-        let step = brainTrainerMessages.filter { $0.role == "user" && !$0.isInitialContext }.count + 1
-        let userMsg = BrainTrainerMessage(role: "user", content: text, isInitialContext: false, stepAnnotation: step)
-        brainTrainerMessages.append(userMsg)
-        isBrainTrainerLoading = true
-        brainTrainerError = nil
-        do {
-            let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
-            let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
-            brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
-            if reply.contains("<complete/>") {
-                brainTrainerComplete = true
+    func sendBrainTrainerMessage(_ text: String) {
+        brainTrainerTask?.cancel()
+        brainTrainerTask = Task {
+            let step = brainTrainerMessages.filter { $0.role == "user" && !$0.isInitialContext }.count + 1
+            let userMsg = BrainTrainerMessage(role: "user", content: text, isInitialContext: false, stepAnnotation: step)
+            brainTrainerMessages.append(userMsg)
+            isBrainTrainerLoading = true
+            brainTrainerError = nil
+            do {
+                let apiMsgs = brainTrainerMessages.map { (role: $0.role, content: $0.apiContent) }
+                let reply = try await ClaudeService.callBrainTrainer(messages: apiMsgs)
+                guard !Task.isCancelled else { return }
+                brainTrainerMessages.append(BrainTrainerMessage(role: "assistant", content: reply, isInitialContext: false))
+                if reply.contains("<complete/>") {
+                    brainTrainerComplete = true
+                }
+            } catch {
+                guard !Task.isCancelled else { return }
+                brainTrainerError = error.localizedDescription
+                if !brainTrainerMessages.isEmpty {
+                    brainTrainerMessages.removeLast()
+                }
             }
-        } catch {
-            brainTrainerError = error.localizedDescription
-            brainTrainerMessages.removeLast()
+            isBrainTrainerLoading = false
         }
-        isBrainTrainerLoading = false
     }
 
     func generateBrainTrainerSummary() async {
@@ -200,7 +211,6 @@ final class CheckInViewModel {
         context.insert(checkIn)
         try? context.save()
 
-        // Update running count for insights staleness and milestone nudge
         let key = "totalCheckInCount"
         let newTotal = UserDefaults.standard.integer(forKey: key) + 1
         UserDefaults.standard.set(newTotal, forKey: key)
@@ -209,6 +219,8 @@ final class CheckInViewModel {
     }
 
     func reset() {
+        brainTrainerTask?.cancel()
+        brainTrainerTask = nil
         currentStep = .bodyScan
         selectedBodyParts = []
         bodySensations = [:]

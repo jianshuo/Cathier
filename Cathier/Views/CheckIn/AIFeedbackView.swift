@@ -46,8 +46,8 @@ struct AIFeedbackView: View {
                 .environment(viewModel)
                 .environment(lm)
         }
-        .task {
-            await viewModel.startBrainTrainerSession()
+        .onAppear {
+            viewModel.startBrainTrainerSession()
         }
     }
 
@@ -400,7 +400,7 @@ struct AIFeedbackView: View {
                     viewModel.brainTrainerMessages = []
                     viewModel.brainTrainerError = nil
                     if p == .brainTrainer {
-                        Task { await viewModel.startBrainTrainerSession() }
+                        viewModel.startBrainTrainerSession()
                     } else {
                         Task {
                             let history = fetchRecentHistory()

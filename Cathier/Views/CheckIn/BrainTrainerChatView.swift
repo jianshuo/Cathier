@@ -181,7 +181,7 @@ struct BrainTrainerChatView: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
             Button(lm.aiRetry) {
-                Task { await viewModel.startBrainTrainerSession() }
+                viewModel.startBrainTrainerSession()
             }
             .font(.caption)
             .foregroundColor(.cathierAccent)
@@ -271,7 +271,7 @@ struct BrainTrainerChatView: View {
     }
 
     private func send(_ text: String) {
-        Task { await viewModel.sendBrainTrainerMessage(text) }
+        viewModel.sendBrainTrainerMessage(text)
     }
 
     // Parse <options><option>…</option></options> blocks out of AI response.
