@@ -30,7 +30,9 @@ private struct OpenAIResponse: Decodable {
     struct Choice: Decodable {
         let message: Message
         struct Message: Decodable {
-            let content: String
+            // Reasoning models can return `content: null` when the entire token
+            // budget is consumed by internal reasoning — keep this optional.
+            let content: String?
         }
     }
 }
@@ -137,7 +139,7 @@ enum ClaudeService {
         language: AppLanguage = LanguageManager.shared.currentLanguage
     ) async throws -> String {
         let system = AICompanionPersona.brainTrainer.systemPrompt(for: language)
-        return try await callMultiTurn(system: system, messages: messages, maxTokens: 1200)
+        return try await callMultiTurn(system: system, messages: messages, maxTokens: 4000)
     }
 
     static func generateBrainTrainerSummary(
@@ -169,7 +171,7 @@ enum ClaudeService {
             """
         var msgs = messages.map { (role: $0.role, content: $0.content.replacingOccurrences(of: "<complete/>", with: "")) }
         msgs.append((role: "user", content: isZh ? "请生成五步复盘总结卡片。" : "Please generate the 5-step summary card."))
-        return try await callMultiTurn(system: system, messages: msgs, maxTokens: 500)
+        return try await callMultiTurn(system: system, messages: msgs, maxTokens: 4000)
     }
 
     private static func callMultiTurn(
