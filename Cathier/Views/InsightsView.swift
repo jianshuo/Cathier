@@ -136,6 +136,11 @@ struct InsightsView: View {
                 weekdayChart(wdData)
             }
 
+            let todData = timeOfDayData
+            if todData.count >= 2 {
+                timeOfDayChart(todData)
+            }
+
             Text(text)
                 .font(.cathierSerif(.body))
                 .lineSpacing(5)
@@ -227,6 +232,72 @@ struct InsightsView: View {
                     y: .value("Avg", item.avg)
                 )
                 .foregroundStyle(Color.cathierAccent.opacity(0.75).gradient)
+                .cornerRadius(4)
+            }
+            .chartYScale(domain: 0...10)
+            .chartXAxis {
+                AxisMarks { _ in AxisValueLabel() }
+            }
+            .frame(height: 120)
+            .padding(.horizontal)
+        }
+    }
+
+    // MARK: - Time-of-day pattern chart
+
+    private var timeOfDayData: [(label: String, avg: Double)] {
+        let calendar = Calendar.current
+        var buckets: [Int: [Int]] = [:]
+        for c in checkIns {
+            let hour = calendar.component(.hour, from: c.date)
+            buckets[bucketIndex(for: hour), default: []].append(c.intensity)
+        }
+        return [0, 1, 2, 3].compactMap { idx in
+            guard let vals = buckets[idx], !vals.isEmpty else { return nil }
+            let avg = Double(vals.reduce(0, +)) / Double(vals.count)
+            return (label: bucketLabel(idx), avg: avg)
+        }
+    }
+
+    private func bucketIndex(for hour: Int) -> Int {
+        switch hour {
+        case 5..<12:  return 0  // morning
+        case 12..<18: return 1  // afternoon
+        case 18..<22: return 2  // evening
+        default:      return 3  // night (22:00–04:59)
+        }
+    }
+
+    private func bucketLabel(_ idx: Int) -> String {
+        let isZh = lm.currentLanguage == .zh
+        let isJa = lm.currentLanguage == .ja
+        switch idx {
+        case 0:  return isZh ? "早晨" : isJa ? "朝" : "Morning"
+        case 1:  return isZh ? "下午" : isJa ? "午後" : "Afternoon"
+        case 2:  return isZh ? "晚上" : isJa ? "夜" : "Evening"
+        default: return isZh ? "深夜" : isJa ? "深夜" : "Night"
+        }
+    }
+
+    private func timeOfDayChart(_ data: [(label: String, avg: Double)]) -> some View {
+        let title: String
+        switch lm.currentLanguage {
+        case .zh: title = "一天中的情绪强度"
+        case .ja: title = "時間帯別強度"
+        default:  title = "Avg Intensity by Time of Day"
+        }
+        return VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+
+            Chart(data, id: \.label) { item in
+                BarMark(
+                    x: .value("Time", item.label),
+                    y: .value("Avg", item.avg)
+                )
+                .foregroundStyle(Color.cathierAccent.opacity(0.6).gradient)
                 .cornerRadius(4)
             }
             .chartYScale(domain: 0...10)
