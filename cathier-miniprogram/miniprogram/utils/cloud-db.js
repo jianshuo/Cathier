@@ -199,6 +199,29 @@ async function updateShareLevel(checkinId, shareLevel) {
   })
 }
 
+// --- Lesson Summaries (吃一堑长一智) ---
+
+async function saveLessonSummary({ items, conversationLength, date }) {
+  const result = await db.collection('lesson_summaries').add({
+    data: {
+      items: items || [],
+      summary: (items || []).join('\n'),
+      conversationLength: conversationLength || 0,
+      date: date || db.serverDate(),
+      createdAt: db.serverDate()
+    }
+  })
+  return { _id: result._id, items }
+}
+
+async function getLessonSummaries(limit = 20) {
+  const result = await db.collection('lesson_summaries')
+    .orderBy('createdAt', 'desc')
+    .limit(limit)
+    .get()
+  return result.data || []
+}
+
 module.exports = {
   saveCheckIn,
   getCheckIns,
@@ -215,5 +238,7 @@ module.exports = {
   getCheckInCount,
   saveProfile,
   getMyProfile,
-  updateShareLevel
+  updateShareLevel,
+  saveLessonSummary,
+  getLessonSummaries
 }
