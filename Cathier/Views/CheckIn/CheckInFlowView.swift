@@ -110,7 +110,10 @@ struct ChipView: View {
                     .stroke(isSelected ? color : Color.clear, lineWidth: 1.5)
             )
             .contentShape(Capsule())
-            .onTapGesture { action() }
+            .onTapGesture {
+                UIImpactFeedbackGenerator(style: isSelected ? .light : .medium).impactOccurred()
+                action()
+            }
             .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
