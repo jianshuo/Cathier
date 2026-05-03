@@ -114,7 +114,6 @@ struct BrainTrainerChatView: View {
 
             Divider()
             inputBar
-            saveButton
         }
     }
 
