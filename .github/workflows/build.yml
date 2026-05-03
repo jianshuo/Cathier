@@ -46,10 +46,10 @@ jobs:
         env:
           FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
-      - name: Inject Qwen API key into Info.plist
-        run: /usr/libexec/PlistBuddy -c "Set :QwenApiKey $QWEN_API_KEY" Cathier/Info.plist
+      - name: Inject AceData API key into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :AcedataApiKey $ACEDATA_API_KEY" Cathier/Info.plist
         env:
-          QWEN_API_KEY: ${{ secrets.QWEN_API_KEY }}
+          ACEDATA_API_KEY: ${{ secrets.ACEDATA_API_KEY }}
 
       # PRs: build only (verify it compiles)
       - name: Build for verification

@@ -39,11 +39,11 @@ enum ClaudeService {
 
     // MARK: - Managed service configuration
     // Production: injected at build time from GitHub secrets → Info.plist.
-    // Local dev: set QWEN_API_KEY in Xcode scheme → Run → Environment Variables.
+    // Local dev: set ACEDATA_API_KEY in Xcode scheme → Run → Environment Variables.
     private static var managedApiKey: String {
-        let plistKey = Bundle.main.infoDictionary?["QwenApiKey"] as? String ?? ""
+        let plistKey = Bundle.main.infoDictionary?["AcedataApiKey"] as? String ?? ""
         if !plistKey.isEmpty { return plistKey }
-        return ProcessInfo.processInfo.environment["QWEN_API_KEY"] ?? ""
+        return ProcessInfo.processInfo.environment["ACEDATA_API_KEY"] ?? ""
     }
 
     // MARK: - Provider helpers

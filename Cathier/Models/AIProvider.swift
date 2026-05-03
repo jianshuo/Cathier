@@ -7,7 +7,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case qwen      = "qwen"
     case zhipu     = "zhipu"
     case openrouter = "openrouter"
-    /// Managed tier — developer's Qwen key is used server-side
+    case acedata   = "acedata"
+    /// Managed tier — developer's key is used at build time
     case managed   = "managed"
 
     var id: String { rawValue }
@@ -20,6 +21,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .qwen:      return "通义千问"
         case .zhipu:     return "智谱 AI"
         case .openrouter: return "OpenRouter"
+        case .acedata:   return "AceData"
         case .managed:   return "我没有 API Key"
         }
     }
@@ -29,11 +31,13 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .claude:    return URL(string: "https://api.anthropic.com/v1/messages")!
         case .openai:    return URL(string: "https://api.openai.com/v1/chat/completions")!
         case .deepseek:  return URL(string: "https://api.deepseek.com/v1/chat/completions")!
-        case .qwen, .managed:
+        case .qwen:
             return URL(string: "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions")!
         case .zhipu:     return URL(string: "https://open.bigmodel.cn/api/paas/v4/chat/completions")!
         case .openrouter:
             return URL(string: "https://openrouter.ai/api/v1/chat/completions")!
+        case .acedata, .managed:
+            return URL(string: "https://api.acedata.cloud/openai/chat/completions")!
         }
     }
 
@@ -43,9 +47,10 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .claude:     return "claude-haiku-4-5-20251001"
         case .openai:     return "gpt-4o-mini"
         case .deepseek:   return "deepseek-chat"
-        case .qwen, .managed: return "qwen-turbo"
+        case .qwen:       return "qwen-turbo"
         case .zhipu:      return "glm-4-flash"
         case .openrouter: return "moonshotai/kimi-k2.6"
+        case .acedata, .managed: return "gpt-5.5-pro"
         }
     }
 
@@ -55,9 +60,10 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .claude:     return "claude-sonnet-4-6"
         case .openai:     return "gpt-4o"
         case .deepseek:   return "deepseek-chat"
-        case .qwen, .managed: return "qwen-plus"
+        case .qwen:       return "qwen-plus"
         case .zhipu:      return "glm-4"
         case .openrouter: return "moonshotai/kimi-k2.6"
+        case .acedata, .managed: return "gpt-5.5-pro"
         }
     }
 
@@ -73,6 +79,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .qwen:      return "sk-…"
         case .zhipu:     return "…"
         case .openrouter: return "sk-or-…"
+        case .acedata:   return "…"
         case .managed:   return ""
         }
     }
@@ -86,6 +93,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .qwen:      return URL(string: "https://dashscope.console.aliyun.com")
         case .zhipu:     return URL(string: "https://open.bigmodel.cn")
         case .openrouter: return URL(string: "https://openrouter.ai/keys")
+        case .acedata:   return URL(string: "https://acedata.cloud")
         case .managed:   return nil
         }
     }
