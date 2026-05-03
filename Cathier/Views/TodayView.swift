@@ -7,7 +7,13 @@ struct TodayView: View {
     @State private var showingCheckIn = false
     @State private var showingJournalEntry = false
     @State private var journalToEdit: DailyJournal? = nil
+    @State private var showingInsights = false
     @Environment(LanguageManager.self) private var lm
+
+    private var hasNewPatterns: Bool {
+        let lastAnalyzed = UserDefaults.standard.integer(forKey: "lastInsightCheckInCount")
+        return checkIns.count >= 7 && checkIns.count >= lastAnalyzed + 5
+    }
 
     private var todayCheckIns: [CheckIn] {
         checkIns.filter { Calendar.current.isDateInToday($0.date) }
@@ -44,6 +50,12 @@ struct TodayView: View {
                         }
                     }
 
+                    // Pattern nudge
+                    if hasNewPatterns {
+                        insightsNudgeCard
+                            .padding(.horizontal, 20)
+                    }
+
                     // Daily journal section
                     dailyJournalSection
                         .padding(.horizontal, 20)
@@ -56,12 +68,57 @@ struct TodayView: View {
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
             }
+            .sheet(isPresented: $showingInsights) {
+                InsightsView()
+                    .environment(lm)
+            }
             .sheet(isPresented: $showingJournalEntry) {
                 DailyJournalEntryView(existing: journalToEdit) {
                     journalToEdit = nil
                 }
             }
         }
+    }
+
+    // MARK: - Insights Nudge
+
+    private var insightsNudgeCard: some View {
+        let title = lm.currentLanguage == .zh ? "新规律正在浮现" : lm.currentLanguage == .ja ? "新しいパターンが見えてきた" : "Patterns emerging"
+        let hint = lm.currentLanguage == .zh
+            ? "已记录 \(checkIns.count) 次，点击发现你的情绪模式"
+            : lm.currentLanguage == .ja
+                ? "\(checkIns.count) 件の記録から感情のパターンを発見"
+                : "\(checkIns.count) check-ins — tap to discover your patterns"
+
+        return Button(action: { showingInsights = true }) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(Color.cathierAccent.opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color.cathierAccent)
+                }
+                VStack(alignment: .leading, spacing: 3) {
+                    Text(title)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    Text(hint)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(16)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Daily Journal Section

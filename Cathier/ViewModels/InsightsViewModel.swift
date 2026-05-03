@@ -17,6 +17,7 @@ struct InsightRecord: Codable, Identifiable {
 
 // MARK: - ViewModel
 
+@MainActor
 @Observable
 final class InsightsViewModel {
 

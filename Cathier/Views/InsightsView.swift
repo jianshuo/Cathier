@@ -69,6 +69,10 @@ struct InsightsView: View {
             }
             .padding(.vertical)
         }
+        .task {
+            guard vm.insightHistory.isEmpty, checkIns.count >= 7, !vm.isLoading else { return }
+            await vm.analyze(allCheckIns: checkIns)
+        }
     }
 
     // MARK: - Analyze button
@@ -120,10 +124,18 @@ struct InsightsView: View {
 
     private func insightContent(_ text: String) -> some View {
         VStack(alignment: .leading, spacing: 20) {
-            // Intensity chart
             intensityChart
 
-            // Narrative
+            let topEmos = topEmotions
+            if topEmos.count >= 3 {
+                emotionFrequencyChart(topEmos)
+            }
+
+            let wdData = weekdayData
+            if wdData.count >= 3 {
+                weekdayChart(wdData)
+            }
+
             Text(text)
                 .font(.cathierSerif(.body))
                 .lineSpacing(5)
@@ -131,6 +143,98 @@ struct InsightsView: View {
                 .background(Color.cathierAccentLight)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.horizontal)
+        }
+    }
+
+    // MARK: - Emotion frequency chart
+
+    private var topEmotions: [(emotion: String, count: Int)] {
+        var freq: [String: Int] = [:]
+        for c in checkIns {
+            for e in c.emotions { freq[e, default: 0] += 1 }
+        }
+        return freq.sorted { $0.value > $1.value }.prefix(6).map { (emotion: $0.key, count: $0.value) }
+    }
+
+    private func emotionFrequencyChart(_ data: [(emotion: String, count: Int)]) -> some View {
+        let title = lm.currentLanguage == .zh ? "高频情绪" : lm.currentLanguage == .ja ? "頻出感情" : "Top Emotions"
+        return VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+
+            Chart(data, id: \.emotion) { item in
+                BarMark(
+                    x: .value("Count", item.count),
+                    y: .value("Emotion", item.emotion)
+                )
+                .foregroundStyle(Color.cathierAccent.gradient)
+                .cornerRadius(4)
+            }
+            .chartXAxis {
+                AxisMarks(values: .automatic(desiredCount: 4)) { _ in
+                    AxisGridLine(stroke: StrokeStyle(lineWidth: 0.5))
+                    AxisValueLabel()
+                }
+            }
+            .frame(height: CGFloat(data.count) * 34 + 16)
+            .padding(.horizontal)
+        }
+    }
+
+    // MARK: - Weekday pattern chart
+
+    private var weekdayData: [(label: String, avg: Double)] {
+        let calendar = Calendar.current
+        var groups: [Int: [Int]] = [:]
+        for c in checkIns {
+            let wd = calendar.component(.weekday, from: c.date)
+            groups[wd, default: []].append(c.intensity)
+        }
+        let isZh = lm.currentLanguage == .zh
+        let isJa = lm.currentLanguage == .ja
+        func label(_ wd: Int) -> String {
+            switch wd {
+            case 1: return isZh ? "周日" : isJa ? "日" : "Sun"
+            case 2: return isZh ? "周一" : isJa ? "月" : "Mon"
+            case 3: return isZh ? "周二" : isJa ? "火" : "Tue"
+            case 4: return isZh ? "周三" : isJa ? "水" : "Wed"
+            case 5: return isZh ? "周四" : isJa ? "木" : "Thu"
+            case 6: return isZh ? "周五" : isJa ? "金" : "Fri"
+            case 7: return isZh ? "周六" : isJa ? "土" : "Sat"
+            default: return ""
+            }
+        }
+        return [2, 3, 4, 5, 6, 7, 1].compactMap { wd in
+            guard let vals = groups[wd], !vals.isEmpty else { return nil }
+            let avg = Double(vals.reduce(0, +)) / Double(vals.count)
+            return (label: label(wd), avg: avg)
+        }
+    }
+
+    private func weekdayChart(_ data: [(label: String, avg: Double)]) -> some View {
+        let title = lm.currentLanguage == .zh ? "各天情绪强度均值" : lm.currentLanguage == .ja ? "曜日別平均強度" : "Avg Intensity by Weekday"
+        return VStack(alignment: .leading, spacing: 8) {
+            Text(title)
+                .font(.subheadline.bold())
+                .foregroundStyle(.secondary)
+                .padding(.horizontal)
+
+            Chart(data, id: \.label) { item in
+                BarMark(
+                    x: .value("Day", item.label),
+                    y: .value("Avg", item.avg)
+                )
+                .foregroundStyle(Color.cathierAccent.opacity(0.75).gradient)
+                .cornerRadius(4)
+            }
+            .chartYScale(domain: 0...10)
+            .chartXAxis {
+                AxisMarks { _ in AxisValueLabel() }
+            }
+            .frame(height: 120)
+            .padding(.horizontal)
         }
     }
 
