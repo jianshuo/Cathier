@@ -202,8 +202,10 @@ function sleep(ms) {
 
 /**
  * Call Hunyuan with a full messages array (system + history).
+ * `maxTokens` defaults to 600 for short chat replies; pass a larger value for
+ * structured output (e.g. brainTrainer steps with <options> XML).
  */
-async function callHunyuanMessages(messages) {
+async function callHunyuanMessages(messages, maxTokens) {
   const apiKey = process.env.HUNYUAN_API_KEY
   if (!apiKey) {
     return { success: false, error: 'AI服务配置错误，请联系开发者' }
@@ -223,7 +225,7 @@ async function callHunyuanMessages(messages) {
         model: HUNYUAN_MODEL,
         messages,
         temperature: 0.7,
-        max_tokens: 600
+        max_tokens: maxTokens || 600
       }),
       signal: controller.signal
     })
@@ -274,17 +276,18 @@ exports.main = async (event, context) => {
     return result
   }
 
-  // Lesson chat: multi-turn reflection conversation
+  // Lesson chat: multi-turn reflection conversation. Needs more tokens because
+  // each AI turn returns prose + 3-7 <option> XML chips.
   if (event.type === 'lesson-chat') {
     const history = event.history || []
     const messages = [
       { role: 'system', content: LESSON_CHAT_PROMPT },
       ...history
     ]
-    let result = await callHunyuanMessages(messages)
+    let result = await callHunyuanMessages(messages, 2000)
     if (result.rateLimited) {
       await sleep(1000)
-      result = await callHunyuanMessages(messages)
+      result = await callHunyuanMessages(messages, 2000)
     }
     return result
   }
@@ -305,10 +308,10 @@ exports.main = async (event, context) => {
       ...cleaned,
       { role: 'user', content: '请生成五步复盘总结卡片。' }
     ]
-    let result = await callHunyuanMessages(messages)
+    let result = await callHunyuanMessages(messages, 1500)
     if (result.rateLimited) {
       await sleep(1000)
-      result = await callHunyuanMessages(messages)
+      result = await callHunyuanMessages(messages, 1500)
     }
     return result
   }

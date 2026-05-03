@@ -9,25 +9,32 @@ function stripDisplayMarkers(text) {
     .trim()
 }
 
-// Parse <options><option>...</option></options> from an AI reply.
+// Parse <options><option>…</option></options> from an AI reply.
 // Returns { mainText, options[] }.
+//
+// Tolerant of truncated / malformed XML — if the block is missing its
+// closing tag, we still extract any complete <option>…</option> pairs and
+// strip the partial wrappers from the displayed text.
 function parseOptions(text) {
-  const raw = String(text || '')
-  const blockMatch = raw.match(/<options>([\s\S]*?)<\/options>/)
-  if (!blockMatch) {
-    return { mainText: raw.replace(/<complete\/>/g, '').trim(), options: [] }
-  }
-  const before = raw.slice(0, blockMatch.index)
-  const after = raw.slice(blockMatch.index + blockMatch[0].length)
-  const mainText = (before + '\n\n' + after).replace(/<complete\/>/g, '').trim()
+  let raw = String(text || '')
 
   const options = []
   const optRegex = /<option>([\s\S]*?)<\/option>/g
   let m
-  while ((m = optRegex.exec(blockMatch[1])) !== null) {
+  while ((m = optRegex.exec(raw)) !== null) {
     const opt = m[1].trim()
     if (opt) options.push(opt)
   }
+
+  let mainText = raw
+  // Remove the full <options>…</options> block if present.
+  mainText = mainText.replace(/<options>[\s\S]*?<\/options>/g, '\n\n')
+  // Then strip any leftover partial / unclosed tags.
+  mainText = mainText.replace(/<\/?options>/g, '')
+  mainText = mainText.replace(/<\/?option>/g, '')
+  mainText = mainText.replace(/<complete\/>/g, '')
+  mainText = mainText.replace(/\n{3,}/g, '\n\n').trim()
+
   return { mainText, options }
 }
 
