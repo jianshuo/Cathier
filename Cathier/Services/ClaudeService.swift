@@ -687,7 +687,7 @@ enum ClaudeService {
             user = "Body areas: \(partsStr.isEmpty ? "unspecified" : partsStr)\nEmotions: \(emosStr.isEmpty ? "unclear" : emosStr)"
         }
 
-        return try await call(model: feedbackModel, system: system, user: user, maxTokens: 300)
+        return try await call(model: feedbackModel, system: system, user: user, maxTokens: 2000)
     }
 
     // MARK: - Health Insights
@@ -699,7 +699,7 @@ enum ClaudeService {
     ) async throws -> String {
         let system = healthInsightSystemPrompt(language: language)
         let user = buildHealthPrompt(summary: summary, recentCheckIns: recentCheckIns, language: language)
-        return try await call(model: insightsModel, system: system, user: user, maxTokens: 800)
+        return try await call(model: insightsModel, system: system, user: user, maxTokens: 2500)
     }
 
     private static func healthInsightSystemPrompt(language: AppLanguage) -> String {
@@ -1109,7 +1109,7 @@ enum ClaudeService {
             user = "Give me today's AI-themed cold joke."
         }
 
-        let raw = try await call(model: feedbackModel, system: system, user: user, maxTokens: 300)
+        let raw = try await call(model: feedbackModel, system: system, user: user, maxTokens: 1500)
         return parseJoke(raw, language: language)
     }
 
