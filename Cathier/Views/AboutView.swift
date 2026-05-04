@@ -6,7 +6,7 @@ struct AboutView: View {
     /// Public TestFlight join link. Generate it in App Store Connect →
     /// TestFlight → External Testing group → "Enable Public Link", then
     /// paste the URL here. Empty string hides the section.
-    private let testFlightPublicLink = ""
+    private let testFlightPublicLink = "https://testflight.apple.com/join/TwF61E49"
 
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
