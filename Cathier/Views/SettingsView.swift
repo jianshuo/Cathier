@@ -7,6 +7,7 @@ struct SettingsView: View {
     @State private var isAuthorized = false
     @State private var showFeedback = false
     @Environment(LanguageManager.self) private var lm
+    @FocusState private var isContextBriefFocused: Bool
 
     var body: some View {
         NavigationStack {
@@ -78,6 +79,7 @@ struct SettingsView: View {
                     TextEditor(text: $contextBrief)
                         .frame(minHeight: 80)
                         .font(.subheadline)
+                        .focused($isContextBriefFocused)
                         .overlay(alignment: .topLeading) {
                             if contextBrief.isEmpty {
                                 Text(lm.settingsContextPlaceholder)
@@ -128,6 +130,7 @@ struct SettingsView: View {
                 }
             }
             .navigationTitle(lm.settingsNavTitle)
+            .scrollDismissesKeyboard(.immediately)
             .sheet(isPresented: $showFeedback) {
                 FeedbackView()
                     .environment(lm)
@@ -135,6 +138,15 @@ struct SettingsView: View {
             .task {
                 reminderTimes = NotificationService.shared.loadTimes()
                 isAuthorized = await NotificationService.shared.checkAuthorizationStatus()
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button(lm.detailDone) {
+                        isContextBriefFocused = false
+                    }
+                    .foregroundColor(.cathierAccent)
+                }
             }
         }
     }
