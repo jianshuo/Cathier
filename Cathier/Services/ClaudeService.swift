@@ -292,7 +292,7 @@ enum ClaudeService {
         let prompt = buildPatternPrompt(checkIns: sample, focus: focus,
                                        contextBrief: contextBrief, language: language)
         let system = patternSystemPrompt(focus: focus, language: language)
-        return try await call(model: insightsModel, system: system, user: prompt, maxTokens: 1200)
+        return try await call(model: insightsModel, system: system, user: prompt, maxTokens: 3000)
     }
 
     private static func patternSystemPrompt(focus: InsightFocusMode, language: AppLanguage) -> String {
@@ -569,7 +569,7 @@ enum ClaudeService {
                                       emotionFrequency: emotionFrequency,
                                       language: language)
         let system = persona.systemPrompt(for: language) + structuredFormatInstruction(for: language)
-        return try await call(model: feedbackModel, system: system, user: userMessage, maxTokens: 1200)
+        return try await call(model: feedbackModel, system: system, user: userMessage, maxTokens: 3000)
     }
 
     private static func structuredFormatInstruction(for language: AppLanguage) -> String {
