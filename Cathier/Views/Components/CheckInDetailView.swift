@@ -128,10 +128,14 @@ struct CheckInDetailView: View {
                                 .accessibilityLabel(lm.detailCopyAI)
                                 .animation(.easeInOut(duration: 0.2), value: aiFeedbackCopied)
                             }
-                            MarkdownText(raw: checkIn.aiFeedback,
-                                         font: .body,
-                                         paragraphSpacing: 8,
-                                         lineSpacing: 5)
+                            if let structured = StructuredFeedback.parse(checkIn.aiFeedback) {
+                                StructuredFeedbackView(feedback: structured)
+                            } else {
+                                MarkdownText(raw: checkIn.aiFeedback,
+                                             font: .body,
+                                             paragraphSpacing: 8,
+                                             lineSpacing: 5)
+                            }
                         }
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
@@ -295,7 +299,13 @@ struct CheckInDetailView: View {
     // MARK: - Copy AI Feedback
 
     private func copyAIFeedback() {
-        UIPasteboard.general.string = checkIn.aiFeedback
+        let text: String
+        if let s = StructuredFeedback.parse(checkIn.aiFeedback) {
+            text = [s.summary, s.insight, s.connection, s.suggestion].joined(separator: "\n\n")
+        } else {
+            text = checkIn.aiFeedback
+        }
+        UIPasteboard.general.string = text
         withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = true }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = false }

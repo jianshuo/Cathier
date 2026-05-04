@@ -15,6 +15,32 @@ enum ClaudeError: LocalizedError {
     }
 }
 
+// Structured AI feedback — stored as JSON in CheckIn.aiFeedback for new check-ins.
+// Legacy plain-text entries are handled via StructuredFeedback.parse returning nil.
+struct StructuredFeedback: Codable {
+    var summary: String
+    var insight: String
+    var connection: String
+    var suggestion: String
+
+    /// Preview text shown in card previews (first meaningful field).
+    var previewText: String { summary }
+
+    static func parse(_ text: String) -> StructuredFeedback? {
+        var jsonText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Strip markdown code fences if the model wrapped the JSON
+        if jsonText.hasPrefix("```") {
+            let lines = jsonText.components(separatedBy: "\n")
+            let inner = lines.dropFirst().prefix(while: { !$0.hasPrefix("```") })
+            jsonText = inner.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        guard let data = jsonText.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode(StructuredFeedback.self, from: data)
+        else { return nil }
+        return decoded
+    }
+}
+
 // Anthropic wire format
 private struct ClaudeResponse: Decodable {
     let content: [ContentBlock]
@@ -542,10 +568,49 @@ enum ClaudeService {
                                       recentHistory: recentHistory,
                                       emotionFrequency: emotionFrequency,
                                       language: language)
-        return try await call(model: feedbackModel,
-                              system: persona.systemPrompt(for: language),
-                              user: userMessage,
-                              maxTokens: 1200)
+        let system = persona.systemPrompt(for: language) + structuredFormatInstruction(for: language)
+        return try await call(model: feedbackModel, system: system, user: userMessage, maxTokens: 1200)
+    }
+
+    private static func structuredFormatInstruction(for language: AppLanguage) -> String {
+        switch language {
+        case .zh:
+            return """
+
+
+            ## 输出格式（必须严格遵守）
+            你的回应必须是以下格式的合法 JSON，不加任何说明文字或代码块：
+            {"summary":"当前身心状态一句话描述","insight":"最值得关注的洞察","connection":"身体感受与情绪的联系","suggestion":"一个此刻能做的具体建议"}
+            按照你的角色风格填写每个字段（1-2句话）。
+            """
+        case .en:
+            return """
+
+
+            ## Output Format (strictly required)
+            Your response must be valid JSON only, with no additional text or code blocks:
+            {"summary":"One sentence on current body-mind state","insight":"Most meaningful observation from this check-in","connection":"Link between body sensations and emotions","suggestion":"One specific thing to try right now"}
+            Write each field in your persona's voice (1-2 sentences each).
+            """
+        case .ja:
+            return """
+
+
+            ## 出力形式（厳守）
+            以下の形式の有効なJSONのみを出力してください（余分なテキストやコードブロック不要）：
+            {"summary":"今の心身状態を一文で","insight":"このチェックインで最も重要な気づき","connection":"身体感覚と感情のつながり","suggestion":"今すぐできる具体的な提案"}
+            各フィールドはあなたのペルソナのスタイルで（1〜2文）。
+            """
+        default:
+            return """
+
+
+            ## Output Format (strictly required)
+            Your response must be valid JSON only, with no additional text or code blocks:
+            {"summary":"One sentence on current body-mind state","insight":"Most meaningful observation from this check-in","connection":"Link between body sensations and emotions","suggestion":"One specific thing to try right now"}
+            Write each field in your persona's voice (1-2 sentences each).
+            """
+        }
     }
 
     // MARK: - Micro-exercise generation

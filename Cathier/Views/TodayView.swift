@@ -10,6 +10,7 @@ struct TodayView: View {
     @State private var showingInsights = false
     @State private var showingBrainTrainer = false
     @State private var showingJokeHistory = false
+    @AppStorage("notificationsEnabled") private var notificationsEnabled = false
     @Environment(LanguageManager.self) private var lm
 
     private var jokeService: JokeService { JokeService.shared }
@@ -45,6 +46,19 @@ struct TodayView: View {
                     // Weekly emotion frequency (shown when emotions have been recorded this week)
                     if !weeklyTopEmotions.isEmpty {
                         WeeklyEmotionSummary(topEmotions: weeklyTopEmotions)
+                            .padding(.horizontal, 20)
+                    }
+
+                    // 7-day trend snapshot
+                    if let snapshot = weeklySnapshot {
+                        weeklySnapshotCard(snapshot)
+                            .padding(.horizontal, 20)
+                    }
+
+                    // Reminder nudge (evening, no check-in, notifications off)
+                    if !notificationsEnabled && todayCheckIns.isEmpty
+                        && Calendar.current.component(.hour, from: Date()) >= 18 {
+                        reminderNudgeCard
                             .padding(.horizontal, 20)
                     }
 
@@ -462,6 +476,138 @@ struct TodayView: View {
         case 12..<18: return lm.greetingAfternoon
         default:      return lm.greetingEvening
         }
+    }
+
+    // MARK: - Weekly Snapshot
+
+    struct WeeklySnapshot {
+        let avgIntensity: Double
+        let trend: Double  // positive = higher than prev week, negative = lower
+        let checkInCount: Int
+    }
+
+    private var weeklySnapshot: WeeklySnapshot? {
+        let calendar = Calendar.current
+        let now = Date()
+        guard let sevenAgo = calendar.date(byAdding: .day, value: -7, to: now),
+              let fourteenAgo = calendar.date(byAdding: .day, value: -14, to: now) else { return nil }
+
+        let thisWeek = checkIns.filter { $0.date >= sevenAgo }
+        guard thisWeek.count >= 3 else { return nil }
+
+        let thisAvg = Double(thisWeek.map(\.intensity).reduce(0, +)) / Double(thisWeek.count)
+        let lastWeek = checkIns.filter { $0.date >= fourteenAgo && $0.date < sevenAgo }
+        let lastAvg = lastWeek.isEmpty ? thisAvg
+            : Double(lastWeek.map(\.intensity).reduce(0, +)) / Double(lastWeek.count)
+
+        return WeeklySnapshot(avgIntensity: thisAvg, trend: thisAvg - lastAvg, checkInCount: thisWeek.count)
+    }
+
+    private func weeklySnapshotCard(_ snapshot: WeeklySnapshot) -> some View {
+        let trendIcon: String
+        let trendColor: Color
+        let trendText: String
+
+        if snapshot.trend > 0.5 {
+            trendIcon = "arrow.up.right"
+            trendColor = .cathierAccent
+            trendText = lm.currentLanguage == .zh ? "强度上升" : lm.currentLanguage == .ja ? "強度上昇" : "Rising"
+        } else if snapshot.trend < -0.5 {
+            trendIcon = "arrow.down.right"
+            trendColor = .cathierSage
+            trendText = lm.currentLanguage == .zh ? "强度下降" : lm.currentLanguage == .ja ? "強度低下" : "Easing"
+        } else {
+            trendIcon = "arrow.right"
+            trendColor = .secondary
+            trendText = lm.currentLanguage == .zh ? "趋于平稳" : lm.currentLanguage == .ja ? "安定" : "Stable"
+        }
+
+        let avgText = String(format: "%.1f", snapshot.avgIntensity)
+        let countLabel = lm.currentLanguage == .zh
+            ? "近 7 天 · \(snapshot.checkInCount) 次记录"
+            : lm.currentLanguage == .ja
+                ? "過去7日 · \(snapshot.checkInCount)回"
+                : "7-day · \(snapshot.checkInCount) entries"
+
+        return Button(action: { showingInsights = true }) {
+            HStack(spacing: 14) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(countLabel)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                    HStack(alignment: .firstTextBaseline, spacing: 4) {
+                        Text(avgText)
+                            .font(.system(.title2, design: .monospaced))
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        Text("/10")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(lm.currentLanguage == .zh ? "平均强度" : lm.currentLanguage == .ja ? "平均強度" : "avg intensity")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                Spacer()
+                HStack(spacing: 4) {
+                    Image(systemName: trendIcon)
+                        .font(.subheadline)
+                        .foregroundColor(trendColor)
+                    Text(trendText)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(trendColor)
+                }
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(14)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Reminder Nudge
+
+    private var reminderNudgeCard: some View {
+        let title = lm.currentLanguage == .zh ? "开启每日提醒"
+            : lm.currentLanguage == .ja ? "毎日リマインダーをオン"
+            : "Enable Daily Reminders"
+        let hint = lm.currentLanguage == .zh ? "坚持记录，才能看到自己的变化趋势"
+            : lm.currentLanguage == .ja ? "継続的な記録で感情の変化を把握できます"
+            : "Consistent tracking helps you see your emotional trends"
+
+        return Button(action: {
+            if let url = URL(string: UIApplication.openNotificationSettingsURLString) {
+                UIApplication.shared.open(url)
+            }
+        }) {
+            HStack(spacing: 12) {
+                Image(systemName: "bell.badge")
+                    .font(.title3)
+                    .foregroundColor(.cathierAccent)
+                    .frame(width: 36)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(title)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    Text(hint)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            .padding(14)
+            .background(Color.cathierAccentLight)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 }
 

@@ -420,12 +420,17 @@ struct AIFeedbackView: View {
             } else if let error = viewModel.aiError {
                 errorView(error)
             } else if !viewModel.aiFeedback.isEmpty {
-                MarkdownText(raw: viewModel.aiFeedback,
-                             font: .cathierSerif(.body),
-                             paragraphSpacing: 8,
-                             lineSpacing: 5)
-                    .foregroundColor(.primary)
-                    .transition(.opacity)
+                if let structured = StructuredFeedback.parse(viewModel.aiFeedback) {
+                    StructuredFeedbackView(feedback: structured)
+                        .transition(.opacity)
+                } else {
+                    MarkdownText(raw: viewModel.aiFeedback,
+                                 font: .cathierSerif(.body),
+                                 paragraphSpacing: 8,
+                                 lineSpacing: 5)
+                        .foregroundColor(.primary)
+                        .transition(.opacity)
+                }
             }
         }
         .padding(16)
@@ -460,6 +465,78 @@ struct AIFeedbackView: View {
                 Text(lm.aiRetry)
                     .font(.subheadline)
                     .foregroundColor(.cathierAccent)
+            }
+        }
+    }
+}
+
+// MARK: - Structured Feedback View
+
+struct StructuredFeedbackView: View {
+    let feedback: StructuredFeedback
+    @Environment(LanguageManager.self) private var lm
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            feedbackRow(icon: "waveform", titleKey: "summary", content: feedback.summary, color: .cathierAccent)
+            Divider().padding(.leading, 26)
+            feedbackRow(icon: "sparkles", titleKey: "insight", content: feedback.insight, color: .cathierAccent)
+            Divider().padding(.leading, 26)
+            feedbackRow(icon: "figure.mind.and.body", titleKey: "connection", content: feedback.connection, color: .cathierSage)
+            Divider().padding(.leading, 26)
+            feedbackRow(icon: "lightbulb", titleKey: "suggestion", content: feedback.suggestion, color: .cathierSage)
+        }
+    }
+
+    private func sectionTitle(_ key: String) -> String {
+        switch lm.currentLanguage {
+        case .zh:
+            switch key {
+            case "summary":    return "此刻状态"
+            case "insight":    return "值得注意"
+            case "connection": return "身心联系"
+            case "suggestion": return "可以尝试"
+            default: return key
+            }
+        case .ja:
+            switch key {
+            case "summary":    return "今の状態"
+            case "insight":    return "気づき"
+            case "connection": return "身心のつながり"
+            case "suggestion": return "やってみよう"
+            default: return key
+            }
+        default:
+            switch key {
+            case "summary":    return "Current State"
+            case "insight":    return "Key Insight"
+            case "connection": return "Body & Mind"
+            case "suggestion": return "Try This"
+            default: return key
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func feedbackRow(icon: String, titleKey: String, content: String, color: Color) -> some View {
+        HStack(alignment: .top, spacing: 10) {
+            Image(systemName: icon)
+                .font(.caption)
+                .foregroundColor(color)
+                .frame(width: 16, alignment: .center)
+                .padding(.top, 3)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(sectionTitle(titleKey))
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(color)
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+                Text(content)
+                    .font(.cathierSerif(.body))
+                    .foregroundColor(.primary)
+                    .lineSpacing(4)
+                    .fixedSize(horizontal: false, vertical: true)
             }
         }
     }

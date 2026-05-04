@@ -53,7 +53,7 @@ struct CheckInCard: View {
                             .font(.caption2)
                             .foregroundColor(.cathierAccent)
                             .padding(.top, 2)
-                        Text(checkIn.aiFeedback)
+                        Text(StructuredFeedback.parse(checkIn.aiFeedback)?.previewText ?? checkIn.aiFeedback)
                             .font(.subheadline)
                             .foregroundColor(.primary)
                             .lineLimit(3)

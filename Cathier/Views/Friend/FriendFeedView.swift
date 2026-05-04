@@ -421,7 +421,7 @@ struct FriendCheckInCard: View {
                     .foregroundColor(.cathierAccent)
                     .padding(.top, 3)
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(item.aiFeedback.firstSentence)
+                    Text(StructuredFeedback.parse(item.aiFeedback)?.previewText ?? item.aiFeedback.firstSentence)
                         .font(.cathierSerif(.subheadline))
                         .foregroundColor(.primary)
                         .lineSpacing(2)
@@ -564,16 +564,22 @@ struct FriendAIDetailView: View {
                     }
 
                     // Full AI text
-                    HStack(alignment: .top, spacing: 8) {
-                        Image(systemName: "sparkles")
-                            .font(.subheadline)
-                            .foregroundColor(.cathierAccent)
-                            .padding(.top, 2)
-                        Text(item.aiFeedback)
-                            .font(.cathierSerif(.body))
-                            .foregroundColor(.primary)
-                            .lineSpacing(4)
-                            .fixedSize(horizontal: false, vertical: true)
+                    Group {
+                        if let structured = StructuredFeedback.parse(item.aiFeedback) {
+                            StructuredFeedbackView(feedback: structured)
+                        } else {
+                            HStack(alignment: .top, spacing: 8) {
+                                Image(systemName: "sparkles")
+                                    .font(.subheadline)
+                                    .foregroundColor(.cathierAccent)
+                                    .padding(.top, 2)
+                                Text(item.aiFeedback)
+                                    .font(.cathierSerif(.body))
+                                    .foregroundColor(.primary)
+                                    .lineSpacing(4)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
                     }
                     .padding(14)
                     .background(Color.cathierAccentLight)
