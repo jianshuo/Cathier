@@ -121,6 +121,14 @@ struct CheckInDetailView: View {
                                     .fontWeight(.semibold)
                                     .foregroundColor(.cathierAccent)
                                 Spacer()
+                                ShareLink(item: aiFeedbackShareText) {
+                                    Image(systemName: "square.and.arrow.up")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
+                                        .frame(width: 28, height: 28)
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityLabel(lm.currentLanguage == .zh ? "分享" : lm.currentLanguage == .ja ? "共有" : "Share")
                                 Button(action: copyAIFeedback) {
                                     Image(systemName: aiFeedbackCopied ? "checkmark" : "doc.on.doc")
                                         .font(.caption)
@@ -313,6 +321,15 @@ struct CheckInDetailView: View {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = false }
         }
+    }
+
+    private var aiFeedbackShareText: String {
+        if let s = StructuredFeedback.parse(checkIn.aiFeedback) {
+            return [s.summary, s.insight, s.connection, s.suggestion]
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n\n")
+        }
+        return checkIn.aiFeedback
     }
 
     // MARK: - Helpers
