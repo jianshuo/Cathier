@@ -1,9 +1,12 @@
 import SwiftUI
+import SwiftData
 
 // MARK: - Main Explorer (3 sections)
 
 struct EmotionExplorerView: View {
     @Environment(ConfigService.self) private var config
+    @Environment(LanguageManager.self) private var lm
+    @Query private var allCheckIns: [CheckIn]
     @State private var selectedTab = 0
     @State private var selectedItem: SelectedItem?
 
@@ -42,11 +45,57 @@ struct EmotionExplorerView: View {
         }
     }
 
+    // MARK: - Vocab banner
+
+    private var usedEmotionNames: Set<String> {
+        Set(allCheckIns.flatMap { $0.emotions })
+    }
+
+    @ViewBuilder
+    private var vocabBanner: some View {
+        let used = usedEmotionNames.count
+        if used > 0 {
+            let total = DictionaryService.emotionsByCategory.reduce(0) { $0 + $1.emotions.count }
+            HStack(spacing: 8) {
+                Image(systemName: "book.fill")
+                    .font(.caption)
+                    .foregroundStyle(Color.cathierAccent)
+                Text(vocabBannerTitle)
+                    .font(.caption)
+                    .foregroundStyle(Color.secondary)
+                Spacer()
+                HStack(spacing: 2) {
+                    Text("\(used)")
+                        .font(.system(.caption, design: .monospaced))
+                        .fontWeight(.bold)
+                        .foregroundStyle(Color.cathierAccent)
+                    Text("/ \(total)")
+                        .font(.system(.caption2, design: .monospaced))
+                        .foregroundStyle(Color.secondary)
+                }
+            }
+            .padding(.horizontal, 14)
+            .padding(.vertical, 10)
+            .background(Color.cathierAccentLight)
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+            .padding(.horizontal, 20)
+        }
+    }
+
+    private var vocabBannerTitle: String {
+        switch lm.currentLanguage {
+        case .zh: return "已感知情绪词汇"
+        case .ja: return "感知した感情の種類"
+        default:  return "Emotions you've felt"
+        }
+    }
+
     // MARK: - Emotions
 
     private var emotionList: some View {
         ScrollView {
             LazyVStack(alignment: .leading, spacing: 24) {
+                vocabBanner
                 ForEach(DictionaryService.emotionsByCategory, id: \.category) { group in
                     let cat = config.categories.first { $0.nameZh == group.category }
                     let color = cat?.color ?? .cathierAccent
