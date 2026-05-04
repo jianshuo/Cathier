@@ -12,10 +12,13 @@ struct AIFeedbackView: View {
     @AppStorage("lastShareTierRaw") private var lastShareTierRaw: String = FriendCheckIn.PrivacyTier.full.rawValue
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
     @State private var shareAIFeedback: Bool = false
+    @State private var shareToPlaza: Bool = false
+    @State private var plazaTier: FriendCheckIn.PrivacyTier = .emotions
     @State private var showExercise = false
     @State private var aiFeedbackCopied = false
 
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
+    private var hasProfile: Bool { friendVM.currentProfile != nil }
 
     var body: some View {
         standardBody
@@ -48,6 +51,10 @@ struct AIFeedbackView: View {
 
                 if hasFriends {
                     shareSection
+                }
+
+                if hasProfile {
+                    plazaSection
                 }
 
                 Button(action: saveAction) {
@@ -221,6 +228,88 @@ struct AIFeedbackView: View {
         .tint(.cathierAccent)
     }
 
+    // MARK: - Plaza section
+
+    private var plazaSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "person.3.fill")
+                    .font(.caption)
+                    .foregroundColor(.cathierSage)
+                Text(lm.plazaShareSectionTitle)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+
+            VStack(spacing: 0) {
+                Toggle(isOn: $shareToPlaza) {
+                    HStack(spacing: 12) {
+                        Image(systemName: "globe.asia.australia.fill")
+                            .foregroundColor(.cathierSage)
+                            .frame(width: 20)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(lm.plazaShareToggle)
+                                .font(.subheadline)
+                                .foregroundColor(.primary)
+                            Text(lm.plazaShareDesc)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+                .tint(.cathierSage)
+                .padding(12)
+
+                if shareToPlaza {
+                    Divider().padding(.horizontal, 12)
+                    plazaTierPicker.padding(12)
+                }
+            }
+            .background(Color.cathierSageLight)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+    }
+
+    private var plazaTierPicker: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            ForEach(FriendCheckIn.PrivacyTier.allCases) { tier in
+                plazaTierRow(tier)
+                if tier != FriendCheckIn.PrivacyTier.allCases.last {
+                    Divider()
+                }
+            }
+        }
+    }
+
+    private func plazaTierRow(_ tier: FriendCheckIn.PrivacyTier) -> some View {
+        let isSelected = plazaTier == tier
+        return Button(action: { plazaTier = tier }) {
+            HStack(spacing: 12) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(isSelected ? .cathierSage : .secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(tierDisplayName(tier))
+                        .font(.subheadline)
+                        .fontWeight(isSelected ? .medium : .regular)
+                        .foregroundColor(.primary)
+                    Text(plazaTierDescription(tier))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private func plazaTierDescription(_ tier: FriendCheckIn.PrivacyTier) -> String {
+        switch tier {
+        case .category: return lm.plazaTierCategoryDesc
+        case .emotions: return lm.plazaTierEmotionsDesc
+        case .full:     return lm.plazaTierFullDesc
+        }
+    }
+
     // MARK: - History
 
     private func fetchRecentHistory() -> [CheckIn] {
@@ -260,6 +349,11 @@ struct AIFeedbackView: View {
         if let tier = selectedTier {
             let includeAI = tier == .full ? false : shareAIFeedback
             Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: includeAI) }
+        }
+        if shareToPlaza, let profile = friendVM.currentProfile {
+            let post = PlazaPost(ownerProfile: profile, checkIn: checkIn, privacyTier: plazaTier, shareAIFeedback: plazaTier == .full)
+            checkIn.isPlazaShared = true
+            Task { try? await CloudKitService.shared.savePlazaPost(post) }
         }
         onDismiss()
     }

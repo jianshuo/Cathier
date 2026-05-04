@@ -260,3 +260,15 @@
 "persona.journaler.desc" = "五步法：觉察→解离→调节→重构→行动";
 "persona.brainTrainer.name" = "吃一堑长一智";
 "persona.brainTrainer.desc" = "五问法：将每一次踩坑变成大脑参数的精准更新";
+
+/* Plaza */
+"tab.plaza" = "广场";
+"plaza.nav_title" = "广场";
+"plaza.empty" = "广场还没有分享";
+"plaza.empty_hint" = "完成打卡后，将你的情绪分享到广场\n让有缘人看见你此刻的感受";
+"plaza.share_section_title" = "广场";
+"plaza.share_toggle" = "分享到广场";
+"plaza.share_desc" = "向所有用户公开分享你此刻的情绪感受";
+"plaza.tier_category_desc" = "广场只看到情绪大类和强度";
+"plaza.tier_emotions_desc" = "广场看到具体情绪词";
+"plaza.tier_full_desc" = "广场看到全部内容含笔记";

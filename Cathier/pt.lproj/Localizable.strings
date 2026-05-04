@@ -256,3 +256,15 @@
 "persona.coach.desc" = "Turn awareness into action";
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
+
+/* Plaza */
+"tab.plaza" = "Praça";
+"plaza.nav_title" = "Praça";
+"plaza.empty" = "Nada compartilhado ainda";
+"plaza.empty_hint" = "Após o check-in, compartilhe suas emoções na Praça";
+"plaza.share_section_title" = "Praça";
+"plaza.share_toggle" = "Compartilhar na Praça";
+"plaza.share_desc" = "Compartilhe seu estado emocional com todos os usuários";
+"plaza.tier_category_desc" = "Praça vê apenas categoria e intensidade";
+"plaza.tier_emotions_desc" = "Praça vê palavras de emoção específicas";
+"plaza.tier_full_desc" = "Praça vê tudo, incluindo notas";
