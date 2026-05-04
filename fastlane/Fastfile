@@ -66,6 +66,28 @@ platform :ios do
     )
   end
 
+  # Build localized "What's New" release notes for App Store submission.
+  # ASC requires a value for the primary locales when submit_for_review: true.
+  # Uses commits since the last release tag; falls back to a generic message.
+  def build_release_notes
+    last_release_tag = `git tag --list 'release/*' --sort=-version:refname 2>/dev/null | head -1`.strip
+    if last_release_tag.empty?
+      commits = `git log -10 --pretty=format:"- %s"`.strip
+    else
+      commits = `git log #{last_release_tag}..HEAD --pretty=format:"- %s"`.strip
+    end
+    en = commits.empty? ? "Bug fixes and performance improvements." : "What's new:\n#{commits}"
+    zh = commits.empty? ? "修复 bug 和性能改进。"             : "更新内容：\n#{commits}"
+    ja = commits.empty? ? "バグ修正と性能改善。"               : "更新内容：\n#{commits}"
+
+    {
+      "default"      => en,
+      "en-US"        => en,
+      "zh-Hans"      => zh,
+      "ja"           => ja,
+    }
+  end
+
   # Bump marketing version decimal-style: 1.9 → 2.0, 2.9 → 3.0.
   # Minor cycles 0..9, then major increments and minor resets.
   # Returns the new version string.
@@ -139,7 +161,8 @@ platform :ios do
         submission_information: {
           add_id_info_uses_idfa:             false,
           export_compliance_uses_encryption: false,
-        }
+        },
+        release_notes:              build_release_notes
       )
 
       # Persist the version bump back to main so source reflects what shipped.
@@ -203,7 +226,8 @@ platform :ios do
       submission_information: {
         add_id_info_uses_idfa:             false,
         export_compliance_uses_encryption: false,
-      }
+      },
+      release_notes:              build_release_notes
     )
   end
 
