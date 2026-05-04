@@ -28,5 +28,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Cathier reads your steps, heart rate, sleep, and activity data to provide AI-powered health insights that connect your physical state to your emotional awareness practice.</string>
 </dict>
 </plist>

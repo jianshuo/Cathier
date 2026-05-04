@@ -690,6 +690,148 @@ enum ClaudeService {
         return try await call(model: feedbackModel, system: system, user: user, maxTokens: 300)
     }
 
+    // MARK: - Health Insights
+
+    static func generateHealthInsights(
+        summary: HealthSummary,
+        recentCheckIns: [CheckIn] = [],
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let system = healthInsightSystemPrompt(language: language)
+        let user = buildHealthPrompt(summary: summary, recentCheckIns: recentCheckIns, language: language)
+        return try await call(model: insightsModel, system: system, user: user, maxTokens: 800)
+    }
+
+    private static func healthInsightSystemPrompt(language: AppLanguage) -> String {
+        switch language {
+        case .zh:
+            return """
+            你是「觉察」（Cathier）App 的身心连接分析师。用户正在练习情绪觉察，你看到的是他们今日及近一周的健康数据（步数、心率、睡眠、活动能量）。
+
+            你的任务：用身体觉知的视角解读这些数据，而不是像健康App那样简单地评判"达标/未达标"。
+            - 把数据和身体感受、情绪状态联系起来
+            - 指出值得留意的信号（如睡眠偏少时，情绪可能更容易被触发）
+            - 语气温暖、简洁，像一位懂身体的朋友在分享观察
+            - 给出1-2条具体的身体觉察建议，配合 Cathier 的练习
+            - 控制在150字以内，用中文回应
+            """
+        case .ja:
+            return """
+            あなたはCathier（覚察）アプリの心身つながりアナリストです。ユーザーは感情気づきを練習しており、あなたは今日と過去1週間の健康データ（歩数、心拍数、睡眠、活動エネルギー）を見ています。
+
+            あなたのタスク：健康アプリのような「達成/未達成」の評価ではなく、身体気づきの視点でデータを解釈する。
+            - データを身体感覚や感情状態と結びつける
+            - 注目すべきシグナルを指摘する（例：睡眠が少ない日は感情が揺れやすい）
+            - 温かく簡潔なトーンで、身体を知る友人のように
+            - Cathierの練習と連動する具体的な身体気づき提案を1〜2つ
+            - 200文字以内、日本語で回答
+            """
+        default:
+            return """
+            You are the mind-body connection analyst for Cathier — an emotion perception training app. The user is practicing emotional awareness, and you're looking at their health data for today and the past week (steps, heart rate, sleep, active energy).
+
+            Your task: interpret this data through a body-awareness lens — not as a fitness app judging "goal met / not met."
+            - Connect the numbers to physical sensations and emotional states
+            - Point out signals worth noticing (e.g., less sleep → emotions may be more easily triggered)
+            - Warm, concise tone — like a perceptive friend who understands the body
+            - Give 1-2 specific body-awareness suggestions that complement the Cathier practice
+            - Keep it under 120 words, respond in English
+            """
+        }
+    }
+
+    private static func buildHealthPrompt(
+        summary: HealthSummary,
+        recentCheckIns: [CheckIn],
+        language: AppLanguage
+    ) -> String {
+        var lines: [String] = []
+
+        switch language {
+        case .zh:
+            lines.append("【今日健康数据】")
+            lines.append("步数：\(summary.stepsToday) 步")
+            if summary.activeEnergyToday > 0 {
+                lines.append("活动能量：\(Int(summary.activeEnergyToday)) 千卡")
+            }
+            if let hr = summary.avgRestingHeartRate {
+                lines.append("近7日平均静息心率：\(Int(hr.rounded())) bpm")
+            }
+            if let sleep = summary.avgSleepHours {
+                lines.append("近7日平均睡眠：\(String(format: "%.1f", sleep)) 小时")
+            }
+            if !summary.weeklySteps.isEmpty {
+                let avg = summary.weeklySteps.map(\.steps).reduce(0, +) / max(1, summary.weeklySteps.count)
+                lines.append("近7日平均步数：\(avg) 步")
+            }
+            if !recentCheckIns.isEmpty {
+                lines.append("\n【近期情绪签到（供参考）】")
+                let cal = Calendar.current
+                for c in recentCheckIns.prefix(5) {
+                    let daysAgo = cal.dateComponents([.day], from: c.date, to: .now).day ?? 0
+                    let when = daysAgo == 0 ? "今天" : "\(daysAgo)天前"
+                    let emos = c.emotions.isEmpty ? "未标记" : c.emotions.prefix(3).joined(separator: "、")
+                    lines.append("· \(when)：强度\(c.intensity)/10，情绪：\(emos)")
+                }
+            }
+            lines.append("\n请从身心连接的角度给出分析和觉察建议。")
+
+        case .ja:
+            lines.append("【今日の健康データ】")
+            lines.append("歩数：\(summary.stepsToday) 歩")
+            if summary.activeEnergyToday > 0 {
+                lines.append("活動エネルギー：\(Int(summary.activeEnergyToday)) kcal")
+            }
+            if let hr = summary.avgRestingHeartRate {
+                lines.append("過去7日間の平均安静時心拍数：\(Int(hr.rounded())) bpm")
+            }
+            if let sleep = summary.avgSleepHours {
+                lines.append("過去7日間の平均睡眠：\(String(format: "%.1f", sleep)) 時間")
+            }
+            if !recentCheckIns.isEmpty {
+                lines.append("\n【最近の感情チェックイン（参考）】")
+                let cal = Calendar.current
+                for c in recentCheckIns.prefix(5) {
+                    let daysAgo = cal.dateComponents([.day], from: c.date, to: .now).day ?? 0
+                    let when = daysAgo == 0 ? "今日" : "\(daysAgo)日前"
+                    let emos = c.emotions.isEmpty ? "未ラベル" : c.emotions.prefix(3).joined(separator: "、")
+                    lines.append("· \(when)：強度\(c.intensity)/10、感情：\(emos)")
+                }
+            }
+            lines.append("\n心身つながりの視点から分析と気づき提案をしてください。")
+
+        default:
+            lines.append("[Today's Health Data]")
+            lines.append("Steps: \(summary.stepsToday)")
+            if summary.activeEnergyToday > 0 {
+                lines.append("Active energy: \(Int(summary.activeEnergyToday)) kcal")
+            }
+            if let hr = summary.avgRestingHeartRate {
+                lines.append("7-day avg resting heart rate: \(Int(hr.rounded())) bpm")
+            }
+            if let sleep = summary.avgSleepHours {
+                lines.append("7-day avg sleep: \(String(format: "%.1f", sleep)) hours")
+            }
+            if !summary.weeklySteps.isEmpty {
+                let avg = summary.weeklySteps.map(\.steps).reduce(0, +) / max(1, summary.weeklySteps.count)
+                lines.append("7-day avg steps: \(avg)")
+            }
+            if !recentCheckIns.isEmpty {
+                lines.append("\n[Recent emotional check-ins for context]")
+                let cal = Calendar.current
+                for c in recentCheckIns.prefix(5) {
+                    let daysAgo = cal.dateComponents([.day], from: c.date, to: .now).day ?? 0
+                    let when = daysAgo == 0 ? "today" : "\(daysAgo) day(s) ago"
+                    let emos = c.emotions.isEmpty ? "unlabeled" : c.emotions.prefix(3).joined(separator: ", ")
+                    lines.append("· \(when): intensity \(c.intensity)/10, emotions: \(emos)")
+                }
+            }
+            lines.append("\nProvide a body-awareness analysis and suggestions.")
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
     /// Parses "bodypart:sensation" encoded strings into grouped entries.
     private static func parseBodySensations(_ sensations: [String]) -> (perPart: [(part: String, sensations: [String])], global: [String]) {
         var perPartDict: [(part: String, sensations: [String])] = []

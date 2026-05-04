@@ -11,7 +11,9 @@ struct TodayView: View {
     @State private var showingBrainTrainer = false
     @State private var showingJokeHistory = false
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+    @State private var showingHealth = false
     @Environment(LanguageManager.self) private var lm
+    @State private var healthService = HealthKitService.shared
 
     private var jokeService: JokeService { JokeService.shared }
 
@@ -103,6 +105,10 @@ struct TodayView: View {
                     brainTrainerSection
                         .padding(.horizontal, 20)
 
+                    // Health data entry
+                    healthSection
+                        .padding(.horizontal, 20)
+
                     Spacer(minLength: 40)
                 }
                 .padding(.top, 8)
@@ -135,6 +141,10 @@ struct TodayView: View {
                 DailyJournalEntryView(existing: journalToEdit) {
                     journalToEdit = nil
                 }
+            }
+            .sheet(isPresented: $showingHealth) {
+                HealthInsightView()
+                    .environment(lm)
             }
         }
     }
@@ -249,6 +259,62 @@ struct TodayView: View {
                         Image(systemName: "gearshape.2.fill")
                             .font(.system(size: 20))
                             .foregroundColor(Color.cathierAccent)
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(hint)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(16)
+                .background(Color.cathierSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    // MARK: - Health Section
+
+    private var healthSection: some View {
+        let title: String
+        let hint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "身体数据"
+            hint = healthService.summary.hasAnyData
+                ? "今日 \(healthService.summary.stepsToday.formatted()) 步 · AI健康洞察"
+                : "连接步数、心率、睡眠，读懂身体信号"
+        case .ja:
+            title = "身体データ"
+            hint = healthService.summary.hasAnyData
+                ? "今日 \(healthService.summary.stepsToday.formatted()) 歩 · AI健康インサイト"
+                : "歩数・心拍数・睡眠を連携して身体のシグナルを読み解く"
+        default:
+            title = "Health Data"
+            hint = healthService.summary.hasAnyData
+                ? "\(healthService.summary.stepsToday.formatted()) steps today · AI insights"
+                : "Connect steps, heart rate & sleep for body-awareness insights"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            Button(action: { showingHealth = true }) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.cathierSage.opacity(0.15))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "heart.text.clipboard.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.cathierSage)
                     }
                     VStack(alignment: .leading, spacing: 3) {
                         Text(hint)
