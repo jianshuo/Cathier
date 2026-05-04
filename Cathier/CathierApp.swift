@@ -19,6 +19,7 @@ struct CathierApp: App {
                     .modelContainer(container)
                     .environment(ConfigService.shared)
                     .environment(LanguageManager.shared)
+                    .environment(ThemeManager.shared)
                     .task { checkMilestoneNudge() }
             } else {
                 ProgressView()

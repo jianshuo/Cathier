@@ -10,12 +10,14 @@ struct DailyJournalCard: View {
             // Header row: mood emoji + privacy badge + edit button
             HStack(alignment: .center, spacing: 8) {
                 if let mood = journal.dailyMood {
-                    Text(mood.emoji)
-                        .font(.system(size: 32))
+                    Circle()
+                        .fill(mood.themeColor)
+                        .frame(width: 24, height: 24)
+                        .shadow(color: mood.themeColor.opacity(0.3), radius: 4, y: 2)
                     Text(mood.label(for: lm.currentLanguage))
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(.primary)
+                        .foregroundColor(mood.themeColor)
                 }
                 Spacer()
                 // Privacy badge

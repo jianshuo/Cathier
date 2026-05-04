@@ -51,54 +51,69 @@ struct DailyJournalEntryView: View {
         }
     }
 
-    // MARK: - Mood Picker
+    // MARK: - Mood Picker (4×4 color grid)
 
     private var moodSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 14) {
             Text(lm.journalEntryMoodLabel)
                 .font(.headline)
 
-            HStack(spacing: 0) {
+            LazyVGrid(
+                columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: 4),
+                spacing: 10
+            ) {
                 ForEach(DailyMood.allCases) { mood in
-                    moodButton(mood)
+                    colorMoodButton(mood)
                 }
             }
-            .padding(4)
-            .background(Color(.systemGray6))
-            .cornerRadius(16)
+
+            if let mood = selectedMood {
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(mood.themeColor)
+                        .frame(width: 10, height: 10)
+                    Text(mood.label(for: lm.currentLanguage))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(mood.themeColor)
+                }
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
+                .animation(.easeInOut(duration: 0.2), value: selectedMood)
+            }
         }
     }
 
-    private func moodButton(_ mood: DailyMood) -> some View {
+    private func colorMoodButton(_ mood: DailyMood) -> some View {
         let isSelected = selectedMood == mood
-        return Button(action: { selectedMood = mood }) {
-            VStack(spacing: 4) {
-                Text(mood.emoji)
-                    .font(.system(size: 30))
-                Text(mood.label(for: lm.currentLanguage))
-                    .font(.caption2)
-                    .fontWeight(isSelected ? .semibold : .regular)
-                    .foregroundColor(isSelected ? .primary : .secondary)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.7)
+        return Button {
+            withAnimation(.easeOut(duration: 0.15)) {
+                selectedMood = mood
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 10)
-            .background(
-                isSelected
-                    ? Color.cathierAccentLight
-                    : Color.clear
-            )
-            .cornerRadius(12)
-            .overlay(
-                isSelected
-                    ? RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.cathierAccent.opacity(0.4), lineWidth: 1)
-                    : nil
-            )
+        } label: {
+            ZStack {
+                Circle()
+                    .fill(mood.themeColor)
+                    .shadow(
+                        color: mood.themeColor.opacity(isSelected ? 0.45 : 0.15),
+                        radius: isSelected ? 8 : 3,
+                        y: isSelected ? 3 : 1
+                    )
+                    .scaleEffect(isSelected ? 1.15 : 1.0)
+                    .overlay(
+                        Circle()
+                            .strokeBorder(Color.white.opacity(isSelected ? 0.9 : 0), lineWidth: 2.5)
+                    )
+
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundColor(.white)
+                }
+            }
+            .frame(height: 52)
         }
         .buttonStyle(.plain)
-        .animation(.easeInOut(duration: 0.15), value: selectedMood)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
     }
 
     // MARK: - Gains Input
@@ -125,7 +140,7 @@ struct DailyJournalEntryView: View {
         Toggle(isOn: $isShared) {
             HStack(spacing: 10) {
                 Image(systemName: "person.2.fill")
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(selectedMood?.themeColor ?? .cathierAccent)
                     .frame(width: 20)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lm.journalEntryShareLabel)
@@ -138,10 +153,11 @@ struct DailyJournalEntryView: View {
                 }
             }
         }
-        .tint(.cathierAccent)
+        .tint(selectedMood?.themeColor ?? .cathierAccent)
         .padding(14)
         .background(Color(.secondarySystemBackground))
         .cornerRadius(12)
+        .animation(.easeInOut(duration: 0.2), value: selectedMood)
     }
 
     // MARK: - Save
@@ -156,16 +172,18 @@ struct DailyJournalEntryView: View {
         }
         .background(
             selectedMood != nil
-                ? Color.cathierAccent
+                ? selectedMood!.themeColor
                 : Color.gray.opacity(0.4)
         )
         .cornerRadius(14)
         .disabled(selectedMood == nil)
-        .animation(.easeInOut(duration: 0.2), value: selectedMood != nil)
+        .animation(.easeInOut(duration: 0.2), value: selectedMood)
     }
 
     private func saveEntry() {
         guard let mood = selectedMood else { return }
+
+        ThemeManager.shared.update(to: mood)
 
         if let entry = existing {
             entry.mood = mood.rawValue

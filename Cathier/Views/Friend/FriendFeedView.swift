@@ -521,14 +521,19 @@ struct SharedJournalFeedRow: View {
             Spacer()
 
             if let mood = journal.dailyMood {
-                Text("\(mood.emoji) \(mood.label(for: lm.currentLanguage))")
-                    .font(.caption)
-                    .fontWeight(.medium)
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(Color.cathierAccentLight)
-                    .foregroundColor(Color.cathierAccent)
-                    .clipShape(Capsule())
+                HStack(spacing: 5) {
+                    Circle()
+                        .fill(mood.themeColor)
+                        .frame(width: 8, height: 8)
+                    Text(mood.label(for: lm.currentLanguage))
+                        .font(.caption)
+                        .fontWeight(.medium)
+                        .foregroundColor(mood.themeColor)
+                }
+                .padding(.horizontal, 10)
+                .padding(.vertical, 4)
+                .background(mood.themeColor.opacity(0.12))
+                .clipShape(Capsule())
             }
         }
     }

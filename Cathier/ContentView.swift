@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var friendVM = FriendViewModel()
     @State private var selectedTab = 0
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -25,7 +26,7 @@ struct ContentView: View {
                     .onAppear { t("📱 SettingsView appeared") }
             }
         }
-        .tint(.cathierAccent)
+        .tint(themeManager.accentColor)
         .environment(friendVM)
         .task { await friendVM.initialize() }
     }
