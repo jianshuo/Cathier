@@ -13,6 +13,7 @@ struct AIFeedbackView: View {
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
     @State private var shareAIFeedback: Bool = false
     @State private var showExercise = false
+    @State private var aiFeedbackCopied = false
 
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
 
@@ -383,6 +384,14 @@ struct AIFeedbackView: View {
 
     // MARK: - AI Feedback Card
 
+    private func copyAIFeedback() {
+        UIPasteboard.general.string = viewModel.aiFeedback
+        withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeInOut(duration: 0.2)) { aiFeedbackCopied = false }
+        }
+    }
+
     private var aiFeedbackCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 6) {
@@ -392,6 +401,17 @@ struct AIFeedbackView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
+                if !viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
+                    Button(action: copyAIFeedback) {
+                        Image(systemName: aiFeedbackCopied ? "checkmark" : "doc.on.doc")
+                            .font(.caption)
+                            .foregroundColor(aiFeedbackCopied ? .cathierSage : .secondary)
+                            .frame(width: 28, height: 28)
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityLabel(lm.detailCopyAI)
+                    .animation(.easeInOut(duration: 0.2), value: aiFeedbackCopied)
+                }
                 personaPicker
             }
 
