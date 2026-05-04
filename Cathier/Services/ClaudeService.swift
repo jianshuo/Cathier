@@ -859,4 +859,93 @@ enum ClaudeService {
             return prompt
         }
     }
+
+    // MARK: - Daily Joke
+
+    static func generateDailyJoke(
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> (question: String, punchline: String) {
+        let system: String
+        let user: String
+
+        switch language {
+        case .zh:
+            system = """
+            你是一个专门创作 AI 和大语言模型主题冷笑话的笑话大师。
+            冷笑话特点：出乎意料的结尾、双关语、谐音梗，让人先愣一下再会心一笑。
+            每次只讲一个笑话，格式严格如下（不加任何其他内容）：
+            问：[笑话的问题或铺垫]
+            答：[笑话的答案或反转]
+            笑话必须和 AI、大语言模型、机器学习、提示词工程、AGI、算法等主题相关。
+            """
+            user = "请给我一个今天的 AI 主题冷笑话。"
+        case .ja:
+            system = """
+            あなたはAIと大規模言語モデルをテーマにしたコールドジョークの専門家です。
+            コールドジョークの特徴：意外なオチ、ダジャレ、じわじわくるユーモア。
+            1つだけ、以下の厳密なフォーマットで出力すること（他の内容は一切加えない）：
+            Q：[ジョークの問いかけや前振り]
+            A：[ジョークのオチや逆転]
+            AIや機械学習、LLM、AGIなどのテーマに関連させること。日本語で出力すること。
+            """
+            user = "今日のAIテーマのコールドジョークを1つください。"
+        default:
+            system = """
+            You are a cold joke master specializing in AI and large language model themes.
+            Cold jokes feature unexpected punchlines, wordplay, and dry wit.
+            Generate exactly one joke in this strict format (nothing else):
+            Q: [the setup or question]
+            A: [the punchline or twist]
+            The joke must relate to AI, LLMs, machine learning, prompt engineering, AGI, or algorithms.
+            Output in English.
+            """
+            user = "Give me today's AI-themed cold joke."
+        }
+
+        let raw = try await call(model: feedbackModel, system: system, user: user, maxTokens: 300)
+        return parseJoke(raw, language: language)
+    }
+
+    private static func parseJoke(_ raw: String, language: AppLanguage) -> (question: String, punchline: String) {
+        let lines = raw
+            .components(separatedBy: "\n")
+            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+
+        let qPrefixes: [String]
+        let aPrefixes: [String]
+        switch language {
+        case .zh:
+            qPrefixes = ["问：", "问:"]
+            aPrefixes = ["答：", "答:"]
+        case .ja:
+            qPrefixes = ["Q：", "Q:"]
+            aPrefixes = ["A：", "A:"]
+        default:
+            qPrefixes = ["Q:", "Q："]
+            aPrefixes = ["A:", "A："]
+        }
+
+        var question = ""
+        var punchline = ""
+
+        for line in lines {
+            if question.isEmpty {
+                for prefix in qPrefixes where line.hasPrefix(prefix) {
+                    question = String(line.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+                }
+            }
+            if punchline.isEmpty {
+                for prefix in aPrefixes where line.hasPrefix(prefix) {
+                    punchline = String(line.dropFirst(prefix.count)).trimmingCharacters(in: .whitespaces)
+                }
+            }
+        }
+
+        // Fallback: if parsing fails, use the first two non-empty lines
+        if question.isEmpty, lines.count >= 1 { question = lines[0] }
+        if punchline.isEmpty, lines.count >= 2 { punchline = lines[1] }
+
+        return (question, punchline)
+    }
 }

@@ -9,7 +9,10 @@ struct TodayView: View {
     @State private var journalToEdit: DailyJournal? = nil
     @State private var showingInsights = false
     @State private var showingBrainTrainer = false
+    @State private var showingJokeHistory = false
     @Environment(LanguageManager.self) private var lm
+
+    private var jokeService: JokeService { JokeService.shared }
 
     private var hasNewPatterns: Bool {
         let lastAnalyzed = UserDefaults.standard.integer(forKey: "lastInsightCheckInCount")
@@ -78,6 +81,10 @@ struct TodayView: View {
                     dailyJournalSection
                         .padding(.horizontal, 20)
 
+                    // Daily joke section
+                    dailyJokeSection
+                        .padding(.horizontal, 20)
+
                     // BrainTrainer entry
                     brainTrainerSection
                         .padding(.horizontal, 20)
@@ -92,8 +99,15 @@ struct TodayView: View {
                     NotificationService.shared.clearBadge()
                 }
             }
+            .task(id: "joke") {
+                await jokeService.generateTodayJokeIfNeeded()
+            }
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
+            }
+            .sheet(isPresented: $showingJokeHistory) {
+                JokeHistoryView()
+                    .environment(lm)
             }
             .sheet(isPresented: $showingInsights) {
                 InsightsView()
@@ -109,6 +123,86 @@ struct TodayView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Daily Joke Section
+
+    private var dailyJokeSection: some View {
+        let title: String
+        let loadingHint: String
+        let errorHint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "AI 冷笑话"
+            loadingHint = "正在生成今日笑话…"
+            errorHint = "生成失败，点击重试"
+        case .ja:
+            title = "AI コールドジョーク"
+            loadingHint = "今日のジョークを生成中…"
+            errorHint = "生成に失敗しました。再試行するにはタップ"
+        default:
+            title = "AI Cold Joke"
+            loadingHint = "Generating today's joke…"
+            errorHint = "Generation failed — tap to retry"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            if let joke = jokeService.todayJoke {
+                DailyJokeCard(joke: joke) {
+                    showingJokeHistory = true
+                }
+            } else if jokeService.isGenerating {
+                jokeLoadingCard(hint: loadingHint)
+            } else {
+                jokeRetryCard(hint: jokeService.generateError != nil ? errorHint : loadingHint) {
+                    Task { await jokeService.generateTodayJokeIfNeeded() }
+                }
+            }
+        }
+    }
+
+    private func jokeLoadingCard(hint: String) -> some View {
+        HStack(spacing: 14) {
+            ProgressView()
+                .tint(Color.cathierSage)
+                .frame(width: 48, height: 48)
+            Text(hint)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        .padding(16)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func jokeRetryCard(hint: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(Color.cathierSage.opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    Image(systemName: "cpu.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color.cathierSage)
+                }
+                Text(hint)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                Spacer()
+                Image(systemName: "arrow.clockwise")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(16)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - BrainTrainer Section
