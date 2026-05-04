@@ -5,6 +5,7 @@ struct CheckInDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(LanguageManager.self) private var lm
     @Environment(FriendViewModel.self) private var friendVM
+    @Query(sort: \CheckIn.date, order: .reverse) private var allCheckIns: [CheckIn]
     @State private var isBusy = false
     @State private var shareError: String?
     @State private var aiFeedbackCopied = false
@@ -89,7 +90,9 @@ struct CheckInDetailView: View {
                                 ForEach(checkIn.emotions, id: \.self) { emotion in
                                     let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                                     let emoji = EmotionData.emoji(for: emotion)
-                                    chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)", color: color)
+                                    chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)",
+                                         color: color,
+                                         count: emotionFrequency[emotion])
                                 }
                             }
                         }
@@ -349,14 +352,31 @@ struct CheckInDetailView: View {
         .cornerRadius(14)
     }
 
-    private func chip(_ label: String, color: Color) -> some View {
-        Text(label)
-            .font(.subheadline)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(color.opacity(0.12))
-            .foregroundColor(color)
-            .clipShape(Capsule())
+    private func chip(_ label: String, color: Color, count: Int? = nil) -> some View {
+        HStack(spacing: 4) {
+            Text(label)
+            if let count, count > 1 {
+                Text("×\(count)")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(color.opacity(0.65))
+            }
+        }
+        .font(.subheadline)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(color.opacity(0.12))
+        .foregroundColor(color)
+        .clipShape(Capsule())
+    }
+
+    /// Count of times each emotion was recorded in the last 30 days, across all check-ins.
+    private var emotionFrequency: [String: Int] {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        var counts: [String: Int] = [:]
+        for ci in allCheckIns where ci.date >= cutoff {
+            for emotion in ci.emotions { counts[emotion, default: 0] += 1 }
+        }
+        return counts
     }
 
     private var dateString: String {
