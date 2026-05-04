@@ -30,5 +30,7 @@
 	</array>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Cathier reads your steps, heart rate, sleep, and activity data to provide AI-powered health insights that connect your physical state to your emotional awareness practice.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Cathier does not write to HealthKit. This entry is required by Apple's submission validator because the app links the HealthKit framework.</string>
 </dict>
 </plist>
