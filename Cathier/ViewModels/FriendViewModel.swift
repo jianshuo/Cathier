@@ -55,9 +55,9 @@ final class FriendViewModel {
         await initialize()
     }
 
-    func initialize() async {
+    func initialize(retryCount: Int = 0) async {
         guard case .loading = accountState else { return }
-        t("FriendVM.initialize() — START")
+        t("FriendVM.initialize() — START (attempt \(retryCount + 1))")
         do {
             t("ck.accountStatus() — START")
             let status = try await ck.accountStatus()
@@ -82,6 +82,20 @@ final class FriendViewModel {
             }
         } catch {
             t("FriendVM.initialize() — ERROR: \(error)")
+
+            // On first launch the network stack may not be ready immediately after
+            // the user grants network permissions. Auto-retry a couple of times with
+            // a short delay before surfacing the error, so users never see a spurious
+            // "no network" screen just because the OS hasn't handed us the connection yet.
+            if let ckError = error as? CKError,
+               (ckError.code == .networkUnavailable || ckError.code == .networkFailure),
+               retryCount < 2 {
+                t("FriendVM.initialize() — network transient, retrying in 1.5s…")
+                try? await Task.sleep(for: .seconds(1.5))
+                await initialize(retryCount: retryCount + 1)
+                return
+            }
+
             let message: String
             if let ckError = error as? CKError {
                 switch ckError.code {
