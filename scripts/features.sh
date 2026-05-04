@@ -146,9 +146,11 @@ cmd_merge() {
         fi
     fi
 
-    # Pick a subject for the squash commit: prefer the branch tip's first-line subject.
+    # Pick a subject: prefer the OLDEST commit on the branch not yet on main
+    # (the feature commit), falling back to the branch tip if there's just one.
     local subject
-    subject=$(git log -1 --format=%s "$ref")
+    subject=$(git log "$ref" --not "$MAIN_BRANCH" --format=%s --reverse | head -1)
+    [ -z "$subject" ] && subject=$(git log -1 --format=%s "$ref")
 
     git merge --squash "$ref"
     if git diff --cached --quiet; then
