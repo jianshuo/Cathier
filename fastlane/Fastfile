@@ -41,8 +41,9 @@ platform :ios do
     end
   end
 
-  # Shared signing + build helper to avoid duplication between lanes.
-  def sign_and_build(api_key:)
+  # Shared signing + build helper. Caller provides the build number so the
+  # lane can also use it (e.g. to decide whether to auto-release).
+  def sign_and_build(api_key:, build_num:)
     match(
       type: "appstore",
       readonly: true,
@@ -50,7 +51,6 @@ platform :ios do
       api_key: api_key
     )
 
-    build_num = next_build_number(api_key: api_key)
     increment_build_number(build_number: build_num)
     UI.message("Build number set to #{build_num}")
 
@@ -64,11 +64,43 @@ platform :ios do
         }
       }
     )
-
-    build_num
   end
 
-  desc "Build and upload to TestFlight"
+  # Bump marketing version decimal-style: 1.9 → 2.0, 2.9 → 3.0.
+  # Minor cycles 0..9, then major increments and minor resets.
+  # Returns the new version string.
+  def bump_marketing_version
+    current = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
+    parts = current.split(".")
+    major = parts[0].to_i
+    minor = (parts[1] || "0").to_i
+    minor += 1
+    if minor > 9
+      major += 1
+      minor = 0
+    end
+    new_version = "#{major}.#{minor}"
+    increment_version_number(version_number: new_version, xcodeproj: "Cathier.xcodeproj")
+    UI.success("Marketing version bumped: #{current} → #{new_version}")
+    new_version
+  end
+
+  # Commit the bumped version (and resulting build number) back to main.
+  # Uses the FEEDBACK_PAT-authenticated remote that actions/checkout set up.
+  # [skip ci] in the message prevents the push from re-triggering Build & Deploy.
+  def commit_and_push_version_bump(version:, build_num:)
+    sh("git config user.email 'github-actions[bot]@users.noreply.github.com'")
+    sh("git config user.name 'github-actions[bot]'")
+    # Only commit project file. Info.plist has injected secrets at this
+    # point (Azure key, GitHub PAT) and must NOT be committed.
+    sh("git add Cathier.xcodeproj/project.pbxproj")
+    sh("git commit -m 'chore: bump to #{version} (build #{build_num}) [skip ci]' || echo 'nothing to commit'")
+    sh("git push origin HEAD:main")
+  end
+
+  desc "Build and upload to TestFlight."
+  desc "If the build number ends in 0 (every 10 builds), also bump the marketing"
+  desc "version (1.9 → 2.0) and submit to App Store review."
   lane :beta do
     setup_ci
 
@@ -81,32 +113,65 @@ platform :ios do
       in_house:              false
     )
 
-    build_num = sign_and_build(api_key: api_key)
+    build_num = next_build_number(api_key: api_key)
+    is_release = (build_num % 10 == 0)
 
-    # Build "What to Test" from recent commits so testers know what changed.
-    # Uses the last TestFlight tag as anchor; falls back to last 10 commits.
-    last_tag = `git describe --tags --abbrev=0 2>/dev/null`.strip
-    if last_tag.empty?
-      commits = `git log -10 --pretty=format:"• %s"`.strip
-    else
-      commits = `git log #{last_tag}..HEAD --pretty=format:"• %s"`.strip
+    new_version = nil
+    if is_release
+      new_version = bump_marketing_version
+      UI.message("Build #{build_num} ends in 0 — auto-releasing as version #{new_version}.")
     end
-    commits = "• No notable changes" if commits.empty?
 
-    changelog = "Build #{build_num}\n\n" \
-                "What changed:\n#{commits}\n\n" \
-                "Please test the above and report any issues. 🙏"
+    sign_and_build(api_key: api_key, build_num: build_num)
 
-    upload_to_testflight(
-      api_key:                           api_key,
-      skip_waiting_for_build_processing: false,
-      distribute_external:               false,
-      notify_external_testers:           false,
-      changelog:                         changelog
-    )
+    if is_release
+      # Auto-release path: submit this build to App Store review.
+      guard_not_in_review
 
-    # Tag this build so the next run knows where to start the commit log.
-    sh("git tag testflight/#{build_num} || true")
+      upload_to_app_store(
+        api_key:                    api_key,
+        skip_metadata:              true,
+        skip_screenshots:           true,
+        submit_for_review:          true,
+        automatic_release:          true,
+        reject_if_possible:         true,
+        run_precheck_before_submit: false,
+        submission_information: {
+          add_id_info_uses_idfa:             false,
+          export_compliance_uses_encryption: false,
+        }
+      )
+
+      # Persist the version bump back to main so source reflects what shipped.
+      commit_and_push_version_bump(version: new_version, build_num: build_num)
+
+      sh("git tag release/#{new_version} || true")
+      sh("git push origin release/#{new_version} || true")
+    else
+      # Regular TestFlight upload.
+      last_tag = `git describe --tags --abbrev=0 2>/dev/null`.strip
+      if last_tag.empty?
+        commits = `git log -10 --pretty=format:"• %s"`.strip
+      else
+        commits = `git log #{last_tag}..HEAD --pretty=format:"• %s"`.strip
+      end
+      commits = "• No notable changes" if commits.empty?
+
+      changelog = "Build #{build_num}\n\n" \
+                  "What changed:\n#{commits}\n\n" \
+                  "Please test the above and report any issues. 🙏"
+
+      upload_to_testflight(
+        api_key:                           api_key,
+        skip_waiting_for_build_processing: false,
+        distribute_external:               false,
+        notify_external_testers:           false,
+        changelog:                         changelog
+      )
+
+      # Tag this build so the next run knows where to start the commit log.
+      sh("git tag testflight/#{build_num} || true")
+    end
   end
 
   desc "Build, upload to TestFlight, and submit for App Store review"
@@ -122,7 +187,8 @@ platform :ios do
       in_house:              false
     )
 
-    sign_and_build(api_key: api_key)
+    build_num = next_build_number(api_key: api_key)
+    sign_and_build(api_key: api_key, build_num: build_num)
 
     guard_not_in_review
 
