@@ -55,7 +55,7 @@ Use it for moments that should feel like reading a journal entry — not for UI 
 ## Color
 
 ### Approach
-Restrained — one bright energetic accent (green) + warm neutrals. Color is rare and meaningful. The warm off-white background is a deliberate departure from the pure-white iOS default — it makes the app feel analog, physical, present.
+Restrained — one bright energetic accent (orange) + warm neutrals. Color is rare and meaningful. The warm off-white background is a deliberate departure from the pure-white iOS default — it makes the app feel analog, physical, present.
 
 ### Light Mode Palette
 ```
@@ -67,9 +67,9 @@ Text Primary:    #1A1613  — near-black, warm undertone
 Text Secondary:  #5C5650  — secondary text
 Text Muted:      #8A837A  — timestamps, captions, placeholders
 
-Accent:          #3D8B5B  — forest green. Primary brand color. Used sparingly.
-Accent Light:    #D0EDDA  — green tint. Chip backgrounds, AI card header.
-Accent Hover:    #2D6B47  — pressed/hover state for green elements.
+Accent:          #F2700A  — bright orange. Primary brand color. Used sparingly.
+Accent Light:    #FEEBD8  — orange tint. Chip backgrounds, AI card header.
+Accent Hover:    #D96308  — pressed/hover state for orange elements.
 
 Sage:            #6B8F71  — secondary accent. Positive states, friend features, growth.
 Sage Light:      #E0EDE2  — sage tint. Shared check-ins, positive chips.
@@ -90,8 +90,8 @@ Text Primary:    #F0EDE8
 Text Secondary:  #B5AFA9
 Text Muted:      #7A736D
 
-Accent:          #57A874  — slightly lighter green for dark backgrounds
-Accent Light:    #193D25
+Accent:          #F5861A  — slightly lighter orange for dark backgrounds
+Accent Light:    #3D2210
 Sage:            #7DA384
 Sage Light:      #1E2E20
 ```
@@ -106,9 +106,9 @@ Sage Light:      #1E2E20
 | `--text-primary` | #1A1613 | #F0EDE8 | Primary text |
 | `--text-secondary` | #5C5650 | #B5AFA9 | Secondary text |
 | `--text-muted` | #8A837A | #7A736D | Timestamps, placeholders |
-| `--accent` | #3D8B5B | #57A874 | Primary brand (green) |
-| `--accent-light` | #D0EDDA | #193D25 | Green tint backgrounds |
-| `--accent-hover` | #2D6B47 | — | Pressed/hover state |
+| `--accent` | #F2700A | #F5861A | Primary brand (orange) |
+| `--accent-light` | #FEEBD8 | #3D2210 | Orange tint backgrounds |
+| `--accent-hover` | #D96308 | — | Pressed/hover state |
 | `--sage` | #6B8F71 | #7DA384 | Secondary accent (green) |
 | `--sage-light` | #E0EDE2 | #1E2E20 | Sage tint backgrounds |
 
@@ -620,4 +620,3 @@ Never do these in Cathier UI:
 | 2026-04-10 | 觉察词典 as 3-tab dictionary | Single entry point for emotions (79), sensations (65), and body parts (24). Segmented picker, not separate screens. Extensible for future content. |
 | 2026-04-10 | Separate dictionary.json from emotion_config.json | Keep emotion_config.json small (~30KB) for fast app launch. dictionary.json (~285KB) loaded on demand for the explorer. |
 | 2026-04-10 | Per-person card tint in friend feed | 5-color warm palette deterministically assigned by CloudKit record hash. Visually distinguishes friends without requiring avatars. |
-| 2026-05-03 | Changed primary accent from orange (#F2700A) to green (#3D8B5B) | User request to shift brand identity to green. Forest green maintains the warm, grounded aesthetic while bringing a nature/growth tone. Sage (#6B8F71) remains as secondary accent for friend/positive states. |
