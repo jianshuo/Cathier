@@ -173,6 +173,8 @@
 "about.privacy_title" = "プライバシー優先";
 "about.privacy_detail" = "データはデバイスに保存されます。AIフィードバックはあなた自身のAPIキーを通じて処理され、サードパーティのサーバーを経由しません。";
 "about.copyright_label" = "著作権";
+"about.testflight_title" = "TestFlight ベータに参加";
+"about.testflight_subtitle" = "新機能をいち早く試す";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "今日の気持ちと収穫";

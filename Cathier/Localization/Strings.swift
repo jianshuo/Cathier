@@ -175,6 +175,8 @@ extension LanguageManager {
     var aboutPrivacyTitle: String  { localized("about.privacy_title") }
     var aboutPrivacyDetail: String { localized("about.privacy_detail") }
     var aboutCopyrightLabel: String { localized("about.copyright_label") }
+    var aboutTestFlightTitle: String    { localized("about.testflight_title") }
+    var aboutTestFlightSubtitle: String { localized("about.testflight_subtitle") }
 
     // MARK: DailyJournalEntryView
     var journalEntryNavTitle: String         { localized("journal_entry.nav_title") }

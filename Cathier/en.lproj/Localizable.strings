@@ -173,6 +173,8 @@
 "about.privacy_title" = "Privacy First";
 "about.privacy_detail" = "Your data stays on-device. AI feedback is processed through your own API key, never through third-party servers.";
 "about.copyright_label" = "Copyright";
+"about.testflight_title" = "Join the TestFlight beta";
+"about.testflight_subtitle" = "Get early access to new features";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Today's Journal";

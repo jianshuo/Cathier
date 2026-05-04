@@ -173,6 +173,8 @@
 "about.privacy_title" = "隐私设计";
 "about.privacy_detail" = "数据存储在设备本地，AI 反馈通过你的 API 密钥处理，不经过第三方服务器。";
 "about.copyright_label" = "版权所有";
+"about.testflight_title" = "加入 TestFlight 测试";
+"about.testflight_subtitle" = "抢先体验新功能";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "今日心情与收获";
