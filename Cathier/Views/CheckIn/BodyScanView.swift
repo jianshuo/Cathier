@@ -167,7 +167,7 @@ private struct IntensitySlider: View {
     let intenseLabel: String
 
     private let gradient = LinearGradient(
-        colors: [.yellow, .orange, .cathierAccent, .red],
+        colors: [.yellow, .orange, .red],
         startPoint: .leading,
         endPoint: .trailing
     )
