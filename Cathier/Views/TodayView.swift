@@ -596,37 +596,40 @@ struct TodayView: View {
                 : "7-day · \(snapshot.checkInCount) entries"
 
         return Button(action: { showingInsights = true }) {
-            HStack(spacing: 14) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(countLabel)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    HStack(alignment: .firstTextBaseline, spacing: 4) {
-                        Text(avgText)
-                            .font(.system(.title2, design: .monospaced))
-                            .fontWeight(.semibold)
-                            .foregroundColor(.primary)
-                        Text("/10")
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 14) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(countLabel)
                             .font(.caption)
                             .foregroundColor(.secondary)
-                        Text(lm.currentLanguage == .zh ? "平均强度" : lm.currentLanguage == .ja ? "平均強度" : "avg intensity")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                        HStack(alignment: .firstTextBaseline, spacing: 4) {
+                            Text(avgText)
+                                .font(.system(.title2, design: .monospaced))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                            Text("/10")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text(lm.currentLanguage == .zh ? "平均强度" : lm.currentLanguage == .ja ? "平均強度" : "avg intensity")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
                     }
+                    Spacer()
+                    HStack(spacing: 4) {
+                        Image(systemName: trendIcon)
+                            .font(.subheadline)
+                            .foregroundColor(trendColor)
+                        Text(trendText)
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(trendColor)
+                    }
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                        .foregroundColor(.secondary)
                 }
-                Spacer()
-                HStack(spacing: 4) {
-                    Image(systemName: trendIcon)
-                        .font(.subheadline)
-                        .foregroundColor(trendColor)
-                    Text(trendText)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .foregroundColor(trendColor)
-                }
-                Image(systemName: "chevron.right")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                WeeklySparkline(checkIns: Array(checkIns))
             }
             .padding(14)
             .background(Color.cathierSurface)
@@ -781,6 +784,54 @@ private struct WeeklyPracticeRow: View {
         case .zh: return ["日", "一", "二", "三", "四", "五", "六"][weekday - 1]
         case .ja: return ["日", "月", "火", "水", "木", "金", "土"][weekday - 1]
         default:  return ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"][weekday - 1]
+        }
+    }
+}
+
+// MARK: - Weekly Sparkline
+
+private struct WeeklySparkline: View {
+    let checkIns: [CheckIn]
+
+    private let barMaxHeight: CGFloat = 20
+    private let barWidth: CGFloat = 10
+
+    private var dayAverages: [Double?] {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+        return (0..<7).reversed().map { offset in
+            let dayStart = cal.date(byAdding: .day, value: -offset, to: today)!
+            let dayEnd = cal.date(byAdding: .day, value: 1, to: dayStart)!
+            let dayCheckIns = checkIns.filter { $0.date >= dayStart && $0.date < dayEnd }
+            guard !dayCheckIns.isEmpty else { return nil }
+            return Double(dayCheckIns.map(\.intensity).reduce(0, +)) / Double(dayCheckIns.count)
+        }
+    }
+
+    var body: some View {
+        HStack(alignment: .bottom, spacing: 4) {
+            ForEach(Array(dayAverages.enumerated()), id: \.offset) { _, avg in
+                if let avg {
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(barColor(avg))
+                        .frame(width: barWidth, height: max(3, barMaxHeight * CGFloat(avg) / 10.0))
+                } else {
+                    RoundedRectangle(cornerRadius: 2, style: .continuous)
+                        .fill(Color.secondary.opacity(0.15))
+                        .frame(width: barWidth, height: 3)
+                }
+            }
+            Spacer()
+        }
+        .frame(height: barMaxHeight)
+        .accessibilityHidden(true)
+    }
+
+    private func barColor(_ intensity: Double) -> Color {
+        switch intensity {
+        case ..<4: return .yellow
+        case ..<7: return .cathierAccent
+        default:   return .red
         }
     }
 }
