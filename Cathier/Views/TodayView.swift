@@ -12,6 +12,7 @@ struct TodayView: View {
     @State private var showingJokeHistory = false
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
     @AppStorage("lastCelebratedStreakMilestone") private var lastCelebratedStreakMilestone: Int = 0
+    @AppStorage("personalBestStreak") private var personalBestStreak: Int = 0
     @State private var showingHealth = false
     @State private var dismissedMilestone: Int = 0
     @Environment(LanguageManager.self) private var lm
@@ -136,6 +137,14 @@ struct TodayView: View {
             .onAppear {
                 if !todayCheckIns.isEmpty {
                     NotificationService.shared.clearBadge()
+                }
+                if streakDays > personalBestStreak {
+                    personalBestStreak = streakDays
+                }
+            }
+            .onChange(of: streakDays) { _, newValue in
+                if newValue > personalBestStreak {
+                    personalBestStreak = newValue
                 }
             }
             .task(id: "joke") {
@@ -480,11 +489,25 @@ struct TodayView: View {
             Text(lm.streakLabel)
                 .font(.caption2)
                 .foregroundColor(.secondary)
+            if personalBestStreak > streakDays {
+                Text(personalBestText)
+                    .font(.caption2)
+                    .foregroundColor(.secondary.opacity(0.6))
+                    .padding(.top, 1)
+            }
         }
         .frame(width: 56)
         .padding(.vertical, 10)
         .background(Color.cathierAccentLight)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    private var personalBestText: String {
+        switch lm.currentLanguage {
+        case .zh: return "最佳\(personalBestStreak)"
+        case .ja: return "最高\(personalBestStreak)"
+        default:   return "Best\(personalBestStreak)"
+        }
     }
 
     private var weeklyTopEmotions: [(emotion: String, count: Int)] {
