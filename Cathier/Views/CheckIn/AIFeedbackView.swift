@@ -10,10 +10,10 @@ struct AIFeedbackView: View {
 
     // Persist last chosen tier; "none" = don't share, defaults to "full"
     @AppStorage("lastShareTierRaw") private var lastShareTierRaw: String = FriendCheckIn.PrivacyTier.full.rawValue
+    @AppStorage("lastPlazaTierRaw") private var lastPlazaTierRaw: String = "none"
     @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
+    @State private var selectedPlazaTier: FriendCheckIn.PrivacyTier? = nil
     @State private var shareAIFeedback: Bool = false
-    @State private var shareToPlaza: Bool = false
-    @State private var plazaTier: FriendCheckIn.PrivacyTier = .emotions
     @State private var showExercise = false
     @State private var aiFeedbackCopied = false
     @State private var isSavingPlaza = false
@@ -82,9 +82,13 @@ struct AIFeedbackView: View {
         }
         .onAppear {
             selectedTier = FriendCheckIn.PrivacyTier(rawValue: lastShareTierRaw)
+            selectedPlazaTier = FriendCheckIn.PrivacyTier(rawValue: lastPlazaTierRaw)
         }
         .onChange(of: selectedTier) { _, newTier in
             lastShareTierRaw = newTier?.rawValue ?? "none"
+        }
+        .onChange(of: selectedPlazaTier) { _, newTier in
+            lastPlazaTierRaw = newTier?.rawValue ?? "none"
         }
         .task {
             if viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
@@ -118,7 +122,7 @@ struct AIFeedbackView: View {
             HStack(spacing: 10) {
                 Image(systemName: "wind")
                     .font(.subheadline)
-                    .foregroundColor(.cathierSage)
+                    .foregroundColor(.cathierAccent)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lm.exerciseTryThis)
                         .font(.subheadline)
@@ -134,7 +138,7 @@ struct AIFeedbackView: View {
                     .foregroundColor(.secondary)
             }
             .padding(14)
-            .background(Color.cathierSageLight)
+            .background(Color.cathierAccentLight)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -252,68 +256,50 @@ struct AIFeedbackView: View {
             HStack(spacing: 6) {
                 Image(systemName: "person.3.fill")
                     .font(.caption)
-                    .foregroundColor(.cathierSage)
+                    .foregroundColor(.cathierAccent)
                 Text(lm.plazaShareSectionTitle)
                     .font(.subheadline)
                     .fontWeight(.medium)
             }
 
-            VStack(spacing: 0) {
-                Toggle(isOn: $shareToPlaza) {
-                    HStack(spacing: 12) {
-                        Image(systemName: "globe.asia.australia.fill")
-                            .foregroundColor(.cathierSage)
-                            .frame(width: 20)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(lm.plazaShareToggle)
-                                .font(.subheadline)
-                                .foregroundColor(.primary)
-                            Text(lm.plazaShareDesc)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+            VStack(spacing: 8) {
+                // Not sharing option
+                plazaTierRow(label: lm.aiDontShare, description: lm.aiOnlySelf, icon: "lock.fill", tier: nil)
+                Divider()
+                ForEach(FriendCheckIn.PrivacyTier.allCases) { tier in
+                    plazaTierRow(label: tierDisplayName(tier), description: plazaTierDescription(tier),
+                                 icon: tierIcon(tier), tier: tier)
+                    if tier != FriendCheckIn.PrivacyTier.allCases.last {
+                        Divider()
                     }
                 }
-                .tint(.cathierSage)
-                .padding(12)
-
-                if shareToPlaza {
-                    Divider().padding(.horizontal, 12)
-                    plazaTierPicker.padding(12)
-                }
             }
-            .background(Color.cathierSageLight)
+            .padding(12)
+            .background(Color.cathierSurface)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
 
-    private var plazaTierPicker: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            ForEach(FriendCheckIn.PrivacyTier.allCases) { tier in
-                plazaTierRow(tier)
-                if tier != FriendCheckIn.PrivacyTier.allCases.last {
-                    Divider()
-                }
-            }
-        }
-    }
-
-    private func plazaTierRow(_ tier: FriendCheckIn.PrivacyTier) -> some View {
-        let isSelected = plazaTier == tier
-        return Button(action: { plazaTier = tier }) {
+    private func plazaTierRow(label: String, description: String, icon: String,
+                              tier: FriendCheckIn.PrivacyTier?) -> some View {
+        let isSelected = selectedPlazaTier == tier
+        return Button(action: { selectedPlazaTier = tier }) {
             HStack(spacing: 12) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .cathierSage : .secondary)
+                    .foregroundColor(isSelected ? .cathierAccent : .secondary)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(tierDisplayName(tier))
+                    Text(label)
                         .font(.subheadline)
                         .fontWeight(isSelected ? .medium : .regular)
                         .foregroundColor(.primary)
-                    Text(plazaTierDescription(tier))
+                    Text(description)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
                 Spacer()
+                Image(systemName: icon)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
         .buttonStyle(.plain)
@@ -367,7 +353,7 @@ struct AIFeedbackView: View {
             let includeAI = tier == .full ? false : shareAIFeedback
             Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: includeAI) }
         }
-        guard shareToPlaza, let profile = friendVM.currentProfile else {
+        guard let plazaTier = selectedPlazaTier, let profile = friendVM.currentProfile else {
             onDismiss()
             return
         }
@@ -533,7 +519,7 @@ struct AIFeedbackView: View {
                     Button(action: copyAIFeedback) {
                         Image(systemName: aiFeedbackCopied ? "checkmark" : "doc.on.doc")
                             .font(.caption)
-                            .foregroundColor(aiFeedbackCopied ? .cathierSage : .secondary)
+                            .foregroundColor(aiFeedbackCopied ? .cathierAccent : .secondary)
                             .frame(width: 28, height: 28)
                     }
                     .buttonStyle(.plain)
@@ -610,9 +596,9 @@ struct StructuredFeedbackView: View {
             Divider().padding(.leading, 26)
             feedbackRow(icon: "sparkles", titleKey: "insight", content: feedback.insight, color: .cathierAccent)
             Divider().padding(.leading, 26)
-            feedbackRow(icon: "figure.mind.and.body", titleKey: "connection", content: feedback.connection, color: .cathierSage)
+            feedbackRow(icon: "figure.mind.and.body", titleKey: "connection", content: feedback.connection, color: .cathierAccent)
             Divider().padding(.leading, 26)
-            feedbackRow(icon: "lightbulb", titleKey: "suggestion", content: feedback.suggestion, color: .cathierSage)
+            feedbackRow(icon: "lightbulb", titleKey: "suggestion", content: feedback.suggestion, color: .cathierAccent)
         }
     }
 

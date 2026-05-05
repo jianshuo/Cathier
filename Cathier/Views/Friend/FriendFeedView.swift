@@ -340,8 +340,8 @@ struct FriendCheckInCard: View {
         FlowLayout(spacing: 6) {
             ForEach(visibleEmotions, id: \.self) { label in
                 let color: Color = (item.privacyTier == .category)
-                    ? .cathierSage
-                    : EmotionData.category(for: label)?.color ?? .cathierSage
+                    ? .cathierAccent
+                    : EmotionData.category(for: label)?.color ?? .cathierAccent
                 Text(lm.display(label))
                     .font(.caption)
                     .fontWeight(.medium)
@@ -374,7 +374,7 @@ struct FriendCheckInCard: View {
                     if part == item.bodyParts.first {
                         Image(systemName: "figure.stand")
                             .font(.caption2)
-                            .foregroundColor(.cathierSage)
+                            .foregroundColor(.cathierAccent)
                             .frame(width: 12)
                     } else {
                         Spacer()
@@ -386,12 +386,12 @@ struct FriendCheckInCard: View {
                         Text(partName)
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(.cathierSage)
+                            .foregroundColor(.cathierAccent)
                     } else {
                         (Text(partName)
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundColor(.cathierSage)
+                            .foregroundColor(.cathierAccent)
                         + Text("  " + sensations.map { lm.display($0) }.joined(separator: " · "))
                             .font(.caption)
                             .foregroundColor(.secondary))
