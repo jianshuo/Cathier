@@ -29,7 +29,7 @@ struct JokeHistoryView: View {
         VStack(spacing: 16) {
             Image(systemName: "cpu.fill")
                 .font(.system(size: 48))
-                .foregroundColor(Color.cathierSage.opacity(0.4))
+                .foregroundColor(Color.cathierAccent.opacity(0.4))
             Text(emptyLabel)
                 .font(.headline)
                 .foregroundColor(.secondary)
@@ -88,7 +88,7 @@ private struct JokeHistoryRow: View {
                 .foregroundColor(.primary)
             Text(joke.punchline)
                 .font(.cathierSerif(.body, italic: true))
-                .foregroundColor(Color.cathierSage)
+                .foregroundColor(Color.cathierAccent)
         }
         .padding(.vertical, 4)
     }

@@ -52,7 +52,7 @@ struct CheckInCard: View {
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: showCopied ? "checkmark" : "sparkles")
                             .font(.caption2)
-                            .foregroundColor(showCopied ? .cathierSage : .cathierAccent)
+                            .foregroundColor(showCopied ? .cathierAccent : .cathierAccent)
                             .padding(.top, 2)
                             .animation(.easeOut(duration: 0.1), value: showCopied)
                         Text(StructuredFeedback.parse(checkIn.aiFeedback)?.previewText ?? checkIn.aiFeedback)

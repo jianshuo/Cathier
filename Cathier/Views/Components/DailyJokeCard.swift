@@ -22,7 +22,7 @@ struct DailyJokeCard: View {
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.cathierSage.opacity(0.25), lineWidth: 1)
+                .stroke(Color.cathierAccent.opacity(0.25), lineWidth: 1)
         )
     }
 
@@ -30,12 +30,12 @@ struct DailyJokeCard: View {
         HStack {
             HStack(spacing: 6) {
                 Circle()
-                    .fill(Color.cathierSage)
+                    .fill(Color.cathierAccent)
                     .frame(width: 6, height: 6)
                 Text(headerTitle)
                     .font(.caption2)
                     .fontWeight(.semibold)
-                    .foregroundColor(Color.cathierSage)
+                    .foregroundColor(Color.cathierAccent)
                     .textCase(.uppercase)
                     .tracking(0.5)
             }
@@ -43,12 +43,12 @@ struct DailyJokeCard: View {
             Button(action: onShowHistory) {
                 Text(historyLabel)
                     .font(.caption)
-                    .foregroundColor(Color.cathierSage)
+                    .foregroundColor(Color.cathierAccent)
             }
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(Color.cathierSageLight)
+        .background(Color.cathierAccentLight)
     }
 
     private var content: some View {
@@ -61,17 +61,17 @@ struct DailyJokeCard: View {
             if showPunchline {
                 Text(joke.punchline)
                     .font(.cathierSerif(.body, italic: true))
-                    .foregroundColor(Color.cathierSage)
+                    .foregroundColor(Color.cathierAccent)
                     .fixedSize(horizontal: false, vertical: true)
                     .transition(.opacity.combined(with: .move(edge: .bottom)))
             } else {
                 Button(action: revealPunchline) {
                     Text(revealLabel)
                         .font(.caption)
-                        .foregroundColor(Color.cathierSage)
+                        .foregroundColor(Color.cathierAccent)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.cathierSageLight)
+                        .background(Color.cathierAccentLight)
                         .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)

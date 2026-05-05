@@ -150,8 +150,8 @@ struct EmotionExplorerView: View {
                             .font(.subheadline)
                             .padding(.horizontal, 14)
                             .padding(.vertical, 8)
-                            .background(Color.cathierSage.opacity(0.1))
-                            .foregroundStyle(.cathierSage)
+                            .background(Color.cathierAccent.opacity(0.1))
+                            .foregroundStyle(.cathierAccent)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -358,7 +358,7 @@ struct EmotionDictionarySheet: View {
 struct SensationDictionarySheet: View {
     let entry: DictionaryEntry
     @Environment(\.dismiss) private var dismiss
-    private let color: Color = .cathierSage
+    private let color: Color = .cathierAccent
 
     var body: some View {
         NavigationStack {
@@ -461,7 +461,7 @@ struct BodyPartDictionarySheet: View {
                         if let v = entry.description, !v.isEmpty { SheetSection(icon: "text.quote", title: "简介", color: color) { serifText(v) } }
                         if let v = entry.howToLocate, !v.isEmpty { SheetSection(icon: "location.magnifyingglass", title: "如何找到", color: color) { serifText(v) } }
                         if let sens = entry.commonSensations, !sens.isEmpty {
-                            SheetSection(icon: "hand.point.up.braille", title: "常见感受", color: color) { chipList(sens, color: .cathierSage) }
+                            SheetSection(icon: "hand.point.up.braille", title: "常见感受", color: color) { chipList(sens, color: .cathierAccent) }
                         }
                         if let v = entry.emotionalConnection, !v.isEmpty { SheetSection(icon: "heart", title: "情绪关联", color: color) { serifText(v) } }
                         if let v = entry.awarenessGuide, !v.isEmpty { SheetSection(icon: "eye", title: "觉察练习", color: color) { serifText(v) } }

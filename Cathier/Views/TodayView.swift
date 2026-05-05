@@ -191,7 +191,7 @@ struct TodayView: View {
     private func jokeLoadingCard(hint: String) -> some View {
         HStack(spacing: 14) {
             ProgressView()
-                .tint(Color.cathierSage)
+                .tint(Color.cathierAccent)
                 .frame(width: 48, height: 48)
             Text(hint)
                 .font(.subheadline)
@@ -208,11 +208,11 @@ struct TodayView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color.cathierSage.opacity(0.15))
+                        .fill(Color.cathierAccent.opacity(0.15))
                         .frame(width: 48, height: 48)
                     Image(systemName: "cpu.fill")
                         .font(.system(size: 20))
-                        .foregroundColor(Color.cathierSage)
+                        .foregroundColor(Color.cathierAccent)
                 }
                 Text(hint)
                     .font(.subheadline)
@@ -310,11 +310,11 @@ struct TodayView: View {
                 HStack(spacing: 14) {
                     ZStack {
                         Circle()
-                            .fill(Color.cathierSage.opacity(0.15))
+                            .fill(Color.cathierAccent.opacity(0.15))
                             .frame(width: 48, height: 48)
                         Image(systemName: "heart.text.clipboard.fill")
                             .font(.system(size: 20))
-                            .foregroundColor(Color.cathierSage)
+                            .foregroundColor(Color.cathierAccent)
                     }
                     VStack(alignment: .leading, spacing: 3) {
                         Text(hint)
@@ -580,7 +580,7 @@ struct TodayView: View {
             trendText = lm.currentLanguage == .zh ? "强度上升" : lm.currentLanguage == .ja ? "強度上昇" : "Rising"
         } else if snapshot.trend < -0.5 {
             trendIcon = "arrow.down.right"
-            trendColor = .cathierSage
+            trendColor = .cathierAccent
             trendText = lm.currentLanguage == .zh ? "强度下降" : lm.currentLanguage == .ja ? "強度低下" : "Easing"
         } else {
             trendIcon = "arrow.right"

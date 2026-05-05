@@ -158,16 +158,16 @@ struct MicroExerciseView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 40))
-                        .foregroundColor(.cathierSage)
+                        .foregroundColor(.cathierAccent)
                     Text(lm.exerciseDone)
                         .font(.headline)
-                        .foregroundColor(.cathierSage)
+                        .foregroundColor(.cathierAccent)
                     Button(action: { dismiss() }) {
                         Text(lm.exerciseClose)
                             .fontWeight(.semibold)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color.cathierSage)
+                            .background(Color.cathierAccent)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                     }
