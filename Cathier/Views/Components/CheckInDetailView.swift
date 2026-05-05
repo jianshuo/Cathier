@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 struct CheckInDetailView: View {
     let checkIn: CheckIn
