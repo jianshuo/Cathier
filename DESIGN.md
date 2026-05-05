@@ -55,7 +55,7 @@ Use it for moments that should feel like reading a journal entry — not for UI 
 ## Color
 
 ### Approach
-Restrained — one bright energetic accent (orange) + warm neutrals. Color is rare and meaningful. The warm off-white background is a deliberate departure from the pure-white iOS default — it makes the app feel analog, physical, present.
+Restrained — one bright energetic accent (orange) + warm neutrals. **Single accent system**: orange is the only brand color. Earlier versions used a sage secondary accent for friend / growth / positive states; that has been retired in favor of a unified orange so the brand reads coherently. Color is rare and meaningful. The warm off-white background is a deliberate departure from the pure-white iOS default — it makes the app feel analog, physical, present.
 
 ### Light Mode Palette
 ```
@@ -67,17 +67,16 @@ Text Primary:    #1A1613  — near-black, warm undertone
 Text Secondary:  #5C5650  — secondary text
 Text Muted:      #8A837A  — timestamps, captions, placeholders
 
-Accent:          #F2700A  — bright orange. Primary brand color. Used sparingly.
-Accent Light:    #FEEBD8  — orange tint. Chip backgrounds, AI card header.
+Accent:          #F2700A  — bright orange. Single brand color. Used sparingly.
+Accent Light:    #FEEBD8  — orange tint. Chip backgrounds, AI card header, positive states.
 Accent Hover:    #D96308  — pressed/hover state for orange elements.
 
-Sage:            #6B8F71  — secondary accent. Positive states, friend features, growth.
-Sage Light:      #E0EDE2  — sage tint. Shared check-ins, positive chips.
-
-Semantic Success: #6B8F71 (sage)
+Semantic Success: #F2700A (accent)
 Semantic Warning: #B45309
-Semantic Error:   #C4614A (accent)
+Semantic Error:   #C4614A
 Semantic Info:    #1D4ED8
+
+Note: legacy `cathierSage` / `cathierSageLight` color sets remain in the asset catalog but are no longer referenced from code. Do not introduce new sage usage.
 ```
 
 ### Dark Mode Palette
@@ -92,8 +91,6 @@ Text Muted:      #7A736D
 
 Accent:          #F5861A  — slightly lighter orange for dark backgrounds
 Accent Light:    #3D2210
-Sage:            #7DA384
-Sage Light:      #1E2E20
 ```
 
 ### Color Tokens (cross-platform)
@@ -106,11 +103,9 @@ Sage Light:      #1E2E20
 | `--text-primary` | #1A1613 | #F0EDE8 | Primary text |
 | `--text-secondary` | #5C5650 | #B5AFA9 | Secondary text |
 | `--text-muted` | #8A837A | #7A736D | Timestamps, placeholders |
-| `--accent` | #F2700A | #F5861A | Primary brand (orange) |
-| `--accent-light` | #FEEBD8 | #3D2210 | Orange tint backgrounds |
+| `--accent` | #F2700A | #F5861A | Brand accent (orange) — single accent system |
+| `--accent-light` | #FEEBD8 | #3D2210 | Orange tint backgrounds, positive states |
 | `--accent-hover` | #D96308 | — | Pressed/hover state |
-| `--sage` | #6B8F71 | #7DA384 | Secondary accent (green) |
-| `--sage-light` | #E0EDE2 | #1E2E20 | Sage tint backgrounds |
 
 **Platform implementation:**
 - iOS: `Assets.xcassets` color sets with light/dark variants, named `cathierBackground`, `cathierAccent`, etc.
@@ -200,7 +195,7 @@ Simple segmented bar at the bottom, not a progress ring. 3 segments, filled in `
 
 ### Emotion chips (Step 2)
 - Same chip style as body areas
-- Positive/growth emotions: use sage variant (`cathierSageLight` / `cathierSage`) instead of terracotta
+- Positive/growth emotions: use the same accent chip style — there is no separate positive-state color in the unified palette
 
 ## 觉察词典 (Awareness Dictionary) Design
 
@@ -217,7 +212,7 @@ The dictionary is a reference companion — not a textbook. It should feel like 
 
 ### Sensation tab
 - Flat flow layout of all sensation chips
-- Sage color family (`cathierSage` at 10% opacity)
+- Accent color (`cathierAccent` at 10% opacity)
 - Tap → full-screen sheet
 
 ### Body Part tab
@@ -237,8 +232,8 @@ The dictionary is a reference companion — not a textbook. It should feel like 
 | Dictionary type | Accent color | Chip color |
 |---|---|---|
 | Emotions | Per-category color | Category color |
-| Sensations | `cathierSage` | Sage |
-| Body Parts | `cathierAccent` | Accent for header, sage for sensation chips within |
+| Sensations | `cathierAccent` | Accent |
+| Body Parts | `cathierAccent` | Accent for header and sensation chips within |
 
 ## Daily Journal Design
 
@@ -260,7 +255,7 @@ Appears after AI feedback loads in Step 3 of the check-in flow. Tailored to the 
 Friend-related UI should feel warm but distinct from the core check-in flow.
 
 - Shared check-in cards: per-person tint from a 5-color warm palette (sage, peach, lavender, wheat, sky), picked deterministically from CloudKit record name hash
-- "Shared with friends" indicators: sage color, not terracotta
+- "Shared with friends" indicators: accent color (orange) — same as primary brand
 - Privacy tier labels: clearly readable, `caption2` style, never ambiguous
 - **Emoji reactions:** horizontal scroll of reaction buttons below each friend check-in. Selected reaction: `cathierAccent` background + white text. Unselected: `systemGray5` background. Names of reactors shown inline.
 - **Body part + sensation display:** grouped per body part — part name in bold accent, sensations in secondary. No truncation, wrap to new lines.
@@ -433,7 +428,7 @@ Full-screen modal, progress indicator at top (3 segments, 4px height, `--accent`
 - Emotion chips in FlowLayout: `emoji + nameZh`, capsule, category color @ 10%, tap → sheet
 
 ### Sensations Tab:
-- All 65 sensations in FlowLayout: nameZh, capsule, sage @ 10%, tap → sheet
+- All 65 sensations in FlowLayout: nameZh, capsule, accent @ 10%, tap → sheet
 
 ### Body Parts Tab:
 - 24 rows: nameZh (left) + nameEn (right) + chevron, tap → sheet
@@ -460,21 +455,21 @@ Full-screen modal, progress indicator at top (3 segments, 4px height, `--accent`
 |---------|------|---------|
 | 释义 | text.quote | description |
 | 具体体验 | hand.raised | howItFeels |
-| 常见部位 | figure.stand | commonLocations (sage chips) |
+| 常见部位 | figure.stand | commonLocations (accent chips) |
 | 常伴随情绪 | heart | relatedEmotions (accent chips) |
 | 身体在说什么 | exclamationmark.bubble | signalMeaning |
 | 可以做什么 | leaf | selfCare |
 | 强度光谱 | chart.bar | intensitySpectrum (tinted bg) |
 | 区别 | arrow.left.arrow.right | differs (card bg) |
 
-**Hero:** hand icon (40px, sage) + nameZh (serif title) + nameEn
+**Hero:** hand icon (40px, accent) + nameZh (serif title) + nameEn
 
 ### Body Part Detail Sheet:
 | Section | Icon | Content |
 |---------|------|---------|
 | 简介 | text.quote | description |
 | 如何找到 | location.magnifyingglass | howToLocate |
-| 常见感受 | hand.point.up.braille | commonSensations (sage chips) |
+| 常见感受 | hand.point.up.braille | commonSensations (accent chips) |
 | 情绪关联 | heart | emotionalConnection |
 | 觉察练习 | eye | awarenessGuide |
 | 文化含义 | book.closed | culturalNote (italic, tinted bg) |
@@ -597,7 +592,7 @@ Both files are bundled with the app. No remote fetching needed.
 
 Never do these in Cathier UI:
 - Gradient backgrounds or gradient buttons
-- Multiple accent colors on one screen (pick terracotta OR sage for a given component, not both)
+- Reintroducing a secondary accent (e.g. sage). The palette is intentionally single-accent; reach for the existing accent or warm neutrals.
 - Bouncy spring animations
 - Dense icon grids (3-column feature layouts)
 - Pure white (#FFFFFF) as the screen background — use cathierBackground (#F7F5F1) for full-screen backgrounds
@@ -620,3 +615,4 @@ Never do these in Cathier UI:
 | 2026-04-10 | 觉察词典 as 3-tab dictionary | Single entry point for emotions (79), sensations (65), and body parts (24). Segmented picker, not separate screens. Extensible for future content. |
 | 2026-04-10 | Separate dictionary.json from emotion_config.json | Keep emotion_config.json small (~30KB) for fast app launch. dictionary.json (~285KB) loaded on demand for the explorer. |
 | 2026-04-10 | Per-person card tint in friend feed | 5-color warm palette deterministically assigned by CloudKit record hash. Visually distinguishes friends without requiring avatars. |
+| 2026-05-05 | Retired sage as secondary accent — single-accent system | Two brand colors fragmented the visual identity. Friend / growth / positive states now share the orange accent. Asset catalog still defines `cathierSage` for backward-compat but no view code references it. |

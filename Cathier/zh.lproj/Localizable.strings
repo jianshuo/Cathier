@@ -196,6 +196,8 @@
 "feedback.nav_title" = "功能建议";
 "feedback.section_title" = "反馈与建议";
 "feedback.button" = "提交功能建议";
+"feedback.name_label" = "你的姓名";
+"feedback.name_placeholder" = "例如：张三";
 "feedback.title_label" = "标题";
 "feedback.title_placeholder" = "简短描述你的建议…";
 "feedback.body_label" = "详细描述";

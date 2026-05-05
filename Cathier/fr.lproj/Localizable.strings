@@ -194,6 +194,8 @@
 "feedback.nav_title" = "Suggestions de fonctionnalités";
 "feedback.section_title" = "Retour";
 "feedback.button" = "Soumettre une suggestion";
+"feedback.name_label" = "Votre nom";
+"feedback.name_placeholder" = "ex : Marie";
 "feedback.title_label" = "Titre";
 "feedback.title_placeholder" = "Brève description de votre suggestion\u2026";
 "feedback.body_label" = "Détails";

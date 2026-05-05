@@ -163,14 +163,14 @@ struct HealthInsightView: View {
             HStack(spacing: 12) {
                 metricCard(
                     icon: "heart.fill",
-                    color: .cathierSage,
+                    color: .cathierAccent,
                     title: lm.currentLanguage == .zh ? "静息心率" : lm.currentLanguage == .ja ? "安静時心拍数" : "Resting HR",
                     value: service.summary.avgRestingHeartRate.map { "\(Int($0.rounded()))" } ?? "—",
                     unit: "bpm"
                 )
                 metricCard(
                     icon: "moon.fill",
-                    color: .cathierSage,
+                    color: .cathierAccent,
                     title: lm.currentLanguage == .zh ? "平均睡眠" : lm.currentLanguage == .ja ? "平均睡眠" : "Avg Sleep",
                     value: service.summary.avgSleepHours.map { String(format: "%.1f", $0) } ?? "—",
                     unit: lm.currentLanguage == .ja ? "時間" : lm.currentLanguage == .zh ? "小时" : "hrs"

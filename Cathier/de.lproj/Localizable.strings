@@ -194,6 +194,8 @@
 "feedback.nav_title" = "Funktionsvorschläge";
 "feedback.section_title" = "Feedback";
 "feedback.button" = "Vorschlag einreichen";
+"feedback.name_label" = "Dein Name";
+"feedback.name_placeholder" = "z.B. Anna";
 "feedback.title_label" = "Titel";
 "feedback.title_placeholder" = "Kurze Beschreibung deines Vorschlags\u2026";
 "feedback.body_label" = "Details";

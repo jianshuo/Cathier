@@ -194,6 +194,8 @@
 "feedback.nav_title" = "Sugestões de recursos";
 "feedback.section_title" = "Feedback";
 "feedback.button" = "Enviar sugestão";
+"feedback.name_label" = "Seu nome";
+"feedback.name_placeholder" = "ex.: Ana";
 "feedback.title_label" = "Título";
 "feedback.title_placeholder" = "Breve descrição da sua sugestão\u2026";
 "feedback.body_label" = "Detalhes";

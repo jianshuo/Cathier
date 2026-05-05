@@ -194,6 +194,8 @@
 "feedback.nav_title" = "फीचर सुझाव";
 "feedback.section_title" = "फीडबैक";
 "feedback.button" = "सुझाव सबमिट करें";
+"feedback.name_label" = "आपका नाम";
+"feedback.name_placeholder" = "उदा. राहुल";
 "feedback.title_label" = "शीर्षक";
 "feedback.title_placeholder" = "अपने सुझाव का संक्षिप्त विवरण\u2026";
 "feedback.body_label" = "विवरण";

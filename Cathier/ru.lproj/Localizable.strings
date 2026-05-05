@@ -194,6 +194,8 @@
 "feedback.nav_title" = "Предложения по функциям";
 "feedback.section_title" = "Отзыв";
 "feedback.button" = "Отправить предложение";
+"feedback.name_label" = "Ваше имя";
+"feedback.name_placeholder" = "например, Анна";
 "feedback.title_label" = "Заголовок";
 "feedback.title_placeholder" = "Краткое описание вашего предложения\u2026";
 "feedback.body_label" = "Детали";

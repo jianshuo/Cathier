@@ -196,6 +196,8 @@
 "feedback.nav_title" = "Feature Feedback";
 "feedback.section_title" = "Feedback";
 "feedback.button" = "Submit Feedback";
+"feedback.name_label" = "Your Name";
+"feedback.name_placeholder" = "e.g. Alex";
 "feedback.title_label" = "Title";
 "feedback.title_placeholder" = "Brief description of your suggestion\u2026";
 "feedback.body_label" = "Details";

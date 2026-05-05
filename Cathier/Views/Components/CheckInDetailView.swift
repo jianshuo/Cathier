@@ -140,7 +140,7 @@ struct CheckInDetailView: View {
                                 Button(action: copyAIFeedback) {
                                     Image(systemName: aiFeedbackCopied ? "checkmark" : "doc.on.doc")
                                         .font(.caption)
-                                        .foregroundColor(aiFeedbackCopied ? .cathierSage : .secondary)
+                                        .foregroundColor(aiFeedbackCopied ? .cathierAccent : .secondary)
                                         .frame(width: 28, height: 28)
                                 }
                                 .buttonStyle(.plain)
@@ -439,6 +439,6 @@ struct CheckInDetailView: View {
         case .ja: label = diff > 0 ? "↑ 平均 \(avgText) より高" : "↓ 平均 \(avgText) より低"
         default:  label = diff > 0 ? "↑ Above avg \(avgText)" : "↓ Below avg \(avgText)"
         }
-        return IntensityContext(label: label, color: diff > 0 ? .cathierAccent : .cathierSage)
+        return IntensityContext(label: label, color: diff > 0 ? .cathierAccent : .cathierAccent)
     }
 }

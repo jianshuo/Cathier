@@ -3,11 +3,6 @@ import SwiftUI
 struct AboutView: View {
     @Environment(LanguageManager.self) private var lm
 
-    /// Public TestFlight join link. Generate it in App Store Connect →
-    /// TestFlight → External Testing group → "Enable Public Link", then
-    /// paste the URL here. Empty string hides the section.
-    private let testFlightPublicLink = "https://testflight.apple.com/join/TwF61E49"
-
     private var version: String {
         Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "-"
     }
@@ -76,29 +71,6 @@ struct AboutView: View {
                 }
             } header: {
                 Text(lm.settingsAboutSection)
-            }
-
-            // MARK: - TestFlight Beta
-            if let url = URL(string: testFlightPublicLink), !testFlightPublicLink.isEmpty {
-                Section {
-                    Link(destination: url) {
-                        HStack(spacing: 12) {
-                            Image(systemName: "airplane.circle.fill")
-                                .font(.title3)
-                                .foregroundStyle(.cathierAccent)
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(lm.aboutTestFlightTitle)
-                                    .foregroundStyle(.primary)
-                                Text(lm.aboutTestFlightSubtitle)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Spacer()
-                            Image(systemName: "arrow.up.right.square")
-                                .foregroundStyle(.tertiary)
-                        }
-                    }
-                }
             }
 
             // MARK: - Privacy

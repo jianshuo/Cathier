@@ -196,6 +196,8 @@
 "feedback.nav_title" = "機能フィードバック";
 "feedback.section_title" = "フィードバック";
 "feedback.button" = "フィードバックを送る";
+"feedback.name_label" = "お名前";
+"feedback.name_placeholder" = "例：田中";
 "feedback.title_label" = "タイトル";
 "feedback.title_placeholder" = "提案を簡単に説明...";
 "feedback.body_label" = "詳細";

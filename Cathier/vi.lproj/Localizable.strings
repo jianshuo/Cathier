@@ -194,6 +194,8 @@
 "feedback.nav_title" = "Đề xuất tính năng";
 "feedback.section_title" = "Phản hồi";
 "feedback.button" = "Gửi đề xuất";
+"feedback.name_label" = "Tên của bạn";
+"feedback.name_placeholder" = "vd. Linh";
 "feedback.title_label" = "Tiêu đề";
 "feedback.title_placeholder" = "Mô tả ngắn về đề xuất của bạn\u2026";
 "feedback.body_label" = "Chi tiết";

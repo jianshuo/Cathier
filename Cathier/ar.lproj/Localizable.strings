@@ -194,6 +194,8 @@
 "feedback.nav_title" = "اقتراحات الميزات";
 "feedback.section_title" = "ملاحظات";
 "feedback.button" = "إرسال اقتراح";
+"feedback.name_label" = "اسمك";
+"feedback.name_placeholder" = "مثل: سارة";
 "feedback.title_label" = "العنوان";
 "feedback.title_placeholder" = "وصف موجز لاقتراحك\u2026";
 "feedback.body_label" = "التفاصيل";

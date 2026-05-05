@@ -199,6 +199,8 @@ extension LanguageManager {
     var feedbackNavTitle: String         { localized("feedback.nav_title") }
     var feedbackSectionTitle: String     { localized("feedback.section_title") }
     var feedbackButton: String           { localized("feedback.button") }
+    var feedbackNameLabel: String        { localized("feedback.name_label") }
+    var feedbackNamePlaceholder: String  { localized("feedback.name_placeholder") }
     var feedbackTitleLabel: String       { localized("feedback.title_label") }
     var feedbackTitlePlaceholder: String { localized("feedback.title_placeholder") }
     var feedbackBodyLabel: String        { localized("feedback.body_label") }

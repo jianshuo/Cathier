@@ -194,6 +194,8 @@
 "feedback.nav_title" = "기능 제안";
 "feedback.section_title" = "피드백";
 "feedback.button" = "제안 제출";
+"feedback.name_label" = "이름";
+"feedback.name_placeholder" = "예: 민수";
 "feedback.title_label" = "제목";
 "feedback.title_placeholder" = "제안에 대한 간략한 설명\u2026";
 "feedback.body_label" = "세부 사항";

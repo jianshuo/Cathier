@@ -194,6 +194,8 @@
 "feedback.nav_title" = "ข้อเสนอแนะฟีเจอร์";
 "feedback.section_title" = "ข้อเสนอแนะ";
 "feedback.button" = "ส่งข้อเสนอแนะ";
+"feedback.name_label" = "ชื่อของคุณ";
+"feedback.name_placeholder" = "เช่น สมชาย";
 "feedback.title_label" = "หัวข้อ";
 "feedback.title_placeholder" = "คำอธิบายสั้นๆ ของข้อเสนอแนะ\u2026";
 "feedback.body_label" = "รายละเอียด";

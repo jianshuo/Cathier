@@ -101,7 +101,7 @@ struct AIFeedbackView: View {
             HStack(spacing: 10) {
                 Image(systemName: "wind")
                     .font(.subheadline)
-                    .foregroundColor(.cathierSage)
+                    .foregroundColor(.cathierAccent)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lm.exerciseTryThis)
                         .font(.subheadline)
@@ -117,7 +117,7 @@ struct AIFeedbackView: View {
                     .foregroundColor(.secondary)
             }
             .padding(14)
-            .background(Color.cathierSageLight)
+            .background(Color.cathierAccentLight)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -235,7 +235,7 @@ struct AIFeedbackView: View {
             HStack(spacing: 6) {
                 Image(systemName: "person.3.fill")
                     .font(.caption)
-                    .foregroundColor(.cathierSage)
+                    .foregroundColor(.cathierAccent)
                 Text(lm.plazaShareSectionTitle)
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -245,7 +245,7 @@ struct AIFeedbackView: View {
                 Toggle(isOn: $shareToPlaza) {
                     HStack(spacing: 12) {
                         Image(systemName: "globe.asia.australia.fill")
-                            .foregroundColor(.cathierSage)
+                            .foregroundColor(.cathierAccent)
                             .frame(width: 20)
                         VStack(alignment: .leading, spacing: 2) {
                             Text(lm.plazaShareToggle)
@@ -257,7 +257,7 @@ struct AIFeedbackView: View {
                         }
                     }
                 }
-                .tint(.cathierSage)
+                .tint(.cathierAccent)
                 .padding(12)
 
                 if shareToPlaza {
@@ -265,7 +265,7 @@ struct AIFeedbackView: View {
                     plazaTierPicker.padding(12)
                 }
             }
-            .background(Color.cathierSageLight)
+            .background(Color.cathierAccentLight)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
     }
@@ -286,7 +286,7 @@ struct AIFeedbackView: View {
         return Button(action: { plazaTier = tier }) {
             HStack(spacing: 12) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .cathierSage : .secondary)
+                    .foregroundColor(isSelected ? .cathierAccent : .secondary)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(tierDisplayName(tier))
                         .font(.subheadline)
@@ -499,7 +499,7 @@ struct AIFeedbackView: View {
                     Button(action: copyAIFeedback) {
                         Image(systemName: aiFeedbackCopied ? "checkmark" : "doc.on.doc")
                             .font(.caption)
-                            .foregroundColor(aiFeedbackCopied ? .cathierSage : .secondary)
+                            .foregroundColor(aiFeedbackCopied ? .cathierAccent : .secondary)
                             .frame(width: 28, height: 28)
                     }
                     .buttonStyle(.plain)
@@ -576,9 +576,9 @@ struct StructuredFeedbackView: View {
             Divider().padding(.leading, 26)
             feedbackRow(icon: "sparkles", titleKey: "insight", content: feedback.insight, color: .cathierAccent)
             Divider().padding(.leading, 26)
-            feedbackRow(icon: "figure.mind.and.body", titleKey: "connection", content: feedback.connection, color: .cathierSage)
+            feedbackRow(icon: "figure.mind.and.body", titleKey: "connection", content: feedback.connection, color: .cathierAccent)
             Divider().padding(.leading, 26)
-            feedbackRow(icon: "lightbulb", titleKey: "suggestion", content: feedback.suggestion, color: .cathierSage)
+            feedbackRow(icon: "lightbulb", titleKey: "suggestion", content: feedback.suggestion, color: .cathierAccent)
         }
     }
 

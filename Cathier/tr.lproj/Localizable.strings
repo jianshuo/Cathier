@@ -194,6 +194,8 @@
 "feedback.nav_title" = "Özellik Önerileri";
 "feedback.section_title" = "Geri Bildirim";
 "feedback.button" = "Öneri Gönder";
+"feedback.name_label" = "Adın";
+"feedback.name_placeholder" = "ör. Ayşe";
 "feedback.title_label" = "Başlık";
 "feedback.title_placeholder" = "Önerinizin kısa açıklaması\u2026";
 "feedback.body_label" = "Ayrıntılar";

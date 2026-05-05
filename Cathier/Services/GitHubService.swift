@@ -20,13 +20,15 @@ struct GitHubService {
         Bundle.main.infoDictionary?["GitHubFeedbackPAT"] as? String ?? ""
     }
 
-    static func createFeedbackIssue(title: String, body: String) async throws -> URL {
+    static func createFeedbackIssue(title: String, body: String, submittedBy: String) async throws -> URL {
         let resolvedToken = bundleToken
 
         let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/issues"
         guard let url = URL(string: urlString) else { throw GitHubError.decodeFailed }
 
         let fullBody = """
+        **From:** \(submittedBy)
+
         \(body)
 
         ---
