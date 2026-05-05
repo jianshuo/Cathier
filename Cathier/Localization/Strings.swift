@@ -8,6 +8,7 @@ extension LanguageManager {
     var tabToday: String    { localized("tab.today") }
     var tabJournal: String  { localized("tab.journal") }
     var tabFriends: String  { localized("tab.friends") }
+    var tabPlaza: String    { localized("tab.plaza") }
     var tabSettings: String { localized("tab.settings") }
 
     // MARK: TodayView
@@ -243,6 +244,17 @@ extension LanguageManager {
     // MARK: Notifications
     var notifMilestoneTitle: String { localized("notif.milestone_title") }
     var notifMilestoneBody: String  { localized("notif.milestone_body") }
+
+    // MARK: PlazaView
+    var plazaNavTitle: String          { localized("plaza.nav_title") }
+    var plazaEmpty: String             { localized("plaza.empty") }
+    var plazaEmptyHint: String         { localized("plaza.empty_hint") }
+    var plazaShareSectionTitle: String { localized("plaza.share_section_title") }
+    var plazaShareToggle: String       { localized("plaza.share_toggle") }
+    var plazaShareDesc: String         { localized("plaza.share_desc") }
+    var plazaTierCategoryDesc: String  { localized("plaza.tier_category_desc") }
+    var plazaTierEmotionsDesc: String  { localized("plaza.tier_emotions_desc") }
+    var plazaTierFullDesc: String      { localized("plaza.tier_full_desc") }
 
     // MARK: Error messages
     var claudeNoApiKey: String     { localized("error.no_api_key") }

@@ -256,3 +256,15 @@
 "persona.coach.desc" = "Turn awareness into action";
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
+
+/* Plaza */
+"tab.plaza" = "광장";
+"plaza.nav_title" = "광장";
+"plaza.empty" = "아직 공유된 게 없습니다";
+"plaza.empty_hint" = "체크인 후 감정을 광장에 공유해보세요";
+"plaza.share_section_title" = "광장";
+"plaza.share_toggle" = "광장에 공유";
+"plaza.share_desc" = "감정 상태를 모든 사용자와 공개 공유합니다";
+"plaza.tier_category_desc" = "광장에서 감정 카테고리와 강도만 표시";
+"plaza.tier_emotions_desc" = "광장에서 구체적인 감정 단어 표시";
+"plaza.tier_full_desc" = "메모 포함 모든 내용 표시";
