@@ -201,6 +201,9 @@
 "feedback.token_section" = "Cài đặt GitHub";
 "feedback.token_footer" = "Cần GitHub Personal Access Token với phạm vi 'repo' để gửi issues. Chỉ lưu cục bộ.";
 "feedback.submit" = "Gửi";
+"feedback.screenshot_label" = "Ảnh chụp màn hình";
+"feedback.screenshot_add" = "Thêm ảnh chụp";
+"feedback.screenshot_footer" = "Đính kèm tối đa 3 ảnh chụp màn hình (tùy chọn).";
 "feedback.success" = "Đã gửi thành công!";
 "feedback.view_issue" = "Xem GitHub Issue \u2192";
 

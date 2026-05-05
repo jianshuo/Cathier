@@ -203,6 +203,9 @@
 "feedback.submit" = "Enviar";
 "feedback.success" = "¡Enviado con éxito!";
 "feedback.view_issue" = "Ver Issue de GitHub \u2192";
+"feedback.screenshot_label" = "Capturas de pantalla";
+"feedback.screenshot_add" = "A\u00f1adir captura";
+"feedback.screenshot_footer" = "Adjunta hasta 3 capturas de pantalla (opcional).";
 
 /* CheckInDetailView */
 "detail.nav_title" = "Detalle del registro";

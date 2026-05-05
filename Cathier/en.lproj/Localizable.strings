@@ -205,6 +205,9 @@
 "feedback.submit" = "Submit";
 "feedback.success" = "Submitted successfully!";
 "feedback.view_issue" = "View GitHub Issue \u2192";
+"feedback.screenshot_label" = "Screenshots";
+"feedback.screenshot_add" = "Add Screenshot";
+"feedback.screenshot_footer" = "Attach up to 3 screenshots (optional).";
 
 /* CheckInDetailView */
 "detail.nav_title" = "Record Detail";
