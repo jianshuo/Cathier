@@ -3,6 +3,7 @@ import SwiftUI
 struct CheckInCard: View {
     let checkIn: CheckIn
     @State private var showDetail = false
+    @State private var showCopied = false
     @Environment(LanguageManager.self) private var lm
 
     var body: some View {
@@ -49,10 +50,11 @@ struct CheckInCard: View {
                 if !checkIn.aiFeedback.isEmpty {
                     Divider()
                     HStack(alignment: .top, spacing: 6) {
-                        Image(systemName: "sparkles")
+                        Image(systemName: showCopied ? "checkmark" : "sparkles")
                             .font(.caption2)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(showCopied ? .cathierSage : .cathierAccent)
                             .padding(.top, 2)
+                            .animation(.easeOut(duration: 0.1), value: showCopied)
                         Text(StructuredFeedback.parse(checkIn.aiFeedback)?.previewText ?? checkIn.aiFeedback)
                             .font(.subheadline)
                             .foregroundColor(.primary)
@@ -84,6 +86,15 @@ struct CheckInCard: View {
             .cornerRadius(14)
         }
         .buttonStyle(.plain)
+        .contextMenu {
+            if !checkIn.aiFeedback.isEmpty {
+                Button {
+                    copyAIFeedback()
+                } label: {
+                    Label(lm.detailCopyAI, systemImage: "doc.on.doc")
+                }
+            }
+        }
         .sheet(isPresented: $showDetail) {
             CheckInDetailView(checkIn: checkIn)
         }
@@ -134,5 +145,22 @@ struct CheckInCard: View {
         let formatter = DateFormatter()
         formatter.dateFormat = "HH:mm"
         return formatter.string(from: checkIn.date)
+    }
+
+    private func copyAIFeedback() {
+        let text: String
+        if let s = StructuredFeedback.parse(checkIn.aiFeedback) {
+            text = [s.summary, s.insight, s.connection, s.suggestion]
+                .filter { !$0.isEmpty }
+                .joined(separator: "\n\n")
+        } else {
+            text = checkIn.aiFeedback
+        }
+        UIPasteboard.general.string = text
+        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+        withAnimation(.easeOut(duration: 0.1)) { showCopied = true }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+            withAnimation(.easeInOut(duration: 0.2)) { showCopied = false }
+        }
     }
 }
