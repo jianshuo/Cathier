@@ -64,6 +64,8 @@ private struct PlazaFeedView: View {
             if plazaVM.isLoading && plazaVM.posts.isEmpty {
                 ProgressView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if let error = plazaVM.error, plazaVM.posts.isEmpty {
+                errorView(error)
             } else if plazaVM.posts.isEmpty {
                 emptyView
             } else {
@@ -77,6 +79,29 @@ private struct PlazaFeedView: View {
                 Task { await plazaVM.load() }
             }
         }
+    }
+
+    private func errorView(_ message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 40))
+                .foregroundColor(.cathierAccent)
+            Text("加载广场失败")
+                .font(.headline)
+            Text(message)
+                .font(.footnote)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+            Button {
+                Task { await plazaVM.load(force: true) }
+            } label: {
+                Text(lm.friendRetry)
+                    .font(.subheadline)
+                    .foregroundColor(.cathierAccent)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var feedList: some View {
