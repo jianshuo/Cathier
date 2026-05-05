@@ -201,6 +201,9 @@
 "feedback.token_section" = "إعدادات GitHub";
 "feedback.token_footer" = "يلزم رمز الوصول الشخصي GitHub بنطاق 'repo' لإرسال المشكلات. مخزَّن محلياً فقط.";
 "feedback.submit" = "إرسال";
+"feedback.screenshot_label" = "لقطات الشاشة";
+"feedback.screenshot_add" = "إضافة لقطة شاشة";
+"feedback.screenshot_footer" = "أرفق ما يصل إلى 3 لقطات شاشة (اختياري).";
 "feedback.success" = "تم الإرسال بنجاح!";
 "feedback.view_issue" = "عرض GitHub Issue \u2192";
 

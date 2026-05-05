@@ -1,4 +1,5 @@
 import SwiftUI
+import PhotosUI
 
 struct FeedbackView: View {
     @Environment(LanguageManager.self) private var lm
@@ -9,6 +10,8 @@ struct FeedbackView: View {
     @State private var isSubmitting = false
     @State private var submittedURL: URL?
     @State private var errorMessage: String?
+    @State private var selectedPhotos: [PhotosPickerItem] = []
+    @State private var attachedImages: [UIImage] = []
 
     var body: some View {
         NavigationStack {
@@ -27,6 +30,63 @@ struct FeedbackView: View {
                     Text(lm.feedbackBodyLabel)
                 } footer: {
                     Text(lm.feedbackBodyFooter)
+                        .font(.caption)
+                }
+
+                Section {
+                    if !attachedImages.isEmpty {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(attachedImages.indices, id: \.self) { index in
+                                    ZStack(alignment: .topTrailing) {
+                                        Image(uiImage: attachedImages[index])
+                                            .resizable()
+                                            .scaledToFill()
+                                            .frame(width: 72, height: 72)
+                                            .clipped()
+                                            .cornerRadius(8)
+                                        Button {
+                                            attachedImages.remove(at: index)
+                                        } label: {
+                                            Image(systemName: "xmark.circle.fill")
+                                                .font(.system(size: 18))
+                                                .foregroundColor(.cathierAccent)
+                                                .background(Color.white.clipShape(Circle()))
+                                        }
+                                        .offset(x: 6, y: -6)
+                                    }
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+
+                    if attachedImages.count < 3 {
+                        PhotosPicker(
+                            selection: $selectedPhotos,
+                            maxSelectionCount: 3 - attachedImages.count,
+                            matching: .images
+                        ) {
+                            Label(lm.feedbackScreenshotAdd, systemImage: "photo.badge.plus")
+                                .foregroundColor(.cathierAccent)
+                        }
+                        .onChange(of: selectedPhotos) { _, items in
+                            Task {
+                                for item in items {
+                                    guard attachedImages.count < 3 else { break }
+                                    if let data = try? await item.loadTransferable(type: Data.self),
+                                       let image = UIImage(data: data) {
+                                        attachedImages.append(image)
+                                    }
+                                }
+                                selectedPhotos = []
+                            }
+                        }
+                    }
+                } header: {
+                    Text(lm.feedbackScreenshotLabel)
+                } footer: {
+                    Text(lm.feedbackScreenshotFooter)
                         .font(.caption)
                 }
 
@@ -78,17 +138,20 @@ struct FeedbackView: View {
         errorMessage = nil
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
         let trimmedBody = bodyText.trimmingCharacters(in: .whitespaces)
+        let images = attachedImages
 
         Task {
             do {
                 let url = try await GitHubService.createFeedbackIssue(
                     title: trimmedTitle,
-                    body: trimmedBody
+                    body: trimmedBody,
+                    images: images
                 )
                 await MainActor.run {
                     submittedURL = url
                     title = ""
                     bodyText = ""
+                    attachedImages = []
                     isSubmitting = false
                 }
             } catch {

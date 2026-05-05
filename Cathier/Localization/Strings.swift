@@ -205,9 +205,12 @@ extension LanguageManager {
     var feedbackBodyFooter: String       { localized("feedback.body_footer") }
     var feedbackTokenSection: String     { localized("feedback.token_section") }
     var feedbackTokenFooter: String      { localized("feedback.token_footer") }
-    var feedbackSubmit: String           { localized("feedback.submit") }
-    var feedbackSuccess: String          { localized("feedback.success") }
-    var feedbackViewIssue: String        { localized("feedback.view_issue") }
+    var feedbackSubmit: String              { localized("feedback.submit") }
+    var feedbackSuccess: String             { localized("feedback.success") }
+    var feedbackViewIssue: String           { localized("feedback.view_issue") }
+    var feedbackScreenshotLabel: String     { localized("feedback.screenshot_label") }
+    var feedbackScreenshotAdd: String       { localized("feedback.screenshot_add") }
+    var feedbackScreenshotFooter: String    { localized("feedback.screenshot_footer") }
 
     // MARK: CheckInDetailView
     var detailNavTitle: String        { localized("detail.nav_title") }

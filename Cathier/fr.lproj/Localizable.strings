@@ -203,6 +203,9 @@
 "feedback.submit" = "Soumettre";
 "feedback.success" = "Soumis avec succès !";
 "feedback.view_issue" = "Voir l'Issue GitHub \u2192";
+"feedback.screenshot_label" = "Captures d'\u00e9cran";
+"feedback.screenshot_add" = "Ajouter une capture";
+"feedback.screenshot_footer" = "Joindre jusqu'\u00e0 3 captures d'\u00e9cran (optionnel).";
 
 /* CheckInDetailView */
 "detail.nav_title" = "Détail de l'enregistrement";

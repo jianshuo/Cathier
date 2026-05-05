@@ -205,6 +205,9 @@
 "feedback.submit" = "提交";
 "feedback.success" = "提交成功！";
 "feedback.view_issue" = "查看 GitHub Issue →";
+"feedback.screenshot_label" = "截图";
+"feedback.screenshot_add" = "添加截图";
+"feedback.screenshot_footer" = "可附上最多 3 张截图（可选）。";
 
 /* CheckInDetailView */
 "detail.nav_title" = "记录详情";
