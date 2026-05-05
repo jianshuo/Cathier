@@ -16,6 +16,8 @@ struct AIFeedbackView: View {
     @State private var plazaTier: FriendCheckIn.PrivacyTier = .emotions
     @State private var showExercise = false
     @State private var aiFeedbackCopied = false
+    @State private var isSavingPlaza = false
+    @State private var plazaError: String?
 
     private var hasFriends: Bool { friendVM.currentProfile != nil && !friendVM.friends.isEmpty }
     private var hasProfile: Bool { friendVM.currentProfile != nil }
@@ -58,15 +60,22 @@ struct AIFeedbackView: View {
                 }
 
                 Button(action: saveAction) {
-                    Text(lm.aiSave)
-                        .font(.headline)
-                        .foregroundColor(.white)
+                    Group {
+                        if isSavingPlaza {
+                            ProgressView().tint(.white)
+                        } else {
+                            Text(lm.aiSave)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                        }
+                    }
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
                 .background(Color.cathierAccent)
                 .clipShape(Capsule())
                 .padding(.top, 8)
+                .disabled(isSavingPlaza)
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 32)
@@ -83,6 +92,14 @@ struct AIFeedbackView: View {
                 let freq = emotionFrequency()
                 await viewModel.fetchAIFeedback(recentHistory: history, emotionFrequency: freq)
             }
+        }
+        .alert("分享到广场失败", isPresented: Binding(
+            get: { plazaError != nil },
+            set: { if !$0 { plazaError = nil } }
+        )) {
+            Button("好", role: .cancel) { plazaError = nil }
+        } message: {
+            Text(plazaError ?? "")
         }
         .sheet(isPresented: $showExercise) {
             MicroExerciseView(
@@ -350,12 +367,29 @@ struct AIFeedbackView: View {
             let includeAI = tier == .full ? false : shareAIFeedback
             Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: includeAI) }
         }
-        if shareToPlaza, let profile = friendVM.currentProfile {
-            let post = PlazaPost(ownerProfile: profile, checkIn: checkIn, privacyTier: plazaTier, shareAIFeedback: plazaTier == .full)
-            checkIn.isPlazaShared = true
-            Task { try? await CloudKitService.shared.savePlazaPost(post) }
+        guard shareToPlaza, let profile = friendVM.currentProfile else {
+            onDismiss()
+            return
         }
-        onDismiss()
+        // Plaza share: await the upload so failures surface to the user instead
+        // of being silently swallowed. isPlazaShared is only flipped on success.
+        let post = PlazaPost(ownerProfile: profile, checkIn: checkIn, privacyTier: plazaTier, shareAIFeedback: plazaTier == .full)
+        isSavingPlaza = true
+        Task {
+            do {
+                try await CloudKitService.shared.savePlazaPost(post)
+                await MainActor.run {
+                    checkIn.isPlazaShared = true
+                    isSavingPlaza = false
+                    onDismiss()
+                }
+            } catch {
+                await MainActor.run {
+                    isSavingPlaza = false
+                    plazaError = error.localizedDescription
+                }
+            }
+        }
     }
 
     // MARK: - Summary Card
