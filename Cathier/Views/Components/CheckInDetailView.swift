@@ -10,6 +10,13 @@ struct CheckInDetailView: View {
     @State private var isBusy = false
     @State private var shareError: String?
     @State private var aiFeedbackCopied = false
+    @State private var dictionaryItem: DictionaryEmotionItem?
+
+    private struct DictionaryEmotionItem: Identifiable {
+        let id = UUID()
+        let entry: DictionaryEntry
+        let color: Color
+    }
 
     var body: some View {
         NavigationStack {
@@ -98,9 +105,18 @@ struct CheckInDetailView: View {
                                 ForEach(checkIn.emotions, id: \.self) { emotion in
                                     let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
                                     let emoji = EmotionData.emoji(for: emotion)
-                                    chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)",
-                                         color: color,
-                                         count: emotionFrequency[emotion])
+                                    Button {
+                                        if let em = EmotionData.emotion(for: emotion),
+                                           let entry = DictionaryService.emotion(for: em.id) {
+                                            dictionaryItem = DictionaryEmotionItem(entry: entry, color: color)
+                                        }
+                                    } label: {
+                                        chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)",
+                                             color: color,
+                                             count: emotionFrequency[emotion])
+                                    }
+                                    .buttonStyle(.plain)
+                                    .accessibilityHint(lm.currentLanguage == .zh ? "点击深入了解" : lm.currentLanguage == .ja ? "タップして詳細を見る" : "Tap to explore")
                                 }
                             }
                         }
@@ -188,6 +204,9 @@ struct CheckInDetailView: View {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(lm.detailDone) { dismiss() }
                 }
+            }
+            .sheet(item: $dictionaryItem) { item in
+                EmotionDictionarySheet(entry: item.entry, categoryColor: item.color)
             }
         }
     }
