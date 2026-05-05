@@ -165,23 +165,29 @@ private struct IntensitySlider: View {
     @Binding var value: Double
     let mildLabel: String
     let intenseLabel: String
-
-    private let gradient = LinearGradient(
-        colors: [.yellow, .orange, .cathierAccent, .red],
-        startPoint: .leading,
-        endPoint: .trailing
-    )
+    @State private var haptic = UISelectionFeedbackGenerator()
 
     var body: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: 8) {
             Slider(value: $value, in: 1...10, step: 1)
                 .tint(intensityColor)
+                .onChange(of: value) { haptic.selectionChanged() }
+            HStack(spacing: 4) {
+                ForEach(1...10, id: \.self) { tick in
+                    Capsule()
+                        .fill(tick <= Int(value) ? intensityColor : Color.secondary.opacity(0.18))
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 3)
+                        .animation(.easeOut(duration: 0.1), value: value)
+                }
+            }
             HStack {
                 Text(mildLabel).font(.caption2).foregroundColor(.secondary)
                 Spacer()
                 Text(intenseLabel).font(.caption2).foregroundColor(.secondary)
             }
         }
+        .onAppear { haptic.prepare() }
     }
 
     private var intensityColor: Color {
