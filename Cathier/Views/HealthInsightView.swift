@@ -10,6 +10,7 @@ struct HealthInsightView: View {
     @State private var isAnalyzing = false
     @State private var analysisError: String? = nil
     @Environment(\.dismiss) private var dismiss
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         NavigationStack {
@@ -39,7 +40,7 @@ struct HealthInsightView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button(lm.checkInCancel) { dismiss() }
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                 }
             }
         }
@@ -82,11 +83,11 @@ struct HealthInsightView: View {
         VStack(spacing: 20) {
             ZStack {
                 Circle()
-                    .fill(Color.cathierAccent.opacity(0.12))
+                    .fill(themeManager.accentColor.opacity(0.12))
                     .frame(width: 72, height: 72)
                 Image(systemName: "heart.text.clipboard.fill")
                     .font(.system(size: 32))
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
             }
 
             VStack(spacing: 8) {
@@ -112,7 +113,7 @@ struct HealthInsightView: View {
                     .foregroundColor(.white)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color.cathierAccent)
+                    .background(themeManager.accentColor)
                     .clipShape(RoundedRectangle(cornerRadius: 9999, style: .continuous))
             }
             .buttonStyle(.plain)
@@ -127,7 +128,7 @@ struct HealthInsightView: View {
     private var loadingView: some View {
         VStack(spacing: 12) {
             ProgressView()
-                .tint(.cathierAccent)
+                .tint(themeManager.accentColor)
             Text(lm.currentLanguage == .zh ? "正在读取健康数据…" : lm.currentLanguage == .ja ? "ヘルスデータを読み込み中…" : "Reading health data…")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -143,7 +144,7 @@ struct HealthInsightView: View {
             HStack(spacing: 12) {
                 metricCard(
                     icon: "figure.walk",
-                    color: .cathierAccent,
+                    color: themeManager.accentColor,
                     title: lm.currentLanguage == .zh ? "今日步数" : lm.currentLanguage == .ja ? "今日の歩数" : "Steps Today",
                     value: service.summary.stepsToday > 0
                         ? "\(service.summary.stepsToday.formatted())"
@@ -152,7 +153,7 @@ struct HealthInsightView: View {
                 )
                 metricCard(
                     icon: "flame.fill",
-                    color: .cathierAccent,
+                    color: themeManager.accentColor,
                     title: lm.currentLanguage == .zh ? "活动能量" : lm.currentLanguage == .ja ? "活動エネルギー" : "Active Energy",
                     value: service.summary.activeEnergyToday > 0
                         ? "\(Int(service.summary.activeEnergyToday))"
@@ -220,7 +221,7 @@ struct HealthInsightView: View {
                     x: .value("Day", item.date, unit: .day),
                     y: .value("Steps", item.steps)
                 )
-                .foregroundStyle(Color.cathierAccent.opacity(0.8))
+                .foregroundStyle(themeManager.accentColor.opacity(0.8))
                 .cornerRadius(4)
             }
             .chartXAxis {
@@ -250,18 +251,18 @@ struct HealthInsightView: View {
             // Header strip
             HStack(spacing: 8) {
                 Circle()
-                    .fill(Color.cathierAccent)
+                    .fill(themeManager.accentColor)
                     .frame(width: 6, height: 6)
                 Text("Cathier AI")
                     .font(.system(.caption2, design: .default).weight(.semibold))
                     .textCase(.uppercase)
                     .tracking(0.08 * 12)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                 Spacer()
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 10)
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColorLight)
             .clipShape(UnevenRoundedRectangle(
                 cornerRadii: RectangleCornerRadii(topLeading: 12, bottomLeading: 0, bottomTrailing: 0, topTrailing: 12),
                 style: .continuous
@@ -276,7 +277,7 @@ struct HealthInsightView: View {
                 } else if isAnalyzing {
                     HStack(spacing: 10) {
                         ProgressView()
-                            .tint(.cathierAccent)
+                            .tint(themeManager.accentColor)
                             .scaleEffect(0.8)
                         Text(lm.currentLanguage == .zh ? "正在分析…" : lm.currentLanguage == .ja ? "分析中…" : "Analyzing…")
                             .font(.subheadline)
@@ -286,12 +287,12 @@ struct HealthInsightView: View {
                     VStack(alignment: .leading, spacing: 8) {
                         Text(error)
                             .font(.caption)
-                            .foregroundColor(Color.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                         Button(lm.aiRetry) {
                             runAnalysis()
                         }
                         .font(.caption)
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                     }
                 } else {
                     Button {
@@ -307,7 +308,7 @@ struct HealthInsightView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(Color.cathierAccent)
+                        .background(themeManager.accentColor)
                         .clipShape(RoundedRectangle(cornerRadius: 9999, style: .continuous))
                     }
                     .buttonStyle(.plain)
@@ -323,7 +324,7 @@ struct HealthInsightView: View {
         }
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.cathierAccent.opacity(0.3), lineWidth: 1)
+                .stroke(themeManager.accentColor.opacity(0.3), lineWidth: 1)
         )
     }
 

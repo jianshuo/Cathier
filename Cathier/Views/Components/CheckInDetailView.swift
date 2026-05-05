@@ -6,6 +6,7 @@ struct CheckInDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(LanguageManager.self) private var lm
     @Environment(FriendViewModel.self) private var friendVM
+    @Environment(ThemeManager.self) private var themeManager
     @Query(sort: \CheckIn.date, order: .reverse) private var allCheckIns: [CheckIn]
     @State private var isBusy = false
     @State private var shareError: String?
@@ -50,14 +51,14 @@ struct CheckInDetailView: View {
                                 if !checkIn.bodyParts.isEmpty {
                                     FlowLayout(spacing: 8) {
                                         ForEach(checkIn.bodyParts, id: \.self) { part in
-                                            chip(lm.display(part), color: .cathierAccent)
+                                            chip(lm.display(part), color: themeManager.accentColor)
                                         }
                                     }
                                 }
                                 if !parsed.global.isEmpty {
                                     FlowLayout(spacing: 8) {
                                         ForEach(parsed.global, id: \.self) { s in
-                                            chip(lm.display(s), color: .cathierAccent)
+                                            chip(lm.display(s), color: themeManager.accentColor)
                                         }
                                     }
                                 }
@@ -68,10 +69,10 @@ struct CheckInDetailView: View {
                                         Text(lm.display(entry.part))
                                             .font(.caption)
                                             .fontWeight(.medium)
-                                            .foregroundColor(.cathierAccent)
+                                            .foregroundColor(themeManager.accentColor)
                                         FlowLayout(spacing: 6) {
                                             ForEach(entry.sensations, id: \.self) { s in
-                                                chip(lm.display(s), color: .cathierAccent)
+                                                chip(lm.display(s), color: themeManager.accentColor)
                                             }
                                         }
                                     }
@@ -79,7 +80,7 @@ struct CheckInDetailView: View {
                                 if !parsed.global.isEmpty {
                                     FlowLayout(spacing: 8) {
                                         ForEach(parsed.global, id: \.self) { s in
-                                            chip(lm.display(s), color: .cathierAccent)
+                                            chip(lm.display(s), color: themeManager.accentColor)
                                         }
                                     }
                                 }
@@ -96,7 +97,7 @@ struct CheckInDetailView: View {
                                 .foregroundColor(.secondary)
                             FlowLayout(spacing: 8) {
                                 ForEach(checkIn.emotions, id: \.self) { emotion in
-                                    let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
+                                    let color = EmotionData.category(for: emotion)?.color ?? themeManager.accentColor
                                     let emoji = EmotionData.emoji(for: emotion)
                                     chip(emoji.isEmpty ? emotion : "\(emoji) \(emotion)",
                                          color: color,
@@ -127,7 +128,7 @@ struct CheckInDetailView: View {
                                 Label(lm.aiCompanion, systemImage: "sparkles")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
-                                    .foregroundColor(.cathierAccent)
+                                    .foregroundColor(themeManager.accentColor)
                                 Spacer()
                                 ShareLink(item: aiFeedbackShareText) {
                                     Image(systemName: "square.and.arrow.up")
@@ -158,7 +159,7 @@ struct CheckInDetailView: View {
                         }
                         .overlay(
                             RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.cathierAccent.opacity(0.25), lineWidth: 1)
+                                .stroke(themeManager.accentColor.opacity(0.25), lineWidth: 1)
                         )
                     }
 
@@ -210,7 +211,7 @@ struct CheckInDetailView: View {
             if isShared, let tier = currentTier {
                 HStack(spacing: 6) {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                     Text(tier.displayName)
                         .font(.subheadline)
                     Text("·")
@@ -289,7 +290,7 @@ struct CheckInDetailView: View {
         }
         .overlay(
             RoundedRectangle(cornerRadius: 14)
-                .stroke(isShared ? Color.cathierAccent.opacity(0.3) : Color.clear, lineWidth: 1)
+                .stroke(isShared ? themeManager.accentColor.opacity(0.3) : Color.clear, lineWidth: 1)
         )
     }
 
@@ -439,6 +440,6 @@ struct CheckInDetailView: View {
         case .ja: label = diff > 0 ? "↑ 平均 \(avgText) より高" : "↓ 平均 \(avgText) より低"
         default:  label = diff > 0 ? "↑ Above avg \(avgText)" : "↓ Below avg \(avgText)"
         }
-        return IntensityContext(label: label, color: diff > 0 ? .cathierAccent : .cathierSage)
+        return IntensityContext(label: label, color: diff > 0 ? themeManager.accentColor : .cathierSage)
     }
 }

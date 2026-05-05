@@ -3,6 +3,7 @@ import SwiftUI
 struct FeedbackView: View {
     @Environment(LanguageManager.self) private var lm
     @Environment(\.dismiss) private var dismiss
+    @Environment(ThemeManager.self) private var themeManager
 
     @State private var title = ""
     @State private var bodyText = ""
@@ -33,10 +34,10 @@ struct FeedbackView: View {
                 if let url = submittedURL {
                     Section {
                         Link(lm.feedbackViewIssue, destination: url)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                     } header: {
                         Text(lm.feedbackSuccess)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                     }
                 }
 

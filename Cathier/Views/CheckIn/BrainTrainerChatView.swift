@@ -3,6 +3,7 @@ import SwiftUI
 struct BrainTrainerChatView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     let onSave: () -> Void
 
     @State private var inputText = ""
@@ -28,16 +29,16 @@ struct BrainTrainerChatView: View {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack(spacing: 6) {
                         Image(systemName: "checkmark.seal.fill")
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                         Text("复盘完成")
                             .font(.subheadline)
                             .fontWeight(.semibold)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                     }
 
                     if viewModel.isGeneratingSummary {
                         HStack(spacing: 10) {
-                            ProgressView().tint(.cathierAccent)
+                            ProgressView().tint(themeManager.accentColor)
                             Text("正在生成总结…")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
@@ -56,11 +57,11 @@ struct BrainTrainerChatView: View {
                 }
                 .padding(16)
             }
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColorLight)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 1)
+                    .stroke(themeManager.accentColor.opacity(0.2), lineWidth: 1)
             )
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
@@ -150,7 +151,7 @@ struct BrainTrainerChatView: View {
             .foregroundColor(.primary)
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColorLight)
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             .frame(maxWidth: .infinity, alignment: .trailing)
     }
@@ -158,7 +159,7 @@ struct BrainTrainerChatView: View {
     private var loadingBubble: some View {
         HStack(spacing: 8) {
             ProgressView()
-                .tint(.cathierAccent)
+                .tint(themeManager.accentColor)
                 .scaleEffect(0.8)
             Text(lm.aiLoading)
                 .font(.subheadline)
@@ -183,7 +184,7 @@ struct BrainTrainerChatView: View {
                 viewModel.startBrainTrainerSession()
             }
             .font(.caption)
-            .foregroundColor(.cathierAccent)
+            .foregroundColor(themeManager.accentColor)
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 8)
@@ -230,7 +231,7 @@ struct BrainTrainerChatView: View {
             Button(action: submitInput) {
                 Image(systemName: "arrow.up.circle.fill")
                     .font(.title2)
-                    .foregroundColor(canSend ? .cathierAccent : .secondary)
+                    .foregroundColor(canSend ? themeManager.accentColor : .secondary)
             }
             .disabled(!canSend)
         }
@@ -250,7 +251,7 @@ struct BrainTrainerChatView: View {
                 .foregroundColor(.white)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 14)
-                .background(Color.cathierAccent)
+                .background(themeManager.accentColor)
                 .clipShape(Capsule())
         }
         .padding(.horizontal, 16)

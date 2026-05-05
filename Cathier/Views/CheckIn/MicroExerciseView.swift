@@ -7,6 +7,7 @@ struct MicroExerciseView: View {
     let emotions: [String]
     @Environment(\.dismiss) private var dismiss
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var exerciseText: String = ""
     @State private var isLoading = true
     @State private var errorMessage: String?
@@ -51,7 +52,7 @@ struct MicroExerciseView: View {
         VStack(spacing: 16) {
             ProgressView()
                 .scaleEffect(1.4)
-                .tint(.cathierAccent)
+                .tint(themeManager.accentColor)
             Text(lm.exerciseLoading)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
@@ -66,7 +67,7 @@ struct MicroExerciseView: View {
         VStack(spacing: 16) {
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 36))
-                .foregroundColor(.cathierAccent)
+                .foregroundColor(themeManager.accentColor)
             Text(message)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -74,7 +75,7 @@ struct MicroExerciseView: View {
             Button(lm.exerciseRetry) {
                 Task { await loadExercise() }
             }
-            .foregroundColor(.cathierAccent)
+            .foregroundColor(themeManager.accentColor)
         }
         .padding(.vertical, 40)
     }
@@ -88,7 +89,7 @@ struct MicroExerciseView: View {
                 .font(.cathierSerif(.body))
                 .lineSpacing(5)
                 .padding(16)
-                .background(Color.cathierAccentLight)
+                .background(themeManager.accentColorLight)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
             // Timer
@@ -108,7 +109,7 @@ struct MicroExerciseView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 14)
-                    .background(Color.cathierAccent)
+                    .background(themeManager.accentColor)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 14))
                 }
@@ -118,7 +119,7 @@ struct MicroExerciseView: View {
                     ZStack {
                         // Background track
                         Circle()
-                            .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 16)
+                            .stroke(themeManager.accentColor.opacity(0.2), lineWidth: 16)
 
                         // Progress ring
                         Circle()
@@ -126,8 +127,8 @@ struct MicroExerciseView: View {
                             .stroke(
                                 AngularGradient(
                                     gradient: Gradient(colors: [
-                                        Color.cathierAccent.opacity(0.6),
-                                        Color.cathierAccent
+                                        themeManager.accentColor.opacity(0.6),
+                                        themeManager.accentColor
                                     ]),
                                     center: .center,
                                     startAngle: .degrees(0),
@@ -142,7 +143,7 @@ struct MicroExerciseView: View {
                         Text(formattedTime)
                             .font(.system(size: 48, weight: .light, design: .rounded))
                             .monospacedDigit()
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                     }
                     .frame(width: 200, height: 200)
 

@@ -7,6 +7,7 @@ struct SettingsView: View {
     @State private var isAuthorized = false
     @State private var showFeedback = false
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @FocusState private var isContextBriefFocused: Bool
 
     var body: some View {
@@ -30,7 +31,7 @@ struct SettingsView: View {
                 // MARK: - Notification Settings
                 Section {
                     Toggle(lm.settingsEnableReminder, isOn: $notificationsEnabled)
-                        .tint(.cathierAccent)
+                        .tint(themeManager.accentColor)
                         .onChange(of: notificationsEnabled) { _, enabled in
                             handleNotificationToggle(enabled)
                         }
@@ -40,7 +41,7 @@ struct SettingsView: View {
                             HStack {
                                 Toggle("", isOn: $time.isEnabled)
                                     .labelsHidden()
-                                    .tint(.cathierAccent)
+                                    .tint(themeManager.accentColor)
                                 Spacer()
                                 DatePicker(
                                     "",
@@ -63,7 +64,7 @@ struct SettingsView: View {
                         Button(lm.settingsSaveReminder) {
                             saveReminderSettings()
                         }
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                     }
                 } header: {
                     Text(lm.settingsRemindersSection)
@@ -116,7 +117,7 @@ struct SettingsView: View {
                         showFeedback = true
                     } label: {
                         Label(lm.feedbackButton, systemImage: "lightbulb")
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                     }
                 }
 
@@ -145,7 +146,7 @@ struct SettingsView: View {
                     Button(lm.detailDone) {
                         isContextBriefFocused = false
                     }
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                 }
             }
         }

@@ -58,6 +58,7 @@ struct CheckInFlowView: View {
 private struct StepIndicatorView: View {
     let currentStep: CheckInStep
     private let steps = CheckInStep.allCases
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         HStack(spacing: 0) {
@@ -65,16 +66,16 @@ private struct StepIndicatorView: View {
                 let isCompleted = stepIndex(step) < stepIndex(currentStep)
                 let isCurrent = step == currentStep
                 Circle()
-                    .fill(isCompleted || isCurrent ? Color.cathierAccent : Color(.systemGray4))
+                    .fill(isCompleted || isCurrent ? themeManager.accentColor : Color(.systemGray4))
                     .frame(width: 10, height: 10)
                     .overlay(
                         Circle()
-                            .stroke(isCurrent ? Color.cathierAccent : Color.clear, lineWidth: 2)
+                            .stroke(isCurrent ? themeManager.accentColor : Color.clear, lineWidth: 2)
                             .frame(width: 16, height: 16)
                     )
                 if index < steps.count - 1 {
                     Rectangle()
-                        .fill(isCompleted ? Color.cathierAccent : Color(.systemGray4))
+                        .fill(isCompleted ? themeManager.accentColor : Color(.systemGray4))
                         .frame(height: 2)
                 }
             }
@@ -93,21 +94,24 @@ private struct StepIndicatorView: View {
 struct ChipView: View {
     let label: String
     let isSelected: Bool
-    var color: Color = .cathierAccent
+    var color: Color? = nil
     let action: () -> Void
 
+    @Environment(ThemeManager.self) private var themeManager
+
     var body: some View {
-        Text(label)
+        let effectiveColor = color ?? themeManager.accentColor
+        return Text(label)
             .font(.subheadline)
             .fontWeight(isSelected ? .semibold : .regular)
             .padding(.horizontal, 14)
             .padding(.vertical, 8)
-            .background(isSelected ? color.opacity(0.15) : Color(.systemGray6))
-            .foregroundColor(isSelected ? color : .primary)
+            .background(isSelected ? effectiveColor.opacity(0.15) : Color(.systemGray6))
+            .foregroundColor(isSelected ? effectiveColor : .primary)
             .clipShape(Capsule())
             .overlay(
                 Capsule()
-                    .stroke(isSelected ? color : Color.clear, lineWidth: 1.5)
+                    .stroke(isSelected ? effectiveColor : Color.clear, lineWidth: 1.5)
             )
             .contentShape(Capsule())
             .onTapGesture {

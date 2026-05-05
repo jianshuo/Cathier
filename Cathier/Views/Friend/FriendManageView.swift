@@ -3,6 +3,7 @@ import SwiftUI
 struct FriendManageView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var removingFriend: UserProfile?
     @State private var showRemoveAlert = false
     @State private var showErrorAlert = false
@@ -124,7 +125,7 @@ struct FriendManageView: View {
                 .foregroundColor(.white)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.cathierAccent)
+                .background(themeManager.accentColor)
                 .clipShape(Capsule())
                 .contentShape(Capsule())
                 .buttonStyle(.plain)

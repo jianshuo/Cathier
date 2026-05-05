@@ -4,6 +4,7 @@ struct EmotionPopoverView: View {
     let emotion: Emotion
     let categoryColor: Color
     var onSimilarTap: ((String) -> Void)?
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -33,7 +34,7 @@ struct EmotionPopoverView: View {
                             }
                             .font(.caption)
                             .fontWeight(.medium)
-                            .foregroundStyle(Color.cathierAccent)
+                            .foregroundStyle(themeManager.accentColor)
 
                             if let diff = emotion.differs?[name] {
                                 Text(diff)

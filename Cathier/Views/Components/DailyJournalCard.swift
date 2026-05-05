@@ -3,6 +3,7 @@ import SwiftUI
 struct DailyJournalCard: View {
     let journal: DailyJournal
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     var onEdit: (() -> Void)? = nil
 
     var body: some View {
@@ -26,11 +27,11 @@ struct DailyJournalCard: View {
                     systemImage: journal.isShared ? "person.2.fill" : "lock.fill"
                 )
                 .font(.caption)
-                .foregroundColor(journal.isShared ? .cathierAccent : .secondary)
+                .foregroundColor(journal.isShared ? themeManager.accentColor : .secondary)
                 .padding(.horizontal, 8)
                 .padding(.vertical, 4)
                 .background(
-                    (journal.isShared ? Color.cathierAccent : Color.secondary)
+                    (journal.isShared ? themeManager.accentColor : Color.secondary)
                         .opacity(0.1)
                 )
                 .clipShape(Capsule())
@@ -39,7 +40,7 @@ struct DailyJournalCard: View {
                     Button(action: edit) {
                         Image(systemName: "pencil.circle.fill")
                             .font(.title3)
-                            .foregroundColor(.cathierAccent.opacity(0.8))
+                            .foregroundColor(themeManager.accentColor.opacity(0.8))
                     }
                     .buttonStyle(.plain)
                 }

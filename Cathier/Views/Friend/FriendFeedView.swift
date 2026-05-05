@@ -6,6 +6,7 @@ import SwiftUI
 struct FriendFeedView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         NavigationStack {
@@ -47,7 +48,7 @@ struct FriendFeedView: View {
             }) {
                 Text(lm.friendRetry)
                     .font(.subheadline)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -60,6 +61,7 @@ private struct FriendHomeView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(ThemeManager.self) private var themeManager
     @Query(filter: #Predicate<DailyJournal> { $0.isShared }, sort: \DailyJournal.date, order: .reverse)
     private var sharedJournals: [DailyJournal]
 
@@ -180,13 +182,13 @@ private struct FriendHomeView: View {
                     VStack(spacing: 4) {
                         Image(systemName: "person.badge.plus")
                             .font(.system(size: 22))
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                             .frame(width: 52, height: 52)
-                            .background(Color.cathierAccent.opacity(0.12))
+                            .background(themeManager.accentColor.opacity(0.12))
                             .clipShape(Circle())
                         Text(lm.manageAddFriend)
                             .font(.caption2)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                             .lineLimit(1)
                             .frame(width: 52)
                     }
@@ -235,7 +237,7 @@ private struct FriendHomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.cathierAccent)
+                    .background(themeManager.accentColor)
                     .clipShape(Capsule())
             }
         }
@@ -256,7 +258,7 @@ private struct FriendHomeView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 28)
                     .padding(.vertical, 12)
-                    .background(Color.cathierAccent)
+                    .background(themeManager.accentColor)
                     .clipShape(Capsule())
             }
         }
@@ -289,6 +291,7 @@ struct FriendCheckInCard: View {
     let owner: UserProfile?
     @Environment(LanguageManager.self) private var lm
     @Environment(FriendViewModel.self) private var vm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var showFullAI = false
 
     var body: some View {
@@ -418,7 +421,7 @@ struct FriendCheckInCard: View {
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "sparkles")
                     .font(.caption2)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                     .padding(.top, 3)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(StructuredFeedback.parse(item.aiFeedback)?.previewText ?? item.aiFeedback.firstSentence)
@@ -429,14 +432,14 @@ struct FriendCheckInCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Text(lm.aiReadMore)
                         .font(.caption2)
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                 }
             }
             .padding(10)
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColorLight)
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+                    .stroke(themeManager.accentColor.opacity(0.15), lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
@@ -465,7 +468,7 @@ struct FriendCheckInCard: View {
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 4)
-                        .background(isMine ? Color.cathierAccent : Color(.systemGray5))
+                        .background(isMine ? themeManager.accentColor : Color(.systemGray5))
                         .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
@@ -482,6 +485,7 @@ struct SharedJournalFeedRow: View {
     let journal: DailyJournal
     let profile: UserProfile?
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -546,6 +550,7 @@ struct FriendAIDetailView: View {
     let owner: UserProfile?
     @Environment(LanguageManager.self) private var lm
     @Environment(\.dismiss) private var dismiss
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         NavigationStack {
@@ -576,7 +581,7 @@ struct FriendAIDetailView: View {
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "sparkles")
                                     .font(.subheadline)
-                                    .foregroundColor(.cathierAccent)
+                                    .foregroundColor(themeManager.accentColor)
                                     .padding(.top, 2)
                                 Text(item.aiFeedback)
                                     .font(.cathierSerif(.body))
@@ -587,10 +592,10 @@ struct FriendAIDetailView: View {
                         }
                     }
                     .padding(14)
-                    .background(Color.cathierAccentLight)
+                    .background(themeManager.accentColorLight)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+                            .stroke(themeManager.accentColor.opacity(0.15), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }

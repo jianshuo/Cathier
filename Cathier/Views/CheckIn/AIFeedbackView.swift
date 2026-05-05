@@ -6,6 +6,7 @@ struct AIFeedbackView: View {
     @Environment(FriendViewModel.self) private var friendVM
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     let onDismiss: () -> Void
 
     // Persist last chosen tier; "none" = don't share, defaults to "full"
@@ -64,7 +65,7 @@ struct AIFeedbackView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(Color.cathierAccent)
+                .background(themeManager.accentColor)
                 .clipShape(Capsule())
                 .padding(.top, 8)
             }
@@ -130,7 +131,7 @@ struct AIFeedbackView: View {
             HStack(spacing: 6) {
                 Image(systemName: "person.2.fill")
                     .font(.caption)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                 Text(lm.aiShareTitle)
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -182,7 +183,7 @@ struct AIFeedbackView: View {
         return Button(action: { selectedTier = tier }) {
             HStack(spacing: 12) {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
-                    .foregroundColor(isSelected ? .cathierAccent : .secondary)
+                    .foregroundColor(isSelected ? themeManager.accentColor : .secondary)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
                         .font(.subheadline)
@@ -213,7 +214,7 @@ struct AIFeedbackView: View {
         Toggle(isOn: $shareAIFeedback) {
             HStack(spacing: 12) {
                 Image(systemName: "sparkles")
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                     .frame(width: 16)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(lm.aiShareAIFeedbackToggle)
@@ -225,7 +226,7 @@ struct AIFeedbackView: View {
                 }
             }
         }
-        .tint(.cathierAccent)
+        .tint(themeManager.accentColor)
     }
 
     // MARK: - Plaza section
@@ -415,7 +416,7 @@ struct AIFeedbackView: View {
                 .frame(width: 16)
             FlowLayout(spacing: 6) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
-                    let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
+                    let color = EmotionData.category(for: emotion)?.color ?? themeManager.accentColor
                     Text(lm.display(emotion))
                         .font(.caption)
                         .fontWeight(.medium)
@@ -470,8 +471,8 @@ struct AIFeedbackView: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color.cathierAccent.opacity(0.1))
-            .foregroundColor(.cathierAccent)
+            .background(themeManager.accentColor.opacity(0.1))
+            .foregroundColor(themeManager.accentColor)
             .clipShape(Capsule())
         }
     }
@@ -490,7 +491,7 @@ struct AIFeedbackView: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 6) {
                 Image(systemName: "sparkles")
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                 Text(lm.aiCompanion)
                     .font(.subheadline)
                     .fontWeight(.semibold)
@@ -528,10 +529,10 @@ struct AIFeedbackView: View {
             }
         }
         .padding(16)
-        .background(Color.cathierAccentLight)
+        .background(themeManager.accentColor.opacity(0.12))
         .overlay(
             RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.cathierAccent.opacity(0.2), lineWidth: 1)
+                .stroke(themeManager.accentColor.opacity(0.2), lineWidth: 1)
         )
         .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         .animation(.easeInOut, value: viewModel.isLoadingAI)
@@ -540,7 +541,7 @@ struct AIFeedbackView: View {
     private var loadingView: some View {
         HStack(spacing: 12) {
             ProgressView()
-                .tint(.cathierAccent)
+                .tint(themeManager.accentColor)
             Text(lm.aiLoading)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -558,7 +559,7 @@ struct AIFeedbackView: View {
             }) {
                 Text(lm.aiRetry)
                     .font(.subheadline)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
             }
         }
     }
@@ -569,12 +570,13 @@ struct AIFeedbackView: View {
 struct StructuredFeedbackView: View {
     let feedback: StructuredFeedback
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
-            feedbackRow(icon: "waveform", titleKey: "summary", content: feedback.summary, color: .cathierAccent)
+            feedbackRow(icon: "waveform", titleKey: "summary", content: feedback.summary, color: themeManager.accentColor)
             Divider().padding(.leading, 26)
-            feedbackRow(icon: "sparkles", titleKey: "insight", content: feedback.insight, color: .cathierAccent)
+            feedbackRow(icon: "sparkles", titleKey: "insight", content: feedback.insight, color: themeManager.accentColor)
             Divider().padding(.leading, 26)
             feedbackRow(icon: "figure.mind.and.body", titleKey: "connection", content: feedback.connection, color: .cathierSage)
             Divider().padding(.leading, 26)
@@ -656,7 +658,7 @@ struct IntensityBadge: View {
     private var intensityColor: Color {
         switch intensity {
         case ..<4: return .yellow
-        case ..<7: return .cathierAccent
+        case ..<7: return .orange
         default:   return .red
         }
     }

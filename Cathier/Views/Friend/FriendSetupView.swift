@@ -3,6 +3,7 @@ import SwiftUI
 struct FriendSetupView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     @State private var displayName = ""
     @State private var avatarEmoji = "🙂"
@@ -41,11 +42,11 @@ struct FriendSetupView: View {
                                 Text(emoji)
                                     .font(.title2)
                                     .frame(width: 40, height: 40)
-                                    .background(avatarEmoji == emoji ? Color.cathierAccent.opacity(0.2) : Color(.systemGray6))
+                                    .background(avatarEmoji == emoji ? themeManager.accentColor.opacity(0.2) : Color(.systemGray6))
                                     .cornerRadius(10)
                                     .overlay(
                                         RoundedRectangle(cornerRadius: 10)
-                                            .stroke(avatarEmoji == emoji ? Color.cathierAccent : Color.clear, lineWidth: 2)
+                                            .stroke(avatarEmoji == emoji ? themeManager.accentColor : Color.clear, lineWidth: 2)
                                     )
                             }
                             .buttonStyle(.plain)
@@ -85,7 +86,7 @@ struct FriendSetupView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 16)
-                .background(canConfirm ? Color.cathierAccent : Color(.systemGray3))
+                .background(canConfirm ? themeManager.accentColor : Color(.systemGray3))
                 .cornerRadius(14)
                 .disabled(!canConfirm || isLoading)
                 .padding(.horizontal, 20)

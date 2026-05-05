@@ -5,6 +5,7 @@ struct BrainTrainerSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var viewModel = CheckInViewModel()
     @State private var phase: Phase = .intro
     @FocusState private var triggerFocused: Bool
@@ -43,7 +44,7 @@ struct BrainTrainerSheet: View {
                     HStack(spacing: 10) {
                         Image(systemName: "gearshape.2.fill")
                             .font(.title2)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                         Text(introHeadline)
                             .font(.cathierSerif(.title2))
                             .foregroundColor(.primary)
@@ -78,7 +79,7 @@ struct BrainTrainerSheet: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 14)
-                        .background(canContinue ? Color.cathierAccent : Color.cathierAccent.opacity(0.4))
+                        .background(canContinue ? themeManager.accentColor : themeManager.accentColor.opacity(0.4))
                         .clipShape(Capsule())
                 }
                 .disabled(!canContinue)

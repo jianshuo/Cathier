@@ -4,6 +4,7 @@ struct CheckInCard: View {
     let checkIn: CheckIn
     @State private var showDetail = false
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         Button(action: { showDetail = true }) {
@@ -16,7 +17,7 @@ struct CheckInCard: View {
                     if checkIn.shareLevel != nil {
                         Image(systemName: "person.2.fill")
                             .font(.caption2)
-                            .foregroundColor(.cathierAccent.opacity(0.8))
+                            .foregroundColor(themeManager.accentColor.opacity(0.8))
                     }
                     Spacer()
                     IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
@@ -31,7 +32,7 @@ struct CheckInCard: View {
                 if !checkIn.emotions.isEmpty {
                     FlowLayout(spacing: 6) {
                         ForEach(checkIn.emotions, id: \.self) { emotion in
-                            let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
+                            let color = EmotionData.category(for: emotion)?.color ?? themeManager.accentColor
                             let emoji = EmotionData.emoji(for: emotion)
                             Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")
                                 .font(.caption)
@@ -51,7 +52,7 @@ struct CheckInCard: View {
                     HStack(alignment: .top, spacing: 6) {
                         Image(systemName: "sparkles")
                             .font(.caption2)
-                            .foregroundColor(.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                             .padding(.top, 2)
                         Text(StructuredFeedback.parse(checkIn.aiFeedback)?.previewText ?? checkIn.aiFeedback)
                             .font(.subheadline)
@@ -99,7 +100,7 @@ struct CheckInCard: View {
                     Text(partName)
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                     if !sensations.isEmpty {
                         Text(sensations.map { lm.display($0) }.joined(separator: " · "))
                             .font(.subheadline)

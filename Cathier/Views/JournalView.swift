@@ -10,6 +10,7 @@ struct JournalView: View {
     @State private var searchText = ""
     @State private var pendingDelete: CheckIn? = nil
     @State private var deleteTask: Task<Void, Never>? = nil
+    @Environment(ThemeManager.self) private var themeManager
 
     private var filteredCheckIns: [CheckIn] {
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
@@ -82,7 +83,7 @@ struct JournalView: View {
                         showInsights = true
                     } label: {
                         Image(systemName: "chart.line.uptrend.xyaxis")
-                            .foregroundStyle(.cathierAccent)
+                            .foregroundStyle(themeManager.accentColor)
                     }
                     .accessibilityLabel(lm.insightsNavTitle)
                 }
@@ -220,7 +221,7 @@ struct JournalView: View {
                 Text(undoActionLabel)
                     .font(.subheadline)
                     .fontWeight(.semibold)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
             }
             .buttonStyle(.plain)
         }

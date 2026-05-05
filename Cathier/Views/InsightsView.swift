@@ -4,6 +4,7 @@ import Charts
 
 struct InsightsView: View {
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @Query(sort: \CheckIn.date, order: .forward) private var checkIns: [CheckIn]
     @State private var vm = InsightsViewModel()
 
@@ -97,7 +98,7 @@ struct InsightsView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 14)
-            .background(vm.isLoading ? Color.cathierAccent.opacity(0.6) : Color.cathierAccent)
+            .background(vm.isLoading ? themeManager.accentColor.opacity(0.6) : themeManager.accentColor)
             .foregroundStyle(.white)
             .clipShape(RoundedRectangle(cornerRadius: 14))
         }
@@ -145,7 +146,7 @@ struct InsightsView: View {
                 .font(.cathierSerif(.body))
                 .lineSpacing(5)
                 .padding()
-                .background(Color.cathierAccentLight)
+                .background(themeManager.accentColorLight)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.horizontal)
         }
@@ -174,7 +175,7 @@ struct InsightsView: View {
                     x: .value("Count", item.count),
                     y: .value("Emotion", item.emotion)
                 )
-                .foregroundStyle(Color.cathierAccent.gradient)
+                .foregroundStyle(themeManager.accentColor.gradient)
                 .cornerRadius(4)
             }
             .chartXAxis {
@@ -231,7 +232,7 @@ struct InsightsView: View {
                     x: .value("Day", item.label),
                     y: .value("Avg", item.avg)
                 )
-                .foregroundStyle(Color.cathierAccent.opacity(0.75).gradient)
+                .foregroundStyle(themeManager.accentColor.opacity(0.75).gradient)
                 .cornerRadius(4)
             }
             .chartYScale(domain: 0...10)
@@ -297,7 +298,7 @@ struct InsightsView: View {
                     x: .value("Time", item.label),
                     y: .value("Avg", item.avg)
                 )
-                .foregroundStyle(Color.cathierAccent.opacity(0.6).gradient)
+                .foregroundStyle(themeManager.accentColor.opacity(0.6).gradient)
                 .cornerRadius(4)
             }
             .chartYScale(domain: 0...10)
@@ -325,14 +326,14 @@ struct InsightsView: View {
                     y: .value("Intensity", c.intensity)
                 )
                 .interpolationMethod(.catmullRom)
-                .foregroundStyle(Color.cathierAccent.gradient)
+                .foregroundStyle(themeManager.accentColor.gradient)
 
                 AreaMark(
                     x: .value("Date", c.date),
                     y: .value("Intensity", c.intensity)
                 )
                 .interpolationMethod(.catmullRom)
-                .foregroundStyle(Color.cathierAccent.opacity(0.15).gradient)
+                .foregroundStyle(themeManager.accentColor.opacity(0.15).gradient)
             }
             .chartYScale(domain: 0...10)
             .chartXAxis {
@@ -352,10 +353,10 @@ struct InsightsView: View {
     private func errorBanner(_ message: String) -> some View {
         Label(message, systemImage: "exclamationmark.triangle.fill")
             .font(.subheadline)
-            .foregroundStyle(.cathierAccent)
+            .foregroundStyle(themeManager.accentColor)
             .padding()
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.cathierAccent.opacity(0.1))
+            .background(themeManager.accentColor.opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .padding(.horizontal)
     }
@@ -405,6 +406,7 @@ private struct FocusChip: View {
     let action: () -> Void
 
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var label: String {
         switch mode {
@@ -422,7 +424,7 @@ private struct FocusChip: View {
                 .fontWeight(isSelected ? .semibold : .regular)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 8)
-                .background(isSelected ? Color.cathierAccent : Color(.tertiarySystemBackground))
+                .background(isSelected ? themeManager.accentColor : Color(.tertiarySystemBackground))
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())
                 .overlay(

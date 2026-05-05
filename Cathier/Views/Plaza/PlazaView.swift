@@ -5,6 +5,7 @@ struct PlazaView: View {
     @Environment(FriendViewModel.self) private var friendVM
     @Environment(PlazaViewModel.self) private var plazaVM
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         NavigationStack {
@@ -45,7 +46,7 @@ struct PlazaView: View {
             } label: {
                 Text(lm.friendRetry)
                     .font(.subheadline)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -58,6 +59,7 @@ private struct PlazaFeedView: View {
     @Environment(PlazaViewModel.self) private var plazaVM
     @Environment(LanguageManager.self) private var lm
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         Group {
@@ -111,6 +113,7 @@ private struct PlazaFeedView: View {
 private struct PlazaPostCard: View {
     let post: PlazaPost
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var showFullAI = false
 
     var body: some View {
@@ -245,7 +248,7 @@ private struct PlazaPostCard: View {
             HStack(alignment: .top, spacing: 8) {
                 Image(systemName: "sparkles")
                     .font(.caption2)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                     .padding(.top, 3)
                 VStack(alignment: .leading, spacing: 4) {
                     Text(StructuredFeedback.parse(post.aiFeedback)?.previewText ?? post.aiFeedback.plazaFirstSentence)
@@ -256,14 +259,14 @@ private struct PlazaPostCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                     Text(lm.aiReadMore)
                         .font(.caption2)
-                        .foregroundColor(.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                 }
             }
             .padding(10)
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColorLight)
             .overlay(
                 RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+                    .stroke(themeManager.accentColor.opacity(0.15), lineWidth: 1)
             )
             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         }
@@ -277,6 +280,7 @@ struct PlazaAIDetailView: View {
     let post: PlazaPost
     @Environment(LanguageManager.self) private var lm
     @Environment(\.dismiss) private var dismiss
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         NavigationStack {
@@ -305,7 +309,7 @@ struct PlazaAIDetailView: View {
                             HStack(alignment: .top, spacing: 8) {
                                 Image(systemName: "sparkles")
                                     .font(.subheadline)
-                                    .foregroundColor(.cathierAccent)
+                                    .foregroundColor(themeManager.accentColor)
                                     .padding(.top, 2)
                                 Text(post.aiFeedback)
                                     .font(.cathierSerif(.body))
@@ -316,10 +320,10 @@ struct PlazaAIDetailView: View {
                         }
                     }
                     .padding(14)
-                    .background(Color.cathierAccentLight)
+                    .background(themeManager.accentColorLight)
                     .overlay(
                         RoundedRectangle(cornerRadius: 10, style: .continuous)
-                            .stroke(Color.cathierAccent.opacity(0.15), lineWidth: 1)
+                            .stroke(themeManager.accentColor.opacity(0.15), lineWidth: 1)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }

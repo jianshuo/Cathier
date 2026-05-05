@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AboutView: View {
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     /// Public TestFlight join link. Generate it in App Store Connect →
     /// TestFlight → External Testing group → "Enable Public Link", then
@@ -28,7 +29,7 @@ struct AboutView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "heart.text.clipboard")
                         .font(.system(size: 52))
-                        .foregroundStyle(.cathierAccent)
+                        .foregroundStyle(themeManager.accentColor)
                     Text("Cathier")
                         .font(.title2)
                         .fontWeight(.semibold)
@@ -85,7 +86,7 @@ struct AboutView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "airplane.circle.fill")
                                 .font(.title3)
-                                .foregroundStyle(.cathierAccent)
+                                .foregroundStyle(themeManager.accentColor)
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(lm.aboutTestFlightTitle)
                                     .foregroundStyle(.primary)

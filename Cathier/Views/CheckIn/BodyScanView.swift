@@ -11,6 +11,7 @@ struct BodyScanView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     @State private var sheetItem: SheetItem?
 
@@ -105,7 +106,7 @@ struct BodyScanView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(viewModel.canProceedFromBodyScan ? Color.cathierAccent : Color(.systemGray3))
+                        .background(viewModel.canProceedFromBodyScan ? themeManager.accentColor : Color(.systemGray3))
                         .clipShape(Capsule())
                 }
                 .disabled(!viewModel.canProceedFromBodyScan)

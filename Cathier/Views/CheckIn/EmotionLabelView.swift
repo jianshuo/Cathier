@@ -11,6 +11,7 @@ struct EmotionLabelView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var sheetEntry: IdentifiableDictionaryEntry?
 
     var body: some View {
@@ -91,7 +92,7 @@ struct EmotionLabelView: View {
                         .foregroundColor(.white)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
-                        .background(viewModel.canProceedFromEmotionLabel ? Color.cathierAccent : Color(.systemGray3))
+                        .background(viewModel.canProceedFromEmotionLabel ? themeManager.accentColor : Color(.systemGray3))
                         .cornerRadius(14)
                 }
                 .disabled(!viewModel.canProceedFromEmotionLabel)
@@ -123,7 +124,7 @@ struct EmotionLabelView: View {
                 .foregroundColor(.secondary)
             FlowLayout(spacing: 8) {
                 ForEach(viewModel.allEmotions, id: \.self) { emotion in
-                    let color = EmotionData.category(for: emotion)?.color ?? .cathierAccent
+                    let color = EmotionData.category(for: emotion)?.color ?? themeManager.accentColor
                     let emoji = EmotionData.emoji(for: emotion)
                     HStack(spacing: 4) {
                         Text(emoji.isEmpty ? emotion : "\(emoji) \(emotion)")

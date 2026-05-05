@@ -5,6 +5,7 @@ struct AddFriendView: View {
     @Environment(FriendViewModel.self) private var vm
     @Environment(LanguageManager.self) private var lm
     @Environment(\.dismiss) private var dismiss
+    @Environment(ThemeManager.self) private var themeManager
 
     @State private var sendingToID: String?
     @State private var sendError: String?
@@ -83,10 +84,10 @@ struct AddFriendView: View {
         } else if vm.hasSentRequest(to: profile) {
             Text(lm.searchRequested)
                 .font(.caption)
-                .foregroundColor(.cathierAccent)
+                .foregroundColor(themeManager.accentColor)
                 .padding(.horizontal, 12)
                 .padding(.vertical, 6)
-                .background(Color.cathierAccent.opacity(0.12))
+                .background(themeManager.accentColor.opacity(0.12))
                 .clipShape(Capsule())
         } else {
             Button { sendRequest(to: profile) } label: {
@@ -100,7 +101,7 @@ struct AddFriendView: View {
                         .foregroundColor(.white)
                         .padding(.horizontal, 12)
                         .padding(.vertical, 6)
-                        .background(Color.cathierAccent)
+                        .background(themeManager.accentColor)
                         .clipShape(Capsule())
                         .contentShape(Capsule())
                 }

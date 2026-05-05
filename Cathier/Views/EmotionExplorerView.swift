@@ -6,6 +6,7 @@ import SwiftData
 struct EmotionExplorerView: View {
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @Query private var allCheckIns: [CheckIn]
     @State private var selectedTab = 0
     @State private var selectedItem: SelectedItem?
@@ -59,7 +60,7 @@ struct EmotionExplorerView: View {
             HStack(spacing: 8) {
                 Image(systemName: "book.fill")
                     .font(.caption)
-                    .foregroundStyle(Color.cathierAccent)
+                    .foregroundStyle(themeManager.accentColor)
                 Text(vocabBannerTitle)
                     .font(.caption)
                     .foregroundStyle(Color.secondary)
@@ -68,7 +69,7 @@ struct EmotionExplorerView: View {
                     Text("\(used)")
                         .font(.system(.caption, design: .monospaced))
                         .fontWeight(.bold)
-                        .foregroundStyle(Color.cathierAccent)
+                        .foregroundStyle(themeManager.accentColor)
                     Text("/ \(total)")
                         .font(.system(.caption2, design: .monospaced))
                         .foregroundStyle(Color.secondary)
@@ -76,7 +77,7 @@ struct EmotionExplorerView: View {
             }
             .padding(.horizontal, 14)
             .padding(.vertical, 10)
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColorLight)
             .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             .padding(.horizontal, 20)
         }
@@ -98,7 +99,7 @@ struct EmotionExplorerView: View {
                 vocabBanner
                 ForEach(DictionaryService.emotionsByCategory, id: \.category) { group in
                     let cat = config.categories.first { $0.nameZh == group.category }
-                    let color = cat?.color ?? .cathierAccent
+                    let color = cat?.color ?? themeManager.accentColor
 
                     VStack(alignment: .leading, spacing: 10) {
                         HStack(spacing: 8) {
@@ -196,7 +197,7 @@ struct EmotionExplorerView: View {
     }
 
     private func categoryColor(for name: String) -> Color {
-        config.categories.first { $0.nameZh == name }?.color ?? .cathierAccent
+        config.categories.first { $0.nameZh == name }?.color ?? themeManager.accentColor
     }
 }
 
@@ -358,6 +359,7 @@ struct EmotionDictionarySheet: View {
 struct SensationDictionarySheet: View {
     let entry: DictionaryEntry
     @Environment(\.dismiss) private var dismiss
+    @Environment(ThemeManager.self) private var themeManager
     private let color: Color = .cathierSage
 
     var body: some View {
@@ -386,7 +388,7 @@ struct SensationDictionarySheet: View {
                             SheetSection(icon: "figure.stand", title: "常见部位", color: color) { chipList(locs, color: color) }
                         }
                         if let emo = entry.relatedEmotions, !emo.isEmpty {
-                            SheetSection(icon: "heart", title: "常伴随情绪", color: color) { chipList(emo, color: .cathierAccent) }
+                            SheetSection(icon: "heart", title: "常伴随情绪", color: color) { chipList(emo, color: themeManager.accentColor) }
                         }
                         if let v = entry.signalMeaning, !v.isEmpty { SheetSection(icon: "exclamationmark.bubble", title: "身体在说什么", color: color) { serifText(v) } }
                         if let v = entry.selfCare, !v.isEmpty { SheetSection(icon: "leaf", title: "可以做什么", color: color) { serifText(v) } }
@@ -436,7 +438,8 @@ struct SensationDictionarySheet: View {
 struct BodyPartDictionarySheet: View {
     let entry: DictionaryEntry
     @Environment(\.dismiss) private var dismiss
-    private let color: Color = .cathierAccent
+    @Environment(ThemeManager.self) private var themeManager
+    private var color: Color { themeManager.accentColor }
 
     var body: some View {
         NavigationStack {

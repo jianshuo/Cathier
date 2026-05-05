@@ -13,6 +13,7 @@ struct TodayView: View {
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
     @State private var showingHealth = false
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
     @State private var healthService = HealthKitService.shared
 
     private var jokeService: JokeService { JokeService.shared }
@@ -254,11 +255,11 @@ struct TodayView: View {
                 HStack(spacing: 14) {
                     ZStack {
                         Circle()
-                            .fill(Color.cathierAccent.opacity(0.15))
+                            .fill(themeManager.accentColor.opacity(0.15))
                             .frame(width: 48, height: 48)
                         Image(systemName: "gearshape.2.fill")
                             .font(.system(size: 20))
-                            .foregroundColor(Color.cathierAccent)
+                            .foregroundColor(themeManager.accentColor)
                     }
                     VStack(alignment: .leading, spacing: 3) {
                         Text(hint)
@@ -349,11 +350,11 @@ struct TodayView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color.cathierAccent.opacity(0.15))
+                        .fill(themeManager.accentColor.opacity(0.15))
                         .frame(width: 48, height: 48)
                     Image(systemName: "chart.line.uptrend.xyaxis")
                         .font(.system(size: 20))
-                        .foregroundColor(Color.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(title)
@@ -403,11 +404,11 @@ struct TodayView: View {
             HStack(spacing: 14) {
                 ZStack {
                     Circle()
-                        .fill(Color.cathierAccent.opacity(0.15))
+                        .fill(themeManager.accentColor.opacity(0.15))
                         .frame(width: 48, height: 48)
                     Image(systemName: "book.fill")
                         .font(.system(size: 22))
-                        .foregroundColor(Color.cathierAccent)
+                        .foregroundColor(themeManager.accentColor)
                 }
                 VStack(alignment: .leading, spacing: 3) {
                     Text(lm.journalEntryWritePrompt)
@@ -457,14 +458,14 @@ struct TodayView: View {
             Text("\(streakDays)")
                 .font(.system(.title3, design: .monospaced))
                 .fontWeight(.semibold)
-                .foregroundColor(.cathierAccent)
+                .foregroundColor(themeManager.accentColor)
             Text(lm.streakLabel)
                 .font(.caption2)
                 .foregroundColor(.secondary)
         }
         .frame(width: 56)
         .padding(.vertical, 10)
-        .background(Color.cathierAccentLight)
+        .background(themeManager.accentColor.opacity(0.15))
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
     }
 
@@ -525,7 +526,7 @@ struct TodayView: View {
             .padding(.vertical, 28)
             .background(
                 LinearGradient(
-                    colors: [Color.cathierAccent, Color.cathierAccent.opacity(0.75)],
+                    colors: [themeManager.accentColor, themeManager.accentColor.opacity(0.75)],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
@@ -576,7 +577,7 @@ struct TodayView: View {
 
         if snapshot.trend > 0.5 {
             trendIcon = "arrow.up.right"
-            trendColor = .cathierAccent
+            trendColor = themeManager.accentColor
             trendText = lm.currentLanguage == .zh ? "强度上升" : lm.currentLanguage == .ja ? "強度上昇" : "Rising"
         } else if snapshot.trend < -0.5 {
             trendIcon = "arrow.down.right"
@@ -656,7 +657,7 @@ struct TodayView: View {
             HStack(spacing: 12) {
                 Image(systemName: "bell.badge")
                     .font(.title3)
-                    .foregroundColor(.cathierAccent)
+                    .foregroundColor(themeManager.accentColor)
                     .frame(width: 36)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
@@ -673,7 +674,7 @@ struct TodayView: View {
                     .foregroundColor(.secondary)
             }
             .padding(14)
-            .background(Color.cathierAccentLight)
+            .background(themeManager.accentColor.opacity(0.15))
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
@@ -684,6 +685,7 @@ struct TodayView: View {
 
 private struct TodayIntensityArc: View {
     let checkIns: [CheckIn]
+    @Environment(ThemeManager.self) private var themeManager
 
     private var sorted: [CheckIn] {
         checkIns.sorted { $0.date < $1.date }
@@ -726,7 +728,7 @@ private struct TodayIntensityArc: View {
     private func dotColor(_ intensity: Int) -> Color {
         switch intensity {
         case ..<4: return .yellow
-        case ..<7: return .cathierAccent
+        case ..<7: return themeManager.accentColor
         default:   return .red
         }
     }
@@ -743,6 +745,7 @@ private struct TodayIntensityArc: View {
 private struct WeeklyPracticeRow: View {
     let checkIns: [CheckIn]
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     private var days: [(date: Date, hasCheckIn: Bool)] {
         let cal = Calendar.current
@@ -761,10 +764,10 @@ private struct WeeklyPracticeRow: View {
                 VStack(spacing: 4) {
                     ZStack {
                         Circle()
-                            .stroke(Color.cathierAccent.opacity(isToday ? 0.35 : 0), lineWidth: 1.5)
+                            .stroke(themeManager.accentColor.opacity(isToday ? 0.35 : 0), lineWidth: 1.5)
                             .frame(width: 18, height: 18)
                         Circle()
-                            .fill(day.hasCheckIn ? Color.cathierAccent : Color.secondary.opacity(0.18))
+                            .fill(day.hasCheckIn ? themeManager.accentColor : Color.secondary.opacity(0.18))
                             .frame(width: 9, height: 9)
                     }
                     .frame(width: 18, height: 18)
@@ -792,6 +795,7 @@ private struct WeeklyPracticeRow: View {
 
 private struct WeeklySparkline: View {
     let checkIns: [CheckIn]
+    @Environment(ThemeManager.self) private var themeManager
 
     private let barMaxHeight: CGFloat = 20
     private let barWidth: CGFloat = 10
@@ -830,7 +834,7 @@ private struct WeeklySparkline: View {
     private func barColor(_ intensity: Double) -> Color {
         switch intensity {
         case ..<4: return .yellow
-        case ..<7: return .cathierAccent
+        case ..<7: return themeManager.accentColor
         default:   return .red
         }
     }
@@ -841,6 +845,7 @@ private struct WeeklySparkline: View {
 private struct WeeklyEmotionSummary: View {
     let topEmotions: [(emotion: String, count: Int)]
     @Environment(LanguageManager.self) private var lm
+    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -848,7 +853,7 @@ private struct WeeklyEmotionSummary: View {
                 .font(.headline)
             FlowLayout(spacing: 8) {
                 ForEach(Array(topEmotions.enumerated()), id: \.offset) { _, item in
-                    let color = EmotionData.category(for: item.emotion)?.color ?? .cathierAccent
+                    let color = EmotionData.category(for: item.emotion)?.color ?? themeManager.accentColor
                     let emoji = EmotionData.emoji(for: item.emotion)
                     let name = lm.display(item.emotion)
                     HStack(spacing: 4) {
