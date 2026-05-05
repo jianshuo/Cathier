@@ -11,9 +11,21 @@ struct TodayView: View {
     @State private var showingBrainTrainer = false
     @State private var showingJokeHistory = false
     @AppStorage("notificationsEnabled") private var notificationsEnabled = false
+    @AppStorage("lastCelebratedStreakMilestone") private var lastCelebratedStreakMilestone: Int = 0
     @State private var showingHealth = false
+    @State private var dismissedMilestone: Int = 0
     @Environment(LanguageManager.self) private var lm
     @State private var healthService = HealthKitService.shared
+
+    private let streakMilestones = [3, 7, 14, 30]
+
+    private var milestoneToShow: Int? {
+        let reached = streakMilestones.filter { $0 <= streakDays }.max()
+        guard let milestone = reached,
+              milestone > lastCelebratedStreakMilestone,
+              milestone != dismissedMilestone else { return nil }
+        return milestone
+    }
 
     private var jokeService: JokeService { JokeService.shared }
 
@@ -38,6 +50,13 @@ struct TodayView: View {
                     // Greeting header
                     headerView
                         .padding(.horizontal, 20)
+
+                    // Streak milestone celebration (one-time per milestone)
+                    if let milestone = milestoneToShow {
+                        streakMilestoneBanner(milestone)
+                            .padding(.horizontal, 20)
+                            .transition(.opacity.combined(with: .move(edge: .top)))
+                    }
 
                     // Weekly practice dots (shown once there's any history)
                     if !checkIns.isEmpty {
@@ -636,6 +655,79 @@ struct TodayView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+
+    // MARK: - Streak Milestone Banner
+
+    private func streakMilestoneBanner(_ days: Int) -> some View {
+        HStack(spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(milestoneTitleText(days))
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.cathierAccent)
+                Text(milestoneBodyText(days))
+                    .font(.cathierSerif(.footnote))
+                    .foregroundColor(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+            Spacer()
+            Button {
+                withAnimation(.easeOut(duration: 0.2)) {
+                    dismissedMilestone = days
+                }
+                lastCelebratedStreakMilestone = days
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .frame(width: 28, height: 28)
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(
+                lm.currentLanguage == .zh ? "关闭"
+                    : lm.currentLanguage == .ja ? "閉じる"
+                    : "Dismiss"
+            )
+        }
+        .padding(14)
+        .background(Color.cathierAccentLight)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func milestoneTitleText(_ days: Int) -> String {
+        switch lm.currentLanguage {
+        case .zh: return "连续练习 \(days) 天"
+        case .ja: return "\(days)日間連続で練習中"
+        default:  return "\(days)-Day Practice Streak"
+        }
+    }
+
+    private func milestoneBodyText(_ days: Int) -> String {
+        switch lm.currentLanguage {
+        case .zh:
+            switch days {
+            case 3:  return "坚持三天，觉察正成为你的习惯。"
+            case 7:  return "一周的坚持，你的情绪感知正在扩展。"
+            case 14: return "两周的练习，变化正在悄然发生。"
+            default: return "一个月，令人敬佩的坚持。"
+            }
+        case .ja:
+            switch days {
+            case 3:  return "3日間継続、気づきが習慣になっています。"
+            case 7:  return "1週間、感情の気づきが広がっています。"
+            case 14: return "2週間、静かな変化が起きています。"
+            default: return "1ヶ月、素晴らしい継続です。"
+            }
+        default:
+            switch days {
+            case 3:  return "Three days in — awareness is becoming a habit."
+            case 7:  return "A week of practice. Your emotional vocabulary is growing."
+            case 14: return "Two weeks. Something is quietly shifting."
+            default: return "A month of consistent practice. Remarkable."
+            }
+        }
     }
 
     // MARK: - Reminder Nudge
