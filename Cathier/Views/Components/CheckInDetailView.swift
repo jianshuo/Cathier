@@ -16,7 +16,7 @@ struct CheckInDetailView: View {
                 VStack(alignment: .leading, spacing: 20) {
 
                     // Header: date + intensity
-                    HStack {
+                    HStack(alignment: .top) {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(dateString)
                                 .font(.subheadline)
@@ -26,7 +26,14 @@ struct CheckInDetailView: View {
                                 .fontWeight(.semibold)
                         }
                         Spacer()
-                        IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
+                        VStack(alignment: .trailing, spacing: 4) {
+                            IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
+                            if let ctx = intensityContext {
+                                Text(ctx.label)
+                                    .font(.caption2)
+                                    .foregroundColor(ctx.color)
+                            }
+                        }
                     }
 
                     // Body parts & sensations
@@ -406,5 +413,31 @@ struct CheckInDetailView: View {
         let f = DateFormatter()
         f.dateFormat = "HH:mm"
         return f.string(from: checkIn.date)
+    }
+
+    // MARK: - Intensity Baseline Context
+
+    private struct IntensityContext {
+        let label: String
+        let color: Color
+    }
+
+    /// Compares this check-in's intensity to the 30-day average (excluding itself).
+    /// Returns nil when there is insufficient history or the difference is not notable.
+    private var intensityContext: IntensityContext? {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        let recent = allCheckIns.filter { $0.id != checkIn.id && $0.date >= cutoff }
+        guard recent.count >= 3 else { return nil }
+        let avg = Double(recent.map(\.intensity).reduce(0, +)) / Double(recent.count)
+        let diff = Double(checkIn.intensity) - avg
+        guard abs(diff) >= 1.5 else { return nil }
+        let avgText = String(format: "%.1f", avg)
+        let label: String
+        switch lm.currentLanguage {
+        case .zh: label = diff > 0 ? "↑ 高于均值 \(avgText)" : "↓ 低于均值 \(avgText)"
+        case .ja: label = diff > 0 ? "↑ 平均 \(avgText) より高" : "↓ 平均 \(avgText) より低"
+        default:  label = diff > 0 ? "↑ Above avg \(avgText)" : "↓ Below avg \(avgText)"
+        }
+        return IntensityContext(label: label, color: diff > 0 ? .cathierAccent : .cathierSage)
     }
 }
