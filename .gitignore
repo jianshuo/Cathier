@@ -48,9 +48,6 @@ secrets.plist
 # iCloud sync artifacts
 *.icloud
 
-# Marketing assets (synced via iCloud, not git)
-marketing/
-
 # Editor config
 .obsidian/
 
