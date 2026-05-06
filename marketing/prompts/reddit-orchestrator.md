@@ -16,6 +16,7 @@
 - 排除最近 30 天 reddit 帖子用过的 angle.id
 - 排除 `platforms_fit` 不含 `"reddit"` 的 angle
 - 排除 `reddit_subreddits` 缺失的 angle
+- **Theme 偏好**：优先选 `body-emotion-practice` theme（Reddit 受众是 r/EmotionalIntelligence、r/somatics、r/IFS 这类心理/somatic 社区，design-decision 角度只在子频道明显是 r/SwiftUI / r/typography 时用）
 - 在符合条件的里随机选 1 个
 
 如果没有可选 angle → 开 issue 标 `marketing-no-angle`，body 说明并退出 0。
