@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 
 private struct IdentifiableDictionaryEntry: Identifiable {
     let id = UUID()
@@ -12,6 +13,16 @@ struct EmotionLabelView: View {
     @Environment(ConfigService.self) private var config
     @Environment(LanguageManager.self) private var lm
     @State private var sheetEntry: IdentifiableDictionaryEntry?
+    @Query(sort: \CheckIn.date, order: .reverse) private var recentCheckIns: [CheckIn]
+
+    private var recentEmotionCounts: [String: Int] {
+        let cutoff = Calendar.current.date(byAdding: .day, value: -30, to: Date()) ?? Date()
+        var counts: [String: Int] = [:]
+        for ci in recentCheckIns where ci.date >= cutoff {
+            for emotion in ci.emotions { counts[emotion, default: 0] += 1 }
+        }
+        return counts
+    }
 
     var body: some View {
         @Bindable var vm = viewModel
@@ -52,7 +63,8 @@ struct EmotionLabelView: View {
                                 ChipView(
                                     label: "\(emotion.emoji) \(emotion.nameZh)",
                                     isSelected: viewModel.selectedEmotions.contains(emotion.nameZh),
-                                    color: category.color
+                                    color: category.color,
+                                    recentCount: recentEmotionCounts[emotion.nameZh]
                                 ) {
                                     toggleEmotion(emotion.nameZh)
                                 }

@@ -94,26 +94,35 @@ struct ChipView: View {
     let label: String
     let isSelected: Bool
     var color: Color = .cathierAccent
+    /// How many times this item appeared in recent check-ins. Shows ×N badge when > 1.
+    var recentCount: Int? = nil
     let action: () -> Void
 
     var body: some View {
-        Text(label)
-            .font(.subheadline)
-            .fontWeight(isSelected ? .semibold : .regular)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 8)
-            .background(isSelected ? color.opacity(0.15) : Color(.systemGray6))
-            .foregroundColor(isSelected ? color : .primary)
-            .clipShape(Capsule())
-            .overlay(
-                Capsule()
-                    .stroke(isSelected ? color : Color.clear, lineWidth: 1.5)
-            )
-            .contentShape(Capsule())
-            .onTapGesture {
-                UIImpactFeedbackGenerator(style: isSelected ? .light : .medium).impactOccurred()
-                action()
+        HStack(spacing: 4) {
+            Text(label)
+            if let count = recentCount, count > 1 {
+                Text("×\(count)")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(color.opacity(0.6))
             }
-            .animation(.easeInOut(duration: 0.15), value: isSelected)
+        }
+        .font(.subheadline)
+        .fontWeight(isSelected ? .semibold : .regular)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 8)
+        .background(isSelected ? color.opacity(0.15) : Color(.systemGray6))
+        .foregroundColor(isSelected ? color : .primary)
+        .clipShape(Capsule())
+        .overlay(
+            Capsule()
+                .stroke(isSelected ? color : Color.clear, lineWidth: 1.5)
+        )
+        .contentShape(Capsule())
+        .onTapGesture {
+            UIImpactFeedbackGenerator(style: isSelected ? .light : .medium).impactOccurred()
+            action()
+        }
+        .animation(.easeInOut(duration: 0.15), value: isSelected)
     }
 }
