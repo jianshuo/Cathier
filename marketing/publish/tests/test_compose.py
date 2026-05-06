@@ -60,3 +60,35 @@ def test_compose_raises_on_empty_title(tmp_path):
             title="",
             output_path=tmp_path / "out.png",
         )
+
+
+def _diff_pixels(bg_img, out_img, y_top: int, y_bot: int) -> int:
+    diff = 0
+    for y in range(y_top, y_bot, 4):
+        for x in range(0, 256, 4):
+            if bg_img.getpixel((x, y)) != out_img.getpixel((x, y)):
+                diff += 1
+    return diff
+
+
+def test_compose_title_position_top(tmp_path):
+    output = tmp_path / "out.png"
+    compose(FIXTURE, "顶部测试", output, title_position="top")
+    bg = Image.open(FIXTURE).convert("RGB")
+    out = Image.open(output).convert("RGB")
+    # Text should land in top quarter, not center.
+    top_diff = _diff_pixels(bg, out, 0, int(384 * 0.30))
+    center_diff = _diff_pixels(bg, out, int(384 * 0.40), int(384 * 0.60))
+    assert top_diff > 20, "Top-positioned title not in top region"
+    assert top_diff > center_diff, "Top-positioned title leaked into center"
+
+
+def test_compose_title_position_bottom(tmp_path):
+    output = tmp_path / "out.png"
+    compose(FIXTURE, "底部测试", output, title_position="bottom")
+    bg = Image.open(FIXTURE).convert("RGB")
+    out = Image.open(output).convert("RGB")
+    bottom_diff = _diff_pixels(bg, out, int(384 * 0.70), 384)
+    center_diff = _diff_pixels(bg, out, int(384 * 0.40), int(384 * 0.60))
+    assert bottom_diff > 20, "Bottom-positioned title not in bottom region"
+    assert bottom_diff > center_diff, "Bottom-positioned title leaked into center"

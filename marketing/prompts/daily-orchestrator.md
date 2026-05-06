@@ -40,11 +40,7 @@
 
 对每一份通过的稿子，调 `marketing/prompts/image-spec.md`，得到图片 prompt 列表。
 
-对列表中每个 entry：
-- 调用 `python3 -m marketing.publish.image_gen` 生成底图（保存到 `marketing/posts/{YYYY-MM-DD}/{filename}`）
-- 调用 `python3 -m marketing.publish.compose` 把 `title_text` 叠到底图上（覆写同一文件）
-
-具体调用方式：在仓库根目录执行 Python 脚本（你有 Bash 工具）。例如：
+对列表中每个 entry，在仓库根目录用 `python3 -c` 执行（你有 Bash 工具）。两个模块没有 CLI 入口，必须通过 import 调用。例如：
 
 ```bash
 python3 -c "
@@ -62,6 +58,7 @@ compose(
     background_path=img,
     title='<标题字>',
     output_path=img,
+    title_position='center',  # 也可 'top' / 'bottom'，由 image-spec 输出决定
 )
 "
 ```
