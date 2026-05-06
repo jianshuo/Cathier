@@ -27,7 +27,16 @@ reddit 是另一条流水线（`reddit-orchestrator.md` + `marketing-weekly-redd
 - 排除 status != "unused" 的 angle
 - 优先选 `platforms_fit` 同时包含 ≥3 个本编排平台（xhs/x/instagram/facebook）的（一稿四发）
 - 退而求其次：≥2 个本编排平台
-- 在符合条件的里随机选 1 个
+
+**Theme 平衡：**
+每条 angle 有 `theme` 字段（`body-emotion-practice` / `product-feature` / `design-decision`）。期望发文比例约 70/20/10。
+
+读最近 14 天 `_index.jsonl`，统计各 theme 已发数量：
+- 如 `body-emotion-practice` 占比 < 60%，本次必选该 theme
+- 如 `design-decision` 占比 > 15%，本次跳过该 theme
+- 否则随机加权（70/20/10）
+
+在符合上述条件的池子里随机选 1 个。
 
 如果没有可选 angle → 开 issue 标 `marketing-no-angle`，body 说明并退出 0。
 

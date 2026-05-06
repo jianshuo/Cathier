@@ -22,7 +22,8 @@
       "r/typography",
       "r/userexperience",
       "r/Design"
-    ]
+    ],
+    "theme": "design-decision"
   },
   {
     "id": "anti-pastel-thesis",
@@ -45,7 +46,8 @@
       "r/userexperience",
       "r/Design",
       "r/digitalminimalism"
-    ]
+    ],
+    "theme": "design-decision"
   },
   {
     "id": "body-scan-as-entry",
@@ -62,7 +64,8 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": []
+    "used_dates": [],
+    "theme": "body-emotion-practice"
   },
   {
     "id": "dictionary-as-field-guide",
@@ -79,7 +82,8 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": []
+    "used_dates": [],
+    "theme": "product-feature"
   },
   {
     "id": "practitioners-not-patients",
@@ -102,91 +106,8 @@
       "r/userexperience",
       "r/digitalminimalism",
       "r/SideProject"
-    ]
-  },
-  {
-    "id": "warm-offwhite-not-pure-white",
-    "claim": "我们的背景是 #F7F5F1 暖米白，不是 iOS 默认的纯白。让屏幕看起来像翻开一本本子，不是又一个聊天窗口。",
-    "evidence": [
-      "DESIGN.md:Color:Light Mode Palette (Background #F7F5F1)",
-      "DESIGN.md:Decisions Log:2026-03-27 (Warm off-white background)",
-      "DESIGN.md:Anti-patterns (never use pure white as screen background)"
     ],
-    "audience": "对屏幕审美敏感的用户；做 UI 的同行",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "reddit",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": [],
-    "reddit_subreddits": [
-      "r/userexperience",
-      "r/Design"
-    ]
-  },
-  {
-    "id": "no-spring-animations",
-    "claim": "我们禁用 spring 动画。一个让你写下'胸口有压迫感'的 app，不能在你按下按钮时弹一下。它该像翻一页本子，不是刷一条 reels。",
-    "evidence": [
-      "DESIGN.md:Motion (Avoid .spring())",
-      "DESIGN.md:Decisions Log:2026-03-27 (No spring animations)"
-    ],
-    "audience": "对交互动效有讲究的设计师；正念/手账用户",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "reddit",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": [],
-    "reddit_subreddits": [
-      "r/userexperience",
-      "r/SwiftUI",
-      "r/Design"
-    ]
-  },
-  {
-    "id": "page-turn-step-transition",
-    "claim": "三步打卡之间的过渡用 0.5 秒的 easeInOut + 横向位移——刻意像翻页，不像导航。慢，是因为情绪需要时间落地。",
-    "evidence": [
-      "DESIGN.md:Motion (Long token 0.5s easeInOut)",
-      "DESIGN.md:Check-in Flow Design:Step transitions"
-    ],
-    "audience": "做交互/动效的同行；对节奏敏感的重度用户",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "reddit",
-      "instagram"
-    ],
-    "status": "unused",
-    "used_dates": [],
-    "reddit_subreddits": [
-      "r/SwiftUI",
-      "r/iOSProgramming"
-    ]
-  },
-  {
-    "id": "body-part-grouped-display",
-    "claim": "别人记录'紧绷, 压迫, 刺痛'。我们记录'头部:紧绷 / 胸口:压迫 / 喉咙:刺痛'——感觉一定要回到身体的位置上，否则只是词。",
-    "evidence": [
-      "DESIGN.md:Decisions Log:2026-04-09 (Body part + sensation grouped display)",
-      "DESIGN.md:Data Models:CheckIn (sensations as 'bodypart:sensation')"
-    ],
-    "audience": "Somatic / 身心实践者；对'感觉精确度'有要求的人",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": []
+    "theme": "body-emotion-practice"
   },
   {
     "id": "three-tier-friend-privacy",
@@ -203,7 +124,8 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": []
+    "used_dates": [],
+    "theme": "product-feature"
   },
   {
     "id": "context-brief-personalization",
@@ -226,46 +148,8 @@
     "reddit_subreddits": [
       "r/SideProject",
       "r/indiehackers"
-    ]
-  },
-  {
-    "id": "local-first-checkin-data",
-    "claim": "你的打卡数据存在你手机的 SwiftData 里，从不进我们的服务器。AI 反馈是无状态的——发一次问一次，不积累你的画像。",
-    "evidence": [
-      "README.md:Privacy (locally on device, never sent to our servers)",
-      "README.md:Privacy (stateless, no history stored server-side)"
     ],
-    "audience": "对'被画像'警觉的用户；做数据合规的同行",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": []
-  },
-  {
-    "id": "longpress-emotion-popover",
-    "claim": "选情绪的时候长按一个词 0.5 秒，会浮出它的释义、相近词、'深入了解'。学习不该把你拉出当下的练习。",
-    "evidence": [
-      "DESIGN.md:Decisions Log:2026-04-07 (Emotion popover on long-press)",
-      "DESIGN.md:Step 2 Emotion Labeling (Long-press popover)",
-      "DESIGN.md:Emotion Popover component spec"
-    ],
-    "audience": "想精确情绪表达的用户；对在场学习路径感兴趣的设计师",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "reddit",
-      "instagram"
-    ],
-    "status": "unused",
-    "used_dates": [],
-    "reddit_subreddits": [
-      "r/iOSProgramming",
-      "r/SwiftUI"
-    ]
+    "theme": "product-feature"
   },
   {
     "id": "intensity-gradient-as-signal",
@@ -282,44 +166,8 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": []
-  },
-  {
-    "id": "deterministic-friend-tint",
-    "claim": "好友 feed 里每个人的卡片有自己的暖色底——sage / peach / lavender / wheat / sky 五选一，按 CloudKit 名字 hash 决定。不用头像也认得出谁。",
-    "evidence": [
-      "DESIGN.md:Decisions Log:2026-04-10 (Per-person card tint in friend feed)",
-      "DESIGN.md:FriendCheckInCard (Card background palette)"
-    ],
-    "audience": "对色彩系统好奇的设计师；用过冷冰冰社交产品的人",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": []
-  },
-  {
-    "id": "dictionary-load-on-demand",
-    "claim": "我们把情绪词典拆成两个文件：30KB 的 emotion_config 启动时加载，285KB 的 dictionary 进了词典页才加载。冷启动不能让用户等。",
-    "evidence": [
-      "DESIGN.md:Data Files (emotion_config.json ~30KB / dictionary.json ~285KB)",
-      "DESIGN.md:Decisions Log:2026-04-10 (Separate dictionary.json from emotion_config.json)"
-    ],
-    "audience": "iOS / 前端工程师；对启动性能讲究的人",
-    "platforms_fit": [
-      "x",
-      "reddit",
-      "instagram"
-    ],
-    "status": "unused",
     "used_dates": [],
-    "reddit_subreddits": [
-      "r/SwiftUI",
-      "r/iOSProgramming"
-    ]
+    "theme": "design-decision"
   },
   {
     "id": "pattern-insights-gated-at-seven",
@@ -341,7 +189,8 @@
     "reddit_subreddits": [
       "r/SideProject",
       "r/indiehackers"
-    ]
+    ],
+    "theme": "product-feature"
   },
   {
     "id": "micro-exercise-tailored",
@@ -359,7 +208,8 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": []
+    "used_dates": [],
+    "theme": "body-emotion-practice"
   },
   {
     "id": "nine-categories-own-color",
@@ -376,67 +226,8 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": []
-  },
-  {
-    "id": "no-decoration-anti-patterns",
-    "claim": "不用渐变背景、不用 3 列图标网格、不用装饰性 blob、不用 emoji 在标题里。Cathier 的'好看'是减法。",
-    "evidence": [
-      "DESIGN.md:Anti-patterns (full list)",
-      "marketing/brain/voice.md:二、硬禁词 (no decorative emoji in titles)"
-    ],
-    "audience": "做克制设计的同行；视觉疲惫的重度用户",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "reddit",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
     "used_dates": [],
-    "reddit_subreddits": [
-      "r/userexperience",
-      "r/Design"
-    ]
-  },
-  {
-    "id": "comfortable-density-not-feed",
-    "claim": "8pt 是基础单元，屏幕横边距 20pt——我们刻意做'comfortable'密度。Cathier 的目标是让你像翻书，不是像滑 feed。",
-    "evidence": [
-      "DESIGN.md:Spacing (Base unit 8pt, Density Comfortable)",
-      "DESIGN.md:Spacing (Screen margins 20pt)"
-    ],
-    "audience": "对信息密度敏感的设计师；厌倦 feed 流的用户",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "reddit",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": [],
-    "reddit_subreddits": [
-      "r/digitalminimalism",
-      "r/userexperience"
-    ]
-  },
-  {
-    "id": "dark-mode-walnut",
-    "claim": "深色模式我们用 #1C1714 深胡桃，不是纯黑。理由很笨：晚上写情绪日记的人，不需要再被一块黑屏吸光。",
-    "evidence": [
-      "DESIGN.md:Color:Dark Mode Palette (Background #1C1714)"
-    ],
-    "audience": "夜里使用 app 的人；对色彩取舍敏感的设计师",
-    "platforms_fit": [
-      "xhs",
-      "x",
-      "instagram",
-      "facebook"
-    ],
-    "status": "unused",
-    "used_dates": []
+    "theme": "product-feature"
   },
   {
     "id": "intensity-baseline-context",
@@ -452,6 +243,391 @@
       "instagram",
       "facebook"
     ],
+    "status": "unused",
+    "used_dates": [],
+    "theme": "product-feature"
+  },
+  {
+    "id": "emotion-not-the-enemy",
+    "claim": "Osho 说：「情绪不是问题，对情绪的抗拒才是问题。」胸口压着一块说不出名字的东西时，第一步不是消除它，是先看见它。Cathier 的身体扫描 + 情绪命名就是这个「先看见」的工具。",
+    "evidence": [
+      "Osho: 'The Book of Secrets' (witnessing emotion vs resisting it)",
+      "DESIGN.md:Check-in Flow Design (3-step: body → emotion → reflection)"
+    ],
+    "audience": "正念/冥想练习者；想深入觉察自己情绪的人",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "body-knows-before-mind",
+    "claim": "身体在你想之前就知道了。心脏发紧、喉咙发涩、肩膀提着——这些信号比「我今天感觉怎么样」诚实十倍。所以 Cathier 第一步是身体扫描，不是问心情。",
+    "evidence": [
+      "DESIGN.md:Check-in Flow Design (Step 1 Body Scan)",
+      "emotion_config.json:24 body parts × 65 sensations matrix"
+    ],
+    "audience": "somatic/正念实践者；对纯心理咨询模型不满意的用户",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/somatics",
+      "r/EmotionalIntelligence",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "anger-is-energy-not-poison",
+    "claim": "Osho 谈愤怒：被压抑的愤怒变怨恨，被见证的愤怒变觉察。Cathier 让你具体定位愤怒落在身体哪一处——胸口、喉咙、双手——这是见证的第一步，不是消除。",
+    "evidence": [
+      "Osho: 'Emotional Wellness' (suppression vs witnessing anger)",
+      "emotion_config.json:愤怒 category (8 emotions)",
+      "emotion_config.json:body parts/sensations mapping"
+    ],
+    "audience": "愤怒情绪强、习惯压抑的人；Osho 读者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/EmotionalIntelligence",
+      "r/somatics",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "sadness-needs-witness-not-cure",
+    "claim": "悲伤需要的不是被治愈，是被见证。Cathier 的悲伤词条——「怅然」是失去的形状但说不清失去了什么；「婆娑」是流泪的不只是眼睛——让你能精确指认你在哪一种悲伤里。",
+    "evidence": [
+      "dictionary.json:悲伤 category (12 emotions)",
+      "DESIGN.md:Emotion Category table (悲伤 #5C8ABF)"
+    ],
+    "audience": "正在经历悲伤但不想被'治愈'的人；文学/敏感读者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/EmotionalIntelligence",
+      "r/somatics"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "fear-locates-in-throat-and-gut",
+    "claim": "恐惧不是抽象的——它有具体的住所。喉咙发紧、腹部发凉、双脚发空——身体每一次诚实地说「这里不安全」。Cathier 让你不再泛泛地'紧张'，而是看到恐惧落在哪。",
+    "evidence": [
+      "emotion_config.json:恐惧 category (8 emotions)",
+      "dictionary.json:body sensations (喉咙紧、腹部凉等)",
+      "Osho on the body's somatic memory of fear"
+    ],
+    "audience": "焦虑/恐惧体验丰富的人；身心练习者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "shame-shrinks-the-spine",
+    "claim": "羞愧不是脑子的事——是脊椎的事。背缩、肩塌、目光躲——身体在你说出「我没事」之前就已经招供。Cathier 的 8 个羞愧词条让你认出这个 你以为只有自己有的姿势。",
+    "evidence": [
+      "emotion_config.json:羞愧 category (8 emotions)",
+      "dictionary.json:身体部位 (背部、肩膀、脸部)",
+      "DESIGN.md:Emotion Category table (羞愧 #8C6647)"
+    ],
+    "audience": "对自我批判敏感的人；想理解羞耻感的躯体形态的人",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "joy-as-aliveness-not-happiness",
+    "claim": "Osho 区分喜悦与开心：开心是反应，喜悦是状态。Cathier 的「快乐」类别有 10 个不同的喜悦词——「雀跃」「沛然」「畅然」——因为「开心」这两个字漏掉了 90% 的活着的体验。",
+    "evidence": [
+      "Osho: 'Joy: The Happiness That Comes from Within'",
+      "emotion_config.json:快乐 category (10 emotions)",
+      "dictionary.json:detailed positive emotion entries"
+    ],
+    "audience": "正念/冥想读者；对'happy/sad' 二元论不满意的人",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/EmotionalIntelligence",
+      "r/somatics",
+      "r/digitalminimalism"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "naming-precision-as-freedom",
+    "claim": "你不能转化你叫不出名字的东西。研究：当人能精确命名一种情绪，皮质醇下降 27%。Cathier 的 79 个情绪词条不是炫技——是给你能转化情绪所必须的精度。",
+    "evidence": [
+      "Lisa Feldman Barrett: 'How Emotions Are Made' (emotional granularity research)",
+      "dictionary.json:79 emotions with full descriptions",
+      "Matt Lieberman fMRI study on affect labeling"
+    ],
+    "audience": "心理学读者；想精确表达情绪的人；语言敏感者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/EmotionalIntelligence",
+      "r/somatics"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "body-scan-is-listening-not-fixing",
+    "claim": "我们不是教你「修复」你的身体。我们教你听它。Cathier 的身体扫描没有「正确答案」——只有今天此刻你的喉咙说了什么、你的胸口说了什么。这本身就是练习。",
+    "evidence": [
+      "DESIGN.md:Check-in Flow Design",
+      "Osho: dynamic meditation philosophy (witness, don't change)"
+    ],
+    "audience": "想做身心练习但不知怎么开始的人；正念入门者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "ten-second-pause-as-meditation",
+    "claim": "你不需要打坐 30 分钟才算练习。Cathier 的一次 check-in 是 10 秒——身体在哪、感受是什么、这是哪种情绪。微小但完整的一次觉察。Osho 说：觉察不是时长，是质量。",
+    "evidence": [
+      "DESIGN.md:Check-in Flow Design (3-step compact)",
+      "Osho: 'Awareness: The Key to Living in Balance'"
+    ],
+    "audience": "试过冥想 app 但坚持不下来的人；忙碌的练习者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "emotion-trapped-becomes-symptom",
+    "claim": "未被见证的情绪不会消失，会搬家——搬到肩膀的紧绷里、胃的隐痛里、下颚的酸里。Cathier 的 24 个身体部位地图，是给这些情绪的临时地址簿。",
+    "evidence": [
+      "Bessel van der Kolk: 'The Body Keeps the Score'",
+      "emotion_config.json:24 body parts",
+      "Osho: somatic memory of unprocessed emotion"
+    ],
+    "audience": "有慢性身体紧张的人；身心连接感兴趣者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/somatics",
+      "r/EmotionalIntelligence",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "heart-tightness-is-grief-asking-for-attention",
+    "claim": "胸口发紧不一定是焦虑——也可能是没流出去的悲伤。Cathier 的心轮 + 胸口词条会告诉你这两种紧绷的细微差别，让你不再误读自己的身体。",
+    "evidence": [
+      "dictionary.json:胸口 (heart area sensations)",
+      "dictionary.json:心轮 (heart chakra)",
+      "Osho: heart chakra teachings"
+    ],
+    "audience": "有未处理悲伤的人；瑜伽/冥想练习者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "throat-constriction-is-something-unsaid",
+    "claim": "喉咙发紧——常常是某句没说出口的话在那里。Cathier 的喉轮词条专门讲这一点：你以为忘了的东西，身体替你记着。",
+    "evidence": [
+      "dictionary.json:喉咙 / 喉轮 entries",
+      "Somatic psychology: throat chakra = expression"
+    ],
+    "audience": "有'话堵着'体验的人；表达困难者；somatic 兴趣者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "shoulders-hold-tomorrow",
+    "claim": "肩膀承担的不是过去，是明天——是你还没做的事、还要应对的人、还要扛的责任。Cathier 的肩膀词条让你能问一个具体的问题：是今天的我，还是明天的我，让肩膀这么沉？",
+    "evidence": [
+      "dictionary.json:肩膀 entries",
+      "Somatic teaching on shoulders as 'load-bearing'"
+    ],
+    "audience": "经常肩颈紧的人；高压工作者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "gut-knows-truth-mind-rationalizes",
+    "claim": "脑子可以辩论一整天「这没什么」。但腹部一沉，那一刻是真话。Osho 谈「中心」时讲的就是这个——腹部是身体的真理之地。Cathier 的腹部 + 脐轮词条让你重新听这个被忽略的声音。",
+    "evidence": [
+      "Osho: 'centering' / hara teachings",
+      "dictionary.json:腹部 / 脐轮 entries",
+      "Embodied cognition research on gut feeling"
+    ],
+    "audience": "决策困难者；对直觉感兴趣者；瑜伽/zen 实践者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/somatics",
+      "r/EmotionalIntelligence",
+      "r/digitalminimalism"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "the-pattern-is-the-teacher",
+    "claim": "一次 check-in 是一个数据点，30 次 check-in 才开始说话。Cathier 的 Pattern Insights 不是给你「分析报告」——是把你的觉察拼成一面镜子，让你看见自己重复了什么。",
+    "evidence": [
+      "DESIGN.md:Pattern Insights (4 focus modes, 7+ check-ins required)",
+      "Osho: 'observe the patterns, not the events'"
+    ],
+    "audience": "已有日记/反思习惯的人；自我研究者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "catharsis-without-violence",
+    "claim": "Osho 的 Dynamic Meditation 第一阶段是混乱呼吸 + 身体宣泄——不是为了发疯，是为了给压抑的能量出口。Cathier 是这个传统的数字版：完整地感受，但不外化为伤害。",
+    "evidence": [
+      "Osho: 'The Orange Book' (Dynamic Meditation 5-stage)",
+      "DESIGN.md:Micro-Exercise Design"
+    ],
+    "audience": "Osho 读者；冥想老练者；想要身心宣泄而非心理咨询的人",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/somatics",
+      "r/EmotionalIntelligence",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "emotion-as-intelligence-not-noise",
+    "claim": "情绪不是「干扰理性」的噪音，是另一种智能。它知道你身边谁不安全、什么决定不对、什么界限被踩了。Cathier 不教你压住它——教你把它当顾问。",
+    "evidence": [
+      "Susan David: 'Emotional Agility'",
+      "Osho: 'Intelligence: The Creative Response to Now'",
+      "dictionary.json:79 emotion entries with situational meaning"
+    ],
+    "audience": "决策者；觉得「应该用理性压住情绪」的人；EQ 兴趣者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/EmotionalIntelligence",
+      "r/digitalminimalism"
+    ],
+    "theme": "body-emotion-practice",
     "status": "unused",
     "used_dates": []
   }
