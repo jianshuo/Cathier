@@ -583,11 +583,36 @@ struct TodayView: View {
                     .foregroundColor(.secondary.opacity(0.6))
                     .padding(.top, 1)
             }
+            if let next = nextMilestoneTarget {
+                milestoneProgressBar(toward: next)
+                    .padding(.top, 4)
+                    .padding(.horizontal, 8)
+            }
         }
         .frame(width: 56)
         .padding(.vertical, 10)
         .background(Color.cathierAccentLight)
         .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+    }
+
+    private var nextMilestoneTarget: Int? {
+        streakMilestones.first { $0 > streakDays }
+    }
+
+    private func milestoneProgressBar(toward target: Int) -> some View {
+        let from = streakMilestones.last { $0 < target } ?? 0
+        let progress = CGFloat(streakDays - from) / CGFloat(target - from)
+        return ZStack(alignment: .leading) {
+            Capsule()
+                .fill(Color.cathierAccent.opacity(0.2))
+                .frame(height: 3)
+            Capsule()
+                .fill(Color.cathierAccent)
+                .frame(height: 3)
+                .scaleEffect(x: max(0, min(1, progress)), y: 1, anchor: .leading)
+                .animation(.easeOut(duration: 0.3), value: progress)
+        }
+        .accessibilityHidden(true)
     }
 
     private var personalBestText: String {
