@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: write
       issues: write
+      id-token: write  # Required by anthropics/claude-code-action@v1 for OIDC auth
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
