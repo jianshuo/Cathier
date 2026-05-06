@@ -630,5 +630,82 @@
     "theme": "body-emotion-practice",
     "status": "unused",
     "used_dates": []
+  },
+  {
+    "id": "chakras-in-body-map",
+    "claim": "Cathier 的 24 个身体部位里藏着 7 个脉轮：海底轮、骶轮、脐轮、心轮、喉轮、眉心轮、顶轮。不是装饰——是 Osho 教导里情绪能量上行的具体地址。当你能说出「我今天是脐轮被堵」而不是「我胃不舒服」，整个体感就换了一个层次。",
+    "evidence": [
+      "emotion_config.json:24 body parts (includes 顶轮/眉心轮/喉轮/心轮/脐轮/骶轮/海底轮)",
+      "DESIGN.md:Body Parts (24) — 全部列出",
+      "Osho: 'The Book of Secrets' (chakra teachings)",
+      "Osho: discourses on Kundalini Yoga"
+    ],
+    "audience": "Osho 读者；Kundalini 瑜伽练习者；tantric practice 兴趣者；对纯西方情绪 app 不满的用户",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/somatics",
+      "r/EmotionalIntelligence",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "trigger-field-as-the-gap",
+    "claim": "Cathier 的身体扫描里有一个不显眼的字段：「发生了什么事？」。这就是 Osho 反复说的那个「间隙」——刺激和反应之间那一秒，meditation 就住在那里。绝大多数情绪 app 跳过这一步直接问'你心情如何'。我们停住，让你看见那个间隙。",
+    "evidence": [
+      "DESIGN.md:Check-in Flow Step 1 (Trigger Event optional text field '发生了什么事？')",
+      "Osho: 'Awareness: The Key to Living in Balance' (the gap between stimulus and response)",
+      "Viktor Frankl: 'Between stimulus and response there is a space' (复用同一传统)"
+    ],
+    "audience": "冥想老练者；Osho/佛学读者；对'反应 vs 回应'区分敏感的人",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/EmotionalIntelligence",
+      "r/somatics",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "body-signals-as-collective-testimony",
+    "claim": "Osho 说：身体比头脑更老实，它记得你心忘掉的东西。Cathier 的 Pattern Insights 有一个专门的模式叫「身体信号」——把你 30 天的身体扫描数据拼起来，让你看见：喉咙每个周一都紧；肩膀在和某人通话后都沉。这是身体的'集体证词'，30 次微小觉察拼出的真相。",
+    "evidence": [
+      "DESIGN.md:Pattern Insights (4 focus modes: 压力触发/成长/身体信号/随机探索)",
+      "DESIGN.md:Pattern Insights prerequisite (≥7 check-ins; rich after 30+)",
+      "Osho: 'Body Mind Balancing' (the body's intelligence vs mental story)",
+      "Bessel van der Kolk: 'The Body Keeps the Score' (somatic memory)"
+    ],
+    "audience": "已积累 30+ 次 check-in 的老用户；自我研究/long-form journaling 兴趣者；身心连接深度爱好者",
+    "platforms_fit": [
+      "xhs",
+      "x",
+      "instagram",
+      "facebook",
+      "reddit"
+    ],
+    "reddit_subreddits": [
+      "r/somatics",
+      "r/EmotionalIntelligence",
+      "r/IFS"
+    ],
+    "theme": "body-emotion-practice",
+    "status": "unused",
+    "used_dates": []
   }
 ]
