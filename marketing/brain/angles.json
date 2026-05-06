@@ -1,0 +1,62 @@
+[
+  {
+    "id": "instrument-serif-rationale",
+    "claim": "我们用衬线字体写 AI 反馈，不是为了好看，是为了让你像在读一封写给自己的信，不是聊天记录。",
+    "evidence": [
+      "DESIGN.md:Decisions Log:2026-03-27 (Instrument Serif for AI reflection text)",
+      "DESIGN.md:AI Reflection Visual Language section"
+    ],
+    "audience": "design-conscious 同行；重度日记/手账用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "anti-pastel-thesis",
+    "claim": "情绪 app 都用 pastel 因为他们假设用户脆弱。我们假设用户在主动训练自己。所以我们用暖橙，不用粉。",
+    "evidence": [
+      "DESIGN.md:Aesthetic Direction:Design thesis",
+      "DESIGN.md:Decisions Log:2026-03-27 (orange #F2700A)"
+    ],
+    "audience": "正在做产品/设计的同行；对市场上'治愈系'感到疲惫的用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "body-scan-as-entry",
+    "claim": "情绪不是从想法开始的。是从身体开始的。这就是为什么 Cathier 的第一步是身体扫描，不是问'你今天感觉怎么样'。",
+    "evidence": [
+      "README.md:Core Check-in Flow",
+      "DESIGN.md:Check-in Flow Design"
+    ],
+    "audience": "对身心练习有了解的用户；正念/瑜伽/Somatic 实践者",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "dictionary-as-field-guide",
+    "claim": "我们做了一本 79 个情绪 + 65 种身体感受 + 24 个身体部位的觉察词典。不是百科——是田野手册。",
+    "evidence": [
+      "DESIGN.md:觉察词典 (Awareness Dictionary) Design",
+      "README.md:觉察词典 section"
+    ],
+    "audience": "心理学爱好者；想精确表达情绪的人",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "practitioners-not-patients",
+    "claim": "Cathier 的用户不是病人，是练习者。这一句话决定了我们所有的设计——颜色、字体、文案、流程节奏。",
+    "evidence": [
+      "DESIGN.md:Product Context:Who it's for",
+      "DESIGN.md:Aesthetic Direction:Design thesis"
+    ],
+    "audience": "对'被当作病人'感到反感的用户；做产品的同行",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  }
+]
