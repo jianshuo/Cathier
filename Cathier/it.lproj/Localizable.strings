@@ -191,6 +191,8 @@
 "journal_entry.write_hint" = "Una volta al giorno \u2014 lascia un segno per oggi";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "Suggerimenti funzionalità";
 "feedback.section_title" = "Feedback";
 "feedback.button" = "Invia suggerimento";

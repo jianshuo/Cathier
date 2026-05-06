@@ -191,6 +191,8 @@
 "journal_entry.write_hint" = "Один раз в день \u2014 оставьте след сегодняшнего дня";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "Предложения по функциям";
 "feedback.section_title" = "Отзыв";
 "feedback.button" = "Отправить предложение";

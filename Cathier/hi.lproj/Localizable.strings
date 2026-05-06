@@ -191,6 +191,8 @@
 "journal_entry.write_hint" = "दिन में एक बार \u2014 आज के लिए एक निशान छोड़ें";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "फीचर सुझाव";
 "feedback.section_title" = "फीडबैक";
 "feedback.button" = "सुझाव सबमिट करें";

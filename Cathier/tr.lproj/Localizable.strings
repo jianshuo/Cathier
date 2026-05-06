@@ -191,6 +191,8 @@
 "journal_entry.write_hint" = "Günde bir kez \u2014 bugün için bir iz bırak";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "Özellik Önerileri";
 "feedback.section_title" = "Geri Bildirim";
 "feedback.button" = "Öneri Gönder";

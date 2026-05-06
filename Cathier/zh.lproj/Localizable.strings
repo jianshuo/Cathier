@@ -193,6 +193,8 @@
 "journal_entry.write_hint" = "每天一次，留下属于今天的印记";
 
 /* FeedbackView */
+"feedback.name_label" = "姓名";
+"feedback.name_placeholder" = "你的姓名";
 "feedback.nav_title" = "功能建议";
 "feedback.section_title" = "反馈与建议";
 "feedback.button" = "提交功能建议";

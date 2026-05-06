@@ -68,7 +68,7 @@ struct GitHubService {
         return downloadUrl
     }
 
-    static func createFeedbackIssue(title: String, body: String, images: [UIImage] = []) async throws -> URL {
+    static func createFeedbackIssue(title: String, body: String, images: [UIImage] = [], submittedBy: String = "") async throws -> URL {
         let resolvedToken = bundleToken
 
         var imageURLs: [String] = []
@@ -78,7 +78,7 @@ struct GitHubService {
             }
         }
 
-        var fullBody = body
+        var fullBody = submittedBy.isEmpty ? body : "**From:** \(submittedBy)\n\n\(body)"
         if !imageURLs.isEmpty {
             let imageMarkdown = imageURLs.enumerated()
                 .map { i, url in "![Screenshot \(i + 1)](\(url))" }

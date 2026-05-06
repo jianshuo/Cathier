@@ -191,6 +191,8 @@
 "journal_entry.write_hint" = "مرة واحدة في اليوم \u2014 اترك أثراً لليوم";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "اقتراحات الميزات";
 "feedback.section_title" = "ملاحظات";
 "feedback.button" = "إرسال اقتراح";

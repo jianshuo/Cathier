@@ -191,6 +191,8 @@
 "journal_entry.write_hint" = "Một lần mỗi ngày \u2014 để lại dấu ấn cho hôm nay";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "Đề xuất tính năng";
 "feedback.section_title" = "Phản hồi";
 "feedback.button" = "Gửi đề xuất";
