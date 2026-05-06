@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "Plaza sees emotion category and intensity only";
 "plaza.tier_emotions_desc" = "Plaza sees specific emotion words";
 "plaza.tier_full_desc" = "Plaza sees everything including notes";
+
+/* Guided Meditation */
+"meditation.nav_title" = "Rehberli Meditasyon";
+"meditation.loading" = "Rehber metni oluşturuluyor…";
+"meditation.retry" = "Tekrar Dene";
+"meditation.play" = "Rehberi Oynat";
+"meditation.pause" = "Duraklat";
+"meditation.resume" = "Devam Et";
+"meditation.stop" = "Durdur";
+"meditation.done" = "Rehber Tamamlandı";
+"meditation.close" = "Kapat";
+"meditation.try_this" = "Rehberli meditasyon";
+"meditation.try_hint" = "Beden taraması ve duygu görselleştirmesi, ~3 dk";

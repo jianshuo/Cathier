@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "Plaza sees emotion category and intensity only";
 "plaza.tier_emotions_desc" = "Plaza sees specific emotion words";
 "plaza.tier_full_desc" = "Plaza sees everything including notes";
+
+/* Guided Meditation */
+"meditation.nav_title" = "การทำสมาธิแบบมีคำแนะนำ";
+"meditation.loading" = "กำลังสร้างสคริปต์คำแนะนำ…";
+"meditation.retry" = "ลองอีกครั้ง";
+"meditation.play" = "เล่นคำแนะนำ";
+"meditation.pause" = "หยุดชั่วคราว";
+"meditation.resume" = "ดำเนินต่อ";
+"meditation.stop" = "หยุด";
+"meditation.done" = "คำแนะนำเสร็จสิ้น";
+"meditation.close" = "ปิด";
+"meditation.try_this" = "การทำสมาธิแบบมีคำแนะนำ";
+"meditation.try_hint" = "สแกนร่างกายและแสดงภาพอารมณ์ ประมาณ 3 นาที";

@@ -690,6 +690,82 @@ enum ClaudeService {
         return try await call(model: feedbackModel, system: system, user: user, maxTokens: 2000)
     }
 
+    // MARK: - Guided Meditation
+
+    static func generateGuidedMeditation(
+        bodyParts: [String],
+        sensations: [String],
+        emotions: [String],
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let lm = LanguageManager.shared
+        let parsed = parseBodySensations(sensations)
+
+        let system: String
+        let user: String
+
+        switch language {
+        case .zh:
+            system = """
+            你是「觉察」App 的引导冥想导师。用户刚完成了身体扫描和情绪标注，现在需要一段约3分钟的音频引导语，带领他们做身体扫描和情绪观想练习。
+
+            要求：
+            - 引导语必须针对用户具体的身体部位、感受和情绪——完全个性化
+            - 用第二人称"你"，语气温柔、缓慢，像在用户耳边轻声引导
+            - 结构：①安定（找到舒适姿势，专注呼吸）→ ②身体扫描（逐一关注用户记录的身体部位）→ ③情绪观想（看见并接纳用户记录的情绪）→ ④收尾整合
+            - 不使用任何 Markdown 格式，不加星号、井号、标题——只有流畅的引导语段落
+            - 语言流畅自然，适合朗读，停顿用省略号（……）表示
+            - 核心理念：不是要消除感受，而是"看见"它、"和它在一起"
+            - 总长度约300-450字，节奏舒缓，适合约3分钟的朗读
+            - 用中文回应
+            """
+            let partsStr = bodyParts.isEmpty ? "整个身体" : bodyParts.joined(separator: "、")
+            let emosStr = emotions.isEmpty ? "当下的感受" : emotions.joined(separator: "、")
+            var sensesStr = ""
+            if !parsed.perPart.isEmpty {
+                sensesStr = parsed.perPart.map { "\($0.part)：\($0.sensations.joined(separator: "、"))" }.joined(separator: "；")
+            }
+            user = "身体部位：\(partsStr)\n感受：\(sensesStr.isEmpty ? "未指定" : sensesStr)\n情绪：\(emosStr)\n\n请为我生成一段个性化的引导冥想语，帮助我做身体扫描和情绪观想。"
+
+        case .ja:
+            system = """
+            あなたはCathier（覚察）アプリのガイド瞑想インストラクターです。ユーザーはボディスキャンと感情ラベリングを完了したばかりです。約3分間の音声ガイドスクリプトを生成し、ボディスキャンと感情観想の練習を導いてください。
+
+            要件：
+            - ユーザーの具体的な身体部位、感覚、感情に完全に合わせた個性化された内容
+            - 「あなた」を使い、耳元で優しく導くような、穏やかでゆっくりとした語り口
+            - 構成：①安定（楽な姿勢を見つけ、呼吸に集中）→ ②ボディスキャン（ユーザーが記録した部位を順に感じる）→ ③感情観想（感情を見つめ、受け入れる）→ ④締めくくり
+            - Markdownは使用しない——滑らかなガイド文のみ
+            - 読み上げに適した自然な日本語、間は「……」で示す
+            - 約300〜400文字、ゆっくりとした朗読で約3分
+            - 日本語で回答
+            """
+            let partsStr = bodyParts.map { lm.display($0) }.joined(separator: "、")
+            let emosStr = emotions.map { lm.display($0) }.joined(separator: "、")
+            user = "身体部位：\(partsStr.isEmpty ? "全身" : partsStr)\n感情：\(emosStr.isEmpty ? "今の感情" : emosStr)\n\n個性化されたガイド瞑想スクリプトを生成してください。"
+
+        default:
+            system = """
+            You are the guided meditation instructor for Cathier — an emotion perception training app. The user just completed a body scan and emotion labeling. Generate a ~3-minute audio guidance script to lead them through a personalized body scan and emotion visualization practice.
+
+            Requirements:
+            - Fully personalized to the user's specific body areas, sensations, and emotions
+            - Use "you", gentle and slow tone — as if speaking softly beside them
+            - Structure: ①Settle (find comfort, focus on breath) → ②Body Scan (attend to each recorded body area) → ③Emotion Visualization (see and accept the labeled emotions) → ④Integration & close
+            - No Markdown formatting — only flowing, spoken-word paragraphs
+            - Natural language suitable for audio, use "..." for pauses
+            - Core philosophy: not about eliminating sensations, but "seeing" them and "being with" them
+            - Total ~250-350 words, paced for ~3 minutes of reading aloud
+            - Respond in English
+            """
+            let partsStr = bodyParts.map { lm.display($0) }.joined(separator: ", ")
+            let emosStr = emotions.map { lm.display($0) }.joined(separator: ", ")
+            user = "Body areas: \(partsStr.isEmpty ? "whole body" : partsStr)\nEmotions: \(emosStr.isEmpty ? "present feelings" : emosStr)\n\nPlease generate a personalized guided meditation script for me."
+        }
+
+        return try await call(model: feedbackModel, system: system, user: user, maxTokens: 2500)
+    }
+
     // MARK: - Health Insights
 
     static func generateHealthInsights(

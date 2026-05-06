@@ -275,3 +275,16 @@
 "plaza.tier_category_desc" = "広場には感情カテゴリと強度のみ表示";
 "plaza.tier_emotions_desc" = "広場には具体的な感情ワードを表示";
 "plaza.tier_full_desc" = "広場にはメモを含む全内容を表示";
+
+/* Guided Meditation */
+"meditation.nav_title" = "ガイド瞑想";
+"meditation.loading" = "ガイドスクリプトを生成中…";
+"meditation.retry" = "再試行";
+"meditation.play" = "ガイドを再生";
+"meditation.pause" = "一時停止";
+"meditation.resume" = "再開";
+"meditation.stop" = "終了";
+"meditation.done" = "ガイド完了";
+"meditation.close" = "閉じる";
+"meditation.try_this" = "ガイド瞑想";
+"meditation.try_hint" = "ボディスキャンと感情観想、約3分";

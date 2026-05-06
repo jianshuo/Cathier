@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "Площадь видит только категорию и интенсивность";
 "plaza.tier_emotions_desc" = "Площадь видит конкретные эмоции";
 "plaza.tier_full_desc" = "Площадь видит всё, включая заметки";
+
+/* Guided Meditation */
+"meditation.nav_title" = "Управляемая медитация";
+"meditation.loading" = "Создание сценария…";
+"meditation.retry" = "Повторить";
+"meditation.play" = "Воспроизвести";
+"meditation.pause" = "Пауза";
+"meditation.resume" = "Продолжить";
+"meditation.stop" = "Стоп";
+"meditation.done" = "Завершено";
+"meditation.close" = "Закрыть";
+"meditation.try_this" = "Управляемая медитация";
+"meditation.try_hint" = "Сканирование тела и визуализация эмоций, ~3 мин";

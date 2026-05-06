@@ -275,3 +275,16 @@
 "plaza.tier_category_desc" = "广场只看到情绪大类和强度";
 "plaza.tier_emotions_desc" = "广场看到具体情绪词";
 "plaza.tier_full_desc" = "广场看到全部内容含笔记";
+
+/* Guided Meditation */
+"meditation.nav_title" = "身体引导冥想";
+"meditation.loading" = "正在为你生成引导语…";
+"meditation.retry" = "再试一次";
+"meditation.play" = "播放引导";
+"meditation.pause" = "暂停";
+"meditation.resume" = "继续";
+"meditation.stop" = "结束";
+"meditation.done" = "引导完成";
+"meditation.close" = "关闭";
+"meditation.try_this" = "跟着引导语";
+"meditation.try_hint" = "身体扫描与情绪观想，约3分钟";

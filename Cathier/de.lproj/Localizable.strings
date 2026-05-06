@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "Plaza sees emotion category and intensity only";
 "plaza.tier_emotions_desc" = "Plaza sees specific emotion words";
 "plaza.tier_full_desc" = "Plaza sees everything including notes";
+
+/* Guided Meditation */
+"meditation.nav_title" = "Geführte Meditation";
+"meditation.loading" = "Führungsskript wird erstellt…";
+"meditation.retry" = "Erneut versuchen";
+"meditation.play" = "Führung abspielen";
+"meditation.pause" = "Pause";
+"meditation.resume" = "Fortsetzen";
+"meditation.stop" = "Stopp";
+"meditation.done" = "Führung abgeschlossen";
+"meditation.close" = "Schließen";
+"meditation.try_this" = "Geführte Meditation";
+"meditation.try_hint" = "Körperscan und Emotionsvisualisierung, ~3 Min";
