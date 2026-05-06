@@ -14,6 +14,8 @@ struct JournalView: View {
     @State private var selectedTab = 0
     @State private var journalToEdit: DailyJournal? = nil
     @State private var showingJournalEntry = false
+    @State private var pendingJournalDelete: DailyJournal? = nil
+    @State private var deleteJournalTask: Task<Void, Never>? = nil
 
     private var filteredCheckIns: [CheckIn] {
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
@@ -22,6 +24,11 @@ struct JournalView: View {
             result = result.filter { $0.id != pending.id }
         }
         return result
+    }
+
+    private var filteredJournals: [DailyJournal] {
+        guard let pending = pendingJournalDelete else { return journals }
+        return journals.filter { $0.id != pending.id }
     }
 
     private func matches(_ c: CheckIn, query: String) -> Bool {
@@ -115,6 +122,10 @@ struct JournalView: View {
                     undoToast
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                         .zIndex(1)
+                } else if pendingJournalDelete != nil {
+                    journalUndoToast
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .zIndex(1)
                 }
             }
             .onDisappear {
@@ -123,6 +134,12 @@ struct JournalView: View {
                     deleteTask = nil
                     commitDelete(item)
                     pendingDelete = nil
+                }
+                if let item = pendingJournalDelete {
+                    deleteJournalTask?.cancel()
+                    deleteJournalTask = nil
+                    commitDeleteJournal(item)
+                    pendingJournalDelete = nil
                 }
             }
         }
@@ -379,6 +396,71 @@ struct JournalView: View {
         }
     }
 
+    // MARK: - Journal Delete
+
+    private func beginSoftDeleteJournal(_ journal: DailyJournal) {
+        if let prev = pendingJournalDelete, prev.id != journal.id {
+            commitDeleteJournal(prev)
+        }
+        deleteJournalTask?.cancel()
+        withAnimation(.easeOut(duration: 0.2)) {
+            pendingJournalDelete = journal
+        }
+        deleteJournalTask = Task {
+            do { try await Task.sleep(for: .seconds(3)) } catch { return }
+            withAnimation(.easeOut(duration: 0.2)) {
+                if pendingJournalDelete?.id == journal.id {
+                    pendingJournalDelete = nil
+                }
+            }
+            commitDeleteJournal(journal)
+        }
+    }
+
+    private func undoDeleteJournal() {
+        deleteJournalTask?.cancel()
+        deleteJournalTask = nil
+        withAnimation(.easeInOut(duration: 0.2)) {
+            pendingJournalDelete = nil
+        }
+    }
+
+    private func commitDeleteJournal(_ journal: DailyJournal) {
+        modelContext.delete(journal)
+        try? modelContext.save()
+    }
+
+    private var journalUndoToast: some View {
+        HStack(spacing: 0) {
+            Text(journalUndoDeletedLabel)
+                .font(.subheadline)
+                .foregroundColor(.primary)
+            Spacer()
+            Button(action: undoDeleteJournal) {
+                Text(undoActionLabel)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.cathierAccent)
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .shadow(color: .black.opacity(0.10), radius: 12, y: 4)
+        .padding(.horizontal, 20)
+        .padding(.bottom, 20)
+    }
+
+    private var journalUndoDeletedLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "日记已删除"
+        case .ja: return "日記を削除しました"
+        default:  return "Journal deleted"
+        }
+    }
+
     private func sectionTitle(for date: Date, calendar: Calendar) -> String {
         if calendar.isDateInToday(date) { return lm.journalToday }
         if calendar.isDateInYesterday(date) { return lm.journalYesterday }
@@ -417,7 +499,7 @@ struct JournalView: View {
 
     @ViewBuilder
     private var journalHistoryView: some View {
-        if journals.isEmpty {
+        if journals.isEmpty && pendingJournalDelete == nil {
             VStack(spacing: 16) {
                 Image(systemName: "book.closed")
                     .font(.system(size: 52))
@@ -432,6 +514,8 @@ struct JournalView: View {
             }
             .padding()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else if groupedJournals.isEmpty && pendingJournalDelete != nil {
+            Color.clear
         } else {
             List {
                 ForEach(groupedJournals, id: \.0) { section, entries in
@@ -445,6 +529,13 @@ struct JournalView: View {
                                     journalToEdit = journal
                                     showingJournalEntry = true
                                 }
+                                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        beginSoftDeleteJournal(journal)
+                                    } label: {
+                                        Label(lm.journalDelete, systemImage: "trash")
+                                    }
+                                }
                         }
                     }
                 }
@@ -456,7 +547,7 @@ struct JournalView: View {
     private var groupedJournals: [(String, [DailyJournal])] {
         let calendar = Calendar.current
         var groups: [String: [DailyJournal]] = [:]
-        for journal in journals {
+        for journal in filteredJournals {
             let key = sectionTitle(for: journal.date, calendar: calendar)
             groups[key, default: []].append(journal)
         }
