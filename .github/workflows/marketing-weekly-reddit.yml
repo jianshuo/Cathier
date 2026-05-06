@@ -1,0 +1,48 @@
+name: Marketing Weekly (Reddit)
+
+on:
+  schedule:
+    # Mondays 02:00 UTC = 10:00 Asia/Shanghai
+    - cron: "0 2 * * MON"
+  workflow_dispatch:
+
+jobs:
+  marketing-weekly-reddit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      id-token: write  # Required by anthropics/claude-code-action@v1 for OIDC auth
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.FEEDBACK_PAT }}
+
+      - name: Configure git
+        run: |
+          git config user.name "cathier-marketing-bot"
+          git config user.email "marketing-bot@users.noreply.github.com"
+
+      - name: Get today's date
+        id: date
+        run: echo "today=$(date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: Run Claude Code reddit orchestrator
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # No image gen / no python tests needed for reddit (text-only).
+          # Bash for git/gh; Read/Write/Edit for file authoring.
+          claude_args: "--allowedTools Bash Read Write Edit Grep Glob"
+          show_full_output: "true"
+          prompt: |
+            Read marketing/prompts/reddit-orchestrator.md and execute it.
+            Today's date: ${{ steps.date.outputs.today }}
+            You have access to: gh CLI, git.
+            Repository root is the working directory.
+            Do NOT push if no commits were made. Do NOT open a duplicate issue
+            if one with label `reddit` already exists for today.
+        env:
+          GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}

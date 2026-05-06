@@ -10,35 +10,50 @@
 
 ## 流水线步骤
 
+## 平台范围
+
+本编排负责的是 **4 个带图日更平台**：
+- xhs（中文母体）
+- x（英文短刺）
+- instagram（英文视觉）
+- facebook（英文老年友好）
+
+reddit 是另一条流水线（`reddit-orchestrator.md` + `marketing-weekly-reddit.yml`），周一才跑，本编排不管。
+
 ### 1. 选 angle
 
 读 `marketing/brain/angles.json` 与 `marketing/posts/_index.jsonl`：
 - 排除最近 14 天用过的 angle.id
 - 排除 status != "unused" 的 angle
-- 优先选 `platforms_fit` 同时包含 xhs 和 x 的（一稿双发）
-- 在符合条件的里随机选 1 个（用 `python3 -c "import random, json; ..."`）
+- 优先选 `platforms_fit` 同时包含 ≥3 个本编排平台（xhs/x/instagram/facebook）的（一稿四发）
+- 退而求其次：≥2 个本编排平台
+- 在符合条件的里随机选 1 个
 
-如果没有可选 angle → 开 issue 标 `marketing-no-angle`，标题 "No usable angle today"，body 说明并退出 0。
+如果没有可选 angle → 开 issue 标 `marketing-no-angle`，body 说明并退出 0。
 
-### 2. 起草（双平台）
+### 2. 起草（多平台并行）
 
-对所选 angle，依序调 `marketing/prompts/post-draft.md`：
-- 一次输入 platform=xhs，得到 xhs 草稿
-- 一次输入 platform=x，得到 x 草稿
+对所选 angle，依次调 `marketing/prompts/post-draft.md`，目标平台 = `angle.platforms_fit ∩ {xhs, x, instagram, facebook}`：
+- 一次 platform=xhs（如 angle 支持）
+- 一次 platform=x（如 angle 支持）
+- 一次 platform=instagram（如 angle 支持）
+- 一次 platform=facebook（如 angle 支持）
 
-将两份草稿写到临时位置（不 commit），等编辑通过再正式存盘。
+将草稿写到临时位置（不 commit），等编辑通过再正式存盘。
 
 ### 3. 编辑 pass
 
 对每一稿调 `marketing/prompts/editor-pass.md`：
 - FAIL → 把"修改要求"塞回 post-draft 重写。最多 2 轮。
-- 第 3 轮仍 FAIL → 跳过该平台。两个平台都跳过 → 整体跳过当日，开 issue 标 `marketing-failed`，附编辑反馈，退出 0。
+- 第 3 轮仍 FAIL → 跳过该平台。所有平台都跳过 → 整体跳过当日，开 issue 标 `marketing-failed`，附编辑反馈，退出 0。
 
 通过的稿子写到 `marketing/posts/{YYYY-MM-DD}/{platform}.md`。
 
 ### 4. 出图
 
 对每一份通过的稿子，调 `marketing/prompts/image-spec.md`，得到图片 prompt 列表。
+
+**省钱合并：** 如果 x / instagram / facebook 同时通过 + 同 size + image-spec 的场景描述能合并，把它们合成一次底图调用，三份输出。每份再各自 compose（标题字可能不同）。
 
 对列表中每个 entry，在仓库根目录用 `python3 -c` 执行（你有 Bash 工具）。两个模块没有 CLI 入口，必须通过 import 调用。例如：
 
@@ -86,8 +101,11 @@ git push
 通过 `gh` 开 GitHub Issue：
 - title: `marketing-ready: {YYYY-MM-DD} — {angle_id}`
 - label: `marketing-ready`
-- body: 嵌入两个平台的文案预览（用代码块）+ 图片在仓库的相对路径
-- 可选：在 body 顶部写"复制以下文案到小红书 / X"
+- body: 按平台分段（xhs / x / instagram / facebook 各一节），每节嵌入文案（代码块）+ 图片相对路径
+- body 顶部写一个"粘贴顺序"清单：先发哪个、后发哪个，例如：
+  - 立刻：xhs（北京时间 9 点）
+  - 早 12 点（美东 9 点）：instagram、facebook
+  - 晚 22 点（美东 11 点）：x
 
 ## 错误处理
 
