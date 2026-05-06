@@ -6,7 +6,6 @@ struct ContentView: View {
     @State private var plazaVM = PlazaViewModel()
     @State private var selectedTab = 0
     @Environment(LanguageManager.self) private var lm
-    @Environment(ThemeManager.self) private var themeManager
 
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -31,7 +30,7 @@ struct ContentView: View {
                     .onAppear { t("📱 SettingsView appeared") }
             }
         }
-        .tint(themeManager.accentColor)
+        .tint(.cathierAccent)
         .environment(friendVM)
         .environment(plazaVM)
         .task { await friendVM.initialize() }
