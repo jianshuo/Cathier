@@ -1113,6 +1113,54 @@ enum ClaudeService {
         return parseJoke(raw, language: language)
     }
 
+    // MARK: - Daily AI Frontier News
+
+    static func generateDailyAINews(
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> String {
+        let system: String
+        let user: String
+
+        switch language {
+        case .zh:
+            system = """
+            你是一位全球AI动态观察者，熟悉最新的AI研究进展、产品发布和行业突破。
+            任务：从你的知识范围内，选取一条最值得关注的AI前沿动态，精简成一句话（30-50字）。
+            要求：
+            - 内容必须具体，提及具体技术、模型、公司或研究成果
+            - 语气简洁、专业、有信息量
+            - 只输出这一句话，不加任何前缀、编号或额外内容
+            - 用中文输出
+            """
+            user = "请给出最前沿的AI动态，一句话概括。"
+        case .ja:
+            system = """
+            あなたはグローバルなAIトレンドのオブザーバーで、最新のAI研究、プロダクトリリース、業界の突破口に精通しています。
+            タスク：最も注目すべきAIの最前線の進展を1文（50〜80文字）で要約してください。
+            要件：
+            - 具体的な技術、モデル、企業、または研究成果に言及すること
+            - 簡潔、専門的、情報量が豊富なトーン
+            - この1文だけを出力し、接頭辞や番号は不要
+            - 日本語で出力
+            """
+            user = "最先端のAI動向を1文で教えてください。"
+        default:
+            system = """
+            You are a global AI trend observer, well-versed in the latest AI research, product launches, and industry breakthroughs.
+            Task: Select the single most noteworthy AI frontier development from your knowledge and summarize it in one sentence (20-40 words).
+            Requirements:
+            - Be specific: mention a concrete technology, model, company, or research finding
+            - Tone: concise, professional, information-dense
+            - Output only the sentence, no prefix, number, or explanation
+            - Respond in English
+            """
+            user = "Give me the most cutting-edge AI development in one sentence."
+        }
+
+        let raw = try await call(model: feedbackModel, system: system, user: user, maxTokens: 300)
+        return raw.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
     private static func parseJoke(_ raw: String, language: AppLanguage) -> (question: String, punchline: String) {
         let lines = raw
             .components(separatedBy: "\n")
