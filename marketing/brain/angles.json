@@ -7,9 +7,14 @@
       "DESIGN.md:AI Reflection Visual Language section"
     ],
     "audience": "design-conscious 同行；重度日记/手账用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
-    "used_dates": []
+    "used_dates": [
+      "2026-05-06"
+    ]
   },
   {
     "id": "anti-pastel-thesis",
@@ -19,7 +24,10 @@
       "DESIGN.md:Decisions Log:2026-03-27 (orange #F2700A)"
     ],
     "audience": "正在做产品/设计的同行；对市场上'治愈系'感到疲惫的用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -31,7 +39,10 @@
       "DESIGN.md:Check-in Flow Design"
     ],
     "audience": "对身心练习有了解的用户；正念/瑜伽/Somatic 实践者",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -43,7 +54,10 @@
       "README.md:觉察词典 section"
     ],
     "audience": "心理学爱好者；想精确表达情绪的人",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -55,7 +69,10 @@
       "DESIGN.md:Aesthetic Direction:Design thesis"
     ],
     "audience": "对'被当作病人'感到反感的用户；做产品的同行",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -68,7 +85,10 @@
       "DESIGN.md:Anti-patterns (never use pure white as screen background)"
     ],
     "audience": "对屏幕审美敏感的用户；做 UI 的同行",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -80,7 +100,10 @@
       "DESIGN.md:Decisions Log:2026-03-27 (No spring animations)"
     ],
     "audience": "对交互动效有讲究的设计师；正念/手账用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -92,7 +115,10 @@
       "DESIGN.md:Check-in Flow Design:Step transitions"
     ],
     "audience": "做交互/动效的同行；对节奏敏感的重度用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -104,7 +130,10 @@
       "DESIGN.md:Data Models:CheckIn (sensations as 'bodypart:sensation')"
     ],
     "audience": "Somatic / 身心实践者；对'感觉精确度'有要求的人",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -116,7 +145,10 @@
       "README.md:Friend Sharing (Three privacy tiers)"
     ],
     "audience": "在意社交边界的人；做隐私设计的同行",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -129,7 +161,10 @@
       "README.md:Privacy (stored locally in UserDefaults)"
     ],
     "audience": "想要个性化但又不想交数据的用户；隐私敏感人群",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -141,7 +176,10 @@
       "README.md:Privacy (stateless, no history stored server-side)"
     ],
     "audience": "对'被画像'警觉的用户；做数据合规的同行",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -154,7 +192,10 @@
       "DESIGN.md:Emotion Popover component spec"
     ],
     "audience": "想精确情绪表达的用户；对在场学习路径感兴趣的设计师",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -166,7 +207,10 @@
       "DESIGN.md:IntensityBadge (color by intensity)"
     ],
     "audience": "对身体信号敏感的用户；UX 设计师",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -178,7 +222,10 @@
       "DESIGN.md:FriendCheckInCard (Card background palette)"
     ],
     "audience": "对色彩系统好奇的设计师；用过冷冰冰社交产品的人",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -190,7 +237,9 @@
       "DESIGN.md:Decisions Log:2026-04-10 (Separate dictionary.json from emotion_config.json)"
     ],
     "audience": "iOS / 前端工程师；对启动性能讲究的人",
-    "platforms_fit": ["x"],
+    "platforms_fit": [
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -202,7 +251,10 @@
       "DESIGN.md:Pattern Insights (Prerequisite: ≥7 check-ins)"
     ],
     "audience": "厌恶 engagement hack 的用户；做产品策略的同行",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -215,7 +267,10 @@
       "README.md:AI Reflection (micro-exercise suggestions)"
     ],
     "audience": "Somatic / 正念实践者；想要可执行 next step 的用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -227,7 +282,10 @@
       "DESIGN.md:觉察词典 Design:Emotion tab (category color)"
     ],
     "audience": "色彩学习者；对情绪精细分层好奇的人",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -239,7 +297,10 @@
       "marketing/brain/voice.md:二、硬禁词 (no decorative emoji in titles)"
     ],
     "audience": "做克制设计的同行；视觉疲惫的重度用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -251,7 +312,10 @@
       "DESIGN.md:Spacing (Screen margins 20pt)"
     ],
     "audience": "对信息密度敏感的设计师；厌倦 feed 流的用户",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -262,7 +326,10 @@
       "DESIGN.md:Color:Dark Mode Palette (Background #1C1714)"
     ],
     "audience": "夜里使用 app 的人；对色彩取舍敏感的设计师",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   },
@@ -274,7 +341,10 @@
       "DESIGN.md:CheckIn data model (intensity)"
     ],
     "audience": "数据敏感的用户；产品/数据 visualisation 同行",
-    "platforms_fit": ["xhs", "x"],
+    "platforms_fit": [
+      "xhs",
+      "x"
+    ],
     "status": "unused",
     "used_dates": []
   }
