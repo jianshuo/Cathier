@@ -186,7 +186,7 @@ struct CheckInDetailView: View {
                                 .fontWeight(.semibold)
                                 .foregroundColor(.secondary)
                             Text(checkIn.note)
-                                .font(.body)
+                                .font(.cathierSerif(.body))
                                 .foregroundColor(.primary)
                                 .lineSpacing(4)
                         }

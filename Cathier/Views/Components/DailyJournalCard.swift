@@ -45,10 +45,10 @@ struct DailyJournalCard: View {
                 }
             }
 
-            // Gains text
+            // Gains text — Instrument Serif: "moments that should feel like reading a journal entry" (DESIGN.md)
             if !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
                 Text(journal.gains)
-                    .font(.body)
+                    .font(.cathierSerif(.body))
                     .foregroundColor(.primary)
                     .lineLimit(4)
                     .lineSpacing(2)

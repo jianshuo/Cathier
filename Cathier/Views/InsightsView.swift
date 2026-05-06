@@ -383,7 +383,7 @@ struct InsightsView: View {
                 .font(.system(size: 52))
                 .foregroundStyle(.secondary.opacity(0.4))
             Text(lm.insightsEmptyTitle)
-                .font(.headline)
+                .font(.cathierSerif(.headline))
                 .foregroundStyle(.secondary)
             Text(lm.insightsEmptyHint)
                 .font(.subheadline)
