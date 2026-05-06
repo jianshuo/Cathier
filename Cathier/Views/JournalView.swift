@@ -6,10 +6,14 @@ struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
     @Environment(FriendViewModel.self) private var friendVM
+    @Query(sort: \DailyJournal.date, order: .reverse) private var journals: [DailyJournal]
     @State private var showInsights = false
     @State private var searchText = ""
     @State private var pendingDelete: CheckIn? = nil
     @State private var deleteTask: Task<Void, Never>? = nil
+    @State private var selectedTab = 0
+    @State private var journalToEdit: DailyJournal? = nil
+    @State private var showingJournalEntry = false
 
     private var filteredCheckIns: [CheckIn] {
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
@@ -67,12 +71,22 @@ struct JournalView: View {
 
     var body: some View {
         NavigationStack {
-            Group {
-                if checkIns.isEmpty && pendingDelete == nil {
-                    emptyState
+            VStack(spacing: 0) {
+                tabPicker
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+
+                if selectedTab == 0 {
+                    Group {
+                        if checkIns.isEmpty && pendingDelete == nil {
+                            emptyState
+                        } else {
+                            journalContent
+                                .searchable(text: $searchText, prompt: searchPrompt)
+                        }
+                    }
                 } else {
-                    journalContent
-                        .searchable(text: $searchText, prompt: searchPrompt)
+                    journalHistoryView
                 }
             }
             .navigationTitle(lm.journalNavTitle)
@@ -90,6 +104,11 @@ struct JournalView: View {
             .sheet(isPresented: $showInsights) {
                 InsightsView()
                     .environment(lm)
+            }
+            .sheet(isPresented: $showingJournalEntry) {
+                DailyJournalEntryView(existing: journalToEdit) {
+                    journalToEdit = nil
+                }
             }
             .overlay(alignment: .bottom) {
                 if pendingDelete != nil {
@@ -366,5 +385,138 @@ struct JournalView: View {
         let formatter = DateFormatter()
         formatter.dateFormat = lm.journalDateFormat
         return formatter.string(from: date)
+    }
+
+    // MARK: - Tab Picker
+
+    private var tabPicker: some View {
+        Picker("", selection: $selectedTab) {
+            Text(checkInsTabLabel).tag(0)
+            Text(dailyJournalTabLabel).tag(1)
+        }
+        .pickerStyle(.segmented)
+    }
+
+    private var checkInsTabLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "签到"
+        case .ja: return "記録"
+        default:  return "Check-ins"
+        }
+    }
+
+    private var dailyJournalTabLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "日记"
+        case .ja: return "日記"
+        default:  return "Journal"
+        }
+    }
+
+    // MARK: - Daily Journal History
+
+    @ViewBuilder
+    private var journalHistoryView: some View {
+        if journals.isEmpty {
+            VStack(spacing: 16) {
+                Image(systemName: "book.closed")
+                    .font(.system(size: 52))
+                    .foregroundColor(.secondary.opacity(0.4))
+                Text(journalHistoryEmptyTitle)
+                    .font(.headline)
+                    .foregroundColor(.secondary)
+                Text(journalHistoryEmptyHint)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+        } else {
+            List {
+                ForEach(groupedJournals, id: \.0) { section, entries in
+                    Section(section) {
+                        ForEach(entries) { journal in
+                            journalEntryRow(journal)
+                                .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                                .listRowBackground(Color.clear)
+                                .listRowSeparator(.hidden)
+                                .onTapGesture {
+                                    journalToEdit = journal
+                                    showingJournalEntry = true
+                                }
+                        }
+                    }
+                }
+            }
+            .listStyle(.plain)
+        }
+    }
+
+    private var groupedJournals: [(String, [DailyJournal])] {
+        let calendar = Calendar.current
+        var groups: [String: [DailyJournal]] = [:]
+        for journal in journals {
+            let key = sectionTitle(for: journal.date, calendar: calendar)
+            groups[key, default: []].append(journal)
+        }
+        return groups.sorted { lhs, rhs in
+            let lDate = groups[lhs.key]?.first?.date ?? .distantPast
+            let rDate = groups[rhs.key]?.first?.date ?? .distantPast
+            return lDate > rDate
+        }
+    }
+
+    @ViewBuilder
+    private func journalEntryRow(_ journal: DailyJournal) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 8) {
+                if let mood = journal.dailyMood {
+                    Circle()
+                        .fill(mood.themeColor)
+                        .frame(width: 20, height: 20)
+                        .shadow(color: mood.themeColor.opacity(0.3), radius: 3, y: 1)
+                    Text(mood.label(for: lm.currentLanguage))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(mood.themeColor)
+                }
+                Spacer()
+                if journal.isShared {
+                    Image(systemName: "person.2.fill")
+                        .font(.caption)
+                        .foregroundColor(.cathierAccent.opacity(0.7))
+                }
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
+            }
+            if !journal.gains.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                Text(journal.gains)
+                    .font(.cathierSerif(.body))
+                    .foregroundColor(.primary)
+                    .lineLimit(3)
+                    .lineSpacing(2)
+            }
+        }
+        .padding(14)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private var journalHistoryEmptyTitle: String {
+        switch lm.currentLanguage {
+        case .zh: return "还没有日记"
+        case .ja: return "日記がありません"
+        default:  return "No journal entries yet"
+        }
+    }
+
+    private var journalHistoryEmptyHint: String {
+        switch lm.currentLanguage {
+        case .zh: return "在「此刻」页面记录今日收获"
+        case .ja: return "「今」のページで今日の気づきを記録しよう"
+        default:  return "Record today's gains from the Now tab"
+        }
     }
 }
