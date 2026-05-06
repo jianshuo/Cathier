@@ -119,6 +119,14 @@ struct JournalView: View {
             }
         } else {
             List {
+                if searchText.isEmpty && checkIns.count >= 7 {
+                    Section {
+                        lifetimeStatsCard
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                    }
+                }
                 ForEach(groupedCheckIns, id: \.0) { section, items in
                     Section(section) {
                         ForEach(items) { checkIn in
@@ -138,6 +146,109 @@ struct JournalView: View {
                 }
             }
             .listStyle(.plain)
+        }
+    }
+
+    // MARK: - Lifetime Stats Card
+
+    @ViewBuilder
+    private var lifetimeStatsCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 0) {
+                statCell(value: checkIns.count, label: statsTotalLabel)
+                Spacer()
+                statCell(value: uniquePracticeDays, label: statsDaysLabel)
+                Spacer()
+                statCell(value: distinctEmotionCount, label: statsEmotionsLabel)
+            }
+
+            if !topEmotionsAllTime.isEmpty {
+                Text(statsFrequentLabel)
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+                FlowLayout(spacing: 6) {
+                    ForEach(Array(topEmotionsAllTime.enumerated()), id: \.offset) { _, item in
+                        let color = EmotionData.category(for: item.emotion)?.color ?? .cathierAccent
+                        let emoji = EmotionData.emoji(for: item.emotion)
+                        Text(emoji.isEmpty ? lm.display(item.emotion) : "\(emoji) \(lm.display(item.emotion))")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 4)
+                            .background(color.opacity(0.12))
+                            .foregroundColor(color)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    @ViewBuilder
+    private func statCell(value: Int, label: String) -> some View {
+        VStack(alignment: .leading, spacing: 2) {
+            Text("\(value)")
+                .font(.system(.title2, design: .monospaced))
+                .fontWeight(.semibold)
+                .foregroundColor(.primary)
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var uniquePracticeDays: Int {
+        Set(checkIns.map { Calendar.current.startOfDay(for: $0.date) }).count
+    }
+
+    private var distinctEmotionCount: Int {
+        Set(checkIns.flatMap(\.emotions)).count
+    }
+
+    private var topEmotionsAllTime: [(emotion: String, count: Int)] {
+        var counts: [String: Int] = [:]
+        for ci in checkIns {
+            for e in ci.emotions { counts[e, default: 0] += 1 }
+        }
+        return counts.sorted { $0.value > $1.value }.prefix(3).map { ($0.key, $0.value) }
+    }
+
+    private var statsTotalLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "次签到"
+        case .ja: return "回の記録"
+        default:  return "check-ins"
+        }
+    }
+
+    private var statsDaysLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "练习天数"
+        case .ja: return "練習日数"
+        default:  return "days"
+        }
+    }
+
+    private var statsEmotionsLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "情绪词汇"
+        case .ja: return "感情の語彙"
+        default:  return "emotions"
+        }
+    }
+
+    private var statsFrequentLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "最常出现"
+        case .ja: return "よく現れる"
+        default:  return "most frequent"
         }
     }
 
