@@ -29,6 +29,7 @@ struct TodayView: View {
     }
 
     private var jokeService: JokeService { JokeService.shared }
+    private var aiFrontierService: AIFrontierService { AIFrontierService.shared }
 
     private var hasNewPatterns: Bool {
         let lastAnalyzed = UserDefaults.standard.integer(forKey: "lastInsightCheckInCount")
@@ -121,6 +122,10 @@ struct TodayView: View {
                     dailyJokeSection
                         .padding(.horizontal, 20)
 
+                    // AI Frontier news section
+                    aiFrontierSection
+                        .padding(.horizontal, 20)
+
                     // BrainTrainer entry
                     brainTrainerSection
                         .padding(.horizontal, 20)
@@ -149,6 +154,9 @@ struct TodayView: View {
             }
             .task(id: "joke") {
                 await jokeService.generateTodayJokeIfNeeded()
+            }
+            .task(id: "aiFrontier") {
+                await aiFrontierService.generateTodayNewsIfNeeded()
             }
             .sheet(isPresented: $showingCheckIn) {
                 CheckInFlowView()
@@ -239,6 +247,86 @@ struct TodayView: View {
                         .fill(Color.cathierAccent.opacity(0.15))
                         .frame(width: 48, height: 48)
                     Image(systemName: "cpu.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(Color.cathierAccent)
+                }
+                Text(hint)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
+                Spacer()
+                Image(systemName: "arrow.clockwise")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(16)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - AI Frontier Section
+
+    private var aiFrontierSection: some View {
+        let title: String
+        let loadingHint: String
+        let errorHint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "今日AI最前沿"
+            loadingHint = "正在检索最前沿AI动态…"
+            errorHint = "获取失败，点击重试"
+        case .ja:
+            title = "今日のAIフロンティア"
+            loadingHint = "最先端のAI動向を取得中…"
+            errorHint = "取得に失敗しました。再試行するにはタップ"
+        default:
+            title = "AI Frontier"
+            loadingHint = "Fetching today's AI frontier…"
+            errorHint = "Failed to load — tap to retry"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            if let news = aiFrontierService.todayNews {
+                AIFrontierCard(news: news) {
+                    Task { await aiFrontierService.regenerate() }
+                }
+            } else if aiFrontierService.isGenerating {
+                aiNewsLoadingCard(hint: loadingHint)
+            } else {
+                aiNewsRetryCard(hint: aiFrontierService.generateError != nil ? errorHint : loadingHint) {
+                    Task { await aiFrontierService.generateTodayNewsIfNeeded() }
+                }
+            }
+        }
+    }
+
+    private func aiNewsLoadingCard(hint: String) -> some View {
+        HStack(spacing: 14) {
+            ProgressView()
+                .tint(Color.cathierAccent)
+                .frame(width: 48, height: 48)
+            Text(hint)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Spacer()
+        }
+        .padding(16)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+
+    private func aiNewsRetryCard(hint: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 14) {
+                ZStack {
+                    Circle()
+                        .fill(Color.cathierAccent.opacity(0.15))
+                        .frame(width: 48, height: 48)
+                    Image(systemName: "sparkles")
                         .font(.system(size: 20))
                         .foregroundColor(Color.cathierAccent)
                 }
