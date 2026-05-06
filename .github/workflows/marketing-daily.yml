@@ -53,6 +53,11 @@ jobs:
         uses: anthropics/claude-code-action@v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # Allowlist the tools the orchestrator actually needs. Without this,
+          # the SDK's default permission mode deadlocks every tool call in headless
+          # workflow_dispatch (29 denials + $1.57 wasted on the first run).
+          claude_args: "--allowedTools Bash Read Write Edit Grep Glob"
+          show_full_output: "true"
           prompt: |
             Read marketing/prompts/daily-orchestrator.md and execute it.
             Today's date: ${{ steps.date.outputs.today }}
