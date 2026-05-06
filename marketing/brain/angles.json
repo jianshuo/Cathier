@@ -58,5 +58,224 @@
     "platforms_fit": ["xhs", "x"],
     "status": "unused",
     "used_dates": []
+  },
+  {
+    "id": "warm-offwhite-not-pure-white",
+    "claim": "我们的背景是 #F7F5F1 暖米白，不是 iOS 默认的纯白。让屏幕看起来像翻开一本本子，不是又一个聊天窗口。",
+    "evidence": [
+      "DESIGN.md:Color:Light Mode Palette (Background #F7F5F1)",
+      "DESIGN.md:Decisions Log:2026-03-27 (Warm off-white background)",
+      "DESIGN.md:Anti-patterns (never use pure white as screen background)"
+    ],
+    "audience": "对屏幕审美敏感的用户；做 UI 的同行",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "no-spring-animations",
+    "claim": "我们禁用 spring 动画。一个让你写下'胸口有压迫感'的 app，不能在你按下按钮时弹一下。它该像翻一页本子，不是刷一条 reels。",
+    "evidence": [
+      "DESIGN.md:Motion (Avoid .spring())",
+      "DESIGN.md:Decisions Log:2026-03-27 (No spring animations)"
+    ],
+    "audience": "对交互动效有讲究的设计师；正念/手账用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "page-turn-step-transition",
+    "claim": "三步打卡之间的过渡用 0.5 秒的 easeInOut + 横向位移——刻意像翻页，不像导航。慢，是因为情绪需要时间落地。",
+    "evidence": [
+      "DESIGN.md:Motion (Long token 0.5s easeInOut)",
+      "DESIGN.md:Check-in Flow Design:Step transitions"
+    ],
+    "audience": "做交互/动效的同行；对节奏敏感的重度用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "body-part-grouped-display",
+    "claim": "别人记录'紧绷, 压迫, 刺痛'。我们记录'头部:紧绷 / 胸口:压迫 / 喉咙:刺痛'——感觉一定要回到身体的位置上，否则只是词。",
+    "evidence": [
+      "DESIGN.md:Decisions Log:2026-04-09 (Body part + sensation grouped display)",
+      "DESIGN.md:Data Models:CheckIn (sensations as 'bodypart:sensation')"
+    ],
+    "audience": "Somatic / 身心实践者；对'感觉精确度'有要求的人",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "three-tier-friend-privacy",
+    "claim": "和朋友分享情绪打卡有三档：只看大类、看具体情绪、全部包括 AI 反思。不是隐私 toggle，是三种亲密度。",
+    "evidence": [
+      "DESIGN.md:Privacy Tiers (category / emotions / full)",
+      "README.md:Friend Sharing (Three privacy tiers)"
+    ],
+    "audience": "在意社交边界的人；做隐私设计的同行",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "context-brief-personalization",
+    "claim": "设置里有个'关于你'的多行文本框。你写一段，AI 做模式分析时会读它。不上传服务器，留在你手机里。",
+    "evidence": [
+      "DESIGN.md:Tab 4 Settings:Context Brief",
+      "README.md:Settings & Personalization (Context Brief)",
+      "README.md:Privacy (stored locally in UserDefaults)"
+    ],
+    "audience": "想要个性化但又不想交数据的用户；隐私敏感人群",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "local-first-checkin-data",
+    "claim": "你的打卡数据存在你手机的 SwiftData 里，从不进我们的服务器。AI 反馈是无状态的——发一次问一次，不积累你的画像。",
+    "evidence": [
+      "README.md:Privacy (locally on device, never sent to our servers)",
+      "README.md:Privacy (stateless, no history stored server-side)"
+    ],
+    "audience": "对'被画像'警觉的用户；做数据合规的同行",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "longpress-emotion-popover",
+    "claim": "选情绪的时候长按一个词 0.5 秒，会浮出它的释义、相近词、'深入了解'。学习不该把你拉出当下的练习。",
+    "evidence": [
+      "DESIGN.md:Decisions Log:2026-04-07 (Emotion popover on long-press)",
+      "DESIGN.md:Step 2 Emotion Labeling (Long-press popover)",
+      "DESIGN.md:Emotion Popover component spec"
+    ],
+    "audience": "想精确情绪表达的用户；对在场学习路径感兴趣的设计师",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "intensity-gradient-as-signal",
+    "claim": "强度滑块的颜色从黄到橙到红，不是为了好看——1-3 黄、4-6 橙、7-10 红，是为了让你下次看到 7 就知道身体说的是'急'。",
+    "evidence": [
+      "DESIGN.md:Step 1 Body Scan:Intensity Slider",
+      "DESIGN.md:IntensityBadge (color by intensity)"
+    ],
+    "audience": "对身体信号敏感的用户；UX 设计师",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "deterministic-friend-tint",
+    "claim": "好友 feed 里每个人的卡片有自己的暖色底——sage / peach / lavender / wheat / sky 五选一，按 CloudKit 名字 hash 决定。不用头像也认得出谁。",
+    "evidence": [
+      "DESIGN.md:Decisions Log:2026-04-10 (Per-person card tint in friend feed)",
+      "DESIGN.md:FriendCheckInCard (Card background palette)"
+    ],
+    "audience": "对色彩系统好奇的设计师；用过冷冰冰社交产品的人",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "dictionary-load-on-demand",
+    "claim": "我们把情绪词典拆成两个文件：30KB 的 emotion_config 启动时加载，285KB 的 dictionary 进了词典页才加载。冷启动不能让用户等。",
+    "evidence": [
+      "DESIGN.md:Data Files (emotion_config.json ~30KB / dictionary.json ~285KB)",
+      "DESIGN.md:Decisions Log:2026-04-10 (Separate dictionary.json from emotion_config.json)"
+    ],
+    "audience": "iOS / 前端工程师；对启动性能讲究的人",
+    "platforms_fit": ["x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "pattern-insights-gated-at-seven",
+    "claim": "Pattern Insights 要打满 7 次卡才解锁，不是 24 小时内推两条 push。模式不是急出来的，是攒出来的。",
+    "evidence": [
+      "README.md:Pattern Insights (requires 7+ check-ins)",
+      "DESIGN.md:Pattern Insights (Prerequisite: ≥7 check-ins)"
+    ],
+    "audience": "厌恶 engagement hack 的用户；做产品策略的同行",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "micro-exercise-tailored",
+    "claim": "AI 反馈写完之后会给你一个微练习——呼吸、grounding 或身体觉察，是按你这次选的部位和感受配的，不是随机推荐。",
+    "evidence": [
+      "DESIGN.md:Micro-Exercise Design",
+      "DESIGN.md:Step 3 AI Feedback (Micro-Exercise Button)",
+      "README.md:AI Reflection (micro-exercise suggestions)"
+    ],
+    "audience": "Somatic / 正念实践者；想要可执行 next step 的用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "nine-categories-own-color",
+    "claim": "9 个情绪大类各自有颜色——激情红橙、快乐金黄、平静水蓝、爱粉、愤怒火红、恐惧紫、悲伤蓝灰、羞愧棕、惊讶橙。颜色是分类的语言。",
+    "evidence": [
+      "DESIGN.md:Data Models:Emotion Category (9 categories with hex)",
+      "DESIGN.md:觉察词典 Design:Emotion tab (category color)"
+    ],
+    "audience": "色彩学习者；对情绪精细分层好奇的人",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "no-decoration-anti-patterns",
+    "claim": "不用渐变背景、不用 3 列图标网格、不用装饰性 blob、不用 emoji 在标题里。Cathier 的'好看'是减法。",
+    "evidence": [
+      "DESIGN.md:Anti-patterns (full list)",
+      "marketing/brain/voice.md:二、硬禁词 (no decorative emoji in titles)"
+    ],
+    "audience": "做克制设计的同行；视觉疲惫的重度用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "comfortable-density-not-feed",
+    "claim": "8pt 是基础单元，屏幕横边距 20pt——我们刻意做'comfortable'密度。Cathier 的目标是让你像翻书，不是像滑 feed。",
+    "evidence": [
+      "DESIGN.md:Spacing (Base unit 8pt, Density Comfortable)",
+      "DESIGN.md:Spacing (Screen margins 20pt)"
+    ],
+    "audience": "对信息密度敏感的设计师；厌倦 feed 流的用户",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "dark-mode-walnut",
+    "claim": "深色模式我们用 #1C1714 深胡桃，不是纯黑。理由很笨：晚上写情绪日记的人，不需要再被一块黑屏吸光。",
+    "evidence": [
+      "DESIGN.md:Color:Dark Mode Palette (Background #1C1714)"
+    ],
+    "audience": "夜里使用 app 的人；对色彩取舍敏感的设计师",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
+  },
+  {
+    "id": "intensity-baseline-context",
+    "claim": "打开一条历史打卡，会看到这次强度对比你 30 天的基线。一个 7 分对一向 4 分的人是警报，对一向 8 分的人是回落。",
+    "evidence": [
+      "git log:eed82c6 feat: show intensity baseline context in check-in detail",
+      "DESIGN.md:CheckIn data model (intensity)"
+    ],
+    "audience": "数据敏感的用户；产品/数据 visualisation 同行",
+    "platforms_fit": ["xhs", "x"],
+    "status": "unused",
+    "used_dates": []
   }
 ]
