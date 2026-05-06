@@ -15,6 +15,7 @@ struct AIFeedbackView: View {
     @State private var selectedPlazaTier: FriendCheckIn.PrivacyTier? = nil
     @State private var shareAIFeedback: Bool = false
     @State private var showExercise = false
+    @State private var showMeditation = false
     @State private var aiFeedbackCopied = false
     @State private var isSavingPlaza = false
     @State private var plazaError: String?
@@ -37,6 +38,7 @@ struct AIFeedbackView: View {
 
                 if !viewModel.aiFeedback.isEmpty && !viewModel.isLoadingAI {
                     exerciseButton
+                    meditationButton
                 }
 
                 VStack(alignment: .leading, spacing: 8) {
@@ -113,6 +115,14 @@ struct AIFeedbackView: View {
             )
             .environment(lm)
         }
+        .sheet(isPresented: $showMeditation) {
+            GuidedMeditationView(
+                bodyParts: Array(viewModel.selectedBodyParts),
+                sensations: viewModel.encodedSensations,
+                emotions: viewModel.allEmotions
+            )
+            .environment(lm)
+        }
     }
 
     // MARK: - Micro-exercise button
@@ -129,6 +139,35 @@ struct AIFeedbackView: View {
                         .fontWeight(.medium)
                         .foregroundColor(.primary)
                     Text(lm.exerciseTryHint)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            .padding(14)
+            .background(Color.cathierAccentLight)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+        .buttonStyle(.plain)
+    }
+
+    // MARK: - Guided meditation button
+
+    private var meditationButton: some View {
+        Button(action: { showMeditation = true }) {
+            HStack(spacing: 10) {
+                Image(systemName: "ear")
+                    .font(.subheadline)
+                    .foregroundColor(.cathierAccent)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(lm.meditationTryThis)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.primary)
+                    Text(lm.meditationTryHint)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }

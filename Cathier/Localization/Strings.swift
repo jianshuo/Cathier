@@ -90,6 +90,19 @@ extension LanguageManager {
     var exerciseTryThis: String   { localized("exercise.try_this") }
     var exerciseTryHint: String   { localized("exercise.try_hint") }
 
+    // MARK: GuidedMeditationView
+    var meditationNavTitle: String { localized("meditation.nav_title") }
+    var meditationLoading: String  { localized("meditation.loading") }
+    var meditationRetry: String    { localized("meditation.retry") }
+    var meditationPlay: String     { localized("meditation.play") }
+    var meditationPause: String    { localized("meditation.pause") }
+    var meditationResume: String   { localized("meditation.resume") }
+    var meditationStop: String     { localized("meditation.stop") }
+    var meditationDone: String     { localized("meditation.done") }
+    var meditationClose: String    { localized("meditation.close") }
+    var meditationTryThis: String  { localized("meditation.try_this") }
+    var meditationTryHint: String  { localized("meditation.try_hint") }
+
     // MARK: Privacy Tier
     var tierCategoryName: String        { localized("tier.category_name") }
     var tierCategoryDesc: String        { localized("tier.category_desc") }

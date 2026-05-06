@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "광장에서 감정 카테고리와 강도만 표시";
 "plaza.tier_emotions_desc" = "광장에서 구체적인 감정 단어 표시";
 "plaza.tier_full_desc" = "메모 포함 모든 내용 표시";
+
+/* Guided Meditation */
+"meditation.nav_title" = "가이드 명상";
+"meditation.loading" = "가이드 스크립트 생성 중…";
+"meditation.retry" = "다시 시도";
+"meditation.play" = "가이드 재생";
+"meditation.pause" = "일시정지";
+"meditation.resume" = "계속";
+"meditation.stop" = "종료";
+"meditation.done" = "가이드 완료";
+"meditation.close" = "닫기";
+"meditation.try_this" = "가이드 명상";
+"meditation.try_hint" = "신체 스캔 및 감정 시각화, 약 3분";

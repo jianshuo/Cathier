@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "Plaza sees emotion category and intensity only";
 "plaza.tier_emotions_desc" = "Plaza sees specific emotion words";
 "plaza.tier_full_desc" = "Plaza sees everything including notes";
+
+/* Guided Meditation */
+"meditation.nav_title" = "निर्देशित ध्यान";
+"meditation.loading" = "आपकी गाइड स्क्रिप्ट बनाई जा रही है…";
+"meditation.retry" = "पुनः प्रयास करें";
+"meditation.play" = "गाइड चलाएं";
+"meditation.pause" = "रोकें";
+"meditation.resume" = "जारी रखें";
+"meditation.stop" = "बंद करें";
+"meditation.done" = "गाइड पूर्ण";
+"meditation.close" = "बंद करें";
+"meditation.try_this" = "निर्देशित ध्यान";
+"meditation.try_hint" = "बॉडी स्कैन और भावना विज़ुअलाइज़ेशन, ~3 मिनट";

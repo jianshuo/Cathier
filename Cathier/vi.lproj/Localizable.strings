@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "Quảng trường chỉ thấy danh mục và cường độ";
 "plaza.tier_emotions_desc" = "Quảng trường thấy từ cảm xúc cụ thể";
 "plaza.tier_full_desc" = "Quảng trường thấy tất cả, kể cả ghi chú";
+
+/* Guided Meditation */
+"meditation.nav_title" = "Thiền Có Hướng Dẫn";
+"meditation.loading" = "Đang tạo kịch bản hướng dẫn…";
+"meditation.retry" = "Thử lại";
+"meditation.play" = "Phát hướng dẫn";
+"meditation.pause" = "Tạm dừng";
+"meditation.resume" = "Tiếp tục";
+"meditation.stop" = "Dừng";
+"meditation.done" = "Hoàn thành hướng dẫn";
+"meditation.close" = "Đóng";
+"meditation.try_this" = "Thiền có hướng dẫn";
+"meditation.try_hint" = "Quét cơ thể và hình dung cảm xúc, ~3 phút";

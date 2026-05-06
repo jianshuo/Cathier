@@ -271,3 +271,16 @@
 "plaza.tier_category_desc" = "La Place voit la catégorie et l'intensité seulement";
 "plaza.tier_emotions_desc" = "La Place voit les mots d'émotion spécifiques";
 "plaza.tier_full_desc" = "La Place voit tout, y compris les notes";
+
+/* Guided Meditation */
+"meditation.nav_title" = "Méditation Guidée";
+"meditation.loading" = "Génération de votre script guidé…";
+"meditation.retry" = "Réessayer";
+"meditation.play" = "Lire le guide";
+"meditation.pause" = "Pause";
+"meditation.resume" = "Reprendre";
+"meditation.stop" = "Arrêter";
+"meditation.done" = "Guidage terminé";
+"meditation.close" = "Fermer";
+"meditation.try_this" = "Méditation guidée";
+"meditation.try_hint" = "Scan corporel et visualisation émotionnelle, ~3 min";
