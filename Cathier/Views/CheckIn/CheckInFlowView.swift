@@ -10,30 +10,29 @@ struct CheckInFlowView: View {
 
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                StepIndicatorView(currentStep: viewModel.currentStep)
-                    .padding(.top, 8)
-                    .padding(.horizontal, 24)
-
-                Group {
-                    switch viewModel.currentStep {
-                    case .bodyScan:
-                        BodyScanView()
-                    case .emotionLabel:
-                        EmotionLabelView(onSkip: {
-                            _ = viewModel.save(context: modelContext)
-                            dismiss()
-                        })
-                    case .aiFeedback:
-                        AIFeedbackView(onDismiss: { dismiss() })
-                    }
+            Group {
+                switch viewModel.currentStep {
+                case .bodyScan:
+                    BodyScanView()
+                case .emotionLabel:
+                    EmotionLabelView(onSkip: {
+                        _ = viewModel.save(context: modelContext)
+                        dismiss()
+                    })
+                case .aiFeedback:
+                    AIFeedbackView(onDismiss: { dismiss() })
                 }
-                .environment(viewModel)
-                .transition(reduceMotion
-                    ? .opacity
-                    : .asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
-                )
-                .animation(.easeInOut(duration: reduceMotion ? 0.2 : 0.3), value: viewModel.currentStep)
+            }
+            .environment(viewModel)
+            .transition(reduceMotion
+                ? .opacity
+                : .asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
+            )
+            .animation(.easeInOut(duration: reduceMotion ? 0.2 : 0.3), value: viewModel.currentStep)
+            .safeAreaInset(edge: .bottom, spacing: 0) {
+                StepProgressBar(currentStep: viewModel.currentStep)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
             }
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
@@ -54,34 +53,24 @@ struct CheckInFlowView: View {
     }
 }
 
-// MARK: - Step Indicator
+// MARK: - Step Progress Bar
 
-private struct StepIndicatorView: View {
+private struct StepProgressBar: View {
     let currentStep: CheckInStep
     private let steps = CheckInStep.allCases
 
     var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(steps.enumerated()), id: \.offset) { index, step in
-                let isCompleted = stepIndex(step) < stepIndex(currentStep)
-                let isCurrent = step == currentStep
-                Circle()
-                    .fill(isCompleted || isCurrent ? Color.cathierAccent : Color(.systemGray4))
-                    .frame(width: 10, height: 10)
-                    .overlay(
-                        Circle()
-                            .stroke(isCurrent ? Color.cathierAccent : Color.clear, lineWidth: 2)
-                            .frame(width: 16, height: 16)
-                    )
-                if index < steps.count - 1 {
-                    Rectangle()
-                        .fill(isCompleted ? Color.cathierAccent : Color(.systemGray4))
-                        .frame(height: 2)
-                }
+        HStack(spacing: 6) {
+            ForEach(Array(steps.enumerated()), id: \.offset) { _, step in
+                Capsule()
+                    .fill(stepIndex(step) <= stepIndex(currentStep)
+                          ? Color.cathierAccent
+                          : Color.cathierAccent.opacity(0.18))
+                    .frame(height: 4)
+                    .animation(.easeOut(duration: 0.2), value: currentStep)
             }
         }
-        .padding(.vertical, 16)
-        .animation(.easeInOut(duration: 0.3), value: currentStep)
+        .accessibilityHidden(true)
     }
 
     private func stepIndex(_ step: CheckInStep) -> Int {
