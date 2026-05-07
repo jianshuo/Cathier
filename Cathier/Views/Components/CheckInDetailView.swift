@@ -201,6 +201,12 @@ struct CheckInDetailView: View {
             .navigationTitle(lm.detailNavTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    ShareLink(item: fullCheckInSummaryText) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel(shareFullLabel)
+                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button(lm.detailDone) { dismiss() }
                 }
@@ -357,6 +363,106 @@ struct CheckInDetailView: View {
                 .joined(separator: "\n\n")
         }
         return checkIn.aiFeedback
+    }
+
+    private var shareFullLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "分享记录"
+        case .ja: return "記録を共有"
+        default:  return "Share record"
+        }
+    }
+
+    private var fullCheckInSummaryText: String {
+        var lines: [String] = []
+
+        lines.append("\(dateString)  \(timeString)")
+        lines.append("")
+
+        let intensityLabel: String
+        switch lm.currentLanguage {
+        case .zh: intensityLabel = "强度"
+        case .ja: intensityLabel = "強度"
+        default:  intensityLabel = "Intensity"
+        }
+        lines.append("\(intensityLabel): \(checkIn.intensity)/10")
+
+        if !checkIn.bodyParts.isEmpty || !checkIn.sensations.isEmpty {
+            lines.append("")
+            let bodyLabel: String
+            switch lm.currentLanguage {
+            case .zh: bodyLabel = "身体部位"
+            case .ja: bodyLabel = "身体部位"
+            default:  bodyLabel = "Body"
+            }
+            lines.append("\(bodyLabel):")
+            let parsed = parsedSensations(checkIn.sensations)
+            if parsed.perPart.isEmpty {
+                for part in checkIn.bodyParts {
+                    lines.append("· \(lm.display(part))")
+                }
+            } else {
+                for entry in parsed.perPart {
+                    let sensStr = entry.sensations.map { lm.display($0) }.joined(separator: ", ")
+                    lines.append("· \(lm.display(entry.part)): \(sensStr)")
+                }
+            }
+        }
+
+        if !checkIn.emotions.isEmpty {
+            lines.append("")
+            let emotionLabel: String
+            switch lm.currentLanguage {
+            case .zh: emotionLabel = "情绪"
+            case .ja: emotionLabel = "気持ち"
+            default:  emotionLabel = "Emotions"
+            }
+            lines.append("\(emotionLabel): \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))")
+        }
+
+        let trigger = checkIn.triggerEvent.trimmingCharacters(in: .whitespaces)
+        if !trigger.isEmpty {
+            lines.append("")
+            let triggerLabel: String
+            switch lm.currentLanguage {
+            case .zh: triggerLabel = "发生了什么"
+            case .ja: triggerLabel = "きっかけ"
+            default:  triggerLabel = "Trigger"
+            }
+            lines.append("\(triggerLabel): \(trigger)")
+        }
+
+        if !checkIn.aiFeedback.isEmpty {
+            lines.append("")
+            let aiLabel: String
+            switch lm.currentLanguage {
+            case .zh: aiLabel = "AI 觉察"
+            case .ja: aiLabel = "AI の気づき"
+            default:  aiLabel = "AI Reflection"
+            }
+            lines.append("\(aiLabel):")
+            if let s = StructuredFeedback.parse(checkIn.aiFeedback) {
+                let parts = [s.summary, s.insight, s.connection, s.suggestion].filter { !$0.isEmpty }
+                lines.append(parts.joined(separator: "\n\n"))
+            } else {
+                lines.append(checkIn.aiFeedback)
+            }
+        }
+
+        let note = checkIn.note.trimmingCharacters(in: .whitespaces)
+        if !note.isEmpty {
+            lines.append("")
+            let noteLabel: String
+            switch lm.currentLanguage {
+            case .zh: noteLabel = "我的想法"
+            case .ja: noteLabel = "メモ"
+            default:  noteLabel = "Notes"
+            }
+            lines.append("\(noteLabel):")
+            lines.append(note)
+        }
+
+        return lines.joined(separator: "\n")
     }
 
     // MARK: - Helpers
