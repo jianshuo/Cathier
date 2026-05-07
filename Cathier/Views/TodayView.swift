@@ -165,8 +165,15 @@ struct TodayView: View {
                 CheckInFlowView()
             }
             .sheet(isPresented: $showingJokeHistory) {
-                JokeHistoryView()
-                    .environment(lm)
+                NavigationStack {
+                    JokeHistoryView()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(jokeSheetDoneLabel) { showingJokeHistory = false }
+                            }
+                        }
+                }
+                .environment(lm)
             }
             .sheet(isPresented: $showingInsights) {
                 InsightsView()
@@ -820,6 +827,14 @@ struct TodayView: View {
             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
         }
         .buttonStyle(.plain)
+    }
+
+    private var jokeSheetDoneLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "完成"
+        case .ja: return "完了"
+        default:  return "Done"
+        }
     }
 }
 
