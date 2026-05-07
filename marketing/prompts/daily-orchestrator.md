@@ -5,7 +5,10 @@
 ## 工作目录约定
 
 - 仓库根目录运行
-- 当日产出落到 `marketing/posts/{YYYY-MM-DD}/`（YYYY-MM-DD 由 `date +%F` 取）
+- 当日产出落到 `marketing/posts/{run-slug}/`，命名规则：
+  - 首选 `{YYYY-MM-DD}`（用 workflow 传进来的 today，已是 Asia/Shanghai 日期；如自己取就 `TZ=Asia/Shanghai date +%F`）
+  - 如该目录已存在（说明今天已经跑过一次），改用 `{YYYY-MM-DD}-{HHMM}`（由 `TZ=Asia/Shanghai date +%F-%H%M` 取，HHMM 也是北京时间）。允许同一天多份并存，不要覆盖
+  - 后续步骤里所有 `{YYYY-MM-DD}` 路径占位符都改成实际的 `{run-slug}`
 - 索引追加到 `marketing/posts/_index.jsonl`
 
 ## 流水线步骤
@@ -56,7 +59,7 @@ reddit 是另一条流水线（`reddit-orchestrator.md` + `marketing-weekly-redd
 - FAIL → 把"修改要求"塞回 post-draft 重写。最多 2 轮。
 - 第 3 轮仍 FAIL → 跳过该平台。所有平台都跳过 → 整体跳过当日，开 issue 标 `marketing-failed`，附编辑反馈，退出 0。
 
-通过的稿子写到 `marketing/posts/{YYYY-MM-DD}/{platform}.md`。
+通过的稿子写到 `marketing/posts/{run-slug}/{platform}.md`。
 
 ### 4. 出图
 
@@ -75,7 +78,7 @@ import os
 img = generate_image(
     prompt='<品牌前缀+场景>',
     size='1024x1536',
-    output_path=Path('marketing/posts/2026-05-07/xiaohongshu-1.png'),
+    output_path=Path('marketing/posts/{run-slug}/xiaohongshu-1.png'),  # 用实际 run-slug 替换
     api_key=os.environ['OPENAI_API_KEY'],
 )
 compose(
@@ -89,30 +92,32 @@ compose(
 
 ### 5. 索引追加
 
-为每个产出的 post 追加一行到 `marketing/posts/_index.jsonl`：
+为每个产出的 post 追加一行到 `marketing/posts/_index.jsonl`。`folder` 字段记录实际目录名，便于同日多次运行时区分：
 
 ```json
-{"date": "2026-05-07", "platform": "xhs", "angle_id": "instrument-serif-rationale", "status": "ready", "files": ["xiaohongshu.md", "xiaohongshu-1.png", ...]}
+{"date": "2026-05-07", "folder": "2026-05-07", "platform": "xhs", "angle_id": "instrument-serif-rationale", "status": "ready", "files": ["xiaohongshu.md", "xiaohongshu-1.png", ...]}
 ```
+
+如同日二次运行，`folder` 形如 `"2026-05-07-1430"`（UTC HHMM），`date` 仍为当天日期。`files` 路径相对于 `marketing/posts/{folder}/`。
 
 将所选 angle 在 `angles.json` 中的 `used_dates` 追加今日日期，`status` 仍为 "unused"（angle 可被复用，只是 14 天内不会被选）。
 
 ### 6. Commit
 
 ```bash
-git add marketing/posts/{YYYY-MM-DD}/ marketing/posts/_index.jsonl marketing/brain/angles.json
-git commit -m "marketing: daily content {YYYY-MM-DD} — {angle_id}"
+git add marketing/posts/{run-slug}/ marketing/posts/_index.jsonl marketing/brain/angles.json
+git commit -m "marketing: daily content {run-slug} — {angle_id}"
 git push
 ```
 
 ### 7. 通知
 
-通过 `gh` 开 GitHub Issue：
-- title: `marketing-ready: {YYYY-MM-DD} — {angle_id}`
+通过 `gh` 开 GitHub Issue（每次运行都开一个，不去重——同日多次跑就开多个 issue）：
+- title: `marketing-ready: {run-slug} — {angle_id}`
 - label: `marketing-ready`
-- body: 按平台分段（xhs / x / instagram / facebook 各一节），每节嵌入文案（代码块）+ 图片相对路径
+- body: 按平台分段（xhs / x / instagram / facebook 各一节），每节嵌入文案（代码块）+ 图片相对路径（路径里用实际的 run-slug）
 - body 顶部写一个"粘贴顺序"清单：先发哪个、后发哪个，例如：
-  - 立刻：xhs（北京时间 9 点）
+  - 立刻：xhs（北京时间 6 点）
   - 早 12 点（美东 9 点）：instagram、facebook
   - 晚 22 点（美东 11 点）：x
 
