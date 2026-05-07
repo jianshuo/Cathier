@@ -87,8 +87,10 @@ extension LanguageManager {
     var exerciseStop: String      { localized("exercise.stop") }
     var exerciseDone: String      { localized("exercise.done") }
     var exerciseClose: String     { localized("exercise.close") }
-    var exerciseTryThis: String   { localized("exercise.try_this") }
-    var exerciseTryHint: String   { localized("exercise.try_hint") }
+    var exerciseTryThis: String     { localized("exercise.try_this") }
+    var exerciseTryHint: String     { localized("exercise.try_hint") }
+    var exerciseListenAudio: String { localized("exercise.listen_audio") }
+    var exerciseAudioDone: String   { localized("exercise.audio_done") }
 
     // MARK: GuidedMeditationView
     var meditationNavTitle: String { localized("meditation.nav_title") }
