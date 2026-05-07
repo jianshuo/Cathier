@@ -164,6 +164,14 @@ struct JournalView: View {
                             .listRowSeparator(.hidden)
                     }
                 }
+                if searchText.isEmpty && checkIns.count > 0 && checkIns.count < 7 {
+                    Section {
+                        insightProgressCard
+                            .listRowInsets(EdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 16))
+                            .listRowBackground(Color.clear)
+                            .listRowSeparator(.hidden)
+                    }
+                }
                 ForEach(groupedCheckIns, id: \.0) { section, items in
                     Section(section) {
                         ForEach(items) { checkIn in
@@ -609,6 +617,83 @@ struct JournalView: View {
         case .zh: return "在「此刻」页面记录今日收获"
         case .ja: return "「今」のページで今日の気づきを記録しよう"
         default:  return "Record today's gains from the Now tab"
+        }
+    }
+
+    // MARK: - Insight Progress Card (shown when checkIns.count < 7)
+
+    @ViewBuilder
+    private var insightProgressCard: some View {
+        let progress = Double(checkIns.count) / 7.0
+        let remaining = 7 - checkIns.count
+
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "chart.line.uptrend.xyaxis")
+                    .font(.caption)
+                    .foregroundColor(.cathierAccent)
+                Text(insightProgressSectionLabel)
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+            }
+
+            ZStack(alignment: .leading) {
+                Capsule()
+                    .fill(Color.cathierAccent.opacity(0.15))
+                    .frame(height: 4)
+                Capsule()
+                    .fill(Color.cathierAccent)
+                    .frame(height: 4)
+                    .scaleEffect(x: max(0, progress), y: 1, anchor: .leading)
+            }
+            .accessibilityHidden(true)
+
+            HStack(alignment: .firstTextBaseline, spacing: 4) {
+                Text("\(checkIns.count)")
+                    .font(.system(.title2, design: .monospaced))
+                    .fontWeight(.semibold)
+                    .foregroundColor(.primary)
+                Text("/7")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                Spacer()
+                Text(insightProgressHint(remaining: remaining))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.cathierSurface)
+        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel(insightProgressAccessibilityLabel(remaining: remaining))
+    }
+
+    private var insightProgressSectionLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "规律洞察"
+        case .ja: return "パターン洞察"
+        default:  return "Pattern Insights"
+        }
+    }
+
+    private func insightProgressHint(remaining: Int) -> String {
+        switch lm.currentLanguage {
+        case .zh: return "还差 \(remaining) 次解锁"
+        case .ja: return "あと \(remaining) 回で解放"
+        default:  return "\(remaining) more to unlock"
+        }
+    }
+
+    private func insightProgressAccessibilityLabel(remaining: Int) -> String {
+        switch lm.currentLanguage {
+        case .zh: return "规律洞察：已完成 \(checkIns.count) 次，还差 \(remaining) 次解锁"
+        case .ja: return "パターン洞察：\(checkIns.count) 回完了、あと \(remaining) 回で解放"
+        default:  return "Pattern Insights: \(checkIns.count) of 7 completed, \(remaining) more to unlock"
         }
     }
 }
