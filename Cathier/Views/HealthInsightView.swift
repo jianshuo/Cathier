@@ -9,40 +9,31 @@ struct HealthInsightView: View {
     @State private var aiInsight: String? = nil
     @State private var isAnalyzing = false
     @State private var analysisError: String? = nil
-    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    if !service.isAvailable {
-                        unavailableView
-                    } else if service.authStatus == .notDetermined {
-                        requestAccessCard
-                    } else if service.isLoading {
-                        loadingView
-                    } else {
-                        metricsGrid
-                        if !service.summary.weeklySteps.isEmpty {
-                            weeklyStepsChart
-                        }
-                        aiInsightSection
+        ScrollView {
+            VStack(spacing: 24) {
+                if !service.isAvailable {
+                    unavailableView
+                } else if service.authStatus == .notDetermined {
+                    requestAccessCard
+                } else if service.isLoading {
+                    loadingView
+                } else {
+                    metricsGrid
+                    if !service.summary.weeklySteps.isEmpty {
+                        weeklyStepsChart
                     }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 40)
-            }
-            .background(Color.cathierBackground)
-            .navigationTitle(navTitle)
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(lm.checkInCancel) { dismiss() }
-                        .foregroundColor(.cathierAccent)
+                    aiInsightSection
                 }
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 40)
         }
+        .background(Color.cathierBackground)
+        .navigationTitle(navTitle)
+        .navigationBarTitleDisplayMode(.large)
         .task {
             if service.authStatus == .requested {
                 await service.loadData()

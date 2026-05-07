@@ -196,8 +196,16 @@ struct TodayView: View {
                 }
             }
             .sheet(isPresented: $showingHealth) {
-                HealthInsightView()
-                    .environment(lm)
+                NavigationStack {
+                    HealthInsightView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button(healthSheetCancelLabel) { showingHealth = false }
+                                    .foregroundColor(.cathierAccent)
+                            }
+                        }
+                }
+                .environment(lm)
             }
         }
     }
@@ -845,6 +853,14 @@ struct TodayView: View {
     }
 
     private var brainTrainerSheetCancelLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "取消"
+        case .ja: return "キャンセル"
+        default:  return "Cancel"
+        }
+    }
+
+    private var healthSheetCancelLabel: String {
         switch lm.currentLanguage {
         case .zh: return "取消"
         case .ja: return "キャンセル"
