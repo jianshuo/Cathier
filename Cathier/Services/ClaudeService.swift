@@ -41,6 +41,26 @@ struct StructuredFeedback: Codable {
     }
 }
 
+struct MusicRecommendation: Codable {
+    var mood: String
+    var description: String
+    var genres: [String]
+    var searchQuery: String
+
+    static func parse(_ text: String) -> MusicRecommendation? {
+        var jsonText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        if jsonText.hasPrefix("```") {
+            let lines = jsonText.components(separatedBy: "\n")
+            let inner = lines.dropFirst().prefix(while: { !$0.hasPrefix("```") })
+            jsonText = inner.joined(separator: "\n").trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        guard let data = jsonText.data(using: .utf8),
+              let decoded = try? JSONDecoder().decode(MusicRecommendation.self, from: data)
+        else { return nil }
+        return decoded
+    }
+}
+
 // Anthropic wire format
 private struct ClaudeResponse: Decodable {
     let content: [ContentBlock]
@@ -1278,5 +1298,82 @@ enum ClaudeService {
         if punchline.isEmpty, lines.count >= 2 { punchline = lines[1] }
 
         return (question, punchline)
+    }
+
+    // MARK: - Body Music Recommendation
+
+    static func generateMusicRecommendation(
+        bodyParts: [String],
+        sensations: [String],
+        intensity: Int,
+        emotions: [String],
+        language: AppLanguage = LanguageManager.shared.currentLanguage
+    ) async throws -> MusicRecommendation {
+        let lm = LanguageManager.shared
+        let parsed = parseBodySensations(sensations)
+
+        let system: String
+        let user: String
+
+        switch language {
+        case .zh:
+            system = """
+            你是「觉察」（Cathier）App 的身心音乐顾问。用户刚完成了一次身体扫描，你需要根据他们的身体状态推荐一段最适合此刻的音乐。
+
+            你的回应必须是以下格式的合法 JSON，不加任何说明文字或代码块：
+            {"mood":"用2-4个词描述此刻适合的音乐情绪（如：舒缓、内省、有力量的）","description":"用2-3句话解释为什么这种音乐适合用户此刻的身心状态，语气温暖，像一位懂音乐的朋友","genres":["推荐的音乐风格1","推荐的音乐风格2"],"searchQuery":"适合在流媒体平台搜索的英文关键词，3-5个词"}
+
+            推荐原则：
+            - 高强度（7-10）→ 考虑有结构感的音乐（neo-classical, minimal techno, drone）
+            - 中强度（4-6）→ 考虑流动感的音乐（ambient, lo-fi, indie folk）
+            - 低强度（1-3）→ 考虑轻盈或空灵的音乐（minimalism, nature sounds, soft jazz）
+            - 胸口紧绷、压迫感 → 避免快节奏，选择缓慢展开的音乐
+            - 情绪积极 → 可以稍微明亮有活力
+            - 情绪低落/悲伤 → 选择陪伴而非强行振奋的音乐
+            """
+            let partsStr = bodyParts.isEmpty ? "未指定" : bodyParts.joined(separator: "、")
+            let emosStr = emotions.isEmpty ? "未标记" : emotions.joined(separator: "、")
+            var sensesStr = ""
+            if !parsed.perPart.isEmpty {
+                sensesStr = parsed.perPart.map { "\($0.part)：\($0.sensations.joined(separator: "、"))" }.joined(separator: "；")
+            }
+            user = "身体部位：\(partsStr)\n感受：\(sensesStr.isEmpty ? "未指定" : sensesStr)\n情绪：\(emosStr)\n强度：\(intensity)/10\n\n请为我推荐此刻最适合的音乐。"
+
+        case .ja:
+            system = """
+            あなたはCathier（覚察）アプリの心身音楽アドバイザーです。ユーザーはボディスキャンを完了しました。身体状態に最も合った音楽を推薦してください。
+
+            以下の形式の有効なJSONのみを出力してください：
+            {"mood":"今この瞬間に合う音楽の雰囲気を2〜4語で（例：穏やか、内省的、力強い）","description":"この音楽がユーザーの今の心身状態に合う理由を2〜3文で、温かい友人のような口調で","genres":["推薦ジャンル1","推薦ジャンル2"],"searchQuery":"ストリーミングサービスで検索するための英語キーワード3〜5語"}
+            """
+            let partsStr = bodyParts.map { lm.display($0) }.joined(separator: "、")
+            let emosStr = emotions.map { lm.display($0) }.joined(separator: "、")
+            user = "身体部位：\(partsStr.isEmpty ? "未指定" : partsStr)\n感情：\(emosStr.isEmpty ? "不明" : emosStr)\n強度：\(intensity)/10\n\n今この瞬間に最も合った音楽を推薦してください。"
+
+        default:
+            system = """
+            You are the mind-body music advisor for Cathier — an emotion perception training app. The user just completed a body scan. Recommend music that best matches their current physical and emotional state.
+
+            Your response must be valid JSON only, with no additional text or code blocks:
+            {"mood":"2-4 words describing the ideal music mood for this moment (e.g. calm, introspective, grounding)","description":"2-3 sentences explaining why this music fits the user's current body-mind state, warm and personal tone","genres":["recommended genre 1","recommended genre 2"],"searchQuery":"3-5 English keywords suitable for searching on a streaming platform"}
+
+            Matching principles:
+            - High intensity (7-10) → structured, anchoring music (neo-classical, minimal techno, drone)
+            - Mid intensity (4-6) → flowing music (ambient, lo-fi, indie folk)
+            - Low intensity (1-3) → light or ethereal music (minimalism, nature sounds, soft jazz)
+            - Chest tightness / pressure → avoid fast rhythms, choose slowly unfolding music
+            - Positive emotions → can be slightly brighter and more energetic
+            - Sadness / low mood → companionable music, not forcibly uplifting
+            """
+            let partsStr = bodyParts.map { lm.display($0) }.joined(separator: ", ")
+            let emosStr = emotions.map { lm.display($0) }.joined(separator: ", ")
+            user = "Body areas: \(partsStr.isEmpty ? "unspecified" : partsStr)\nEmotions: \(emosStr.isEmpty ? "unlabeled" : emosStr)\nIntensity: \(intensity)/10\n\nPlease recommend the most suitable music for this moment."
+        }
+
+        let raw = try await call(model: feedbackModel, system: system, user: user, maxTokens: 800)
+        guard let recommendation = MusicRecommendation.parse(raw) else {
+            throw ClaudeError.decodingError
+        }
+        return recommendation
     }
 }
