@@ -5,6 +5,7 @@ struct CheckInFlowView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @Environment(LanguageManager.self) private var lm
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var viewModel = CheckInViewModel()
 
     var body: some View {
@@ -28,11 +29,11 @@ struct CheckInFlowView: View {
                     }
                 }
                 .environment(viewModel)
-                .transition(.asymmetric(
-                    insertion: .move(edge: .trailing),
-                    removal: .move(edge: .leading)
-                ))
-                .animation(.easeInOut(duration: 0.3), value: viewModel.currentStep)
+                .transition(reduceMotion
+                    ? .opacity
+                    : .asymmetric(insertion: .move(edge: .trailing), removal: .move(edge: .leading))
+                )
+                .animation(.easeInOut(duration: reduceMotion ? 0.2 : 0.3), value: viewModel.currentStep)
             }
             .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)

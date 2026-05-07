@@ -16,6 +16,7 @@ struct TodayView: View {
     @State private var showingHealth = false
     @State private var dismissedMilestone: Int = 0
     @Environment(LanguageManager.self) private var lm
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var healthService = HealthKitService.shared
 
     private let streakMilestones = [3, 7, 14, 30]
@@ -57,7 +58,7 @@ struct TodayView: View {
                     if let milestone = milestoneToShow {
                         streakMilestoneBanner(milestone)
                             .padding(.horizontal, 20)
-                            .transition(.opacity.combined(with: .move(edge: .top)))
+                            .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .top)))
                     }
 
                     // Weekly practice dots (shown once there's any history)

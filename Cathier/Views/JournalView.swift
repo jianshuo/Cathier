@@ -16,6 +16,7 @@ struct JournalView: View {
     @State private var showingJournalEntry = false
     @State private var pendingJournalDelete: DailyJournal? = nil
     @State private var deleteJournalTask: Task<Void, Never>? = nil
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     private var filteredCheckIns: [CheckIn] {
         let query = searchText.trimmingCharacters(in: .whitespaces).lowercased()
@@ -120,11 +121,11 @@ struct JournalView: View {
             .overlay(alignment: .bottom) {
                 if pendingDelete != nil {
                     undoToast
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
                         .zIndex(1)
                 } else if pendingJournalDelete != nil {
                     journalUndoToast
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .transition(reduceMotion ? .opacity : .move(edge: .bottom).combined(with: .opacity))
                         .zIndex(1)
                 }
             }
