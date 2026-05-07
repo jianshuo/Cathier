@@ -6,11 +6,13 @@
 
 | 平台 | 频率 | 母语 | 工作流 |
 |---|---|---|---|
-| 小红书 | 每天 09:00 Asia/Shanghai | 中文 | `marketing-daily.yml` |
-| X | 每天 09:00 | 英文 | `marketing-daily.yml` |
-| Instagram | 每天 09:00 | 英文 | `marketing-daily.yml` |
-| Facebook | 每天 09:00 | 英文 | `marketing-daily.yml` |
+| 小红书 | 每天 06:00 Asia/Shanghai | 中文 | `marketing-daily.yml` |
+| X | 每天 06:00 | 英文 | `marketing-daily.yml` |
+| Instagram | 每天 06:00 | 英文 | `marketing-daily.yml` |
+| Facebook | 每天 06:00 | 英文 | `marketing-daily.yml` |
 | Reddit | 每周一 10:00 | 英文 | `marketing-weekly-reddit.yml` |
+
+同日多次运行（cron + 手动 dispatch，或多次 dispatch）允许并存：首跑落到 `posts/YYYY-MM-DD/`，再跑落到 `posts/YYYY-MM-DD-HHMM/`（北京时间），互不覆盖，每次都开独立 issue。
 
 ## 工作流
 
@@ -23,7 +25,7 @@
 ## Phase 1 人工部分
 
 打开 issue → body 是按平台分段的文案 + 图片相对路径 → 复制粘贴到对应 App 发。
-推荐发布顺序：xhs 立即（北京 9 点）→ instagram/facebook 中午（美东 9 点）→ x 晚上（美东 11 点）→ reddit 美东上午（周一）。
+推荐发布顺序：xhs 立即（北京 6 点）→ instagram/facebook 中午（美东 9 点）→ x 晚上（美东 11 点）→ reddit 美东上午（周一）。
 
 详见 `publish/xhs_checklist.md`。
 

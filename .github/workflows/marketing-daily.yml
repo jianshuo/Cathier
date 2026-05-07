@@ -2,8 +2,8 @@ name: Marketing Daily
 
 on:
   schedule:
-    # 01:00 UTC = 09:00 Asia/Shanghai
-    - cron: "0 1 * * *"
+    # 22:00 UTC = 06:00 Asia/Shanghai (next day)
+    - cron: "0 22 * * *"
   workflow_dispatch:
 
 jobs:
@@ -45,9 +45,9 @@ jobs:
           git config user.name "cathier-marketing-bot"
           git config user.email "marketing-bot@users.noreply.github.com"
 
-      - name: Get today's date
+      - name: Get today's date (Asia/Shanghai)
         id: date
-        run: echo "today=$(date +%F)" >> "$GITHUB_OUTPUT"
+        run: echo "today=$(TZ=Asia/Shanghai date +%F)" >> "$GITHUB_OUTPUT"
 
       - name: Run Claude Code orchestrator
         uses: anthropics/claude-code-action@v1
@@ -64,8 +64,8 @@ jobs:
             You have access to: OPENAI_API_KEY (env var), gh CLI, git, python3.
             Repository root is the working directory; import paths use the
             `marketing.publish.*` package.
-            Do NOT push if no commits were made. Do NOT open a duplicate issue
-            if one with label `marketing-ready` already exists for today.
+            Do NOT push if no commits were made. Multiple runs per day are
+            allowed — see the orchestrator's folder-naming rule for collisions.
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}
