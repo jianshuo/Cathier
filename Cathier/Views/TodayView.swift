@@ -180,8 +180,15 @@ struct TodayView: View {
                     .environment(lm)
             }
             .sheet(isPresented: $showingBrainTrainer) {
-                BrainTrainerSheet()
-                    .environment(lm)
+                NavigationStack {
+                    BrainTrainerView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button(brainTrainerSheetCancelLabel) { showingBrainTrainer = false }
+                            }
+                        }
+                }
+                .environment(lm)
             }
             .sheet(isPresented: $showingJournalEntry) {
                 DailyJournalEntryView(existing: journalToEdit) {
@@ -834,6 +841,14 @@ struct TodayView: View {
         case .zh: return "完成"
         case .ja: return "完了"
         default:  return "Done"
+        }
+    }
+
+    private var brainTrainerSheetCancelLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "取消"
+        case .ja: return "キャンセル"
+        default:  return "Cancel"
         }
     }
 }
