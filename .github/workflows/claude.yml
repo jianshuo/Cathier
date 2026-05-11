@@ -39,3 +39,57 @@ jobs:
           # This is an optional setting that allows Claude to read CI results on PRs
           additional_permissions: |
             actions: read
+
+      # claude-code-action@v1 creates a branch and posts a "Create PR ➔" link
+      # but does NOT open the PR itself — so issue-driven branches sit there
+      # until a human clicks the link. This step detects the freshly-pushed
+      # claude/issue-N-* branch and opens the PR programmatically, completing
+      # the issue → branch → PR → build → auto-merge chain.
+      #
+      # Only runs on issue-shaped events. For pull_request_review[_comment]
+      # the bot pushes to the existing PR branch, so there's nothing to open.
+      - name: Open PR for new claude branch
+        if: >
+          (github.event_name == 'issues' || github.event_name == 'issue_comment') &&
+          !github.event.issue.pull_request
+        env:
+          GH_TOKEN: ${{ secrets.FEEDBACK_PAT }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          set -e
+
+          # Find the newest claude/issue-<N>-* branch on origin. The
+          # YYYYMMDD-HHMM suffix sorts lexically = chronologically, so the
+          # last entry after sort -r is the one this run just pushed.
+          BRANCH=$(git ls-remote --heads origin "claude/issue-${ISSUE_NUMBER}-*" \
+                   | awk '{print $2}' | sed 's|refs/heads/||' \
+                   | sort -r | head -1)
+
+          if [ -z "$BRANCH" ]; then
+            echo "No claude/issue-${ISSUE_NUMBER}-* branch on origin — bot likely answered without pushing code. Nothing to open."
+            exit 0
+          fi
+
+          # Idempotent: if a PR already exists for this exact branch, skip.
+          EXISTING=$(gh pr list --head "$BRANCH" --state all --json number --jq '.[0].number // empty')
+          if [ -n "$EXISTING" ]; then
+            echo "PR #${EXISTING} already exists for ${BRANCH}, skipping."
+            exit 0
+          fi
+
+          # Use the head commit's subject as the PR title — the bot writes
+          # those carefully (e.g. "feat: …", "fix: …") so they translate
+          # well to PR titles. Fall back if fetch fails.
+          git fetch origin "$BRANCH" --depth=1
+          TITLE=$(git log -1 --format="%s" "origin/${BRANCH}" 2>/dev/null \
+                  || echo "@claude work for issue #${ISSUE_NUMBER}")
+
+          gh pr create \
+            --head "$BRANCH" \
+            --base main \
+            --title "$TITLE" \
+            --body "Closes #${ISSUE_NUMBER}.
+
+          Auto-opened by \`claude.yml\` after @claude finished work on this branch.
+          Build & Deploy will run on this PR; if it passes, \`auto-merge-claude.yml\` will squash-merge automatically."
