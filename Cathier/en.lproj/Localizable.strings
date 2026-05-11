@@ -293,3 +293,18 @@
 "meditation.close" = "Close";
 "meditation.try_this" = "Guided Meditation";
 "meditation.try_hint" = "Body scan & emotion visualization, ~3 min";
+
+/* White Noise */
+"whitenoise.nav_title" = "White Noise";
+"whitenoise.play" = "Play";
+"whitenoise.stop" = "Stop";
+"whitenoise.close" = "Close";
+"whitenoise.type_label" = "Noise Type";
+"whitenoise.type_white" = "White";
+"whitenoise.type_pink" = "Pink";
+"whitenoise.type_brown" = "Brown";
+"whitenoise.timer_label" = "Auto-Stop";
+"whitenoise.timer_none" = "Off";
+"whitenoise.timer_15" = "15 min";
+"whitenoise.timer_30" = "30 min";
+"whitenoise.timer_60" = "60 min";

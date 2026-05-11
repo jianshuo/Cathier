@@ -289,3 +289,18 @@
 "meditation.close" = "Đóng";
 "meditation.try_this" = "Thiền có hướng dẫn";
 "meditation.try_hint" = "Quét cơ thể và hình dung cảm xúc, ~3 phút";
+
+/* White Noise */
+"whitenoise.nav_title" = "Tiếng Ồn Trắng";
+"whitenoise.play" = "Phát";
+"whitenoise.stop" = "Dừng";
+"whitenoise.close" = "Đóng";
+"whitenoise.type_label" = "Loại tiếng ồn";
+"whitenoise.type_white" = "Trắng";
+"whitenoise.type_pink" = "Hồng";
+"whitenoise.type_brown" = "Nâu";
+"whitenoise.timer_label" = "Tự động dừng";
+"whitenoise.timer_none" = "Không giới hạn";
+"whitenoise.timer_15" = "15 phút";
+"whitenoise.timer_30" = "30 phút";
+"whitenoise.timer_60" = "60 phút";

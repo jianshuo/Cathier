@@ -289,3 +289,18 @@
 "meditation.close" = "Fermer";
 "meditation.try_this" = "Méditation guidée";
 "meditation.try_hint" = "Scan corporel et visualisation émotionnelle, ~3 min";
+
+/* White Noise */
+"whitenoise.nav_title" = "Bruit Blanc";
+"whitenoise.play" = "Lire";
+"whitenoise.stop" = "Arrêter";
+"whitenoise.close" = "Fermer";
+"whitenoise.type_label" = "Type de bruit";
+"whitenoise.type_white" = "Blanc";
+"whitenoise.type_pink" = "Rose";
+"whitenoise.type_brown" = "Brun";
+"whitenoise.timer_label" = "Arrêt automatique";
+"whitenoise.timer_none" = "Sans limite";
+"whitenoise.timer_15" = "15 min";
+"whitenoise.timer_30" = "30 min";
+"whitenoise.timer_60" = "60 min";

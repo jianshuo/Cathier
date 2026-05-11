@@ -289,3 +289,18 @@
 "meditation.close" = "닫기";
 "meditation.try_this" = "가이드 명상";
 "meditation.try_hint" = "신체 스캔 및 감정 시각화, 약 3분";
+
+/* White Noise */
+"whitenoise.nav_title" = "백색 소음";
+"whitenoise.play" = "재생";
+"whitenoise.stop" = "정지";
+"whitenoise.close" = "닫기";
+"whitenoise.type_label" = "소음 유형";
+"whitenoise.type_white" = "화이트";
+"whitenoise.type_pink" = "핑크";
+"whitenoise.type_brown" = "브라운";
+"whitenoise.timer_label" = "자동 정지";
+"whitenoise.timer_none" = "없음";
+"whitenoise.timer_15" = "15분";
+"whitenoise.timer_30" = "30분";
+"whitenoise.timer_60" = "60분";

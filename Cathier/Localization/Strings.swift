@@ -277,6 +277,21 @@ extension LanguageManager {
     var plazaTierEmotionsDesc: String  { localized("plaza.tier_emotions_desc") }
     var plazaTierFullDesc: String      { localized("plaza.tier_full_desc") }
 
+    // MARK: WhiteNoiseView
+    var whiteNoiseNavTitle: String  { localized("whitenoise.nav_title") }
+    var whiteNoisePlay: String      { localized("whitenoise.play") }
+    var whiteNoiseStop: String      { localized("whitenoise.stop") }
+    var whiteNoiseClose: String     { localized("whitenoise.close") }
+    var whiteNoiseTypeLabel: String { localized("whitenoise.type_label") }
+    var whiteNoiseTypeWhite: String { localized("whitenoise.type_white") }
+    var whiteNoiseTypePink: String  { localized("whitenoise.type_pink") }
+    var whiteNoiseTypeBrown: String { localized("whitenoise.type_brown") }
+    var whiteNoiseTimerLabel: String { localized("whitenoise.timer_label") }
+    var whiteNoiseTimerNone: String { localized("whitenoise.timer_none") }
+    var whiteNoiseTimer15: String   { localized("whitenoise.timer_15") }
+    var whiteNoiseTimer30: String   { localized("whitenoise.timer_30") }
+    var whiteNoiseTimer60: String   { localized("whitenoise.timer_60") }
+
     // MARK: Error messages
     var claudeNoApiKey: String     { localized("error.no_api_key") }
     func claudeApiError(_ code: Int) -> String {

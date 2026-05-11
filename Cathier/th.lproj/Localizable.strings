@@ -289,3 +289,18 @@
 "meditation.close" = "ปิด";
 "meditation.try_this" = "การทำสมาธิแบบมีคำแนะนำ";
 "meditation.try_hint" = "สแกนร่างกายและแสดงภาพอารมณ์ ประมาณ 3 นาที";
+
+/* White Noise */
+"whitenoise.nav_title" = "เสียงไวท์นอยซ์";
+"whitenoise.play" = "เล่น";
+"whitenoise.stop" = "หยุด";
+"whitenoise.close" = "ปิด";
+"whitenoise.type_label" = "ประเภทเสียง";
+"whitenoise.type_white" = "ขาว";
+"whitenoise.type_pink" = "ชมพู";
+"whitenoise.type_brown" = "น้ำตาล";
+"whitenoise.timer_label" = "หยุดอัตโนมัติ";
+"whitenoise.timer_none" = "ไม่จำกัด";
+"whitenoise.timer_15" = "15 นาที";
+"whitenoise.timer_30" = "30 นาที";
+"whitenoise.timer_60" = "60 นาที";
