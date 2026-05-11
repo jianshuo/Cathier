@@ -193,6 +193,8 @@
 "journal_entry.write_hint" = "วันละครั้ง \u2014 ทิ้งรอยไว้สำหรับวันนี้";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "ข้อเสนอแนะฟีเจอร์";
 "feedback.section_title" = "ข้อเสนอแนะ";
 "feedback.button" = "ส่งข้อเสนอแนะ";

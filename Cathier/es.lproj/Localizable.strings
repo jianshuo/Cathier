@@ -193,6 +193,8 @@
 "journal_entry.write_hint" = "Una vez al día \u2014 deja una huella para hoy";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "Sugerencias de funciones";
 "feedback.section_title" = "Comentarios";
 "feedback.button" = "Enviar sugerencia";

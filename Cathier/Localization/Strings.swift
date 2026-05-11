@@ -211,6 +211,8 @@ extension LanguageManager {
     var journalEntryWriteHint: String        { localized("journal_entry.write_hint") }
 
     // MARK: FeedbackView
+    var feedbackNameLabel: String        { localized("feedback.name_label") }
+    var feedbackNamePlaceholder: String  { localized("feedback.name_placeholder") }
     var feedbackNavTitle: String         { localized("feedback.nav_title") }
     var feedbackSectionTitle: String     { localized("feedback.section_title") }
     var feedbackButton: String           { localized("feedback.button") }

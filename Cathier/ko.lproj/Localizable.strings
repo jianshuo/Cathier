@@ -193,6 +193,8 @@
 "journal_entry.write_hint" = "하루에 한 번 \u2014 오늘을 위한 흔적을 남겨요";
 
 /* FeedbackView */
+"feedback.name_label" = "Name";
+"feedback.name_placeholder" = "Your name";
 "feedback.nav_title" = "기능 제안";
 "feedback.section_title" = "피드백";
 "feedback.button" = "제안 제출";

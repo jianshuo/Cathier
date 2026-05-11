@@ -5,6 +5,7 @@ struct FeedbackView: View {
     @Environment(LanguageManager.self) private var lm
     @Environment(\.dismiss) private var dismiss
 
+    @AppStorage("feedbackUserName") private var userName: String = ""
     @State private var title = ""
     @State private var bodyText = ""
     @State private var isSubmitting = false
@@ -16,6 +17,14 @@ struct FeedbackView: View {
     var body: some View {
         NavigationStack {
             Form {
+                Section {
+                    TextField(lm.feedbackNamePlaceholder, text: $userName)
+                        .textInputAutocapitalization(.words)
+                        .autocorrectionDisabled()
+                } header: {
+                    Text(lm.feedbackNameLabel)
+                }
+
                 Section {
                     TextField(lm.feedbackTitlePlaceholder, text: $title)
                         .autocorrectionDisabled()
@@ -125,7 +134,8 @@ struct FeedbackView: View {
                             Text(lm.feedbackSubmit)
                         }
                     }
-                    .disabled(title.trimmingCharacters(in: .whitespaces).isEmpty ||
+                    .disabled(userName.trimmingCharacters(in: .whitespaces).isEmpty ||
+                              title.trimmingCharacters(in: .whitespaces).isEmpty ||
                               bodyText.trimmingCharacters(in: .whitespaces).isEmpty ||
                               isSubmitting)
                 }
@@ -138,6 +148,7 @@ struct FeedbackView: View {
         errorMessage = nil
         let trimmedTitle = title.trimmingCharacters(in: .whitespaces)
         let trimmedBody = bodyText.trimmingCharacters(in: .whitespaces)
+        let trimmedName = userName.trimmingCharacters(in: .whitespaces)
         let images = attachedImages
 
         Task {
@@ -145,7 +156,8 @@ struct FeedbackView: View {
                 let url = try await GitHubService.createFeedbackIssue(
                     title: trimmedTitle,
                     body: trimmedBody,
-                    images: images
+                    images: images,
+                    submittedBy: trimmedName
                 )
                 await MainActor.run {
                     submittedURL = url
