@@ -24,6 +24,7 @@ struct PlazaView: View {
                     PlazaFeedView()
                 }
             }
+            .background(ColorfulBlackBackground())
             .navigationTitle(lm.plazaNavTitle)
             .navigationBarTitleDisplayMode(.large)
         }

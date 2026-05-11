@@ -25,6 +25,7 @@ struct FriendFeedView: View {
                     FriendHomeView()
                 }
             }
+            .background(ColorfulBlackBackground())
             .navigationTitle(lm.friendNavTitle)
             .navigationBarTitleDisplayMode(.large)
         }

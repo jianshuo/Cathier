@@ -129,6 +129,8 @@ struct SettingsView: View {
                     .foregroundColor(.primary)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(ColorfulBlackBackground())
             .navigationTitle(lm.settingsNavTitle)
             .scrollDismissesKeyboard(.immediately)
             .sheet(isPresented: $showFeedback) {

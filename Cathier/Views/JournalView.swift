@@ -97,6 +97,7 @@ struct JournalView: View {
                     journalHistoryView
                 }
             }
+            .background(ColorfulBlackBackground())
             .navigationTitle(lm.journalNavTitle)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -191,6 +192,7 @@ struct JournalView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
         }
     }
 
@@ -550,6 +552,7 @@ struct JournalView: View {
                 }
             }
             .listStyle(.plain)
+            .scrollContentBackground(.hidden)
         }
     }
 
