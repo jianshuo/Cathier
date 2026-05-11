@@ -146,6 +146,7 @@ struct TodayView: View {
                 }
                 .padding(.top, 8)
             }
+            .background(ColorfulBlackBackground())
             .navigationTitle(lm.todayNavTitle)
             .onAppear {
                 if !todayCheckIns.isEmpty {
