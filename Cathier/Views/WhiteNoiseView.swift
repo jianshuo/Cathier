@@ -20,12 +20,21 @@ private final class NoiseEngine {
     private var sourceNode: AVAudioSourceNode?
     private var timerTask: Task<Void, Never>?
 
-    // Pink noise filter state
-    private var b0: Float = 0, b1: Float = 0, b2: Float = 0
-    private var b3: Float = 0, b4: Float = 0, b5: Float = 0, b6: Float = 0
+    // Pink noise filter state — internal DSP, not observed.
+    // @ObservationIgnored required because @Observable generates an
+    // ObservationTracked accessor per stored property, and the macro
+    // rejects multi-variable `var a, b, c: Float` declarations. These
+    // never drive UI, so observation is unnecessary anyway.
+    @ObservationIgnored private var b0: Float = 0
+    @ObservationIgnored private var b1: Float = 0
+    @ObservationIgnored private var b2: Float = 0
+    @ObservationIgnored private var b3: Float = 0
+    @ObservationIgnored private var b4: Float = 0
+    @ObservationIgnored private var b5: Float = 0
+    @ObservationIgnored private var b6: Float = 0
 
     // Brown noise filter state
-    private var lastBrown: Float = 0
+    @ObservationIgnored private var lastBrown: Float = 0
 
     func start(type: NoiseType, timer: TimerOption) {
         stop()
