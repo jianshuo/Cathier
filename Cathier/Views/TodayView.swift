@@ -14,6 +14,7 @@ struct TodayView: View {
     @AppStorage("lastCelebratedStreakMilestone") private var lastCelebratedStreakMilestone: Int = 0
     @AppStorage("personalBestStreak") private var personalBestStreak: Int = 0
     @State private var showingHealth = false
+    @State private var showingMusic = false
     @State private var dismissedMilestone: Int = 0
     @Environment(LanguageManager.self) private var lm
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -137,6 +138,10 @@ struct TodayView: View {
                     healthSection
                         .padding(.horizontal, 20)
 
+                    // Body music entry
+                    musicSection
+                        .padding(.horizontal, 20)
+
                     Spacer(minLength: 40)
                 }
                 .padding(.top, 8)
@@ -206,6 +211,17 @@ struct TodayView: View {
                         }
                 }
                 .environment(lm)
+            }
+            .sheet(isPresented: $showingMusic) {
+                if let recent = checkIns.first {
+                    BodyMusicView(
+                        bodyParts: recent.bodyParts,
+                        sensations: recent.sensations,
+                        intensity: recent.intensity,
+                        emotions: recent.emotions
+                    )
+                    .environment(lm)
+                }
             }
         }
     }
@@ -462,6 +478,74 @@ struct TodayView: View {
                             .font(.subheadline)
                             .fontWeight(.semibold)
                             .foregroundColor(.primary)
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(16)
+                .background(Color.cathierSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    // MARK: - Music Section
+
+    private var musicSection: some View {
+        let title: String
+        let hint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "来自身体的音乐"
+            hint = checkIns.isEmpty
+                ? "完成一次身体扫描，获得专属音乐推荐"
+                : "根据你刚才的身体状态，AI 为你寻找适合的音乐"
+        case .ja:
+            title = "身体からの音楽"
+            hint = checkIns.isEmpty
+                ? "ボディスキャンを完了して、パーソナライズされた音楽をもらおう"
+                : "あなたの身体状態に合わせて、AIが最適な音楽を提案します"
+        default:
+            title = "Music from the Body"
+            hint = checkIns.isEmpty
+                ? "Complete a body scan to get personalized music recommendations"
+                : "AI finds music that matches your current body state"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            Button(action: {
+                if !checkIns.isEmpty { showingMusic = true }
+                else { showingCheckIn = true }
+            }) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.cathierAccent.opacity(0.15))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "music.note")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.cathierAccent)
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(hint)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
+                        if let recent = checkIns.first, !recent.emotions.isEmpty {
+                            let preview = recent.emotions.prefix(3).joined(
+                                separator: lm.currentLanguage == .en ? ", " : "、"
+                            )
+                            Text(preview)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .lineLimit(1)
+                        }
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
