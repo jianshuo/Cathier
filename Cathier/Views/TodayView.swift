@@ -15,6 +15,7 @@ struct TodayView: View {
     @AppStorage("personalBestStreak") private var personalBestStreak: Int = 0
     @State private var showingHealth = false
     @State private var showingMusic = false
+    @State private var showingDictionary = false
     @State private var dismissedMilestone: Int = 0
     @Environment(LanguageManager.self) private var lm
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -111,6 +112,10 @@ struct TodayView: View {
                             }
                         }
                     }
+
+                    // Awareness dictionary entry
+                    dictionarySection
+                        .padding(.horizontal, 20)
 
                     // Pattern nudge
                     if hasNewPatterns {
@@ -224,6 +229,58 @@ struct TodayView: View {
                     .environment(lm)
                 }
             }
+            .sheet(isPresented: $showingDictionary) {
+                EmotionExplorerView()
+                    .environment(lm)
+            }
+        }
+    }
+
+    // MARK: - Dictionary Section
+
+    private var dictionarySection: some View {
+        let title: String
+        let hint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "觉察词典"
+            hint = "不知道怎么描述感受？查查词典"
+        case .ja:
+            title = "気づき辞典"
+            hint = "気持ちをうまく表せないとき、辞典で調べてみて"
+        default:
+            title = "Awareness Dictionary"
+            hint = "Can't find the right word for what you feel?"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            Button(action: { showingDictionary = true }) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.cathierAccent.opacity(0.15))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "character.book.closed.fill")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.cathierAccent)
+                    }
+                    Text(hint)
+                        .font(.subheadline)
+                        .fontWeight(.semibold)
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(16)
+                .background(Color.cathierSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
         }
     }
 
