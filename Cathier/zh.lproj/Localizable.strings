@@ -75,6 +75,8 @@
 "exercise.close" = "关闭";
 "exercise.try_this" = "试试这个";
 "exercise.try_hint" = "1分钟放松练习，针对你刚才的身体感受";
+"exercise.listen_audio" = "听音频引导";
+"exercise.audio_done" = "音频引导已播完";
 
 /* Privacy Tier */
 "tier.category_name" = "只分享情绪大类";

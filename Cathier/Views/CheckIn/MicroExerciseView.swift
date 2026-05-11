@@ -1,5 +1,80 @@
 import SwiftUI
 import UIKit
+import AVFoundation
+
+// MARK: - Speech manager
+
+@Observable
+private final class ExerciseSpeechManager: NSObject, AVSpeechSynthesizerDelegate {
+    enum PlayState { case idle, playing, paused, done }
+
+    var playState: PlayState = .idle
+
+    private let synthesizer = AVSpeechSynthesizer()
+
+    override init() {
+        super.init()
+        synthesizer.delegate = self
+    }
+
+    func play(text: String, language: AppLanguage) {
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.voice = AVSpeechSynthesisVoice(language: voiceLocale(for: language))
+        utterance.rate = 0.40
+        utterance.pitchMultiplier = 0.95
+        utterance.volume = 1.0
+        utterance.postUtteranceDelay = 0.3
+
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default)
+        try? AVAudioSession.sharedInstance().setActive(true)
+
+        synthesizer.speak(utterance)
+        playState = .playing
+    }
+
+    func pause() {
+        synthesizer.pauseSpeaking(at: .word)
+        playState = .paused
+    }
+
+    func resume() {
+        synthesizer.continueSpeaking()
+        playState = .playing
+    }
+
+    func stop() {
+        synthesizer.stopSpeaking(at: .immediate)
+        playState = .idle
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        playState = .done
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+
+    private func voiceLocale(for language: AppLanguage) -> String {
+        switch language {
+        case .zh: return "zh-CN"
+        case .ja: return "ja-JP"
+        case .ko: return "ko-KR"
+        case .fr: return "fr-FR"
+        case .de: return "de-DE"
+        case .es: return "es-ES"
+        case .it: return "it-IT"
+        case .pt: return "pt-BR"
+        case .ru: return "ru-RU"
+        case .ar: return "ar-SA"
+        case .hi: return "hi-IN"
+        case .th: return "th-TH"
+        case .vi: return "vi-VN"
+        case .tr: return "tr-TR"
+        default:  return "en-US"
+        }
+    }
+}
+
+// MARK: - MicroExerciseView
 
 struct MicroExerciseView: View {
     let bodyParts: [String]
@@ -12,6 +87,7 @@ struct MicroExerciseView: View {
     @State private var errorMessage: String?
     @State private var timerState: TimerState = .idle
     @State private var remaining: Int = 60
+    @State private var speechManager = ExerciseSpeechManager()
 
     private enum TimerState {
         case idle, running, done
@@ -43,6 +119,7 @@ struct MicroExerciseView: View {
             }
         }
         .task { await loadExercise() }
+        .onDisappear { speechManager.stop() }
     }
 
     // MARK: - Loading
@@ -91,9 +168,111 @@ struct MicroExerciseView: View {
                 .background(Color.cathierAccentLight)
                 .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
 
+            // Audio guidance
+            audioControls
+
             // Timer
             timerSection
         }
+    }
+
+    // MARK: - Audio controls
+
+    private var audioControls: some View {
+        VStack(spacing: 12) {
+            switch speechManager.playState {
+            case .idle:
+                Button(action: { speechManager.play(text: exerciseText, language: lm.currentLanguage) }) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "headphones")
+                            .font(.subheadline)
+                        Text(lm.exerciseListenAudio)
+                            .fontWeight(.medium)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .background(Color.cathierAccent.opacity(0.12))
+                    .foregroundColor(.cathierAccent)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                }
+                .buttonStyle(.plain)
+
+            case .playing:
+                VStack(spacing: 10) {
+                    audioPlayingIndicator
+
+                    HStack(spacing: 12) {
+                        Button(action: { speechManager.pause() }) {
+                            HStack(spacing: 6) {
+                                Image(systemName: "pause.fill")
+                                Text(lm.meditationPause)
+                                    .fontWeight(.medium)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .background(Color.cathierAccent)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
+
+                        Button(action: { speechManager.stop() }) {
+                            Text(lm.meditationStop)
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
+
+            case .paused:
+                HStack(spacing: 12) {
+                    Button(action: { speechManager.resume() }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "play.fill")
+                            Text(lm.meditationResume)
+                                .fontWeight(.medium)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 12)
+                        .background(Color.cathierAccent)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+
+                    Button(action: { speechManager.stop() }) {
+                        Text(lm.meditationStop)
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+
+            case .done:
+                HStack(spacing: 6) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.cathierAccent)
+                    Text(lm.exerciseAudioDone)
+                        .font(.subheadline)
+                        .foregroundColor(.cathierAccent)
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+
+    private var audioPlayingIndicator: some View {
+        HStack(spacing: 4) {
+            ForEach(0..<5, id: \.self) { i in
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.cathierAccent)
+                    .frame(width: 4, height: i % 2 == 0 ? 20 : 14)
+                    .animation(
+                        .easeInOut(duration: 0.5)
+                        .repeatForever()
+                        .delay(Double(i) * 0.1),
+                        value: speechManager.playState
+                    )
+            }
+        }
+        .frame(height: 28)
     }
 
     private var timerSection: some View {

@@ -75,6 +75,8 @@
 "exercise.close" = "閉じる";
 "exercise.try_this" = "やってみよう";
 "exercise.try_hint" = "身体の感覚に合わせた1分間のリラクゼーション";
+"exercise.listen_audio" = "音声ガイドを聴く";
+"exercise.audio_done" = "音声ガイド完了";
 
 /* Privacy Tier */
 "tier.category_name" = "感情カテゴリのみ";

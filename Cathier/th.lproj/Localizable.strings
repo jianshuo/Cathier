@@ -75,6 +75,8 @@
 "exercise.close" = "Close";
 "exercise.try_this" = "Try This";
 "exercise.try_hint" = "A 1-minute exercise based on what your body is feeling";
+"exercise.listen_audio" = "Listen to Audio Guide";
+"exercise.audio_done" = "Audio guidance complete";
 
 /* Privacy Tier */
 "tier.category_name" = "แชร์หมวดหมู่อารมณ์";
