@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "Interpretación IA";
 
 /* FriendSetupView */
-"setup.title" = "Configura tu perfil de amigo";
+"setup.title" = "Configura tu perfil personal";
 "setup.subtitle" = "Los amigos verán este nombre y avatar";
 "setup.choose_emoji" = "Elige un emoji de avatar";
 "setup.nickname_label" = "Tu apodo";

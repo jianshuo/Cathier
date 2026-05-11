@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "AI व्याख्या";
 
 /* FriendSetupView */
-"setup.title" = "दोस्त प्रोफाइल सेट करें";
+"setup.title" = "व्यक्तिगत प्रोफाइल सेट करें";
 "setup.subtitle" = "दोस्त यह नाम और अवतार देखेंगे";
 "setup.choose_emoji" = "अवतार इमोजी चुनें";
 "setup.nickname_label" = "आपका उपनाम";

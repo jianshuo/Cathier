@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "การตีความ AI";
 
 /* FriendSetupView */
-"setup.title" = "ตั้งค่าโปรไฟล์เพื่อน";
+"setup.title" = "ตั้งค่าโปรไฟล์ส่วนตัว";
 "setup.subtitle" = "เพื่อนจะเห็นชื่อและอวาตาร์นี้";
 "setup.choose_emoji" = "เลือกอีโมจิอวาตาร์";
 "setup.nickname_label" = "ชื่อเล่นของคุณ";

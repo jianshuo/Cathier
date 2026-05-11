@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "تفسير الذكاء الاصطناعي";
 
 /* FriendSetupView */
-"setup.title" = "إعداد ملف الصديق";
+"setup.title" = "إعداد الملف الشخصي";
 "setup.subtitle" = "سيرى الأصدقاء هذا الاسم والصورة الرمزية";
 "setup.choose_emoji" = "اختر رمزاً تعبيرياً للصورة الرمزية";
 "setup.nickname_label" = "اسمك المستعار";
