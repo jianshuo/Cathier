@@ -2,27 +2,20 @@ import SwiftUI
 
 struct JokeHistoryView: View {
     @Environment(LanguageManager.self) private var lm
-    @Environment(\.dismiss) private var dismiss
 
     private var jokeService: JokeService { JokeService.shared }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if jokeService.jokeHistory.isEmpty {
-                    emptyState
-                } else {
-                    jokeList
-                }
-            }
-            .navigationTitle(navTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(doneLabel) { dismiss() }
-                }
+        Group {
+            if jokeService.jokeHistory.isEmpty {
+                emptyState
+            } else {
+                jokeList
             }
         }
+        .navigationTitle(navTitle)
+        .navigationBarTitleDisplayMode(.large)
+        .task { await jokeService.generateTodayJokeIfNeeded() }
     }
 
     private var emptyState: some View {
@@ -55,14 +48,6 @@ struct JokeHistoryView: View {
         case .zh: return "AI 冷笑话"
         case .ja: return "AI コールドジョーク"
         default:  return "AI Cold Jokes"
-        }
-    }
-
-    private var doneLabel: String {
-        switch lm.currentLanguage {
-        case .zh: return "完成"
-        case .ja: return "完了"
-        default:  return "Done"
         }
     }
 

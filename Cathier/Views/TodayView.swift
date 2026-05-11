@@ -75,8 +75,10 @@ struct TodayView: View {
 
                     // 7-day trend snapshot
                     if let snapshot = weeklySnapshot {
-                        weeklySnapshotCard(snapshot)
-                            .padding(.horizontal, 20)
+                        WeeklySnapshotCard(snapshot: snapshot, checkIns: Array(checkIns)) {
+                            showingInsights = true
+                        }
+                        .padding(.horizontal, 20)
                     }
 
                     // Reminder nudge (evening, no check-in, notifications off)
@@ -163,16 +165,30 @@ struct TodayView: View {
                 CheckInFlowView()
             }
             .sheet(isPresented: $showingJokeHistory) {
-                JokeHistoryView()
-                    .environment(lm)
+                NavigationStack {
+                    JokeHistoryView()
+                        .toolbar {
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(jokeSheetDoneLabel) { showingJokeHistory = false }
+                            }
+                        }
+                }
+                .environment(lm)
             }
             .sheet(isPresented: $showingInsights) {
                 InsightsView()
                     .environment(lm)
             }
             .sheet(isPresented: $showingBrainTrainer) {
-                BrainTrainerSheet()
-                    .environment(lm)
+                NavigationStack {
+                    BrainTrainerView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button(brainTrainerSheetCancelLabel) { showingBrainTrainer = false }
+                            }
+                        }
+                }
+                .environment(lm)
             }
             .sheet(isPresented: $showingJournalEntry) {
                 DailyJournalEntryView(existing: journalToEdit) {
@@ -180,8 +196,16 @@ struct TodayView: View {
                 }
             }
             .sheet(isPresented: $showingHealth) {
-                HealthInsightView()
-                    .environment(lm)
+                NavigationStack {
+                    HealthInsightView()
+                        .toolbar {
+                            ToolbarItem(placement: .cancellationAction) {
+                                Button(healthSheetCancelLabel) { showingHealth = false }
+                                    .foregroundColor(.cathierAccent)
+                            }
+                        }
+                }
+                .environment(lm)
             }
         }
     }
@@ -702,96 +726,8 @@ struct TodayView: View {
 
     // MARK: - Weekly Snapshot
 
-    struct WeeklySnapshot {
-        let avgIntensity: Double
-        let trend: Double  // positive = higher than prev week, negative = lower
-        let checkInCount: Int
-    }
-
     private var weeklySnapshot: WeeklySnapshot? {
-        let calendar = Calendar.current
-        let now = Date()
-        guard let sevenAgo = calendar.date(byAdding: .day, value: -7, to: now),
-              let fourteenAgo = calendar.date(byAdding: .day, value: -14, to: now) else { return nil }
-
-        let thisWeek = checkIns.filter { $0.date >= sevenAgo }
-        guard thisWeek.count >= 3 else { return nil }
-
-        let thisAvg = Double(thisWeek.map(\.intensity).reduce(0, +)) / Double(thisWeek.count)
-        let lastWeek = checkIns.filter { $0.date >= fourteenAgo && $0.date < sevenAgo }
-        let lastAvg = lastWeek.isEmpty ? thisAvg
-            : Double(lastWeek.map(\.intensity).reduce(0, +)) / Double(lastWeek.count)
-
-        return WeeklySnapshot(avgIntensity: thisAvg, trend: thisAvg - lastAvg, checkInCount: thisWeek.count)
-    }
-
-    private func weeklySnapshotCard(_ snapshot: WeeklySnapshot) -> some View {
-        let trendIcon: String
-        let trendColor: Color
-        let trendText: String
-
-        if snapshot.trend > 0.5 {
-            trendIcon = "arrow.up.right"
-            trendColor = .cathierAccent
-            trendText = lm.currentLanguage == .zh ? "强度上升" : lm.currentLanguage == .ja ? "強度上昇" : "Rising"
-        } else if snapshot.trend < -0.5 {
-            trendIcon = "arrow.down.right"
-            trendColor = .cathierAccent
-            trendText = lm.currentLanguage == .zh ? "强度下降" : lm.currentLanguage == .ja ? "強度低下" : "Easing"
-        } else {
-            trendIcon = "arrow.right"
-            trendColor = .secondary
-            trendText = lm.currentLanguage == .zh ? "趋于平稳" : lm.currentLanguage == .ja ? "安定" : "Stable"
-        }
-
-        let avgText = String(format: "%.1f", snapshot.avgIntensity)
-        let countLabel = lm.currentLanguage == .zh
-            ? "近 7 天 · \(snapshot.checkInCount) 次记录"
-            : lm.currentLanguage == .ja
-                ? "過去7日 · \(snapshot.checkInCount)回"
-                : "7-day · \(snapshot.checkInCount) entries"
-
-        return Button(action: { showingInsights = true }) {
-            VStack(alignment: .leading, spacing: 10) {
-                HStack(spacing: 14) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(countLabel)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        HStack(alignment: .firstTextBaseline, spacing: 4) {
-                            Text(avgText)
-                                .font(.system(.title2, design: .monospaced))
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
-                            Text("/10")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text(lm.currentLanguage == .zh ? "平均强度" : lm.currentLanguage == .ja ? "平均強度" : "avg intensity")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    Spacer()
-                    HStack(spacing: 4) {
-                        Image(systemName: trendIcon)
-                            .font(.subheadline)
-                            .foregroundColor(trendColor)
-                        Text(trendText)
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(trendColor)
-                    }
-                    Image(systemName: "chevron.right")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-                WeeklySparkline(checkIns: Array(checkIns))
-            }
-            .padding(14)
-            .background(Color.cathierSurface)
-            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        }
-        .buttonStyle(.plain)
+        WeeklySnapshot.compute(from: Array(checkIns))
     }
 
     // MARK: - Streak Milestone Banner
@@ -907,6 +843,30 @@ struct TodayView: View {
         }
         .buttonStyle(.plain)
     }
+
+    private var jokeSheetDoneLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "完成"
+        case .ja: return "完了"
+        default:  return "Done"
+        }
+    }
+
+    private var brainTrainerSheetCancelLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "取消"
+        case .ja: return "キャンセル"
+        default:  return "Cancel"
+        }
+    }
+
+    private var healthSheetCancelLabel: String {
+        switch lm.currentLanguage {
+        case .zh: return "取消"
+        case .ja: return "キャンセル"
+        default:  return "Cancel"
+        }
+    }
 }
 
 // MARK: - Today Intensity Arc
@@ -967,145 +927,3 @@ private struct TodayIntensityArc: View {
     }
 }
 
-// MARK: - Weekly Practice Row
-
-private struct WeeklyPracticeRow: View {
-    let checkIns: [CheckIn]
-    @Environment(LanguageManager.self) private var lm
-
-    private var days: [(date: Date, hasCheckIn: Bool)] {
-        let cal = Calendar.current
-        let today = cal.startOfDay(for: Date())
-        let dates = Set(checkIns.map { cal.startOfDay(for: $0.date) })
-        return (0..<7).reversed().map { offset in
-            let d = cal.date(byAdding: .day, value: -offset, to: today)!
-            return (date: d, hasCheckIn: dates.contains(d))
-        }
-    }
-
-    var body: some View {
-        HStack(spacing: 0) {
-            ForEach(Array(days.enumerated()), id: \.offset) { _, day in
-                let isToday = Calendar.current.isDateInToday(day.date)
-                VStack(spacing: 4) {
-                    ZStack {
-                        Circle()
-                            .stroke(Color.cathierAccent.opacity(isToday ? 0.35 : 0), lineWidth: 1.5)
-                            .frame(width: 18, height: 18)
-                        Circle()
-                            .fill(day.hasCheckIn ? Color.cathierAccent : Color.secondary.opacity(0.18))
-                            .frame(width: 9, height: 9)
-                    }
-                    .frame(width: 18, height: 18)
-                    Text(dayLabel(day.date))
-                        .font(.caption2)
-                        .foregroundColor(isToday ? .primary : .secondary)
-                }
-                .frame(maxWidth: .infinity)
-            }
-        }
-        .accessibilityHidden(true)
-    }
-
-    private func dayLabel(_ date: Date) -> String {
-        let weekday = Calendar.current.component(.weekday, from: date)
-        switch lm.currentLanguage {
-        case .zh: return ["日", "一", "二", "三", "四", "五", "六"][weekday - 1]
-        case .ja: return ["日", "月", "火", "水", "木", "金", "土"][weekday - 1]
-        default:  return ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"][weekday - 1]
-        }
-    }
-}
-
-// MARK: - Weekly Sparkline
-
-private struct WeeklySparkline: View {
-    let checkIns: [CheckIn]
-
-    private let barMaxHeight: CGFloat = 20
-    private let barWidth: CGFloat = 10
-
-    private var dayAverages: [Double?] {
-        let cal = Calendar.current
-        let today = cal.startOfDay(for: Date())
-        return (0..<7).reversed().map { offset in
-            let dayStart = cal.date(byAdding: .day, value: -offset, to: today)!
-            let dayEnd = cal.date(byAdding: .day, value: 1, to: dayStart)!
-            let dayCheckIns = checkIns.filter { $0.date >= dayStart && $0.date < dayEnd }
-            guard !dayCheckIns.isEmpty else { return nil }
-            return Double(dayCheckIns.map(\.intensity).reduce(0, +)) / Double(dayCheckIns.count)
-        }
-    }
-
-    var body: some View {
-        HStack(alignment: .bottom, spacing: 4) {
-            ForEach(Array(dayAverages.enumerated()), id: \.offset) { _, avg in
-                if let avg {
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(barColor(avg))
-                        .frame(width: barWidth, height: max(3, barMaxHeight * CGFloat(avg) / 10.0))
-                } else {
-                    RoundedRectangle(cornerRadius: 2, style: .continuous)
-                        .fill(Color.secondary.opacity(0.15))
-                        .frame(width: barWidth, height: 3)
-                }
-            }
-            Spacer()
-        }
-        .frame(height: barMaxHeight)
-        .accessibilityHidden(true)
-    }
-
-    private func barColor(_ intensity: Double) -> Color {
-        switch intensity {
-        case ..<4: return .yellow
-        case ..<7: return .cathierAccent
-        default:   return .red
-        }
-    }
-}
-
-// MARK: - Weekly Emotion Summary
-
-private struct WeeklyEmotionSummary: View {
-    let topEmotions: [(emotion: String, count: Int)]
-    @Environment(LanguageManager.self) private var lm
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text(sectionTitle)
-                .font(.headline)
-            FlowLayout(spacing: 8) {
-                ForEach(Array(topEmotions.enumerated()), id: \.offset) { _, item in
-                    let color = EmotionData.category(for: item.emotion)?.color ?? .cathierAccent
-                    let emoji = EmotionData.emoji(for: item.emotion)
-                    let name = lm.display(item.emotion)
-                    HStack(spacing: 4) {
-                        Text(emoji.isEmpty ? name : "\(emoji) \(name)")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                        if item.count > 1 {
-                            Text("×\(item.count)")
-                                .font(.system(.caption2, design: .monospaced))
-                                .foregroundColor(color.opacity(0.7))
-                        }
-                    }
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 4)
-                    .background(color.opacity(0.12))
-                    .foregroundColor(color)
-                    .clipShape(Capsule())
-                }
-            }
-        }
-        .accessibilityElement(children: .combine)
-    }
-
-    private var sectionTitle: String {
-        switch lm.currentLanguage {
-        case .zh: return "本周情绪"
-        case .ja: return "今週の気持ち"
-        default:  return "This Week"
-        }
-    }
-}

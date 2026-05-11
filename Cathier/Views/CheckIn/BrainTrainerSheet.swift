@@ -1,7 +1,8 @@
 import SwiftUI
 import SwiftData
 
-struct BrainTrainerSheet: View {
+/// Content view (no NavigationStack), suitable for both NavigationLink push and sheet wrapping.
+struct BrainTrainerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
@@ -12,26 +13,19 @@ struct BrainTrainerSheet: View {
     private enum Phase { case intro, chat }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                switch phase {
-                case .intro:
-                    introView
-                case .chat:
-                    BrainTrainerChatView(onSave: saveAction)
-                        .environment(viewModel)
-                        .environment(lm)
-                }
-            }
-            .navigationTitle(navTitle)
-            .navigationBarTitleDisplayMode(.inline)
-            .background(Color.cathierBackground.ignoresSafeArea())
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button(cancelLabel) { dismiss() }
-                }
+        Group {
+            switch phase {
+            case .intro:
+                introView
+            case .chat:
+                BrainTrainerChatView(onSave: saveAction)
+                    .environment(viewModel)
+                    .environment(lm)
             }
         }
+        .navigationTitle(navTitle)
+        .navigationBarTitleDisplayMode(.inline)
+        .background(Color.cathierBackground.ignoresSafeArea())
     }
 
     // MARK: - Intro
@@ -95,8 +89,6 @@ struct BrainTrainerSheet: View {
         !viewModel.triggerEvent.trimmingCharacters(in: .whitespaces).isEmpty
     }
 
-    // MARK: - Actions
-
     private func startChat() {
         triggerFocused = false
         phase = .chat
@@ -116,14 +108,6 @@ struct BrainTrainerSheet: View {
         case .zh: return "吃一堑长一智"
         case .ja: return "失敗から学ぶ"
         default:  return "Lesson from Setback"
-        }
-    }
-
-    private var cancelLabel: String {
-        switch lm.currentLanguage {
-        case .zh: return "取消"
-        case .ja: return "キャンセル"
-        default:  return "Cancel"
         }
     }
 
