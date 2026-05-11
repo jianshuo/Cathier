@@ -289,3 +289,18 @@
 "meditation.close" = "إغلاق";
 "meditation.try_this" = "التأمل الموجه";
 "meditation.try_hint" = "مسح الجسم وتصور المشاعر، ~٣ دقائق";
+
+/* White Noise */
+"whitenoise.nav_title" = "الضوضاء البيضاء";
+"whitenoise.play" = "تشغيل";
+"whitenoise.stop" = "إيقاف";
+"whitenoise.close" = "إغلاق";
+"whitenoise.type_label" = "نوع الضوضاء";
+"whitenoise.type_white" = "أبيض";
+"whitenoise.type_pink" = "وردي";
+"whitenoise.type_brown" = "بني";
+"whitenoise.timer_label" = "إيقاف تلقائي";
+"whitenoise.timer_none" = "بلا حد";
+"whitenoise.timer_15" = "١٥ دقيقة";
+"whitenoise.timer_30" = "٣٠ دقيقة";
+"whitenoise.timer_60" = "٦٠ دقيقة";

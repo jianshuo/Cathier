@@ -16,6 +16,7 @@ struct TodayView: View {
     @State private var showingHealth = false
     @State private var showingMusic = false
     @State private var showingDictionary = false
+    @State private var showingWhiteNoise = false
     @State private var dismissedMilestone: Int = 0
     @Environment(LanguageManager.self) private var lm
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -147,6 +148,10 @@ struct TodayView: View {
                     musicSection
                         .padding(.horizontal, 20)
 
+                    // White noise entry
+                    whiteNoiseSection
+                        .padding(.horizontal, 20)
+
                     Spacer(minLength: 40)
                 }
                 .padding(.top, 8)
@@ -231,6 +236,10 @@ struct TodayView: View {
             }
             .sheet(isPresented: $showingDictionary) {
                 EmotionExplorerView()
+                    .environment(lm)
+            }
+            .sheet(isPresented: $showingWhiteNoise) {
+                WhiteNoiseView()
                     .environment(lm)
             }
         }
@@ -604,6 +613,56 @@ struct TodayView: View {
                                 .foregroundColor(.secondary)
                                 .lineLimit(1)
                         }
+                    }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                .padding(16)
+                .background(Color.cathierSurface)
+                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+
+    // MARK: - White Noise Section
+
+    private var whiteNoiseSection: some View {
+        let title: String
+        let hint: String
+        switch lm.currentLanguage {
+        case .zh:
+            title = "白噪音"
+            hint = "白噪音、粉噪音、棕噪音，帮你放松入静"
+        case .ja:
+            title = "ホワイトノイズ"
+            hint = "ホワイト・ピンク・ブラウンノイズでリラックス"
+        default:
+            title = "White Noise"
+            hint = "White, pink & brown noise to help you relax"
+        }
+
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(title)
+                .font(.headline)
+
+            Button(action: { showingWhiteNoise = true }) {
+                HStack(spacing: 14) {
+                    ZStack {
+                        Circle()
+                            .fill(Color(red: 107/255, green: 143/255, blue: 113/255).opacity(0.15))
+                            .frame(width: 48, height: 48)
+                        Image(systemName: "waveform")
+                            .font(.system(size: 20))
+                            .foregroundColor(Color(red: 107/255, green: 143/255, blue: 113/255))
+                    }
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(hint)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
+                            .foregroundColor(.primary)
                     }
                     Spacer()
                     Image(systemName: "chevron.right")

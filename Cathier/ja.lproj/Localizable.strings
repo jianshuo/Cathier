@@ -293,3 +293,18 @@
 "meditation.close" = "閉じる";
 "meditation.try_this" = "ガイド瞑想";
 "meditation.try_hint" = "ボディスキャンと感情観想、約3分";
+
+/* White Noise */
+"whitenoise.nav_title" = "ホワイトノイズ";
+"whitenoise.play" = "再生";
+"whitenoise.stop" = "停止";
+"whitenoise.close" = "閉じる";
+"whitenoise.type_label" = "ノイズの種類";
+"whitenoise.type_white" = "ホワイト";
+"whitenoise.type_pink" = "ピンク";
+"whitenoise.type_brown" = "ブラウン";
+"whitenoise.timer_label" = "自動停止";
+"whitenoise.timer_none" = "なし";
+"whitenoise.timer_15" = "15分";
+"whitenoise.timer_30" = "30分";
+"whitenoise.timer_60" = "60分";
