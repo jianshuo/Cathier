@@ -225,6 +225,7 @@ extension LanguageManager {
     var feedbackSubmit: String              { localized("feedback.submit") }
     var feedbackSuccess: String             { localized("feedback.success") }
     var feedbackViewIssue: String           { localized("feedback.view_issue") }
+    var feedbackViewAllIssues: String        { localized("feedback.view_all_issues") }
     var feedbackScreenshotLabel: String     { localized("feedback.screenshot_label") }
     var feedbackScreenshotAdd: String       { localized("feedback.screenshot_add") }
     var feedbackScreenshotFooter: String    { localized("feedback.screenshot_footer") }

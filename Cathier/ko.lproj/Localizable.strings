@@ -205,6 +205,7 @@
 "feedback.token_section" = "GitHub 설정";
 "feedback.token_footer" = "이슈 제출을 위해 'repo' 범위의 GitHub 개인 액세스 토큰이 필요합니다. 로컬에만 저장됩니다.";
 "feedback.submit" = "제출";
+"feedback.view_all_issues" = "다른 사람들의 제안 보기 →";
 "feedback.screenshot_label" = "스크린샷";
 "feedback.screenshot_add" = "스크린샷 추가";
 "feedback.screenshot_footer" = "스크린샷을 최대 3장 첨부할 수 있습니다 (선택 사항).";

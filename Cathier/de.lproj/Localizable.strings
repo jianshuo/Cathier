@@ -207,6 +207,7 @@
 "feedback.submit" = "Einreichen";
 "feedback.success" = "Erfolgreich eingereicht!";
 "feedback.view_issue" = "GitHub Issue ansehen \u2192";
+"feedback.view_all_issues" = "Vorschläge anderer ansehen →";
 "feedback.screenshot_label" = "Screenshots";
 "feedback.screenshot_add" = "Screenshot hinzuf\u00fcgen";
 "feedback.screenshot_footer" = "Bis zu 3 Screenshots anh\u00e4ngen (optional).";

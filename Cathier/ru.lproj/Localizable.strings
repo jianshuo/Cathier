@@ -205,6 +205,7 @@
 "feedback.token_section" = "Настройки GitHub";
 "feedback.token_footer" = "Для отправки issues требуется личный токен доступа GitHub с областью 'repo'. Хранится только локально.";
 "feedback.submit" = "Отправить";
+"feedback.view_all_issues" = "Посмотреть предложения других →";
 "feedback.screenshot_label" = "Снимки экрана";
 "feedback.screenshot_add" = "Добавить снимок";
 "feedback.screenshot_footer" = "Прикрепите до 3 снимков экрана (необязательно).";

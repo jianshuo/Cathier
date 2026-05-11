@@ -209,6 +209,7 @@
 "feedback.submit" = "送信";
 "feedback.success" = "送信成功！";
 "feedback.view_issue" = "GitHub Issueを見る →";
+"feedback.view_all_issues" = "他の人が提案した内容を見る →";
 "feedback.screenshot_label" = "スクリーンショット";
 "feedback.screenshot_add" = "スクリーンショットを追加";
 "feedback.screenshot_footer" = "最大3枚のスクリーンショットを添付できます（任意）。";

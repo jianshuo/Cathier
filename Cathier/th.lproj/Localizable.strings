@@ -205,6 +205,7 @@
 "feedback.token_section" = "การตั้งค่า GitHub";
 "feedback.token_footer" = "ต้องใช้ GitHub Personal Access Token ที่มีขอบเขต 'repo' เพื่อส่ง Issues จัดเก็บในเครื่องเท่านั้น";
 "feedback.submit" = "ส่ง";
+"feedback.view_all_issues" = "ดูข้อเสนอแนะของผู้อื่น →";
 "feedback.screenshot_label" = "ภาพหน้าจอ";
 "feedback.screenshot_add" = "เพิ่มภาพหน้าจอ";
 "feedback.screenshot_footer" = "แนบภาพหน้าจอได้สูงสุด 3 ภาพ (ไม่บังคับ)";
