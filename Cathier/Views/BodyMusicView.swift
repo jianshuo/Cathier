@@ -128,22 +128,35 @@ struct BodyMusicView: View {
     }
 
     private var bodyStateSummaryCard: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            let summaryLabel: String
+        // @ViewBuilder bodies treat statements as views, so a `switch` used
+        // imperatively (assigning to a `let`) evaluates to `()` and fails to
+        // conform to View. Compute the localized strings outside the
+        // ViewBuilder body so the switches are statement-position, not
+        // view-position.
+        let summaryLabel: String = {
             switch lm.currentLanguage {
-            case .zh: summaryLabel = "当前身体状态"
-            case .ja: summaryLabel = "現在の身体状態"
-            default:  summaryLabel = "Current Body State"
+            case .zh: return "当前身体状态"
+            case .ja: return "現在の身体状態"
+            default:  return "Current Body State"
             }
+        }()
+        let intensityLabel: String = {
+            switch lm.currentLanguage {
+            case .zh: return "强度 \(intensity)/10"
+            case .ja: return "強度 \(intensity)/10"
+            default:  return "Intensity \(intensity)/10"
+            }
+        }()
+        let parts = bodyParts.prefix(4).joined(separator: lm.currentLanguage == .en ? ", " : "、")
+        let emos  = emotions.prefix(3).joined(separator: lm.currentLanguage == .en ? ", " : "、")
+
+        return VStack(alignment: .leading, spacing: 8) {
             Text(summaryLabel)
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.cathierAccent)
                 .tracking(0.5)
                 .textCase(.uppercase)
-
-            let parts = bodyParts.prefix(4).joined(separator: lm.currentLanguage == .en ? ", " : "、")
-            let emos  = emotions.prefix(3).joined(separator: lm.currentLanguage == .en ? ", " : "、")
 
             if !parts.isEmpty {
                 Label(parts, systemImage: "figure.stand")
@@ -156,12 +169,6 @@ struct BodyMusicView: View {
                     .foregroundColor(.secondary)
             }
 
-            let intensityLabel: String
-            switch lm.currentLanguage {
-            case .zh: intensityLabel = "强度 \(intensity)/10"
-            case .ja: intensityLabel = "強度 \(intensity)/10"
-            default:  intensityLabel = "Intensity \(intensity)/10"
-            }
             Label(intensityLabel, systemImage: "waveform.path.ecg")
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -223,13 +230,14 @@ struct BodyMusicView: View {
     }
 
     private func genreChips(_ genres: [String]) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            let genreLabel: String
+        let genreLabel: String = {
             switch lm.currentLanguage {
-            case .zh: genreLabel = "推荐风格"
-            case .ja: genreLabel = "推薦ジャンル"
-            default:  genreLabel = "Recommended Genres"
+            case .zh: return "推荐风格"
+            case .ja: return "推薦ジャンル"
+            default:  return "Recommended Genres"
             }
+        }()
+        return VStack(alignment: .leading, spacing: 8) {
             Text(genreLabel)
                 .font(.caption)
                 .fontWeight(.semibold)
