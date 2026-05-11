@@ -41,6 +41,71 @@ platform :ios do
     end
   end
 
+  # Push localized "What's New" onto the current edit-state App Store Version.
+  # Why this exists: upload_to_app_store with skip_metadata:true silently
+  # ignores the release_notes parameter — release notes are part of "metadata"
+  # in deliver's view. ASC then rejects submit_for_review because whatsNew is
+  # empty on the primary locales. This helper sets whatsNew directly via the
+  # App Store Connect API between binary upload and submit_for_review.
+  #
+  # notes: hash of locale → text (e.g. { "en-US" => "...", "zh-Hans" => "..." })
+  def push_release_notes_via_spaceship(notes:)
+    require "spaceship"
+    app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
+    UI.user_error!("App not found on App Store Connect") unless app
+
+    version = app.get_edit_app_store_version(platform: "IOS")
+    UI.user_error!("No edit-state App Store Version found — was the build associated?") unless version
+
+    localizations = version.get_app_store_version_localizations
+    if localizations.nil? || localizations.empty?
+      UI.user_error!("App Store Version #{version.version_string} has no localizations")
+    end
+
+    localizations.each do |loc|
+      locale = loc.locale
+      text = notes[locale] || notes[locale.split("-").first] || notes["default"]
+      next if text.nil? || text.empty?
+      loc.update(attributes: { whats_new: text })
+      UI.success("whatsNew set for #{locale} (#{text.length} chars)")
+    end
+  end
+
+  # Upload the freshly-built binary, populate localized whatsNew via Spaceship,
+  # then submit the version for App Store review. Three steps because
+  # skip_metadata:true makes deliver drop release_notes on the floor — see
+  # push_release_notes_via_spaceship for the full explanation.
+  def upload_and_submit_for_review(api_key:)
+    # 1. Upload binary and associate with the edit-state App Store Version.
+    #    submit_for_review:false here — we'll submit after whatsNew is set.
+    upload_to_app_store(
+      api_key:                    api_key,
+      skip_metadata:              true,
+      skip_screenshots:           true,
+      submit_for_review:          false,
+      run_precheck_before_submit: false,
+    )
+
+    # 2. Push localized whatsNew (required by ASC for submit_for_review).
+    push_release_notes_via_spaceship(notes: build_release_notes)
+
+    # 3. Submit. Binary already up; metadata now populated.
+    upload_to_app_store(
+      api_key:                    api_key,
+      skip_metadata:              true,
+      skip_screenshots:           true,
+      skip_binary_upload:         true,
+      submit_for_review:          true,
+      automatic_release:          true,
+      reject_if_possible:         true,
+      run_precheck_before_submit: false,
+      submission_information: {
+        add_id_info_uses_idfa:             false,
+        export_compliance_uses_encryption: false,
+      },
+    )
+  end
+
   # Shared signing + build helper. Caller provides the build number so the
   # lane can also use it (e.g. to decide whether to auto-release).
   def sign_and_build(api_key:, build_num:)
@@ -150,20 +215,7 @@ platform :ios do
       # Auto-release path: submit this build to App Store review.
       guard_not_in_review
 
-      upload_to_app_store(
-        api_key:                    api_key,
-        skip_metadata:              true,
-        skip_screenshots:           true,
-        submit_for_review:          true,
-        automatic_release:          true,
-        reject_if_possible:         true,
-        run_precheck_before_submit: false,
-        submission_information: {
-          add_id_info_uses_idfa:             false,
-          export_compliance_uses_encryption: false,
-        },
-        release_notes:              build_release_notes
-      )
+      upload_and_submit_for_review(api_key: api_key)
 
       # Tag the released commit. The pbxproj at this point still has
       # new_version, so the tag captures that snapshot before the post-release
@@ -227,20 +279,7 @@ platform :ios do
 
     guard_not_in_review
 
-    upload_to_app_store(
-      api_key:                    api_key,
-      skip_metadata:              true,
-      skip_screenshots:           true,
-      submit_for_review:          true,
-      automatic_release:          true,
-      reject_if_possible:         true,
-      run_precheck_before_submit: false,
-      submission_information: {
-        add_id_info_uses_idfa:             false,
-        export_compliance_uses_encryption: false,
-      },
-      release_notes:              build_release_notes
-    )
+    upload_and_submit_for_review(api_key: api_key)
   end
 
 end
