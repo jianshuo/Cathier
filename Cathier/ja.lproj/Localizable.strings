@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "AIの解釈";
 
 /* FriendSetupView */
-"setup.title" = "友達プロフィールを設定";
+"setup.title" = "個人プロフィールを設定";
 "setup.subtitle" = "友達にはこの名前とアバターが表示されます";
 "setup.choose_emoji" = "アバター絵文字を選択";
 "setup.nickname_label" = "ニックネーム";

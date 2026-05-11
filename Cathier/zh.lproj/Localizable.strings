@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "AI 解读";
 
 /* FriendSetupView */
-"setup.title" = "设置你的好友档案";
+"setup.title" = "设置你的个人档案";
 "setup.subtitle" = "好友看到的就是这个名字和头像";
 "setup.choose_emoji" = "选一个头像 emoji";
 "setup.nickname_label" = "你的昵称";

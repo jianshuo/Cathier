@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "Diễn giải AI";
 
 /* FriendSetupView */
-"setup.title" = "Thiết lập hồ sơ bạn bè";
+"setup.title" = "Thiết lập hồ sơ cá nhân";
 "setup.subtitle" = "Bạn bè sẽ thấy tên và ảnh đại diện này";
 "setup.choose_emoji" = "Chọn emoji đại diện";
 "setup.nickname_label" = "Biệt danh của bạn";

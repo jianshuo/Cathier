@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "Yapay Zeka Yorumu";
 
 /* FriendSetupView */
-"setup.title" = "Arkadaş Profilinizi Kurun";
+"setup.title" = "Kişisel Profilinizi Kurun";
 "setup.subtitle" = "Arkadaşlar bu ismi ve avatarı görecek";
 "setup.choose_emoji" = "Bir avatar emojisi seçin";
 "setup.nickname_label" = "Takma Adınız";

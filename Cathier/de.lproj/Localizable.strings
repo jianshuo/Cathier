@@ -100,7 +100,7 @@
 "ai.full_interpretation" = "KI-Interpretation";
 
 /* FriendSetupView */
-"setup.title" = "Freundesprofil einrichten";
+"setup.title" = "Persönliches Profil einrichten";
 "setup.subtitle" = "Freunde sehen diesen Namen und Avatar";
 "setup.choose_emoji" = "Wähle einen Avatar-Emoji";
 "setup.nickname_label" = "Dein Spitzname";
