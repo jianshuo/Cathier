@@ -205,6 +205,7 @@
 "feedback.token_section" = "GitHub Ayarları";
 "feedback.token_footer" = "Issue göndermek için 'repo' kapsamlı GitHub Kişisel Erişim Tokenı gereklidir. Yalnızca yerel olarak saklanır.";
 "feedback.submit" = "Gönder";
+"feedback.view_all_issues" = "Diğerlerinin önerilerini gör →";
 "feedback.screenshot_label" = "Ekran Görüntüleri";
 "feedback.screenshot_add" = "Ekran görüntüsü ekle";
 "feedback.screenshot_footer" = "İsteğe bağlı olarak en fazla 3 ekran görüntüsü ekleyin.";

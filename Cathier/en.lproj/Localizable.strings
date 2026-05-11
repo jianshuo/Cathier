@@ -209,6 +209,7 @@
 "feedback.submit" = "Submit";
 "feedback.success" = "Submitted successfully!";
 "feedback.view_issue" = "View GitHub Issue \u2192";
+"feedback.view_all_issues" = "See what others have suggested →";
 "feedback.screenshot_label" = "Screenshots";
 "feedback.screenshot_add" = "Add Screenshot";
 "feedback.screenshot_footer" = "Attach up to 3 screenshots (optional).";

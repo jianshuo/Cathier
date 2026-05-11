@@ -38,8 +38,13 @@ struct FeedbackView: View {
                 } header: {
                     Text(lm.feedbackBodyLabel)
                 } footer: {
-                    Text(lm.feedbackBodyFooter)
-                        .font(.caption)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(lm.feedbackBodyFooter)
+                        Link(lm.feedbackViewAllIssues,
+                             destination: URL(string: "https://github.com/jianshuo/Cathier/issues")!)
+                            .foregroundColor(.cathierAccent)
+                    }
+                    .font(.caption)
                 }
 
                 Section {

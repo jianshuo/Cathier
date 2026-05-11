@@ -207,6 +207,7 @@
 "feedback.submit" = "Enviar";
 "feedback.success" = "¡Enviado con éxito!";
 "feedback.view_issue" = "Ver Issue de GitHub \u2192";
+"feedback.view_all_issues" = "Ver las sugerencias de otros →";
 "feedback.screenshot_label" = "Capturas de pantalla";
 "feedback.screenshot_add" = "A\u00f1adir captura";
 "feedback.screenshot_footer" = "Adjunta hasta 3 capturas de pantalla (opcional).";

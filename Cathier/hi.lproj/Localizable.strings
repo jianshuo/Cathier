@@ -205,6 +205,7 @@
 "feedback.token_section" = "GitHub सेटिंग्स";
 "feedback.token_footer" = "Issues सबमिट करने के लिए 'repo' स्कोप वाला GitHub Personal Access Token आवश्यक है। केवल स्थानीय रूप से संग्रहीत।";
 "feedback.submit" = "सबमिट करें";
+"feedback.view_all_issues" = "दूसरों के सुझाव देखें →";
 "feedback.screenshot_label" = "स्क्रीनशॉट";
 "feedback.screenshot_add" = "स्क्रीनशॉट जोड़ें";
 "feedback.screenshot_footer" = "अधिकतम 3 स्क्रीनशॉट संलग्न करें (वैकल्पिक)।";
