@@ -233,7 +233,7 @@ struct WhiteNoiseView: View {
         let isSelected = (selectedType == type)
         let background: Color = isSelected ? sageColor.opacity(0.18) : Color.cathierSurface
         let foreground: Color = isSelected ? sageColor : .secondary
-        let stroke: Color = isSelected ? sageColor : Color.cathierBorder
+        let stroke: Color = isSelected ? sageColor : Color.cathierAccent.opacity(0.2)
 
         return Button(action: { selectedType = type }) {
             VStack(spacing: 6) {
@@ -277,7 +277,7 @@ struct WhiteNoiseView: View {
         let isSelected = (selectedTimer == option)
         let background: Color = isSelected ? sageColor.opacity(0.18) : Color.cathierSurface
         let foreground: Color = isSelected ? sageColor : .secondary
-        let stroke: Color = isSelected ? sageColor : Color.cathierBorder
+        let stroke: Color = isSelected ? sageColor : Color.cathierAccent.opacity(0.2)
 
         return Button(action: { selectedTimer = option }) {
             Text(timerName(option))
