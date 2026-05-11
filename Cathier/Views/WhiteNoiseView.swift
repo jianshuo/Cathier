@@ -219,28 +219,41 @@ struct WhiteNoiseView: View {
 
             HStack(spacing: 10) {
                 ForEach(NoiseEngine.NoiseType.allCases, id: \.self) { type in
-                    Button(action: { selectedType = type }) {
-                        VStack(spacing: 6) {
-                            Text(noiseEmoji(type))
-                                .font(.title3)
-                            Text(typeName(type))
-                                .font(.caption)
-                                .fontWeight(.medium)
-                        }
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(selectedType == type ? sageColor.opacity(0.18) : Color.cathierSurface)
-                        .foregroundColor(selectedType == type ? sageColor : .secondary)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 10, style: .continuous)
-                                .stroke(selectedType == type ? sageColor : Color.cathierBorder, lineWidth: 1.5)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
+                    noiseTypeButton(type)
                 }
             }
         }
+    }
+
+    // Extracted from the ForEach body. Inlining the ternary-laden modifier
+    // chain inside @ViewBuilder pushed Swift past the type-checker timeout
+    // ("expression too complex"). Breaking each option into a named view
+    // lets the inferencer solve each piece independently.
+    private func noiseTypeButton(_ type: NoiseEngine.NoiseType) -> some View {
+        let isSelected = (selectedType == type)
+        let background: Color = isSelected ? sageColor.opacity(0.18) : Color.cathierSurface
+        let foreground: Color = isSelected ? sageColor : .secondary
+        let stroke: Color = isSelected ? sageColor : Color.cathierBorder
+
+        return Button(action: { selectedType = type }) {
+            VStack(spacing: 6) {
+                Text(noiseEmoji(type))
+                    .font(.title3)
+                Text(typeName(type))
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .background(background)
+            .foregroundColor(foreground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                    .stroke(stroke, lineWidth: 1.5)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Timer picker
@@ -254,24 +267,33 @@ struct WhiteNoiseView: View {
 
             HStack(spacing: 10) {
                 ForEach(NoiseEngine.TimerOption.allCases, id: \.self) { option in
-                    Button(action: { selectedTimer = option }) {
-                        Text(timerName(option))
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
-                            .background(selectedTimer == option ? sageColor.opacity(0.18) : Color.cathierSurface)
-                            .foregroundColor(selectedTimer == option ? sageColor : .secondary)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                                    .stroke(selectedTimer == option ? sageColor : Color.cathierBorder, lineWidth: 1.5)
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
+                    timerButton(option)
                 }
             }
         }
+    }
+
+    private func timerButton(_ option: NoiseEngine.TimerOption) -> some View {
+        let isSelected = (selectedTimer == option)
+        let background: Color = isSelected ? sageColor.opacity(0.18) : Color.cathierSurface
+        let foreground: Color = isSelected ? sageColor : .secondary
+        let stroke: Color = isSelected ? sageColor : Color.cathierBorder
+
+        return Button(action: { selectedTimer = option }) {
+            Text(timerName(option))
+                .font(.caption)
+                .fontWeight(.medium)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(background)
+                .foregroundColor(foreground)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .stroke(stroke, lineWidth: 1.5)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Control button
