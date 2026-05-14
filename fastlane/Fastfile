@@ -214,6 +214,24 @@ platform :ios do
       UI.important("get_pre_release_versions failed (#{e.message})")
     end
 
+    begin
+      # Prior runs sometimes leave a build whose prerelease train was later
+      # deleted from ASC. The prerelease record is gone but Apple still
+      # remembers the version as used. Pull every build's preReleaseVersion
+      # to catch those orphans too.
+      resp = Spaceship::ConnectAPI.get_builds(
+        filter: { app: app.id },
+        includes: "preReleaseVersion",
+        limit: 200
+      )
+      resp.to_models.each do |b|
+        pv = b.pre_release_version
+        used << pv.version if pv && pv.version
+      end
+    rescue StandardError => e
+      UI.important("get_builds failed (#{e.message})")
+    end
+
     UI.message("ASC reports #{used.size} version strings already in use: #{used.to_a.sort.join(', ')}")
     used
   rescue StandardError => e
