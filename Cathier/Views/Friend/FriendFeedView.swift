@@ -332,8 +332,6 @@ struct FriendCheckInCard: View {
             }
 
             Spacer()
-
-            IntensityBadge(intensity: item.intensity, label: lm.aiIntensityBadge(item.intensity))
         }
     }
 

@@ -9,7 +9,7 @@ struct CheckInCard: View {
     var body: some View {
         Button(action: { showDetail = true }) {
             VStack(alignment: .leading, spacing: 10) {
-                // Top row: time + share indicator + intensity badge
+                // Top row: time + share indicator
                 HStack {
                     Text(timeString)
                         .font(.caption)
@@ -20,7 +20,6 @@ struct CheckInCard: View {
                             .foregroundColor(.cathierAccent.opacity(0.8))
                     }
                     Spacer()
-                    IntensityBadge(intensity: checkIn.intensity, label: lm.aiIntensityBadge(checkIn.intensity))
                 }
 
                 // Body parts + sensations (grouped per body part)

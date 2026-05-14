@@ -426,7 +426,6 @@ struct AIFeedbackView: View {
                     .font(.subheadline)
                     .fontWeight(.semibold)
                 Spacer()
-                IntensityBadge(intensity: Int(viewModel.intensity), label: lm.aiIntensityBadge(Int(viewModel.intensity)))
             }
 
             if !viewModel.selectedBodyParts.isEmpty {
@@ -691,32 +690,6 @@ struct StructuredFeedbackView: View {
                     .lineSpacing(4)
                     .fixedSize(horizontal: false, vertical: true)
             }
-        }
-    }
-}
-
-// MARK: - Intensity Badge
-
-struct IntensityBadge: View {
-    let intensity: Int
-    var label: String? = nil
-
-    var body: some View {
-        Text(label ?? "强度 \(intensity)/10")
-            .font(.caption)
-            .fontWeight(.medium)
-            .padding(.horizontal, 10)
-            .padding(.vertical, 4)
-            .background(intensityColor.opacity(0.15))
-            .foregroundColor(intensityColor)
-            .clipShape(Capsule())
-    }
-
-    private var intensityColor: Color {
-        switch intensity {
-        case ..<4: return .yellow
-        case ..<7: return .cathierAccent
-        default:   return .red
         }
     }
 }

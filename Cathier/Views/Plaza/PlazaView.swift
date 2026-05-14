@@ -186,8 +186,6 @@ private struct PlazaPostCard: View {
             }
 
             Spacer()
-
-            IntensityBadge(intensity: post.intensity, label: lm.aiIntensityBadge(post.intensity))
         }
     }
 
