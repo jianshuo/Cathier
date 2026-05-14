@@ -157,86 +157,82 @@ platform :ios do
 
   # Bump marketing version decimal-style: 1.9 → 2.0, 2.9 → 3.0.
   # Minor cycles 0..9, then major increments and minor resets.
-  # Skips versions already present in App Store Connect — a prior run that
-  # uploaded the binary but failed before the post-release push back to main
-  # leaves the version registered in ASC, so a blind +1 collides on retry.
+  #
+  # Apple's "version already used" rule covers more than just the active App
+  # Store Versions and TestFlight trains list endpoints expose — released
+  # builds with archived trains, deleted versions, and other ghosts remain
+  # blocked by ASC even though no API call lists them. So instead of trying
+  # to enumerate "used" versions, this helper probes by actually creating
+  # each candidate via the App Store Versions endpoint and bumps on rejection.
+  # The first candidate ASC accepts is set as the local marketing version and
+  # remains as an edit-state App Store Version for upload_to_app_store to
+  # associate the freshly-built binary with.
+  #
   # Returns the new version string.
   def bump_marketing_version(api_key: nil)
-    used = api_key ? asc_used_versions(api_key: api_key) : Set.new
     current = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
     parts = current.split(".")
     major = parts[0].to_i
     minor = (parts[1] || "0").to_i
 
-    loop do
+    if api_key.nil?
+      # Fallback: no ASC available, blind +1.
       minor += 1
       if minor > 9
         major += 1
         minor = 0
       end
       candidate = "#{major}.#{minor}"
-      next if used.include?(candidate)
       increment_version_number(version_number: candidate, xcodeproj: "Cathier.xcodeproj")
-      UI.success("Marketing version bumped: #{current} → #{candidate}")
+      UI.success("Marketing version bumped (no ASC dedup): #{current} → #{candidate}")
       return candidate
     end
-  end
 
-  # Returns a Set of every versionString App Store Connect has on file for the
-  # app — both the currently-editable App Store Versions AND every prerelease
-  # train. Apple disallows reusing a versionString in any of these channels,
-  # and get_app_store_versions only returns active/editable App Store records,
-  # which is why a prior released-then-archived version was missed before.
-  # Caller must have already set up the ASC API key via app_store_connect_api_key.
-  def asc_used_versions(api_key:)
     require "spaceship"
     app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
-    used = Set.new
+    UI.user_error!("App not found on App Store Connect") unless app
 
-    begin
-      app.get_app_store_versions(filter: { platform: "IOS" }).each do |v|
-        used << v.version_string
+    # An edit-state version left by a prior failed run blocks creating any new
+    # version (only one edit version per platform exists at a time). Drop it
+    # via the raw tunes endpoint since Spaceship doesn't expose a wrapper.
+    leftover = app.get_edit_app_store_version(platform: "IOS")
+    if leftover
+      UI.message("Removing leftover edit App Store Version #{leftover.version_string}")
+      begin
+        Spaceship::ConnectAPI.tunes_request_client.delete("v1/appStoreVersions/#{leftover.id}")
+      rescue StandardError => e
+        UI.important("Could not delete leftover edit version (#{e.message}) — proceeding anyway.")
       end
-    rescue StandardError => e
-      UI.important("get_app_store_versions failed (#{e.message})")
     end
 
-    begin
-      # Prerelease versions are TestFlight trains — every version ever opened.
-      # Apple disallows reusing one of these for an App Store submission, so
-      # they need to count as "used" too.
-      resp = Spaceship::ConnectAPI.get_pre_release_versions(
-        filter: { app: app.id, platform: "IOS" },
-        limit: 200
-      )
-      resp.to_models.each { |v| used << v.version }
-    rescue StandardError => e
-      UI.important("get_pre_release_versions failed (#{e.message})")
-    end
+    attempts = 0
+    loop do
+      attempts += 1
+      UI.user_error!("Could not find an available marketing version after 20 attempts") if attempts > 20
 
-    begin
-      # Prior runs sometimes leave a build whose prerelease train was later
-      # deleted from ASC. The prerelease record is gone but Apple still
-      # remembers the version as used. Pull every build's preReleaseVersion
-      # to catch those orphans too.
-      resp = Spaceship::ConnectAPI.get_builds(
-        filter: { app: app.id },
-        includes: "preReleaseVersion",
-        limit: 200
-      )
-      resp.to_models.each do |b|
-        pv = b.pre_release_version
-        used << pv.version if pv && pv.version
+      minor += 1
+      if minor > 9
+        major += 1
+        minor = 0
       end
-    rescue StandardError => e
-      UI.important("get_builds failed (#{e.message})")
-    end
+      candidate = "#{major}.#{minor}"
 
-    UI.message("ASC reports #{used.size} version strings already in use: #{used.to_a.sort.join(', ')}")
-    used
-  rescue StandardError => e
-    UI.important("Could not fetch ASC versions (#{e.message}) — proceeding without dedup.")
-    Set.new
+      begin
+        Spaceship::ConnectAPI.post_app_store_version(
+          app_id: app.id,
+          attributes: { platform: "IOS", version_string: candidate }
+        )
+        UI.success("Created App Store version #{candidate} (was #{current})")
+        increment_version_number(version_number: candidate, xcodeproj: "Cathier.xcodeproj")
+        return candidate
+      rescue Spaceship::UnexpectedResponse => e
+        if e.message.include?("previously used") || e.message.include?("already been used")
+          UI.message("ASC rejects #{candidate} as previously used — trying next.")
+          next
+        end
+        raise
+      end
+    end
   end
 
   # Commit the bumped version back to main with a custom message.
