@@ -291,16 +291,3 @@
 "meditation.try_hint" = "Beden taraması ve duygu görselleştirmesi, ~3 dk";
 
 /* White Noise */
-"whitenoise.nav_title" = "Beyaz Gürültü";
-"whitenoise.play" = "Oynat";
-"whitenoise.stop" = "Durdur";
-"whitenoise.close" = "Kapat";
-"whitenoise.type_label" = "Gürültü Türü";
-"whitenoise.type_white" = "Beyaz";
-"whitenoise.type_pink" = "Pembe";
-"whitenoise.type_brown" = "Kahverengi";
-"whitenoise.timer_label" = "Otomatik durdurma";
-"whitenoise.timer_none" = "Süresiz";
-"whitenoise.timer_15" = "15 dak";
-"whitenoise.timer_30" = "30 dak";
-"whitenoise.timer_60" = "60 dak";

@@ -291,16 +291,3 @@
 "meditation.try_hint" = "बॉडी स्कैन और भावना विज़ुअलाइज़ेशन, ~3 मिनट";
 
 /* White Noise */
-"whitenoise.nav_title" = "श्वेत शोर";
-"whitenoise.play" = "चलाएं";
-"whitenoise.stop" = "रोकें";
-"whitenoise.close" = "बंद करें";
-"whitenoise.type_label" = "शोर का प्रकार";
-"whitenoise.type_white" = "श्वेत";
-"whitenoise.type_pink" = "गुलाबी";
-"whitenoise.type_brown" = "भूरा";
-"whitenoise.timer_label" = "स्वतः बंद";
-"whitenoise.timer_none" = "बिना सीमा";
-"whitenoise.timer_15" = "15 मिनट";
-"whitenoise.timer_30" = "30 मिनट";
-"whitenoise.timer_60" = "60 मिनट";

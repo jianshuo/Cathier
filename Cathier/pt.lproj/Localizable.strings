@@ -291,16 +291,3 @@
 "meditation.try_hint" = "Escaneamento corporal e visualização emocional, ~3 min";
 
 /* White Noise */
-"whitenoise.nav_title" = "Ruído Branco";
-"whitenoise.play" = "Reproduzir";
-"whitenoise.stop" = "Parar";
-"whitenoise.close" = "Fechar";
-"whitenoise.type_label" = "Tipo de ruído";
-"whitenoise.type_white" = "Branco";
-"whitenoise.type_pink" = "Rosa";
-"whitenoise.type_brown" = "Marrom";
-"whitenoise.timer_label" = "Parada automática";
-"whitenoise.timer_none" = "Sem limite";
-"whitenoise.timer_15" = "15 min";
-"whitenoise.timer_30" = "30 min";
-"whitenoise.timer_60" = "60 min";

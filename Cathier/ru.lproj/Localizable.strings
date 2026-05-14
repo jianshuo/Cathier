@@ -291,16 +291,3 @@
 "meditation.try_hint" = "Сканирование тела и визуализация эмоций, ~3 мин";
 
 /* White Noise */
-"whitenoise.nav_title" = "Белый шум";
-"whitenoise.play" = "Играть";
-"whitenoise.stop" = "Стоп";
-"whitenoise.close" = "Закрыть";
-"whitenoise.type_label" = "Тип шума";
-"whitenoise.type_white" = "Белый";
-"whitenoise.type_pink" = "Розовый";
-"whitenoise.type_brown" = "Коричневый";
-"whitenoise.timer_label" = "Автостоп";
-"whitenoise.timer_none" = "Без ограничений";
-"whitenoise.timer_15" = "15 мин";
-"whitenoise.timer_30" = "30 мин";
-"whitenoise.timer_60" = "60 мин";

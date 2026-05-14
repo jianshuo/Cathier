@@ -291,16 +291,3 @@
 "meditation.try_hint" = "Körperscan und Emotionsvisualisierung, ~3 Min";
 
 /* White Noise */
-"whitenoise.nav_title" = "Weißes Rauschen";
-"whitenoise.play" = "Abspielen";
-"whitenoise.stop" = "Stopp";
-"whitenoise.close" = "Schließen";
-"whitenoise.type_label" = "Rauschtyp";
-"whitenoise.type_white" = "Weiß";
-"whitenoise.type_pink" = "Rosa";
-"whitenoise.type_brown" = "Braun";
-"whitenoise.timer_label" = "Auto-Stopp";
-"whitenoise.timer_none" = "Aus";
-"whitenoise.timer_15" = "15 Min";
-"whitenoise.timer_30" = "30 Min";
-"whitenoise.timer_60" = "60 Min";

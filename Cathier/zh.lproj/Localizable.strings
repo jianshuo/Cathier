@@ -295,16 +295,3 @@
 "meditation.try_hint" = "身体扫描与情绪观想，约3分钟";
 
 /* White Noise */
-"whitenoise.nav_title" = "白噪音";
-"whitenoise.play" = "开始播放";
-"whitenoise.stop" = "停止";
-"whitenoise.close" = "关闭";
-"whitenoise.type_label" = "噪音类型";
-"whitenoise.type_white" = "白噪音";
-"whitenoise.type_pink" = "粉噪音";
-"whitenoise.type_brown" = "棕噪音";
-"whitenoise.timer_label" = "自动停止";
-"whitenoise.timer_none" = "不限时";
-"whitenoise.timer_15" = "15分钟";
-"whitenoise.timer_30" = "30分钟";
-"whitenoise.timer_60" = "60分钟";
