@@ -202,12 +202,16 @@ platform :ios do
     end
 
     begin
-      # Prerelease versions are TestFlight trains — every one ever opened.
-      app.get_prerelease_versions(filter: { platform: "IOS" }).each do |v|
-        used << v.version
-      end
+      # Prerelease versions are TestFlight trains — every version ever opened.
+      # Apple disallows reusing one of these for an App Store submission, so
+      # they need to count as "used" too.
+      resp = Spaceship::ConnectAPI.get_pre_release_versions(
+        filter: { app: app.id, platform: "IOS" },
+        limit: 200
+      )
+      resp.to_models.each { |v| used << v.version }
     rescue StandardError => e
-      UI.important("get_prerelease_versions failed (#{e.message})")
+      UI.important("get_pre_release_versions failed (#{e.message})")
     end
 
     UI.message("ASC reports #{used.size} version strings already in use: #{used.to_a.sort.join(', ')}")
