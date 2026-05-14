@@ -183,13 +183,35 @@ platform :ios do
   end
 
   # Returns a Set of every versionString App Store Connect has on file for the
-  # app, regardless of state (prepared, in-review, ready, rejected, ...).
+  # app — both the currently-editable App Store Versions AND every prerelease
+  # train. Apple disallows reusing a versionString in any of these channels,
+  # and get_app_store_versions only returns active/editable App Store records,
+  # which is why a prior released-then-archived version was missed before.
   # Caller must have already set up the ASC API key via app_store_connect_api_key.
   def asc_used_versions(api_key:)
     require "spaceship"
     app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
-    versions = app.get_app_store_versions(filter: { platform: "IOS" })
-    Set.new(versions.map(&:version_string))
+    used = Set.new
+
+    begin
+      app.get_app_store_versions(filter: { platform: "IOS" }).each do |v|
+        used << v.version_string
+      end
+    rescue StandardError => e
+      UI.important("get_app_store_versions failed (#{e.message})")
+    end
+
+    begin
+      # Prerelease versions are TestFlight trains — every one ever opened.
+      app.get_prerelease_versions(filter: { platform: "IOS" }).each do |v|
+        used << v.version
+      end
+    rescue StandardError => e
+      UI.important("get_prerelease_versions failed (#{e.message})")
+    end
+
+    UI.message("ASC reports #{used.size} version strings already in use: #{used.to_a.sort.join(', ')}")
+    used
   rescue StandardError => e
     UI.important("Could not fetch ASC versions (#{e.message}) — proceeding without dedup.")
     Set.new
