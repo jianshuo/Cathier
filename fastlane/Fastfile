@@ -220,7 +220,7 @@ platform :ios do
       begin
         Spaceship::ConnectAPI.post_app_store_version(
           app_id: app.id,
-          attributes: { platform: "IOS", version_string: candidate }
+          attributes: { platform: "IOS", versionString: candidate }
         )
         UI.success("Created App Store version #{candidate} (was #{current})")
         increment_version_number(version_number: candidate, xcodeproj: "Cathier.xcodeproj")
