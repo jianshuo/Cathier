@@ -37,3 +37,7 @@
 {"date": "2026-05-14", "folder": "2026-05-14", "platform": "x", "angle_id": "shame-shrinks-the-spine", "status": "ready", "files": ["x.md"]}
 {"date": "2026-05-14", "folder": "2026-05-14", "platform": "instagram", "angle_id": "shame-shrinks-the-spine", "status": "ready", "files": ["instagram.md"]}
 {"date": "2026-05-14", "folder": "2026-05-14", "platform": "facebook", "angle_id": "shame-shrinks-the-spine", "status": "ready", "files": ["facebook.md"]}
+{"date": "2026-05-15", "folder": "2026-05-15", "platform": "xhs", "angle_id": "interoception-as-trainable-skill", "status": "ready", "files": ["xiaohongshu.md"], "note": "images skipped — OpenAI billing limit reached"}
+{"date": "2026-05-15", "folder": "2026-05-15", "platform": "x", "angle_id": "interoception-as-trainable-skill", "status": "ready", "files": ["x.md"], "note": "images skipped — OpenAI billing limit reached"}
+{"date": "2026-05-15", "folder": "2026-05-15", "platform": "instagram", "angle_id": "interoception-as-trainable-skill", "status": "ready", "files": ["instagram.md"], "note": "images skipped — OpenAI billing limit reached"}
+{"date": "2026-05-15", "folder": "2026-05-15", "platform": "facebook", "angle_id": "interoception-as-trainable-skill", "status": "ready", "files": ["facebook.md"], "note": "images skipped — OpenAI billing limit reached"}
