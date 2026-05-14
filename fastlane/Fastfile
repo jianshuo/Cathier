@@ -1,6 +1,8 @@
 # This file contains the fastlane.tools configuration
 # You can find the documentation at https://docs.fastlane.tools
 
+require "set"
+
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 default_platform(:ios)
@@ -155,21 +157,42 @@ platform :ios do
 
   # Bump marketing version decimal-style: 1.9 → 2.0, 2.9 → 3.0.
   # Minor cycles 0..9, then major increments and minor resets.
+  # Skips versions already present in App Store Connect — a prior run that
+  # uploaded the binary but failed before the post-release push back to main
+  # leaves the version registered in ASC, so a blind +1 collides on retry.
   # Returns the new version string.
-  def bump_marketing_version
+  def bump_marketing_version(api_key: nil)
+    used = api_key ? asc_used_versions(api_key: api_key) : Set.new
     current = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
     parts = current.split(".")
     major = parts[0].to_i
     minor = (parts[1] || "0").to_i
-    minor += 1
-    if minor > 9
-      major += 1
-      minor = 0
+
+    loop do
+      minor += 1
+      if minor > 9
+        major += 1
+        minor = 0
+      end
+      candidate = "#{major}.#{minor}"
+      next if used.include?(candidate)
+      increment_version_number(version_number: candidate, xcodeproj: "Cathier.xcodeproj")
+      UI.success("Marketing version bumped: #{current} → #{candidate}")
+      return candidate
     end
-    new_version = "#{major}.#{minor}"
-    increment_version_number(version_number: new_version, xcodeproj: "Cathier.xcodeproj")
-    UI.success("Marketing version bumped: #{current} → #{new_version}")
-    new_version
+  end
+
+  # Returns a Set of every versionString App Store Connect has on file for the
+  # app, regardless of state (prepared, in-review, ready, rejected, ...).
+  # Caller must have already set up the ASC API key via app_store_connect_api_key.
+  def asc_used_versions(api_key:)
+    require "spaceship"
+    app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
+    versions = app.get_app_store_versions(filter: { platform: "IOS" })
+    Set.new(versions.map(&:version_string))
+  rescue StandardError => e
+    UI.important("Could not fetch ASC versions (#{e.message}) — proceeding without dedup.")
+    Set.new
   end
 
   # Commit the bumped version back to main with a custom message.
@@ -205,7 +228,7 @@ platform :ios do
 
     new_version = nil
     if is_release
-      new_version = bump_marketing_version
+      new_version = bump_marketing_version(api_key: api_key)
       UI.message("Build #{build_num} ends in 0 — auto-releasing as version #{new_version}.")
     end
 
@@ -230,7 +253,7 @@ platform :ios do
       # at that version fails with "Invalid Pre-Release Train". By bumping
       # now and pushing back to main, the next non-release CI run picks up
       # the new version and uploads cleanly.
-      next_version = bump_marketing_version
+      next_version = bump_marketing_version(api_key: api_key)
       commit_and_push_version_bump(
         message: "chore: bump to #{next_version} after release/#{new_version} [skip ci]"
       )
