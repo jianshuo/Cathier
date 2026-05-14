@@ -220,17 +220,16 @@ platform :ios do
     app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
     UI.user_error!("App not found on App Store Connect") unless app
 
-    # An edit-state version left by a prior failed run blocks creating any new
-    # version (only one edit version per platform exists at a time). Drop it
-    # via the raw tunes endpoint since Spaceship doesn't expose a wrapper.
-    leftover = app.get_edit_app_store_version(platform: "IOS")
-    if leftover
-      UI.message("Removing leftover edit App Store Version #{leftover.version_string}")
-      begin
-        Spaceship::ConnectAPI.tunes_request_client.delete("v1/appStoreVersions/#{leftover.id}")
-      rescue StandardError => e
-        UI.important("Could not delete leftover edit version (#{e.message}) — proceeding anyway.")
-      end
+    # ASC allows only one edit-state version per platform. If a prior run
+    # already prepared one (and once a build is uploaded it can't be deleted),
+    # that version IS the next release — reuse it instead of trying to create
+    # another, which would fail with "cannot create a new version in the
+    # current state".
+    existing = app.get_edit_app_store_version(platform: "IOS")
+    if existing
+      UI.success("Reusing existing edit App Store Version #{existing.version_string} (was #{current})")
+      set_marketing_version(existing.version_string)
+      return existing.version_string
     end
 
     attempts = 0
