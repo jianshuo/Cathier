@@ -77,11 +77,17 @@ platform :ios do
   # then submit the version for App Store review. Three steps because
   # skip_metadata:true makes deliver drop release_notes on the floor — see
   # push_release_notes_via_spaceship for the full explanation.
-  def upload_and_submit_for_review(api_key:)
+  # app_version must be passed explicitly: deliver otherwise resolves it from
+  # the IPA / project and can land on the currently-live version (2.0), then
+  # tries to patch the edit version's versionString to that already-used value
+  # and ASC rejects it. Passing the freshly-bumped version keeps deliver's
+  # ensure_version! aligned with the edit version bump_marketing_version made.
+  def upload_and_submit_for_review(api_key:, app_version:)
     # 1. Upload binary and associate with the edit-state App Store Version.
     #    submit_for_review:false here — we'll submit after whatsNew is set.
     upload_to_app_store(
       api_key:                    api_key,
+      app_version:                app_version,
       skip_metadata:              true,
       skip_screenshots:           true,
       submit_for_review:          false,
@@ -94,6 +100,7 @@ platform :ios do
     # 3. Submit. Binary already up; metadata now populated.
     upload_to_app_store(
       api_key:                    api_key,
+      app_version:                app_version,
       skip_metadata:              true,
       skip_screenshots:           true,
       skip_binary_upload:         true,
@@ -155,6 +162,27 @@ platform :ios do
     }
   end
 
+  # Write MARKETING_VERSION into the Cathier app target's build settings.
+  # The project has GENERATE_INFOPLIST_FILE = YES, so the build derives
+  # CFBundleShortVersionString from this build setting — editing Info.plist
+  # with agvtool (what increment_version_number does) is silently ignored,
+  # which is why earlier bumps never reached the actual binary.
+  def set_marketing_version(version)
+    require "xcodeproj"
+    project = Xcodeproj::Project.open("Cathier.xcodeproj")
+    updated = false
+    project.targets.each do |target|
+      next unless target.name == "Cathier"
+      target.build_configurations.each do |config|
+        config.build_settings["MARKETING_VERSION"] = version
+        updated = true
+      end
+    end
+    project.save
+    UI.user_error!("Target 'Cathier' not found — MARKETING_VERSION not set") unless updated
+    UI.message("Set MARKETING_VERSION = #{version} for target Cathier")
+  end
+
   # Bump marketing version decimal-style: 1.9 → 2.0, 2.9 → 3.0.
   # Minor cycles 0..9, then major increments and minor resets.
   #
@@ -183,7 +211,7 @@ platform :ios do
         minor = 0
       end
       candidate = "#{major}.#{minor}"
-      increment_version_number(version_number: candidate, xcodeproj: "Cathier.xcodeproj")
+      set_marketing_version(candidate)
       UI.success("Marketing version bumped (no ASC dedup): #{current} → #{candidate}")
       return candidate
     end
@@ -223,7 +251,7 @@ platform :ios do
           attributes: { platform: "IOS", versionString: candidate }
         )
         UI.success("Created App Store version #{candidate} (was #{current})")
-        increment_version_number(version_number: candidate, xcodeproj: "Cathier.xcodeproj")
+        set_marketing_version(candidate)
         return candidate
       rescue Spaceship::UnexpectedResponse => e
         if e.message.include?("previously used") || e.message.include?("already been used")
@@ -278,7 +306,7 @@ platform :ios do
       # Auto-release path: submit this build to App Store review.
       guard_not_in_review
 
-      upload_and_submit_for_review(api_key: api_key)
+      upload_and_submit_for_review(api_key: api_key, app_version: new_version)
 
       # Tag the released commit. The pbxproj at this point still has
       # new_version, so the tag captures that snapshot before the post-release
@@ -342,7 +370,8 @@ platform :ios do
 
     guard_not_in_review
 
-    upload_and_submit_for_review(api_key: api_key)
+    app_version = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
+    upload_and_submit_for_review(api_key: api_key, app_version: app_version)
   end
 
 end
