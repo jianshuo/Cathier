@@ -169,7 +169,10 @@ platform :ios do
   # which is why earlier bumps never reached the actual binary.
   def set_marketing_version(version)
     require "xcodeproj"
-    project = Xcodeproj::Project.open("Cathier.xcodeproj")
+    # fastlane runs lane code with CWD = the fastlane/ dir, so a bare relative
+    # path resolves to fastlane/Cathier.xcodeproj. Anchor to the repo root.
+    project_path = File.expand_path("../Cathier.xcodeproj", __dir__)
+    project = Xcodeproj::Project.open(project_path)
     updated = false
     project.targets.each do |target|
       next unless target.name == "Cathier"
