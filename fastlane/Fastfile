@@ -269,13 +269,17 @@ platform :ios do
   # Uses the FEEDBACK_PAT-authenticated remote that actions/checkout set up.
   # [skip ci] in the message prevents the push from re-triggering Build & Deploy.
   def commit_and_push_version_bump(message:)
-    sh("git config user.email 'github-actions[bot]@users.noreply.github.com'")
-    sh("git config user.name 'github-actions[bot]'")
+    # fastlane runs lane code with CWD = the fastlane/ dir, so a bare
+    # `git add Cathier.xcodeproj/...` pathspec doesn't resolve. Anchor every
+    # git call to the repo root with `git -C`.
+    repo = File.expand_path("..", __dir__)
+    sh("git -C '#{repo}' config user.email 'github-actions[bot]@users.noreply.github.com'")
+    sh("git -C '#{repo}' config user.name 'github-actions[bot]'")
     # Only commit project file. Info.plist has injected secrets at this
     # point (Azure key, GitHub PAT) and must NOT be committed.
-    sh("git add Cathier.xcodeproj/project.pbxproj")
-    sh("git commit -m '#{message}' || echo 'nothing to commit'")
-    sh("git push origin HEAD:main")
+    sh("git -C '#{repo}' add Cathier.xcodeproj/project.pbxproj")
+    sh("git -C '#{repo}' commit -m '#{message}' || echo 'nothing to commit'")
+    sh("git -C '#{repo}' push origin HEAD:main")
   end
 
   desc "Build and upload to TestFlight."
