@@ -157,28 +157,6 @@ actor CloudKitService {
             .compactMap { FriendCheckIn(record: $0) }
     }
 
-    // MARK: - PlazaPost
-
-    func savePlazaPost(_ post: PlazaPost) async throws {
-        _ = try await db.save(post.toRecord())
-    }
-
-    func deletePlazaPost(id: CKRecord.ID) async throws {
-        _ = try await db.deleteRecord(withID: id)
-    }
-
-    /// Fetch most recent plaza posts.
-    /// ⚠️ Requires a Queryable index on `date` in CloudKit Dashboard:
-    ///    Schema → Record Types → PlazaPost → Add Index → Sortable → date
-    func fetchPlazaPosts(limit: Int = 50) async throws -> [PlazaPost] {
-        let query = CKQuery(recordType: PlazaPost.recordType, predicate: NSPredicate(value: true))
-        query.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-        let (results, _) = try await db.records(matching: query, resultsLimit: limit)
-        return results
-            .compactMap { try? $0.1.get() }
-            .compactMap { PlazaPost(record: $0) }
-    }
-
     // MARK: - Reaction
 
     /// Save or overwrite a reaction (record name is deterministic — acts as upsert).

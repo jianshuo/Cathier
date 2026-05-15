@@ -265,17 +265,6 @@
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
 
-/* Plaza */
-"tab.plaza" = "Площадь";
-"plaza.nav_title" = "Площадь";
-"plaza.empty" = "Ничего не опубликовано";
-"plaza.empty_hint" = "После отметки поделитесь эмоциями на Площади";
-"plaza.share_section_title" = "Площадь";
-"plaza.share_toggle" = "Поделиться на Площади";
-"plaza.share_desc" = "Публично поделитесь своим эмоциональным состоянием";
-"plaza.tier_category_desc" = "Площадь видит только категорию и интенсивность";
-"plaza.tier_emotions_desc" = "Площадь видит конкретные эмоции";
-"plaza.tier_full_desc" = "Площадь видит всё, включая заметки";
 
 /* Guided Meditation */
 "meditation.nav_title" = "Управляемая медитация";

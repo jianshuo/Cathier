@@ -265,17 +265,6 @@
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
 
-/* Plaza */
-"tab.plaza" = "Plaza";
-"plaza.nav_title" = "Plaza";
-"plaza.empty" = "Nothing shared yet";
-"plaza.empty_hint" = "After checking in, share your emotions to the Plaza\nLet kindred spirits find you";
-"plaza.share_section_title" = "Plaza";
-"plaza.share_toggle" = "Share to Plaza";
-"plaza.share_desc" = "Share your emotional state publicly with all Plaza users";
-"plaza.tier_category_desc" = "Plaza sees emotion category and intensity only";
-"plaza.tier_emotions_desc" = "Plaza sees specific emotion words";
-"plaza.tier_full_desc" = "Plaza sees everything including notes";
 
 /* Guided Meditation */
 "meditation.nav_title" = "Geführte Meditation";

@@ -265,17 +265,6 @@
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
 
-/* Plaza */
-"tab.plaza" = "Quảng trường";
-"plaza.nav_title" = "Quảng trường";
-"plaza.empty" = "Chưa có gì được chia sẻ";
-"plaza.empty_hint" = "Sau khi check-in, hãy chia sẻ cảm xúc lên Quảng trường";
-"plaza.share_section_title" = "Quảng trường";
-"plaza.share_toggle" = "Chia sẻ lên Quảng trường";
-"plaza.share_desc" = "Chia sẻ công khai trạng thái cảm xúc với mọi người";
-"plaza.tier_category_desc" = "Quảng trường chỉ thấy danh mục và cường độ";
-"plaza.tier_emotions_desc" = "Quảng trường thấy từ cảm xúc cụ thể";
-"plaza.tier_full_desc" = "Quảng trường thấy tất cả, kể cả ghi chú";
 
 /* Guided Meditation */
 "meditation.nav_title" = "Thiền Có Hướng Dẫn";

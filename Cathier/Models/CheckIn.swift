@@ -14,8 +14,6 @@ final class CheckIn {
     var triggerEvent: String = ""
     /// Mirrors FriendCheckIn.PrivacyTier.rawValue when shared; nil = private.
     var shareLevel: String? = nil
-    /// True when this check-in has been published to the public Plaza.
-    var isPlazaShared: Bool = false
 
     init(
         date: Date = Date(),

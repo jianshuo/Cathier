@@ -265,17 +265,6 @@
 "persona.journaler.name" = "Journal Guide";
 "persona.journaler.desc" = "5-step method to reframe and act";
 
-/* Plaza */
-"tab.plaza" = "Place";
-"plaza.nav_title" = "Place";
-"plaza.empty" = "Rien de partagé encore";
-"plaza.empty_hint" = "Après votre check-in, partagez vos émotions à la Place\nLaissez les âmes sœurs vous trouver";
-"plaza.share_section_title" = "Place";
-"plaza.share_toggle" = "Partager à la Place";
-"plaza.share_desc" = "Partagez votre état émotionnel publiquement";
-"plaza.tier_category_desc" = "La Place voit la catégorie et l'intensité seulement";
-"plaza.tier_emotions_desc" = "La Place voit les mots d'émotion spécifiques";
-"plaza.tier_full_desc" = "La Place voit tout, y compris les notes";
 
 /* Guided Meditation */
 "meditation.nav_title" = "Méditation Guidée";

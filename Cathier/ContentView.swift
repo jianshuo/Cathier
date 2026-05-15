@@ -3,7 +3,6 @@ import SwiftData
 
 struct ContentView: View {
     @State private var friendVM = FriendViewModel()
-    @State private var plazaVM = PlazaViewModel()
     @State private var selectedTab = 0
     @Environment(LanguageManager.self) private var lm
 
@@ -21,18 +20,13 @@ struct ContentView: View {
                 FriendFeedView()
                     .onAppear { t("📱 FriendFeedView appeared") }
             }
-            Tab(lm.tabPlaza, systemImage: "person.3.fill", value: 3) {
-                PlazaView()
-                    .onAppear { t("📱 PlazaView appeared") }
-            }
-            Tab(lm.tabSettings, systemImage: "gearshape.fill", value: 4) {
+            Tab(lm.tabSettings, systemImage: "gearshape.fill", value: 3) {
                 SettingsView()
                     .onAppear { t("📱 SettingsView appeared") }
             }
         }
         .tint(.cathierAccent)
         .environment(friendVM)
-        .environment(plazaVM)
         .task { await friendVM.initialize() }
     }
 }

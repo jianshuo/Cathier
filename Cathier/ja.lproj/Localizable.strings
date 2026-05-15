@@ -269,17 +269,6 @@
 "persona.brainTrainer.name" = "一在必成長";
 "persona.brainTrainer.desc" = "5つの質問で認知的重みを更新";
 
-/* Plaza */
-"tab.plaza" = "広場";
-"plaza.nav_title" = "広場";
-"plaza.empty" = "まだ共有されていません";
-"plaza.empty_hint" = "チェックイン後、感情を広場に共有しましょう\n同じ気持ちの人と出会えるかもしれません";
-"plaza.share_section_title" = "広場";
-"plaza.share_toggle" = "広場に共有";
-"plaza.share_desc" = "感情状態をすべてのユーザーと公開共有する";
-"plaza.tier_category_desc" = "広場には感情カテゴリと強度のみ表示";
-"plaza.tier_emotions_desc" = "広場には具体的な感情ワードを表示";
-"plaza.tier_full_desc" = "広場にはメモを含む全内容を表示";
 
 /* Guided Meditation */
 "meditation.nav_title" = "ガイド瞑想";
