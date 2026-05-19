@@ -276,9 +276,25 @@ platform :ios do
     sh("git -C '#{repo}' config user.email 'github-actions[bot]@users.noreply.github.com'")
     sh("git -C '#{repo}' config user.name 'github-actions[bot]'")
     # Only commit project file. Info.plist has injected secrets at this
-    # point (Azure key, GitHub PAT) and must NOT be committed.
+    # point (Gateway key, GitHub PAT) and must NOT be committed.
     sh("git -C '#{repo}' add Cathier.xcodeproj/project.pbxproj")
-    sh("git -C '#{repo}' commit -m '#{message}' || echo 'nothing to commit'")
+
+    # If pbxproj wasn't actually modified, the old silent-success path
+    # (`commit … || echo 'nothing to commit'`) would push HEAD unchanged,
+    # leave main pinned at the just-submitted version, and doom every
+    # subsequent non-release upload to "Invalid Pre-Release Train" once
+    # Apple closes the released train. Fail loud here instead.
+    staged = `git -C '#{repo}' diff --cached --name-only`.strip
+    if staged.empty?
+      UI.user_error!(
+        "Post-release MARKETING_VERSION bump produced NO staged changes. " \
+        "set_marketing_version did not modify Cathier.xcodeproj/project.pbxproj — " \
+        "aborting before push so main does not stay pinned at the released " \
+        "version. Investigate bump_marketing_version / set_marketing_version " \
+        "(target name change? Xcodeproj gem error?) before retrying."
+      )
+    end
+    sh("git -C '#{repo}' commit -m '#{message}'")
     sh("git -C '#{repo}' push origin HEAD:main")
   end
 
