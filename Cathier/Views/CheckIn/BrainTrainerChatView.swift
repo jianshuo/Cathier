@@ -58,11 +58,16 @@ struct BrainTrainerChatView: View {
                         }
                         .padding(.vertical, 8)
                     } else if !viewModel.brainTrainerSummary.isEmpty {
-                        MarkdownText(raw: viewModel.brainTrainerSummary,
-                                     font: .cathierSerif(.body),
-                                     paragraphSpacing: 8,
-                                     lineSpacing: 5)
+                        // Plain Text instead of MarkdownText: the 5-line summary
+                        // card stays readable with the `**` markers stripped, and
+                        // dropping the AttributedString render path eliminates the
+                        // last layout-cycle vector for the watchdog crash.
+                        Text(stripMarkdownEmphasis(viewModel.brainTrainerSummary))
+                            .font(.cathierSerif(.body))
+                            .lineSpacing(5)
                             .foregroundColor(.primary)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .fixedSize(horizontal: false, vertical: true)
                             .transition(.opacity)
                     } else if let err = viewModel.brainTrainerError {
                         errorRow(err)
@@ -175,7 +180,12 @@ struct BrainTrainerChatView: View {
         VStack(spacing: 0) {
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 16) {
+                    // VStack (not LazyVStack): the BrainTrainer conversation is
+                    // bounded — 1 context message + 5 question/answer rounds ≈
+                    // 11 visible bubbles — so lazy materialization buys nothing
+                    // and its separate layout pass compounded the SwiftUI
+                    // layout cycle that watchdog-killed the app.
+                    VStack(alignment: .leading, spacing: 16) {
                         ForEach(visibleMessages) { msg in
                             if msg.role == "assistant" {
                                 assistantBubble(msg)
@@ -216,12 +226,15 @@ struct BrainTrainerChatView: View {
     private func assistantBubble(_ msg: BrainTrainerMessage) -> some View {
         let clean = msg.displayContent.replacingOccurrences(of: "<complete/>", with: "").trimmingCharacters(in: .whitespacesAndNewlines)
         let parsed = parseOptions(clean)
+        // No outer .frame(maxWidth: .infinity) wrapping the MarkdownText bubble:
+        // MarkdownText already applies it internally, and a second flexible-width
+        // ancestor inside a LazyVStack > ScrollView contributed to the SwiftUI
+        // layout cycle that watchdog-killed the app at 0x8BADF00D.
         return VStack(alignment: .leading, spacing: 10) {
             if !parsed.mainText.isEmpty {
-                MarkdownText(raw: parsed.mainText,
-                             font: .cathierSerif(.body),
-                             paragraphSpacing: 6,
-                             lineSpacing: 4)
+                Text(stripMarkdownEmphasis(parsed.mainText))
+                    .font(.cathierSerif(.body))
+                    .lineSpacing(4)
                     .foregroundColor(.primary)
                     .padding(14)
                     .background(Color.cathierSurface)
@@ -231,11 +244,13 @@ struct BrainTrainerChatView: View {
                             .stroke(Color.primary.opacity(0.12), lineWidth: 1)
                     )
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             if !parsed.options.isEmpty {
                 optionChips(parsed.options)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func userBubble(_ msg: BrainTrainerMessage) -> some View {
@@ -387,6 +402,17 @@ struct BrainTrainerChatView: View {
         let prose = proseLines.joined(separator: "\n")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         return (prose, options)
+    }
+
+    /// Remove markdown emphasis markers (`**bold**`, `*italic*`) without
+    /// running the AttributedString markdown parser. The BrainTrainer flow
+    /// renders these strings as plain Text — keeping the markers literal
+    /// would print "**堑**：..." with visible asterisks, which is uglier
+    /// than just stripping them.
+    private func stripMarkdownEmphasis(_ text: String) -> String {
+        text
+            .replacingOccurrences(of: "**", with: "")
+            .replacingOccurrences(of: "__", with: "")
     }
 
     private func bulletOption(in line: String) -> String? {
