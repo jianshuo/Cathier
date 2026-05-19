@@ -6,6 +6,7 @@ struct BrainTrainerView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Environment(LanguageManager.self) private var lm
+    @Environment(FriendViewModel.self) private var friendVM
     @State private var viewModel = CheckInViewModel()
     @State private var phase: Phase = .intro
     @FocusState private var triggerFocused: Bool
@@ -21,6 +22,7 @@ struct BrainTrainerView: View {
                 BrainTrainerChatView(onSave: saveAction)
                     .environment(viewModel)
                     .environment(lm)
+                    .environment(friendVM)
             }
         }
         .navigationTitle(navTitle)
@@ -95,9 +97,16 @@ struct BrainTrainerView: View {
         viewModel.startBrainTrainerSession()
     }
 
-    private func saveAction() {
+    private func saveAction(tier: FriendCheckIn.PrivacyTier?) {
         viewModel.aiFeedback = viewModel.brainTrainerTranscript
-        _ = viewModel.save(context: modelContext)
+        let checkIn = viewModel.save(context: modelContext)
+        if let tier {
+            // The BrainTrainer transcript lives in aiFeedback; pass
+            // shareAIFeedback: true so non-full tiers (not currently offered
+            // in the UI, but kept honest for the future) still carry the
+            // transcript when shared.
+            Task { try? await friendVM.shareCheckIn(checkIn, tier: tier, shareAIFeedback: true) }
+        }
         dismiss()
     }
 

@@ -3,10 +3,24 @@ import SwiftUI
 struct BrainTrainerChatView: View {
     @Environment(CheckInViewModel.self) private var viewModel
     @Environment(LanguageManager.self) private var lm
-    let onSave: () -> Void
+    @Environment(FriendViewModel.self) private var friendVM
+
+    /// Called when the user taps Save on the summary screen.
+    /// Passes the share tier the user chose, or nil to keep it private.
+    let onSave: (FriendCheckIn.PrivacyTier?) -> Void
 
     @State private var inputText = ""
     @FocusState private var inputFocused: Bool
+
+    /// Persists the user's last share choice across BrainTrainer sessions.
+    /// Kept on a separate key from the regular check-in's lastShareTierRaw so
+    /// BrainTrainer transcripts (more personal) get their own default.
+    @AppStorage("brainTrainerLastShareTier") private var lastShareTierRaw: String = "none"
+    @State private var selectedTier: FriendCheckIn.PrivacyTier? = nil
+
+    private var hasFriends: Bool {
+        friendVM.currentProfile != nil && !friendVM.friends.isEmpty
+    }
 
     private var visibleMessages: [BrainTrainerMessage] {
         viewModel.brainTrainerMessages.filter { !$0.isInitialContext }
@@ -65,6 +79,12 @@ struct BrainTrainerChatView: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
 
+            if hasFriends {
+                shareSection
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 12)
+            }
+
             Spacer(minLength: 0)
             saveButton
         }
@@ -73,6 +93,80 @@ struct BrainTrainerChatView: View {
                 await viewModel.generateBrainTrainerSummary()
             }
         }
+        .onAppear {
+            // Restore previous selection; "none" or unknown → nil (don't share).
+            selectedTier = FriendCheckIn.PrivacyTier(rawValue: lastShareTierRaw)
+        }
+        .onChange(of: selectedTier) { _, newTier in
+            lastShareTierRaw = newTier?.rawValue ?? "none"
+        }
+    }
+
+    // MARK: - Share Section
+    //
+    // The BrainTrainer creates a CheckIn whose only substantive content is the
+    // transcript stored in aiFeedback — bodyParts / emotions / sensations are
+    // empty (no body-scan step). So the only meaningful privacy choices are
+    // "don't share" vs "share the full transcript". Offering category /
+    // emotions tiers here would just publish an empty record. Picking from a
+    // 2-option list also keeps the summary screen compact next to the 5-line
+    // training card.
+
+    private var shareSection: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 6) {
+                Image(systemName: "person.2.fill")
+                    .font(.caption)
+                    .foregroundColor(.cathierAccent)
+                Text(lm.aiShareTitle)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+
+            VStack(spacing: 8) {
+                tierRow(
+                    label: lm.aiDontShare,
+                    description: lm.aiOnlySelf,
+                    icon: "lock.fill",
+                    tier: nil
+                )
+                Divider()
+                tierRow(
+                    label: lm.tierFullName,
+                    description: lm.tierFullDesc,
+                    icon: "doc.text.fill",
+                    tier: .full
+                )
+            }
+            .padding(12)
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        }
+    }
+
+    private func tierRow(label: String, description: String, icon: String,
+                         tier: FriendCheckIn.PrivacyTier?) -> some View {
+        let isSelected = selectedTier == tier
+        return Button(action: { selectedTier = tier }) {
+            HStack(spacing: 12) {
+                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                    .foregroundColor(isSelected ? .cathierAccent : .secondary)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(label)
+                        .font(.subheadline)
+                        .fontWeight(isSelected ? .medium : .regular)
+                        .foregroundColor(.primary)
+                    Text(description)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                Image(systemName: icon)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Chat (5-step conversation)
@@ -244,7 +338,7 @@ struct BrainTrainerChatView: View {
     }
 
     private var saveButton: some View {
-        Button(action: onSave) {
+        Button(action: { onSave(selectedTier) }) {
             Text(lm.aiSave)
                 .font(.headline)
                 .foregroundColor(.white)
