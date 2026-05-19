@@ -273,30 +273,37 @@ struct BrainTrainerChatView: View {
         viewModel.sendBrainTrainerMessage(text)
     }
 
-    // Parse <options><option>…</option></options> blocks out of AI response.
-    // Returns prose (text outside the block) + extracted option strings.
+    // Line-scan the AI reply for bullet-list options. Any line whose trimmed
+    // form starts with `- `, `* `, or `• ` is treated as an option; everything
+    // else is prose. The previous <options><option>…</option></options> parser
+    // crashed when the model emitted malformed or out-of-order tags — a stray
+    // `</option>` before its matching `<option>` produced an inverted
+    // Range<String.Index> and Swift fatal-errored before any catch could fire.
+    // Line iteration has no such slicing and can't crash on bad input.
     private func parseOptions(_ text: String) -> (mainText: String, options: [String]) {
-        guard let blockStart = text.range(of: "<options>"),
-              let blockEnd   = text.range(of: "</options>") else {
-            return (text, [])
-        }
-
-        let before = String(text[text.startIndex..<blockStart.lowerBound])
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        let after  = String(text[blockEnd.upperBound...])
-            .trimmingCharacters(in: .whitespacesAndNewlines)
-        let prose  = [before, after].filter { !$0.isEmpty }.joined(separator: "\n\n")
-
+        var proseLines: [String] = []
         var options: [String] = []
-        var remaining = String(text[blockStart.upperBound..<blockEnd.lowerBound])
-        while let s = remaining.range(of: "<option>"),
-              let e = remaining.range(of: "</option>") {
-            let option = String(remaining[s.upperBound..<e.lowerBound])
-                .trimmingCharacters(in: .whitespacesAndNewlines)
-            if !option.isEmpty { options.append(option) }
-            remaining = String(remaining[e.upperBound...])
+        for line in text.components(separatedBy: "\n") {
+            if let option = bulletOption(in: line) {
+                options.append(option)
+            } else {
+                proseLines.append(line)
+            }
         }
-
+        let prose = proseLines.joined(separator: "\n")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
         return (prose, options)
+    }
+
+    private func bulletOption(in line: String) -> String? {
+        let trimmed = line.trimmingCharacters(in: .whitespaces)
+        for prefix in ["- ", "* ", "• "] {
+            if trimmed.hasPrefix(prefix) {
+                let content = String(trimmed.dropFirst(prefix.count))
+                    .trimmingCharacters(in: .whitespacesAndNewlines)
+                return content.isEmpty ? nil : content
+            }
+        }
+        return nil
     }
 }
