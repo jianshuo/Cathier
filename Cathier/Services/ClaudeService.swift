@@ -2,15 +2,26 @@ import Foundation
 
 enum ClaudeError: LocalizedError {
     case noApiKey
-    case apiError(Int)
+    case apiError(Int, String?)
     case decodingError
 
     var errorDescription: String? {
         let lm = LanguageManager.shared
         switch self {
-        case .noApiKey:        return lm.claudeNoApiKey
-        case .apiError(let c): return lm.claudeApiError(c)
-        case .decodingError:   return lm.claudeDecodeError
+        case .noApiKey:
+            return lm.claudeNoApiKey
+        case .apiError(let code, let body):
+            // Surface the provider's response body so 403/429/etc. show their real
+            // reason in-app (Vercel AI Gateway in particular returns useful JSON
+            // like {"error":{"message":"..."}}). Trimmed to avoid pathological logs.
+            let prefix = lm.claudeApiError(code)
+            guard let raw = body?.trimmingCharacters(in: .whitespacesAndNewlines), !raw.isEmpty else {
+                return prefix
+            }
+            let trimmed = raw.count > 800 ? String(raw.prefix(800)) + "…" : raw
+            return "\(prefix)\n\n\(trimmed)"
+        case .decodingError:
+            return lm.claudeDecodeError
         }
     }
 }
@@ -144,10 +155,9 @@ enum ClaudeService {
 
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            if let responseBody = String(data: data, encoding: .utf8) {
-                print("[AIService] HTTP \(statusCode): \(responseBody)")
-            }
-            throw ClaudeError.apiError(statusCode)
+            let responseBody = String(data: data, encoding: .utf8)
+            if let responseBody { print("[AIService] HTTP \(statusCode): \(responseBody)") }
+            throw ClaudeError.apiError(statusCode, responseBody)
         }
 
         if provider.isAnthropicFormat {
@@ -241,8 +251,9 @@ enum ClaudeService {
         let (data, response) = try await URLSession.shared.data(for: request)
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            if let body = String(data: data, encoding: .utf8) { print("[AIService] HTTP \(statusCode): \(body)") }
-            throw ClaudeError.apiError(statusCode)
+            let body = String(data: data, encoding: .utf8)
+            if let body { print("[AIService] HTTP \(statusCode): \(body)") }
+            throw ClaudeError.apiError(statusCode, body)
         }
 
         if provider.isAnthropicFormat {
