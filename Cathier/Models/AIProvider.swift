@@ -9,7 +9,7 @@ enum AIProvider: String, CaseIterable, Identifiable {
     case openrouter = "openrouter"
     case acedata   = "acedata"
     case azure     = "azure"
-    /// Managed tier — developer's key is used at build time
+    /// Managed tier — developer's Vercel AI Gateway key is used at build time
     case managed   = "managed"
 
     var id: String { rawValue }
@@ -40,8 +40,10 @@ enum AIProvider: String, CaseIterable, Identifiable {
             return URL(string: "https://openrouter.ai/api/v1/chat/completions")!
         case .acedata:
             return URL(string: "https://api.acedata.cloud/openai/chat/completions")!
-        case .azure, .managed:
+        case .azure:
             return URL(string: "https://openai-gtp4-baixing.openai.azure.com/openai/deployments/gpt-5/chat/completions?api-version=2025-01-01-preview")!
+        case .managed:
+            return URL(string: "https://ai-gateway.vercel.sh/v1/messages")!
         }
     }
 
@@ -55,7 +57,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .zhipu:      return "glm-4-flash"
         case .openrouter: return "moonshotai/kimi-k2.6"
         case .acedata:    return "gpt-5.5-pro"
-        case .azure, .managed: return "gpt-5"
+        case .azure:      return "gpt-5"
+        case .managed:    return "anthropic/claude-haiku-4.5"
         }
     }
 
@@ -69,7 +72,8 @@ enum AIProvider: String, CaseIterable, Identifiable {
         case .zhipu:      return "glm-4"
         case .openrouter: return "moonshotai/kimi-k2.6"
         case .acedata:    return "gpt-5.5-pro"
-        case .azure, .managed: return "gpt-5"
+        case .azure:      return "gpt-5"
+        case .managed:    return "anthropic/claude-sonnet-4.6"
         }
     }
 
@@ -106,14 +110,15 @@ enum AIProvider: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Whether this provider uses the Anthropic wire format (vs. OpenAI-compatible)
-    var isAnthropicFormat: Bool { self == .claude }
+    /// Whether this provider uses the Anthropic wire format (vs. OpenAI-compatible).
+    /// `.managed` uses Vercel AI Gateway's Anthropic-compatible endpoint.
+    var isAnthropicFormat: Bool { self == .claude || self == .managed }
 
     /// Azure OpenAI authenticates with the `api-key` header instead of `Authorization: Bearer`.
-    var usesAzureAuth: Bool { self == .azure || self == .managed }
+    var usesAzureAuth: Bool { self == .azure }
 
     /// Newer reasoning deployments (gpt-5 etc.) require `max_completion_tokens` and reject `max_tokens`.
-    var usesMaxCompletionTokens: Bool { self == .azure || self == .managed }
+    var usesMaxCompletionTokens: Bool { self == .azure }
 
     /// Whether this is the developer-managed tier
     var isManaged: Bool { self == .managed }

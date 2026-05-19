@@ -66,17 +66,18 @@ private struct OpenAIResponse: Decodable {
 enum ClaudeService {
 
     // MARK: - Managed service configuration
-    // Production: injected at build time from GitHub secrets → Info.plist.
-    // Local dev: set AZURE_OPENAI_API_KEY in Xcode scheme → Run → Environment Variables.
+    // Routes all managed-tier AI calls through Vercel AI Gateway (Anthropic-compatible endpoint).
+    // Production: injected at build time from GitHub secret VERCEL_AI_GATEWAY_KEY → Info.plist.
+    // Local dev: set VERCEL_AI_GATEWAY_KEY in Xcode scheme → Run → Environment Variables.
     private static var managedApiKey: String {
-        let plistKey = Bundle.main.infoDictionary?["AzureOpenAIApiKey"] as? String ?? ""
+        let plistKey = Bundle.main.infoDictionary?["VercelAIGatewayKey"] as? String ?? ""
         if !plistKey.isEmpty { return plistKey }
-        return ProcessInfo.processInfo.environment["AZURE_OPENAI_API_KEY"] ?? ""
+        return ProcessInfo.processInfo.environment["VERCEL_AI_GATEWAY_KEY"] ?? ""
     }
 
     // MARK: - Provider helpers
 
-    // Default to managed Qwen — developer's key, free for all users.
+    // Default to managed tier — developer's Vercel AI Gateway key, free for all users.
     private static var activeProvider: AIProvider { .managed }
 
     private static var feedbackModel: String  { activeProvider.feedbackModel }
