@@ -46,10 +46,10 @@ jobs:
         env:
           FEEDBACK_PAT: ${{ secrets.FEEDBACK_PAT }}
 
-      - name: Inject Azure OpenAI key into Info.plist
-        run: /usr/libexec/PlistBuddy -c "Set :AzureOpenAIApiKey $AZURE_OPENAI_API_KEY" Cathier/Info.plist
+      - name: Inject Vercel AI Gateway key into Info.plist
+        run: /usr/libexec/PlistBuddy -c "Set :VercelAIGatewayKey $VERCEL_AI_GATEWAY_KEY" Cathier/Info.plist
         env:
-          AZURE_OPENAI_API_KEY: ${{ secrets.AZURE_OPENAI_API_KEY }}
+          VERCEL_AI_GATEWAY_KEY: ${{ secrets.VERCEL_AI_GATEWAY_KEY }}
 
       # PRs: build only (verify it compiles)
       - name: Build for verification

@@ -17,7 +17,7 @@
 	</array>
 	<key>GitHubFeedbackPAT</key>
 	<string></string>
-	<key>AzureOpenAIApiKey</key>
+	<key>VercelAIGatewayKey</key>
 	<string></string>
 	<key>UIAppFonts</key>
 	<array>
