@@ -214,7 +214,9 @@
       "facebook"
     ],
     "status": "unused",
-    "used_dates": [],
+    "used_dates": [
+      "2026-05-20"
+    ],
     "theme": "body-emotion-practice"
   },
   {
