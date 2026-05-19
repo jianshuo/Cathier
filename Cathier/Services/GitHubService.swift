@@ -118,4 +118,40 @@ struct GitHubService {
 
         return issueURL
     }
+
+    /// Open an issue from an automated source (MetricKit / CrashReporter).
+    /// Different label set than user feedback, and no "@claude please implement"
+    /// footer — these reports are diagnostic noise, not feature requests.
+    static func createCrashIssue(title: String, body: String) async throws -> URL {
+        let urlString = "https://api.github.com/repos/\(repoOwner)/\(repoName)/issues"
+        guard let url = URL(string: urlString) else { throw GitHubError.decodeFailed }
+
+        let payload: [String: Any] = [
+            "title": title,
+            "body": body,
+            "labels": ["crash", "auto-reported"]
+        ]
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(bundleToken)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/vnd.github+json", forHTTPHeaderField: "Accept")
+        request.setValue("2022-11-28", forHTTPHeaderField: "X-GitHub-Api-Version")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode != 201 {
+            throw GitHubError.httpError(httpResponse.statusCode)
+        }
+
+        guard let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let htmlUrl = json["html_url"] as? String,
+              let issueURL = URL(string: htmlUrl) else {
+            throw GitHubError.decodeFailed
+        }
+
+        return issueURL
+    }
 }

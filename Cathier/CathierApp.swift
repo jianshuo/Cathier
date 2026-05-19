@@ -20,7 +20,15 @@ struct CathierApp: App {
                     .environment(ConfigService.shared)
                     .environment(LanguageManager.shared)
                     .environment(ThemeManager.shared)
-                    .task { checkMilestoneNudge() }
+                    .task {
+                        // Subscribe to MetricKit on first launch. Idempotent
+                        // — start() bails if already registered. Crash / hang
+                        // payloads from the previous run get delivered to
+                        // CrashReporter shortly after this call and auto-file
+                        // a GitHub issue via the existing FEEDBACK_PAT.
+                        CrashReporter.shared.start()
+                        checkMilestoneNudge()
+                    }
             } else {
                 ProgressView()
                     .task(priority: .userInitiated) {
