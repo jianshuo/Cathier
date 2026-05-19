@@ -143,13 +143,24 @@ platform :ios do
   # Build localized "What's New" release notes for App Store submission.
   # ASC requires a value for the primary locales when submit_for_review: true.
   # Uses commits since the last release tag; falls back to a generic message.
+  #
+  # ASC rejects whatsNew that contains anything resembling HTML markup, even
+  # if the angle brackets came from a literal token in a commit message
+  # (e.g. "fix(brainTrainer): drop <options> XML"). Strip <…> spans and
+  # collapse the resulting whitespace before handing the text to ASC.
   def build_release_notes
     last_release_tag = `git tag --list 'release/*' --sort=-version:refname 2>/dev/null | head -1`.strip
-    if last_release_tag.empty?
-      commits = `git log -10 --pretty=format:"- %s"`.strip
+    raw_commits = if last_release_tag.empty?
+      `git log -10 --pretty=format:"- %s"`.strip
     else
-      commits = `git log #{last_release_tag}..HEAD --pretty=format:"- %s"`.strip
+      `git log #{last_release_tag}..HEAD --pretty=format:"- %s"`.strip
     end
+
+    commits = raw_commits
+      .gsub(/<[^>]*>/, "")            # strip HTML-like tags
+      .gsub(/[ \t]+/, " ")            # collapse stray double-spaces from the strip
+      .strip
+
     en = commits.empty? ? "Bug fixes and performance improvements." : "What's new:\n#{commits}"
     zh = commits.empty? ? "修复 bug 和性能改进。"             : "更新内容：\n#{commits}"
     ja = commits.empty? ? "バグ修正と性能改善。"               : "更新内容：\n#{commits}"
@@ -186,121 +197,11 @@ platform :ios do
     UI.message("Set MARKETING_VERSION = #{version} for target Cathier")
   end
 
-  # Bump marketing version decimal-style: 1.9 → 2.0, 2.9 → 3.0.
-  # Minor cycles 0..9, then major increments and minor resets.
-  #
-  # Apple's "version already used" rule covers more than just the active App
-  # Store Versions and TestFlight trains list endpoints expose — released
-  # builds with archived trains, deleted versions, and other ghosts remain
-  # blocked by ASC even though no API call lists them. So instead of trying
-  # to enumerate "used" versions, this helper probes by actually creating
-  # each candidate via the App Store Versions endpoint and bumps on rejection.
-  # The first candidate ASC accepts is set as the local marketing version and
-  # remains as an edit-state App Store Version for upload_to_app_store to
-  # associate the freshly-built binary with.
-  #
-  # Returns the new version string.
-  def bump_marketing_version(api_key: nil)
-    current = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
-    parts = current.split(".")
-    major = parts[0].to_i
-    minor = (parts[1] || "0").to_i
-
-    if api_key.nil?
-      # Fallback: no ASC available, blind +1.
-      minor += 1
-      if minor > 9
-        major += 1
-        minor = 0
-      end
-      candidate = "#{major}.#{minor}"
-      set_marketing_version(candidate)
-      UI.success("Marketing version bumped (no ASC dedup): #{current} → #{candidate}")
-      return candidate
-    end
-
-    require "spaceship"
-    app = Spaceship::ConnectAPI::App.find("com.wangjianshuo.cathier.Cathier")
-    UI.user_error!("App not found on App Store Connect") unless app
-
-    # ASC allows only one edit-state version per platform. If a prior run
-    # already prepared one (and once a build is uploaded it can't be deleted),
-    # that version IS the next release — reuse it instead of trying to create
-    # another, which would fail with "cannot create a new version in the
-    # current state".
-    existing = app.get_edit_app_store_version(platform: "IOS")
-    if existing
-      UI.success("Reusing existing edit App Store Version #{existing.version_string} (was #{current})")
-      set_marketing_version(existing.version_string)
-      return existing.version_string
-    end
-
-    attempts = 0
-    loop do
-      attempts += 1
-      UI.user_error!("Could not find an available marketing version after 20 attempts") if attempts > 20
-
-      minor += 1
-      if minor > 9
-        major += 1
-        minor = 0
-      end
-      candidate = "#{major}.#{minor}"
-
-      begin
-        Spaceship::ConnectAPI.post_app_store_version(
-          app_id: app.id,
-          attributes: { platform: "IOS", versionString: candidate }
-        )
-        UI.success("Created App Store version #{candidate} (was #{current})")
-        set_marketing_version(candidate)
-        return candidate
-      rescue Spaceship::UnexpectedResponse => e
-        if e.message.include?("previously used") || e.message.include?("already been used")
-          UI.message("ASC rejects #{candidate} as previously used — trying next.")
-          next
-        end
-        raise
-      end
-    end
-  end
-
-  # Commit the bumped version back to main with a custom message.
-  # Uses the FEEDBACK_PAT-authenticated remote that actions/checkout set up.
-  # [skip ci] in the message prevents the push from re-triggering Build & Deploy.
-  def commit_and_push_version_bump(message:)
-    # fastlane runs lane code with CWD = the fastlane/ dir, so a bare
-    # `git add Cathier.xcodeproj/...` pathspec doesn't resolve. Anchor every
-    # git call to the repo root with `git -C`.
-    repo = File.expand_path("..", __dir__)
-    sh("git -C '#{repo}' config user.email 'github-actions[bot]@users.noreply.github.com'")
-    sh("git -C '#{repo}' config user.name 'github-actions[bot]'")
-    # Only commit project file. Info.plist has injected secrets at this
-    # point (Gateway key, GitHub PAT) and must NOT be committed.
-    sh("git -C '#{repo}' add Cathier.xcodeproj/project.pbxproj")
-
-    # If pbxproj wasn't actually modified, the old silent-success path
-    # (`commit … || echo 'nothing to commit'`) would push HEAD unchanged,
-    # leave main pinned at the just-submitted version, and doom every
-    # subsequent non-release upload to "Invalid Pre-Release Train" once
-    # Apple closes the released train. Fail loud here instead.
-    staged = `git -C '#{repo}' diff --cached --name-only`.strip
-    if staged.empty?
-      UI.user_error!(
-        "Post-release MARKETING_VERSION bump produced NO staged changes. " \
-        "set_marketing_version did not modify Cathier.xcodeproj/project.pbxproj — " \
-        "aborting before push so main does not stay pinned at the released " \
-        "version. Investigate bump_marketing_version / set_marketing_version " \
-        "(target name change? Xcodeproj gem error?) before retrying."
-      )
-    end
-    sh("git -C '#{repo}' commit -m '#{message}'")
-    sh("git -C '#{repo}' push origin HEAD:main")
-  end
-
   desc "Build and upload to TestFlight."
-  desc "If the build number ends in 0 (every 10 builds), also bump the marketing"
-  desc "version (1.9 → 2.0) and submit to App Store review."
+  desc "Source-driven release detection: if Cathier.xcodeproj's MARKETING_VERSION"
+  desc "differs from the most recent release/* git tag, the developer bumped"
+  desc "intentionally — this run submits to App Store review instead of just"
+  desc "uploading to TestFlight. CI never writes pbxproj or pushes to main."
   lane :beta do
     setup_ci
 
@@ -314,46 +215,41 @@ platform :ios do
     )
 
     build_num = next_build_number(api_key: api_key)
-    is_release = (build_num % 10 == 0)
 
-    new_version = nil
-    if is_release
-      new_version = bump_marketing_version(api_key: api_key)
-      UI.message("Build #{build_num} ends in 0 — auto-releasing as version #{new_version}.")
-    end
+    # Single source of truth: the version in pbxproj. If a release/<v> tag
+    # exists matching the current pbxproj version, this commit has already
+    # been released → TestFlight only. Otherwise the developer bumped, so
+    # this commit IS the release → submit for review.
+    current_version  = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
+    last_release_tag = `git tag --list 'release/*' --sort=-version:refname 2>/dev/null | head -1`.strip
+    last_released    = last_release_tag.sub(%r{^release/}, "")
+    is_release       = !current_version.empty? && current_version != last_released
+
+    UI.message(
+      "Build #{build_num} | MARKETING_VERSION=#{current_version} | " \
+      "last released=#{last_released.empty? ? '(none)' : last_released} | " \
+      "is_release=#{is_release}"
+    )
 
     sign_and_build(api_key: api_key, build_num: build_num)
 
     if is_release
-      # Auto-release path: submit this build to App Store review.
+      # Source-driven release: developer bumped pbxproj, so submit to review.
       guard_not_in_review
+      upload_and_submit_for_review(api_key: api_key, app_version: current_version)
 
-      upload_and_submit_for_review(api_key: api_key, app_version: new_version)
-
-      # Tag the released commit. The pbxproj at this point still has
-      # new_version, so the tag captures that snapshot before the post-release
-      # bump rewrites it. main itself never gets a commit at new_version —
-      # we jump straight to the next version below.
-      sh("git tag release/#{new_version} || true")
-      sh("git push origin release/#{new_version} || true")
-
-      # Bump immediately so subsequent TestFlight uploads land on a new
-      # pre-release train. Apple closes the train at new_version once the
-      # App Store release is approved, after which any TestFlight upload
-      # at that version fails with "Invalid Pre-Release Train". By bumping
-      # now and pushing back to main, the next non-release CI run picks up
-      # the new version and uploads cleanly.
-      next_version = bump_marketing_version(api_key: api_key)
-      commit_and_push_version_bump(
-        message: "chore: bump to #{next_version} after release/#{new_version} [skip ci]"
-      )
+      # Record the released version as a tag so subsequent non-bump commits
+      # are detected as TestFlight-only. Idempotent via `|| true` — re-running
+      # after a transient failure won't break on existing tags.
+      sh("git tag release/#{current_version} || true")
+      sh("git push origin release/#{current_version} || true")
     else
-      # Regular TestFlight upload.
+      # Regular TestFlight upload (no pbxproj bump since last release).
       last_tag = `git describe --tags --abbrev=0 2>/dev/null`.strip
-      if last_tag.empty?
-        commits = `git log -10 --pretty=format:"• %s"`.strip
+      commits = if last_tag.empty?
+        `git log -10 --pretty=format:"• %s"`.strip
       else
-        commits = `git log #{last_tag}..HEAD --pretty=format:"• %s"`.strip
+        `git log #{last_tag}..HEAD --pretty=format:"• %s"`.strip
       end
       commits = "• No notable changes" if commits.empty?
 
@@ -372,6 +268,25 @@ platform :ios do
       # Tag this build so the next run knows where to start the commit log.
       sh("git tag testflight/#{build_num} || true")
     end
+  end
+
+  desc "Bump MARKETING_VERSION locally (2.2 → 2.3, 2.9 → 3.0)."
+  desc "Run, commit Cathier.xcodeproj/project.pbxproj, push to main — the next"
+  desc "CI build will detect the change and submit it to App Store review."
+  lane :bump do
+    current = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
+    parts   = current.split(".")
+    major   = parts[0].to_i
+    minor   = (parts[1] || "0").to_i + 1
+    if minor > 9
+      major += 1
+      minor = 0
+    end
+    new_version = "#{major}.#{minor}"
+    set_marketing_version(new_version)
+    UI.success("Bumped MARKETING_VERSION: #{current} → #{new_version}")
+    UI.message("Now: git add Cathier.xcodeproj/project.pbxproj && git commit && git push origin main")
+    UI.message("CI will then detect #{new_version} != release/#{current} and submit to review.")
   end
 
   desc "Build, upload to TestFlight, and submit for App Store review"
