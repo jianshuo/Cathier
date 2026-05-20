@@ -96,10 +96,17 @@ enum ClaudeService {
 
     // MARK: - Shared network helper
 
-    private static func call(model: String, system: String, user: String, maxTokens: Int) async throws -> String {
+    /// Shared transport for every managed-tier LLM call. `turns` holds the
+    /// user/assistant conversation (no system message); `system` is placed in the
+    /// provider's system field (Anthropic) or prepended as a system turn (OpenAI).
+    private static func performRequest(
+        model: String,
+        system: String,
+        turns: [[String: String]],
+        maxTokens: Int,
+        debug: Bool = false
+    ) async throws -> String {
         let provider = activeProvider
-
-        // Use the developer's Qwen key injected at build time.
         let apiKey = managedApiKey
         guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
 
@@ -108,16 +115,10 @@ enum ClaudeService {
         request.setValue("application/json", forHTTPHeaderField: "content-type")
 
         let body: [String: Any]
-
         if provider.isAnthropicFormat {
             request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
             request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
-            body = [
-                "model": model,
-                "max_tokens": maxTokens,
-                "system": system,
-                "messages": [["role": "user", "content": user]],
-            ]
+            body = ["model": model, "max_tokens": maxTokens, "system": system, "messages": turns]
         } else {
             if provider.usesAzureAuth {
                 request.setValue(apiKey, forHTTPHeaderField: "api-key")
@@ -125,34 +126,28 @@ enum ClaudeService {
                 request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
             }
             let tokenField = provider.usesMaxCompletionTokens ? "max_completion_tokens" : "max_tokens"
-            body = [
-                "model": model,
-                tokenField: maxTokens,
-                "messages": [
-                    ["role": "system", "content": system],
-                    ["role": "user", "content": user],
-                ],
-            ]
+            body = ["model": model, tokenField: maxTokens,
+                    "messages": [["role": "system", "content": system]] + turns]
         }
 
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
-        // Debug: print the full LLM request
-        print("╔══════════════════════════════════════")
-        print("║ [AIService] LLM Call Debug")
-        print("╠══════════════════════════════════════")
-        print("║ Provider: \(provider.displayName)")
-        print("║ Model: \(model)")
-        print("║ Max Tokens: \(maxTokens)")
-        print("║ Endpoint: \(provider.endpoint)")
-        print("╠── System Prompt ─────────────────────")
-        print(system)
-        print("╠── User Message ──────────────────────")
-        print(user)
-        print("╚══════════════════════════════════════")
+        if debug {
+            print("╔══════════════════════════════════════")
+            print("║ [AIService] LLM Call Debug")
+            print("╠══════════════════════════════════════")
+            print("║ Provider: \(provider.displayName)")
+            print("║ Model: \(model)")
+            print("║ Max Tokens: \(maxTokens)")
+            print("║ Endpoint: \(provider.endpoint)")
+            print("╠── System Prompt ─────────────────────")
+            print(system)
+            print("╠── Messages ──────────────────────────")
+            for m in turns { print("║ [\(m["role"] ?? "")] \(m["content"] ?? "")") }
+            print("╚══════════════════════════════════════")
+        }
 
         let (data, response) = try await URLSession.shared.data(for: request)
-
         guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             let responseBody = String(data: data, encoding: .utf8)
@@ -167,6 +162,12 @@ enum ClaudeService {
             let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
             return decoded.choices.first?.message.content ?? ""
         }
+    }
+
+    private static func call(model: String, system: String, user: String, maxTokens: Int) async throws -> String {
+        try await performRequest(model: model, system: system,
+                                 turns: [["role": "user", "content": user]],
+                                 maxTokens: maxTokens, debug: true)
     }
 
     // MARK: - Multi-turn (BrainTrainer)
@@ -184,31 +185,7 @@ enum ClaudeService {
         language: AppLanguage = LanguageManager.shared.currentLanguage
     ) async throws -> String {
         let isZh = language == .zh
-        let system = isZh ? """
-            你是「吃一堑长一智」复盘卡片整理员。用户刚走完 5 步对话，根据对话内容输出一张 5 行训练卡片，**严格用以下格式**（Markdown 加粗标签）：
-
-            **堑**：一句事实——外面装个摄像头能拍到的那件事
-            **自动输出**：当时第一反应蹦出来的原话
-            **旧权重**：背后那条一直没改的旧解释模式 / 老假设
-            **新参数**：想训练的那条针对一类情境的新响应模式
-            **下次的那一秒**：<外部可观测的触发器> → <2 秒内可执行的物理动作>
-
-            五行的内在关系：旧权重要改的是这个 → 新参数练的方向是这个 → 替代动作就是那一秒练它的方式。
-
-            语气简洁，像记录一张训练卡片。不加鼓励语，不加待办，不加阅读建议——只给这 5 行。
-            """ : """
-            You are the summary card editor for the "Eating Setback to Grow Wisdom" 5-step reflection. The user just finished the five steps. Output a 5-line training card in **exactly this format** (Markdown bold labels):
-
-            **Setback**: One factual sentence — what a camera in the room would have recorded
-            **Auto-response**: The first thought / urge that flashed in that second
-            **Old weight**: The long-standing interpretation pattern / assumption underneath it
-            **New parameter**: The specific new response pattern for one class of trigger you want to train
-            **Next-second move**: <externally observable trigger> → <physical action you can do within 2 seconds>
-
-            Internal logic: the old weight is what needs updating → the new parameter is the direction of training → the next-second move is how you actually train it in the moment.
-
-            Concise, like a training card. No encouragement, no to-dos, no reading suggestions — just the five lines.
-            """
+        let system = AICompanionPersona.brainTrainerSummaryPrompt(for: language)
         var msgs = messages.map { (role: $0.role, content: $0.content.replacingOccurrences(of: "<complete/>", with: "")) }
         msgs.append((role: "user", content: isZh ? "请生成五步复盘总结卡片。" : "Please generate the 5-step summary card."))
         return try await callMultiTurn(system: system, messages: msgs, maxTokens: 4000)
@@ -219,50 +196,9 @@ enum ClaudeService {
         messages: [(role: String, content: String)],
         maxTokens: Int
     ) async throws -> String {
-        let provider = activeProvider
-        let apiKey = managedApiKey
-        guard !apiKey.isEmpty else { throw ClaudeError.noApiKey }
-
-        var request = URLRequest(url: provider.endpoint)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "content-type")
-
-        let msgArray = messages.map { ["role": $0.role, "content": $0.content] }
-        let body: [String: Any]
-
-        if provider.isAnthropicFormat {
-            request.setValue(apiKey, forHTTPHeaderField: "x-api-key")
-            request.setValue("2023-06-01", forHTTPHeaderField: "anthropic-version")
-            body = ["model": feedbackModel, "max_tokens": maxTokens, "system": system, "messages": msgArray]
-        } else {
-            if provider.usesAzureAuth {
-                request.setValue(apiKey, forHTTPHeaderField: "api-key")
-            } else {
-                request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "authorization")
-            }
-            let tokenField = provider.usesMaxCompletionTokens ? "max_completion_tokens" : "max_tokens"
-            var all: [[String: String]] = [["role": "system", "content": system]]
-            all.append(contentsOf: msgArray)
-            body = ["model": feedbackModel, tokenField: maxTokens, "messages": all]
-        }
-
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-        guard let http = response as? HTTPURLResponse, http.statusCode == 200 else {
-            let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            let body = String(data: data, encoding: .utf8)
-            if let body { print("[AIService] HTTP \(statusCode): \(body)") }
-            throw ClaudeError.apiError(statusCode, body)
-        }
-
-        if provider.isAnthropicFormat {
-            let decoded = try JSONDecoder().decode(ClaudeResponse.self, from: data)
-            return decoded.content.first(where: { $0.type == "text" })?.text ?? ""
-        } else {
-            let decoded = try JSONDecoder().decode(OpenAIResponse.self, from: data)
-            return decoded.choices.first?.message.content ?? ""
-        }
+        try await performRequest(model: feedbackModel, system: system,
+                                 turns: messages.map { ["role": $0.role, "content": $0.content] },
+                                 maxTokens: maxTokens)
     }
 
     // MARK: - Pattern Insights
@@ -360,30 +296,6 @@ enum ClaudeService {
             - 最后加一句鼓励的话，肯定用户的觉察练习
             - 请用中文回应
             """
-        case .en:
-            return """
-            You are the pattern analyst for Cathier — an emotion perception training app. You specialize in finding patterns in body-emotion data that users can't see themselves.
-
-            ## Context
-
-            Users practice daily emotion awareness through Cathier: each check-in records body areas, physical sensations, emotion intensity, emotion words (from an 80+ word awareness dictionary), and trigger events. You're looking at their check-in data over a period of time.
-
-            ## Your Task
-
-            Identify 3-5 meaningful patterns in this data. Not generic psychology — patterns that emerge from this specific person's data, patterns that belong to them.
-
-            \(focusInstruction)
-
-            ## Format
-
-            - Each pattern: one paragraph, warm and direct — like a perceptive friend sharing an observation
-            - Each pattern MUST cite specific evidence (a date, an emotion word, a trigger, a body area) — no vague generalizations
-            - Avoid anything anyone could say without seeing the data ("you seem to experience stress") — give insights only possible from reading these records
-            - Pay special attention to body-emotion correlations — that's Cathier's core value
-            - If you notice emotion vocabulary becoming more precise over time (from "upset" to "frustrated" to "disappointed in myself"), call out this growth
-            - End with one encouraging sentence affirming their awareness practice
-            - Respond in English
-            """
         case .ja:
             return """
             あなたはCathier（覚察）アプリのパターンアナリスト——身体-感情データから、ユーザー自身が気づけないパターンを見つけ出す専門家です。
@@ -454,8 +366,6 @@ enum ClaudeService {
         switch language {
         case .zh:
             header = "以下是用户过去 \(checkIns.count) 条情绪签到记录（时间从早到晚排列）：\n"
-        case .en:
-            header = "Below are \(checkIns.count) emotional check-ins from the user (chronological order):\n"
         case .ja:
             header = "以下はユーザーの\(checkIns.count)件の感情チェックイン記録です（時系列順）：\n"
         default:
@@ -486,7 +396,6 @@ enum ClaudeService {
             let contextLabel: String
             switch language {
             case .zh: contextLabel = "\n【用户背景信息】\n\(contextBrief)\n"
-            case .en: contextLabel = "\n[User Context]\n\(contextBrief)\n"
             case .ja: contextLabel = "\n【ユーザー背景情報】\n\(contextBrief)\n"
             default: contextLabel = "\n[User Context]\n\(contextBrief)\n"
             }
@@ -496,7 +405,6 @@ enum ClaudeService {
         let closing: String
         switch language {
         case .zh: closing = "\n请根据以上记录，给出你的分析。"
-        case .en: closing = "\nPlease provide your analysis based on the records above."
         case .ja: closing = "\n上記の記録に基づいて分析を提供してください。"
         default: closing = "\nPlease provide your analysis based on the records above."
         }
@@ -526,32 +434,20 @@ enum ClaudeService {
         let bodySet = Set(currentBodyParts)
         let emotionSet = Set(currentEmotions)
 
-        // Priority 1: matching body parts (up to 3)
-        var count1 = 0
-        for c in history where count1 < 3 {
-            if selected[c.id] == nil && !Set(c.bodyParts).isDisjoint(with: bodySet) {
-                selected[c.id] = c
-                count1 += 1
+        // Add up to `cap` not-yet-selected check-ins matching `predicate`.
+        func addMatching(cap: Int, where predicate: (CheckIn) -> Bool) {
+            var n = 0
+            for c in history where n < cap {
+                if selected[c.id] == nil && predicate(c) {
+                    selected[c.id] = c
+                    n += 1
+                }
             }
         }
 
-        // Priority 2: matching emotions (up to 3)
-        var count2 = 0
-        for c in history where count2 < 3 {
-            if selected[c.id] == nil && !Set(c.emotions).isDisjoint(with: emotionSet) {
-                selected[c.id] = c
-                count2 += 1
-            }
-        }
-
-        // Priority 3: same weekday (up to 2)
-        var count3 = 0
-        for c in history where count3 < 2 {
-            if selected[c.id] == nil && Calendar.current.component(.weekday, from: c.date) == todayWeekday {
-                selected[c.id] = c
-                count3 += 1
-            }
-        }
+        addMatching(cap: 3) { !Set($0.bodyParts).isDisjoint(with: bodySet) }       // Priority 1: matching body parts
+        addMatching(cap: 3) { !Set($0.emotions).isDisjoint(with: emotionSet) }     // Priority 2: matching emotions
+        addMatching(cap: 2) { Calendar.current.component(.weekday, from: $0.date) == todayWeekday } // Priority 3: same weekday
 
         // Priority 4: fill remaining with most recent
         for c in history {
@@ -597,15 +493,6 @@ enum ClaudeService {
             你的回应必须是以下格式的合法 JSON，不加任何说明文字或代码块：
             {"summary":"当前身心状态一句话描述","insight":"最值得关注的洞察","connection":"身体感受与情绪的联系","suggestion":"一个此刻能做的具体建议"}
             按照你的角色风格填写每个字段（1-2句话）。
-            """
-        case .en:
-            return """
-
-
-            ## Output Format (strictly required)
-            Your response must be valid JSON only, with no additional text or code blocks:
-            {"summary":"One sentence on current body-mind state","insight":"Most meaningful observation from this check-in","connection":"Link between body sensations and emotions","suggestion":"One specific thing to try right now"}
-            Write each field in your persona's voice (1-2 sentences each).
             """
         case .ja:
             return """
@@ -1022,50 +909,6 @@ enum ClaudeService {
                 prompt += "\n"
             }
             prompt += "请根据以上信息，给予温暖而有深度的回应。"
-            return prompt
-
-        case .en:
-            let parts  = bodyParts.map { lm.display($0) }
-            let emos   = emotions.map { lm.display($0) }
-
-            let partsStr  = parts.isEmpty  ? "unspecified" : parts.joined(separator: ", ")
-            let emosStr   = emos.isEmpty   ? "unclear" : emos.joined(separator: ", ")
-            let enSensesFormatted = formatSensationsForPrompt(sensations, language: .en)
-            let enSensesStr = enSensesFormatted.isEmpty ? "unspecified" : enSensesFormatted
-
-            let enTriggerStr = triggerEvent.trimmingCharacters(in: .whitespaces)
-            var prompt = """
-            [Current Body Scan]
-            Body areas: \(partsStr)
-            Sensations: \(enSensesStr) (Intensity: \(intensity)/10)
-            Emotions: \(emosStr)
-            \(enTriggerStr.isEmpty ? "" : "Triggering event/scene: \(enTriggerStr)\n")
-            """
-
-            let history = recentHistory.prefix(10)
-            if !history.isEmpty {
-                prompt += "[Recent History for Trend Analysis]\n"
-                let calendar = Calendar.current
-                for checkIn in history {
-                    let daysAgo = calendar.dateComponents([.day], from: checkIn.date, to: Date()).day ?? 0
-                    let when = daysAgo == 0 ? "earlier today" : "\(daysAgo) day(s) ago"
-                    let hParts  = checkIn.bodyParts.isEmpty  ? "" : "body: \(checkIn.bodyParts.map { lm.display($0) }.joined(separator: ", "))"
-                    let hSensesStr = formatSensationsForPrompt(checkIn.sensations, language: .en)
-                    let hSenses = hSensesStr.isEmpty ? "" : "sensations: \(hSensesStr) (intensity: \(checkIn.intensity)/10)"
-                    let hEmos   = checkIn.emotions.isEmpty   ? "" : "emotions: \(checkIn.emotions.map { lm.display($0) }.joined(separator: ", "))"
-                    let info = [hParts, hSenses, hEmos].filter { !$0.isEmpty }.joined(separator: "; ")
-                    prompt += "· \(when): \(info)\n"
-                }
-                prompt += "\n"
-            }
-            if !emotionFrequency.isEmpty {
-                prompt += "[Recent Emotion Frequency]\n"
-                for (emotion, count) in emotionFrequency {
-                    prompt += "· \(lm.display(emotion)) (\(count) times)\n"
-                }
-                prompt += "\n"
-            }
-            prompt += "Please provide a warm and insightful response based on the above."
             return prompt
 
         case .ja:

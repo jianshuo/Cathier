@@ -204,16 +204,8 @@ struct BrainTrainerChatView: View {
                     .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                 }
-                .onChange(of: viewModel.brainTrainerMessages.count) { _, _ in
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        proxy.scrollTo("bottom")
-                    }
-                }
-                .onChange(of: viewModel.isBrainTrainerLoading) { _, _ in
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        proxy.scrollTo("bottom")
-                    }
-                }
+                .onChange(of: viewModel.brainTrainerMessages.count) { _, _ in scrollToBottom(proxy) }
+                .onChange(of: viewModel.isBrainTrainerLoading) { _, _ in scrollToBottom(proxy) }
             }
 
             Divider()
@@ -237,12 +229,7 @@ struct BrainTrainerChatView: View {
                     .lineSpacing(4)
                     .foregroundColor(.primary)
                     .padding(14)
-                    .background(Color.cathierSurface)
-                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-                    )
+                    .surfaceCard()
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -275,12 +262,7 @@ struct BrainTrainerChatView: View {
         }
         .padding(.horizontal, 14)
         .padding(.vertical, 10)
-        .background(Color.cathierSurface)
-        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .stroke(Color.primary.opacity(0.12), lineWidth: 1)
-        )
+        .surfaceCard()
     }
 
     private func errorRow(_ message: String) -> some View {
@@ -370,6 +352,10 @@ struct BrainTrainerChatView: View {
 
     // MARK: - Helpers
 
+    private func scrollToBottom(_ proxy: ScrollViewProxy) {
+        withAnimation(.easeInOut(duration: 0.35)) { proxy.scrollTo("bottom") }
+    }
+
     private func submitInput() {
         let text = inputText.trimmingCharacters(in: .whitespaces)
         guard !text.isEmpty else { return }
@@ -425,5 +411,26 @@ struct BrainTrainerChatView: View {
             }
         }
         return nil
+    }
+}
+
+/// The cathierSurface card style shared by the BrainTrainer chat bubbles:
+/// surface fill, continuous rounded corners, and a hairline border.
+private struct SurfaceCard: ViewModifier {
+    var cornerRadius: CGFloat = 12
+    func body(content: Content) -> some View {
+        content
+            .background(Color.cathierSurface)
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(Color.primary.opacity(0.12), lineWidth: 1)
+            )
+    }
+}
+
+private extension View {
+    func surfaceCard(cornerRadius: CGFloat = 12) -> some View {
+        modifier(SurfaceCard(cornerRadius: cornerRadius))
     }
 }

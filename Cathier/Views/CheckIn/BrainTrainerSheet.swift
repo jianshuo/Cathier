@@ -112,51 +112,41 @@ struct BrainTrainerView: View {
 
     // MARK: - Localized strings
 
-    private var navTitle: String {
-        switch lm.currentLanguage {
-        case .zh: return "吃一堑长一智"
-        case .ja: return "失敗から学ぶ"
-        default:  return "Lesson from Setback"
+    private struct Strings {
+        let navTitle, introHeadline, introSubtitle, promptLabel, promptPlaceholder, continueLabel: String
+
+        static func make(_ lang: AppLanguage) -> Strings {
+            switch lang {
+            case .zh: return Strings(
+                navTitle: "吃一堑长一智",
+                introHeadline: "刚才踩了什么坑？",
+                introSubtitle: "我们花几分钟做一次五步复盘——不复盘事件，而是复盘解释事件的旧模型，训练一个新版本。",
+                promptLabel: "一句话描述这次的「堑」",
+                promptPlaceholder: "比如：开会时被问到细节没答上来…",
+                continueLabel: "开始复盘")
+            case .ja: return Strings(
+                navTitle: "失敗から学ぶ",
+                introHeadline: "今、何でつまずいた？",
+                introSubtitle: "5ステップで振り返ります。出来事ではなく、出来事を解釈する古いモデルを更新します。",
+                promptLabel: "今回の「つまずき」を一言で",
+                promptPlaceholder: "例：会議で詳細を答えられなかった…",
+                continueLabel: "振り返りを始める")
+            default: return Strings(
+                navTitle: "Lesson from Setback",
+                introHeadline: "What just tripped you up?",
+                introSubtitle: "We'll do a 5-step review — not of the event, but of the old model that interpreted it. Train a new version.",
+                promptLabel: "Describe the setback in one line",
+                promptPlaceholder: "e.g., Got asked a detail in a meeting and froze...",
+                continueLabel: "Begin Review")
+            }
         }
     }
 
-    private var introHeadline: String {
-        switch lm.currentLanguage {
-        case .zh: return "刚才踩了什么坑？"
-        case .ja: return "今、何でつまずいた？"
-        default:  return "What just tripped you up?"
-        }
-    }
-
-    private var introSubtitle: String {
-        switch lm.currentLanguage {
-        case .zh: return "我们花几分钟做一次五步复盘——不复盘事件，而是复盘解释事件的旧模型，训练一个新版本。"
-        case .ja: return "5ステップで振り返ります。出来事ではなく、出来事を解釈する古いモデルを更新します。"
-        default:  return "We'll do a 5-step review — not of the event, but of the old model that interpreted it. Train a new version."
-        }
-    }
-
-    private var promptLabel: String {
-        switch lm.currentLanguage {
-        case .zh: return "一句话描述这次的「堑」"
-        case .ja: return "今回の「つまずき」を一言で"
-        default:  return "Describe the setback in one line"
-        }
-    }
-
-    private var promptPlaceholder: String {
-        switch lm.currentLanguage {
-        case .zh: return "比如：开会时被问到细节没答上来…"
-        case .ja: return "例：会議で詳細を答えられなかった…"
-        default:  return "e.g., Got asked a detail in a meeting and froze..."
-        }
-    }
-
-    private var continueLabel: String {
-        switch lm.currentLanguage {
-        case .zh: return "开始复盘"
-        case .ja: return "振り返りを始める"
-        default:  return "Begin Review"
-        }
-    }
+    private var s: Strings { .make(lm.currentLanguage) }
+    private var navTitle: String { s.navTitle }
+    private var introHeadline: String { s.introHeadline }
+    private var introSubtitle: String { s.introSubtitle }
+    private var promptLabel: String { s.promptLabel }
+    private var promptPlaceholder: String { s.promptPlaceholder }
+    private var continueLabel: String { s.continueLabel }
 }

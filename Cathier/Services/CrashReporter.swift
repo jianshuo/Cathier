@@ -16,6 +16,7 @@ nonisolated final class CrashReporter: NSObject, MXMetricManagerSubscriber {
 
     private static let processedKey = "metricKitProcessedSignatures"
     private static let maxRemembered = 50
+    private static let iso8601 = ISO8601DateFormatter()
 
     private var started = false
 
@@ -94,7 +95,7 @@ nonisolated final class CrashReporter: NSObject, MXMetricManagerSubscriber {
         - **App build**: \(meta.applicationBuildVersion)
         - **iOS**: \(meta.osVersion)
         - **Device**: \(meta.deviceType)
-        - **Reported at**: \(ISO8601DateFormatter().string(from: Date()))
+        - **Reported at**: \(Self.iso8601.string(from: Date()))
 
         ## Full diagnostic JSON
 
