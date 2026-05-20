@@ -6,6 +6,7 @@ Returns the saved file path; lets callers handle errors via exception.
 import base64
 from pathlib import Path
 
+import httpx
 from openai import OpenAI
 
 MODEL = "gpt-image-1"
@@ -20,7 +21,7 @@ def generate_image(
     if not prompt:
         raise ValueError("prompt must be non-empty")
 
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(api_key=api_key, http_client=httpx.Client())
     response = client.images.generate(
         model=MODEL,
         prompt=prompt,
