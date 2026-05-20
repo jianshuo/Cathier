@@ -173,6 +173,18 @@ platform :ios do
     }
   end
 
+  # Compute the next minor marketing version: 2.3 → 2.4, 2.9 → 3.0.
+  def bump_minor(version)
+    parts = version.to_s.split(".")
+    major = parts[0].to_i
+    minor = (parts[1] || "0").to_i + 1
+    if minor > 9
+      major += 1
+      minor = 0
+    end
+    "#{major}.#{minor}"
+  end
+
   # Write MARKETING_VERSION into the Cathier app target's build settings.
   # The project has GENERATE_INFOPLIST_FILE = YES, so the build derives
   # CFBundleShortVersionString from this build setting — editing Info.plist
@@ -216,19 +228,37 @@ platform :ios do
 
     build_num = next_build_number(api_key: api_key)
 
-    # Single source of truth: the version in pbxproj. If a release/<v> tag
-    # exists matching the current pbxproj version, this commit has already
-    # been released → TestFlight only. Otherwise the developer bumped, so
-    # this commit IS the release → submit for review.
-    current_version  = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
     last_release_tag = `git tag --list 'release/*' --sort=-version:refname 2>/dev/null | head -1`.strip
     last_released    = last_release_tag.sub(%r{^release/}, "")
-    is_release       = !current_version.empty? && current_version != last_released
+    pbxproj_version  = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
+
+    # Automatic release cadence: every build number ending in 0 ships a new
+    # MARKETING_VERSION to the App Store. The new version is the next minor
+    # above the highest version we know about (latest release/* tag or the
+    # current pbxproj value), written into the build settings for THIS build
+    # only. CI never commits pbxproj or pushes to main, so release detection
+    # stays tag-driven — the release/<v> tag created below is what records it.
+    auto_release = (build_num % 10).zero?
+
+    if auto_release
+      highest = [pbxproj_version, last_released].reject(&:empty?)
+                                                .max_by { |v| Gem::Version.new(v) }
+      current_version = bump_minor(highest)
+      set_marketing_version(current_version)
+      is_release = true
+    else
+      # Manual-bump path: a developer raised pbxproj's MARKETING_VERSION above
+      # the latest release tag and pushed. Compare versions (not !=) so a
+      # version auto-released ahead of pbxproj never retriggers a release here.
+      current_version = pbxproj_version
+      is_release = last_released.empty? ||
+                   Gem::Version.new(current_version) > Gem::Version.new(last_released)
+    end
 
     UI.message(
       "Build #{build_num} | MARKETING_VERSION=#{current_version} | " \
       "last released=#{last_released.empty? ? '(none)' : last_released} | " \
-      "is_release=#{is_release}"
+      "auto_release=#{auto_release} | is_release=#{is_release}"
     )
 
     sign_and_build(api_key: api_key, build_num: build_num)
@@ -274,15 +304,8 @@ platform :ios do
   desc "Run, commit Cathier.xcodeproj/project.pbxproj, push to main — the next"
   desc "CI build will detect the change and submit it to App Store review."
   lane :bump do
-    current = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
-    parts   = current.split(".")
-    major   = parts[0].to_i
-    minor   = (parts[1] || "0").to_i + 1
-    if minor > 9
-      major += 1
-      minor = 0
-    end
-    new_version = "#{major}.#{minor}"
+    current     = get_version_number(xcodeproj: "Cathier.xcodeproj", target: "Cathier")
+    new_version = bump_minor(current)
     set_marketing_version(new_version)
     UI.success("Bumped MARKETING_VERSION: #{current} → #{new_version}")
     UI.message("Now: git add Cathier.xcodeproj/project.pbxproj && git commit && git push origin main")
