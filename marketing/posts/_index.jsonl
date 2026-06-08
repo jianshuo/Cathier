@@ -66,3 +66,4 @@
 {"date": "2026-05-21", "folder": "2026-05-21", "platform": "x", "angle_id": "body-scan-is-listening-not-fixing", "status": "ready", "files": ["x.md"], "note": "images skipped — OpenAI billing limit reached"}
 {"date": "2026-05-21", "folder": "2026-05-21", "platform": "instagram", "angle_id": "body-scan-is-listening-not-fixing", "status": "ready", "files": ["instagram.md"], "note": "images skipped — OpenAI billing limit reached"}
 {"date": "2026-05-21", "folder": "2026-05-21", "platform": "facebook", "angle_id": "body-scan-is-listening-not-fixing", "status": "ready", "files": ["facebook.md"], "note": "images skipped — OpenAI billing limit reached"}
+{"date": "2026-06-08", "folder": "2026-06-08-reddit", "platform": "reddit", "subreddit": "r/somatics", "angle_id": "gut-knows-truth-mind-rationalizes", "status": "ready", "files": ["r-somatics.md"]}
