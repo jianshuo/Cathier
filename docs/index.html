@@ -1,1358 +1,974 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cathier — 情绪感知训练</title>
-  <meta name="description" content="Body scans, emotion labeling, AI reflection. For practitioners who want to go deeper with emotional self-awareness." />
-  <link rel="icon" href="app-icon.png" type="image/png" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Noto+Serif+SC:wght@400;500&display=swap" rel="stylesheet" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Cathier — 情绪感知训练。一台用于训练情绪觉察的精密仪器：定位身体感受、精确命名情绪（80+ 词、9 大类）、观察强度曲线随时间浮现的模式。Native SwiftUI · iOS 26 · Swift Charts。">
+<title>Cathier — 情绪感知训练</title>
+<link rel="icon" href="app-icon.png" type="image/png">
+<link rel="apple-touch-icon" href="app-icon.png">
+<meta property="og:title" content="Cathier — 情绪感知训练">
+<meta property="og:description" content="一台用于训练情绪觉察的精密仪器：定位身体感受、精确命名情绪、观察强度曲线随时间浮现的模式。">
+<meta property="og:image" content="app-icon.png">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FBFBFA;
+    --surface:#FFFFFF;
+    --line:#E4E4E1;
+    --line-strong:#D2D2CE;
+    --ink:#161614;
+    --sub:#6B6B66;
+    --signal:#F2700A;
+    --signal-wash:rgba(242,112,10,.08);
+    --sage:#6B8F71;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
+    --sans:'IBM Plex Sans','Noto Sans SC',-apple-system,sans-serif;
+    --serif:'Instrument Serif',Georgia,serif;
+    --gutter:clamp(20px,4vw,64px);
+    --maxw:1240px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    text-rendering:optimizeLegibility;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--signal);color:#fff}
+  a{color:inherit;text-decoration:none}
+  img,svg{display:block;max-width:100%}
 
-  <style>
-    /* ─────────────────────────────────────────
-       TOKENS
-    ───────────────────────────────────────── */
-    :root {
-      --bg:           #F7F5F1;
-      --surface:      #FFFFFF;
-      --surface-alt:  #FAF9F7;
-      --border:       #E0DDD6;
-      --text-primary: #1A1613;
-      --text-secondary:#5C5650;
-      --text-muted:   #8A837A;
-      --accent:       #F2700A;
-      --accent-light: #FEEBD8;
-      --accent-hover: #D96308;
-      --sage:         #6B8F71;
-      --sage-light:   #E0EDE2;
+  /* ---- shared label / mono primitives ---- */
+  .mono{font-family:var(--mono);font-feature-settings:"tnum" 1,"zero" 1}
+  .tag{
+    font-family:var(--mono);
+    font-size:11px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    color:var(--sub);
+    font-weight:500;
+  }
+  .tag .dot{color:var(--signal)}
+  .num{font-family:var(--mono);font-feature-settings:"tnum" 1}
 
-      --serif: 'Instrument Serif', 'Noto Serif SC', Georgia, serif;
-      --sans:  -apple-system, 'PingFang SC', 'Hiragino Sans GB', system-ui, sans-serif;
-      --mono:  'SF Mono', Menlo, Consolas, monospace;
+  /* ---- layout frame ---- */
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 var(--gutter)}
+  .rule{border:0;border-top:1px solid var(--line);margin:0}
 
-      --radius-sm:  8px;
-      --radius-md:  12px;
-      --radius-lg:  20px;
-      --radius-pill: 9999px;
-    }
+  /* ================= TOP BAR ================= */
+  .topbar{
+    position:sticky;top:0;z-index:60;
+    background:rgba(251,251,250,.82);
+    backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--line);
+  }
+  .topbar .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
+  .brand{display:flex;align-items:center;gap:11px;letter-spacing:.02em}
+  .brand .glyph{
+    width:26px;height:26px;border:1px solid var(--ink);border-radius:6px;
+    display:grid;place-items:center;position:relative;background:var(--surface);
+  }
+  .brand .glyph::before{content:"";position:absolute;inset:0;background:
+    linear-gradient(to right,transparent 49%,var(--line) 49%,var(--line) 51%,transparent 51%),
+    linear-gradient(to bottom,transparent 49%,var(--line) 49%,var(--line) 51%,transparent 51%);}
+  .brand .glyph .pk{position:relative;z-index:1;width:13px;height:9px;}
+  .brand .name{font-weight:600;font-size:15px}
+  .brand .ver{font-family:var(--mono);font-size:10.5px;color:var(--sub);letter-spacing:.08em;
+    border:1px solid var(--line);border-radius:4px;padding:2px 6px;margin-left:2px}
+  .nav{display:flex;align-items:center;gap:28px}
+  .nav a{font-size:13px;color:var(--sub);transition:color .15s}
+  .nav a:hover{color:var(--ink)}
+  .nav .ghost{display:none}
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    font-family:var(--sans);font-size:14px;font-weight:600;
+    min-height:44px;padding:0 20px;border-radius:9px;cursor:pointer;border:1px solid transparent;
+    transition:transform .12s ease,box-shadow .15s ease,background .15s;
+  }
+  .btn-primary{background:var(--signal);color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.04)}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(242,112,10,.28)}
+  .btn-ghost{background:var(--surface);color:var(--ink);border-color:var(--line-strong)}
+  .btn-ghost:hover{border-color:var(--ink)}
+  .nav-cta{min-height:38px;padding:0 16px;font-size:13px}
+  @media(max-width:820px){.nav a:not(.nav-cta){display:none}}
 
-    /* ─────────────────────────────────────────
-       RESET
-    ───────────────────────────────────────── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text-primary);
-      font-family: var(--sans);
-      font-size: 17px;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-    }
-    img { display: block; max-width: 100%; }
-    a { color: inherit; text-decoration: none; }
+  /* ================= HERO ================= */
+  .hero{position:relative;overflow:hidden}
+  .hero::before{ /* faint blueprint grid */
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:64px 64px;
+    -webkit-mask-image:radial-gradient(120% 80% at 50% 0%,#000 30%,transparent 78%);
+            mask-image:radial-gradient(120% 80% at 50% 0%,#000 30%,transparent 78%);
+  }
+  .hero .wrap{position:relative;z-index:1;padding-top:clamp(40px,6vw,76px);padding-bottom:clamp(40px,6vw,72px)}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.08fr);gap:clamp(28px,4vw,56px);align-items:center}
+  @media(max-width:960px){.hero-grid{grid-template-columns:1fr;gap:34px}}
 
-    /* ─────────────────────────────────────────
-       PAPER TEXTURE  (subtle SVG noise overlay)
-    ───────────────────────────────────────── */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      opacity: 0.032;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      background-size: 300px 300px;
-    }
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px}
+  .eyebrow .pill{
+    font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    border:1px solid var(--line-strong);border-radius:999px;padding:5px 11px 4px;color:var(--ink);
+    background:var(--surface);
+  }
+  .eyebrow .pill b{color:var(--signal);font-weight:600}
+  .eyebrow .sep{font-family:var(--mono);font-size:11px;color:var(--sub);letter-spacing:.1em}
 
-    /* ─────────────────────────────────────────
-       LAYOUT UTILITIES
-    ───────────────────────────────────────── */
-    .container {
-      max-width: 960px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
-    .container--wide {
-      max-width: 1140px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
+  h1.hero-h{
+    font-family:var(--sans);font-weight:700;
+    font-size:clamp(34px,5vw,58px);line-height:1.02;letter-spacing:-.02em;
+    margin-bottom:8px;
+  }
+  h1.hero-h .zh{display:block;font-size:clamp(26px,3.4vw,40px);letter-spacing:.01em;margin-top:14px;font-weight:700}
+  h1.hero-h .zh .hl{color:var(--signal)}
+  .hero-sub{font-size:clamp(15px,1.5vw,17px);color:var(--sub);max-width:42ch;margin-top:22px;line-height:1.62}
+  .hero-sub b{color:var(--ink);font-weight:600}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;align-items:center}
+  .lang-line{display:flex;gap:14px;margin-top:22px;flex-wrap:wrap}
+  .lang-line span{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--sub)}
+  .lang-line span b{color:var(--ink);font-weight:500}
 
-    /* ─────────────────────────────────────────
-       NAV
-    ───────────────────────────────────────── */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 0 20px;
-      height: 60px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(247, 245, 241, 0.88);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-    }
-    .nav-wordmark {
-      font-family: var(--serif);
-      font-size: 22px;
-      letter-spacing: -0.01em;
-      color: var(--text-primary);
-    }
-    .nav-wordmark span { color: var(--accent); }
-    .nav-cta {
-      background: var(--accent);
-      color: #fff;
-      font-size: 15px;
-      font-weight: 600;
-      padding: 8px 20px;
-      border-radius: var(--radius-pill);
-      transition: background 0.2s ease;
-    }
-    .nav-cta:hover { background: var(--accent-hover); }
+  /* metric strip under headline */
+  .metrics{display:flex;gap:0;margin-top:34px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+  .metrics .m{flex:1;padding:14px 16px;border-right:1px solid var(--line)}
+  .metrics .m:last-child{border-right:0}
+  .metrics .m .v{font-family:var(--mono);font-size:21px;font-weight:600;letter-spacing:-.01em}
+  .metrics .m .v small{font-size:11px;color:var(--sub);font-weight:500}
+  .metrics .m .k{font-size:11px;color:var(--sub);margin-top:3px;letter-spacing:.02em}
+  @media(max-width:420px){.metrics{flex-wrap:wrap}.metrics .m{flex:1 0 50%;border-bottom:1px solid var(--line)}.metrics .m:nth-child(2){border-right:0}}
 
-    /* ─────────────────────────────────────────
-       HERO
-    ───────────────────────────────────────── */
-    .hero {
-      padding: 140px 0 100px;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-    }
-    .hero-kicker {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: var(--accent-light);
-      padding: 6px 14px;
-      border-radius: var(--radius-pill);
-      margin-bottom: 24px;
-    }
-    .hero-kicker-dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: var(--accent);
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.5; transform: scale(0.75); }
-    }
-    .hero-headline {
-      font-family: var(--serif);
-      font-size: clamp(40px, 5vw, 62px);
-      font-weight: 400;
-      line-height: 1.12;
-      letter-spacing: -0.02em;
-      color: var(--text-primary);
-      margin-bottom: 16px;
-    }
-    .hero-headline em {
-      font-style: italic;
-      color: var(--accent);
-    }
-    .hero-sub {
-      font-size: 18px;
-      color: var(--text-secondary);
-      line-height: 1.65;
-      max-width: 460px;
-      margin-bottom: 40px;
-    }
-    .hero-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-    .btn-primary {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 16px;
-      font-weight: 600;
-      padding: 14px 28px;
-      border-radius: var(--radius-pill);
-      transition: background 0.2s ease, transform 0.15s ease;
-    }
-    .btn-primary:hover {
-      background: var(--accent-hover);
-      transform: translateY(-1px);
-    }
-    .btn-primary svg { width: 18px; height: 18px; }
-    .hero-lang-note {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
+  /* ---- HERO CHART CARD ---- */
+  .instrument{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:16px;
+    box-shadow:0 1px 0 var(--line),0 24px 60px -28px rgba(20,20,16,.28);
+    overflow:hidden;
+  }
+  .inst-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--line)}
+  .inst-head .ttl{display:flex;align-items:center;gap:10px}
+  .inst-head .ttl .led{width:8px;height:8px;border-radius:50%;background:var(--signal);box-shadow:0 0 0 3px var(--signal-wash);animation:pulse 2.4s infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 0 0 3px var(--signal-wash)}50%{box-shadow:0 0 0 6px rgba(242,112,10,.04)}}
+  .inst-head .ttl .t{font-size:13px;font-weight:600}
+  .inst-head .ttl .s{font-family:var(--mono);font-size:11px;color:var(--sub);letter-spacing:.04em}
+  .inst-head .range{display:flex;gap:4px}
+  .inst-head .range b{font-family:var(--mono);font-size:10.5px;color:var(--sub);border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-weight:500}
+  .inst-head .range b.on{color:var(--ink);border-color:var(--ink);background:var(--paper)}
+  .inst-body{padding:6px 8px 4px}
+  .chart-svg{width:100%;height:auto;display:block;overflow:visible}
+  .axis-txt{font-family:var(--mono);font-size:9.5px;fill:var(--sub);letter-spacing:.02em}
+  .axis-cap{font-family:var(--mono);font-size:9px;fill:var(--sub);letter-spacing:.14em;text-transform:uppercase}
+  .grid-line{stroke:var(--line);stroke-width:1}
+  .grid-line.base{stroke:var(--line-strong)}
+  .series-orange{fill:none;stroke:var(--signal);stroke-width:2.25;stroke-linecap:round;stroke-linejoin:round}
+  .series-sage{fill:none;stroke:var(--sage);stroke-width:1.5;stroke-dasharray:3 4;stroke-linecap:round}
+  .dot-o{fill:var(--surface);stroke:var(--signal);stroke-width:2}
+  .area-o{fill:url(#areaGrad)}
+  .draw{stroke-dasharray:var(--len);stroke-dashoffset:var(--len);animation:draw 1.5s .25s ease forwards}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .fade{opacity:0;animation:fadein .5s ease forwards}
+  .fade.d1{animation-delay:1.1s}.fade.d2{animation-delay:1.35s}
+  @keyframes fadein{to{opacity:1}}
+  .inst-legend{display:flex;align-items:center;gap:18px;padding:10px 18px;border-top:1px solid var(--line);flex-wrap:wrap}
+  .inst-legend .lg{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;color:var(--sub)}
+  .inst-legend .lg .sw{width:16px;height:0;border-top:2px solid var(--signal)}
+  .inst-legend .lg.sage .sw{border-top:2px dashed var(--sage)}
+  .inst-legend .meta{margin-left:auto;font-family:var(--mono);font-size:10.5px;color:var(--sub);letter-spacing:.04em}
+  .inst-legend .emoji{font-size:13px;line-height:1}
 
-    /* Hero visual — phone mockup */
-    .hero-visual {
-      position: relative;
-      display: flex;
-      justify-content: center;
-    }
-    .hero-phone {
-      position: relative;
-      width: 280px;
-    }
-    .phone-shell {
-      background: var(--text-primary);
-      border-radius: 44px;
-      padding: 14px;
-      box-shadow:
-        0 40px 80px rgba(26,22,19,0.22),
-        0 10px 20px rgba(26,22,19,0.10),
-        inset 0 0 0 1px rgba(255,255,255,0.06);
-    }
-    .phone-screen {
-      background: var(--bg);
-      border-radius: 32px;
-      overflow: hidden;
-      aspect-ratio: 9/19.5;
-      position: relative;
-    }
-    .phone-notch {
-      position: absolute;
-      top: 12px; left: 50%;
-      transform: translateX(-50%);
-      width: 100px; height: 28px;
-      background: var(--text-primary);
-      border-radius: 20px;
-      z-index: 2;
-    }
-    .phone-content {
-      padding: 52px 16px 20px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .phone-greeting {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .phone-greeting span {
-      color: var(--text-secondary);
-      font-weight: 400;
-    }
-    .phone-cta-btn {
-      background: var(--accent);
-      color: #fff;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 10px;
-      border-radius: 10px;
-    }
-    .phone-card {
-      background: var(--surface-alt);
-      border-radius: 10px;
-      padding: 10px 12px;
-      border: 1px solid var(--border);
-    }
-    .phone-card-time {
-      font-size: 9px;
-      color: var(--text-muted);
-      font-family: var(--mono);
-      margin-bottom: 5px;
-    }
-    .phone-card-emotions {
-      display: flex;
-      gap: 4px;
-      flex-wrap: wrap;
-      margin-bottom: 6px;
-    }
-    .phone-chip {
-      font-size: 8px;
-      padding: 2px 7px;
-      border-radius: 99px;
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 500;
-    }
-    .phone-chip.sage {
-      background: var(--sage-light);
-      color: var(--sage);
-    }
-    .phone-ai-preview {
-      font-family: var(--serif);
-      font-size: 9px;
-      line-height: 1.5;
-      color: var(--text-secondary);
-      font-style: italic;
-    }
-    .phone-intensity {
-      font-size: 8px;
-      font-family: var(--mono);
-      font-weight: 600;
-      color: var(--accent);
-      background: var(--accent-light);
-      padding: 2px 7px;
-      border-radius: 99px;
-      display: inline-block;
-      margin-bottom: 4px;
-    }
-    .phone-section-label {
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--text-muted);
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      margin-bottom: 4px;
-      margin-top: 2px;
-    }
+  /* ================= SECTION SCAFFOLD ================= */
+  section{position:relative}
+  .sec-pad{padding:clamp(56px,8vw,104px) 0}
+  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(32px,5vw,56px)}
+  .sec-head .idx{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--sub);text-transform:uppercase;white-space:nowrap}
+  .sec-head .idx b{color:var(--signal);font-weight:600}
+  .sec-title{font-size:clamp(24px,3.2vw,38px);font-weight:700;letter-spacing:-.018em;line-height:1.08;max-width:18ch}
+  .sec-lead{color:var(--sub);font-size:15px;max-width:48ch;margin-top:14px;line-height:1.6}
+  @media(max-width:680px){.sec-head{flex-direction:column;align-items:flex-start;gap:14px}}
 
-    /* floating accent orbs */
-    .hero-orb {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(60px);
-      pointer-events: none;
-      z-index: -1;
-    }
-    .hero-orb-1 {
-      width: 320px; height: 320px;
-      background: rgba(242,112,10,0.10);
-      right: -60px; top: -60px;
-    }
-    .hero-orb-2 {
-      width: 200px; height: 200px;
-      background: rgba(107,143,113,0.08);
-      right: 100px; bottom: -40px;
-    }
+  /* ================= PIPELINE / FLOW ================= */
+  .flow-meta{font-family:var(--mono);font-size:11px;color:var(--sub);letter-spacing:.04em;border:1px solid var(--line);
+    border-radius:999px;padding:6px 13px;white-space:nowrap;background:var(--surface)}
+  .pipe{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid var(--line-strong);border-radius:16px;overflow:hidden;background:var(--surface)}
+  @media(max-width:860px){.pipe{grid-template-columns:1fr}}
+  .step{padding:clamp(22px,2.4vw,32px);border-right:1px solid var(--line);position:relative}
+  .step:last-child{border-right:0}
+  @media(max-width:860px){.step{border-right:0;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}}
+  .step .stp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .step .stp-no{font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--sub)}
+  .step .stp-no b{color:var(--signal);font-weight:600}
+  .step .stp-time{font-family:var(--mono);font-size:10.5px;color:var(--sub);border:1px solid var(--line);border-radius:5px;padding:3px 7px}
+  .step h3{font-size:19px;font-weight:700;letter-spacing:-.01em}
+  .step h3 .en{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--sub);font-weight:500;margin-top:4px;text-transform:uppercase}
+  .step .q{font-size:13px;color:var(--signal);margin-top:14px;font-weight:500;font-style:italic;font-family:var(--serif);letter-spacing:.01em}
+  .step .q .em{font-style:normal;font-family:var(--mono);font-size:11px;color:var(--sub);display:block;margin-top:2px;letter-spacing:.02em}
+  .step p{font-size:13.5px;color:var(--sub);margin-top:12px;line-height:1.6}
+  .step .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
+  .chip{font-family:var(--mono);font-size:11px;border:1px solid var(--line-strong);border-radius:6px;padding:4px 9px;color:var(--ink);background:var(--paper)}
+  .chip.sig{color:var(--signal);border-color:rgba(242,112,10,.4);background:var(--signal-wash)}
+  /* intensity mini scale */
+  .iscale{margin-top:16px}
+  .iscale .lab{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--sub);display:flex;justify-content:space-between;margin-bottom:5px}
+  .iscale .bar{height:8px;border-radius:4px;background:linear-gradient(90deg,#EDEDEA,var(--signal));border:1px solid var(--line);position:relative}
+  .iscale .bar .mk{position:absolute;top:-3px;width:14px;height:14px;border-radius:50%;background:var(--surface);border:2px solid var(--signal);left:62%;transform:translateX(-50%);box-shadow:0 2px 6px rgba(242,112,10,.3)}
+  .iscale .bar .mk::after{content:"7";position:absolute;inset:0;display:grid;place-items:center;font-family:var(--mono);font-size:8px;color:var(--signal);font-weight:600}
+  /* serif reflection card body for step 3 */
+  .step.reflect{background:linear-gradient(180deg,#fff, #FCFBF9)}
+  .reflect-note{margin-top:14px;border-left:2px solid var(--signal);padding:4px 0 4px 14px}
+  .reflect-note p{font-family:var(--serif);font-size:17px;line-height:1.5;color:var(--ink);font-style:italic;margin-top:0}
+  .reflect-note .by{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--sub);text-transform:uppercase;margin-top:10px;display:block}
+  .not-chatbot{font-family:var(--mono);font-size:10.5px;color:var(--sub);margin-top:14px;display:flex;align-items:center;gap:7px}
+  .not-chatbot .x{color:var(--signal)}
 
-    /* ─────────────────────────────────────────
-       SECTION LABEL
-    ───────────────────────────────────────── */
-    .section-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 12px;
-    }
+  /* connector arrows between steps (desktop) */
+  .step .arrow{display:none}
+  @media(min-width:861px){
+    .step:not(:last-child) .arrow{display:block;position:absolute;right:-9px;top:50%;transform:translateY(-50%);z-index:2;
+      width:18px;height:18px;border:1px solid var(--line-strong);border-radius:50%;background:var(--paper);}
+    .step:not(:last-child) .arrow::after{content:"";position:absolute;inset:0;margin:auto;width:5px;height:5px;border-top:1.5px solid var(--sub);border-right:1.5px solid var(--sub);transform:rotate(45deg);left:-1px}
+  }
 
-    /* ─────────────────────────────────────────
-       THESIS BAND
-    ───────────────────────────────────────── */
-    .thesis-band {
-      background: var(--text-primary);
-      padding: 64px 0;
-      position: relative;
-      overflow: hidden;
-    }
-    .thesis-band::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0.025;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      background-size: 300px;
-    }
-    .thesis-inner {
-      display: grid;
-      grid-template-columns: 1fr 2fr;
-      gap: 60px;
-      align-items: start;
-    }
-    .thesis-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    .thesis-copy {
-      font-family: var(--serif);
-      font-size: clamp(22px, 2.8vw, 32px);
-      font-weight: 400;
-      line-height: 1.45;
-      color: #F0EDE8;
-      font-style: italic;
-    }
-    .thesis-copy strong {
-      font-style: normal;
-      color: #fff;
-    }
-    .thesis-copy .accent { color: var(--accent); font-style: normal; }
+  /* ================= PATTERN INSIGHTS PANEL ================= */
+  .panel{border:1px solid var(--line-strong);border-radius:16px;background:var(--surface);overflow:hidden}
+  .panel-grid{display:grid;grid-template-columns:1.15fr .85fr}
+  @media(max-width:860px){.panel-grid{grid-template-columns:1fr}}
+  .panel-l{padding:clamp(24px,3vw,38px);border-right:1px solid var(--line)}
+  @media(max-width:860px){.panel-l{border-right:0;border-bottom:1px solid var(--line)}}
+  .panel-l .badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--signal);
+    border:1px solid rgba(242,112,10,.35);background:var(--signal-wash);border-radius:999px;padding:5px 11px;margin-bottom:22px}
+  .panel-l h3{font-size:clamp(20px,2.4vw,28px);font-weight:700;letter-spacing:-.015em;line-height:1.15}
+  .panel-l p{color:var(--sub);font-size:14.5px;margin-top:14px;line-height:1.62;max-width:42ch}
+  .insight-list{margin-top:26px;display:grid;gap:0;border-top:1px solid var(--line)}
+  .insight{display:grid;grid-template-columns:auto 1fr auto;gap:14px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
+  .insight .ic{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--sub);border:1px solid var(--line-strong);border-radius:5px;padding:4px 7px;white-space:nowrap}
+  .insight .tx{font-size:13.5px}
+  .insight .tx b{font-weight:600}
+  .insight .tx span{color:var(--sub)}
+  .insight .freq{font-family:var(--mono);font-size:12px;color:var(--signal);font-weight:600;white-space:nowrap}
+  .insight .freq small{color:var(--sub);font-weight:400}
+  /* right: signal frequency bars */
+  .panel-r{padding:clamp(24px,3vw,38px);background:linear-gradient(180deg,#FCFCFB,#fff)}
+  .panel-r .rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+  .panel-r .rhead .t{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+  .panel-r .rhead .n{font-family:var(--mono);font-size:11px;color:var(--ink)}
+  .bars{display:grid;gap:16px}
+  .barrow .bl{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;margin-bottom:6px}
+  .barrow .bl .name{color:var(--ink)}
+  .barrow .bl .name .e{margin-right:6px}
+  .barrow .bl .val{color:var(--sub)}
+  .barrow .track{height:7px;background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+  .barrow .fill{height:100%;background:var(--signal);border-radius:4px 0 0 4px;transform-origin:left;animation:grow 1s ease forwards;transform:scaleX(0)}
+  .barrow.sage .fill{background:var(--sage)}
+  @keyframes grow{to{transform:scaleX(1)}}
 
-    /* ─────────────────────────────────────────
-       FEATURES
-    ───────────────────────────────────────── */
-    .features {
-      padding: 100px 0;
-    }
-    .features-header {
-      text-align: center;
-      max-width: 560px;
-      margin: 0 auto 72px;
-    }
-    .features-headline {
-      font-family: var(--serif);
-      font-size: clamp(28px, 3.5vw, 40px);
-      font-weight: 400;
-      line-height: 1.2;
-      margin-bottom: 16px;
-    }
-    .features-sub {
-      font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.65;
-    }
+  /* ================= THESIS ================= */
+  .thesis{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--surface)}
+  .thesis .wrap{padding:clamp(50px,7vw,86px) var(--gutter)}
+  .thesis-grid{display:grid;grid-template-columns:auto 1fr;gap:clamp(24px,4vw,54px);align-items:center}
+  @media(max-width:760px){.thesis-grid{grid-template-columns:1fr;gap:24px}}
+  .thesis .lab{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--sub);writing-mode:vertical-rl;transform:rotate(180deg)}
+  @media(max-width:760px){.thesis .lab{writing-mode:horizontal-tb;transform:none}}
+  .thesis q,.thesis .quote{font-size:clamp(22px,3.1vw,34px);font-weight:600;letter-spacing:-.015em;line-height:1.28;quotes:none}
+  .thesis .quote .hl{color:var(--signal)}
+  .thesis .quote .mut{color:var(--sub)}
+  .thesis .sig{margin-top:20px;font-family:var(--mono);font-size:11.5px;color:var(--sub);letter-spacing:.04em}
 
-    .features-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 2px;
-      background: var(--border);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-    }
-    .feature-cell {
-      background: var(--bg);
-      padding: 40px 32px;
-      position: relative;
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-    }
-    .feature-cell.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .feature-cell:nth-child(1) { transition-delay: 0.05s; }
-    .feature-cell:nth-child(2) { transition-delay: 0.12s; }
-    .feature-cell:nth-child(3) { transition-delay: 0.19s; }
-    .feature-cell:nth-child(4) { transition-delay: 0.26s; }
-    .feature-cell:nth-child(5) { transition-delay: 0.33s; }
-    .feature-cell:nth-child(6) { transition-delay: 0.40s; }
+  /* ================= DICTIONARY SPEC SHEET ================= */
+  .dict-stat{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line-strong);border-radius:14px 14px 0 0;overflow:hidden;background:var(--surface)}
+  .dict-stat .d{padding:22px 24px;border-right:1px solid var(--line)}
+  .dict-stat .d:last-child{border-right:0}
+  .dict-stat .d .v{font-family:var(--mono);font-size:clamp(30px,4vw,46px);font-weight:600;letter-spacing:-.02em;line-height:1}
+  .dict-stat .d .v .u{font-size:13px;color:var(--sub);font-weight:500;margin-left:6px}
+  .dict-stat .d .k{font-size:12.5px;color:var(--sub);margin-top:8px;letter-spacing:.02em}
+  @media(max-width:560px){.dict-stat{grid-template-columns:1fr}.dict-stat .d{border-right:0;border-bottom:1px solid var(--line)}.dict-stat .d:last-child{border-bottom:0}}
 
-    .feature-icon {
-      width: 44px; height: 44px;
-      border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-      font-size: 22px;
-    }
-    .feature-icon.orange { background: var(--accent-light); }
-    .feature-icon.sage   { background: var(--sage-light); }
+  .spec{border:1px solid var(--line-strong);border-top:0;border-radius:0 0 14px 14px;overflow:hidden;background:var(--surface)}
+  .spec .srow{display:grid;grid-template-columns:130px 1fr 78px;gap:0;border-top:1px solid var(--line);align-items:center}
+  .spec .srow:first-child{border-top:0}
+  .spec .srow.head{background:var(--paper)}
+  .spec .srow.head div{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--sub);padding:11px 18px}
+  .spec .cat{padding:15px 18px;display:flex;flex-direction:column;gap:3px}
+  .spec .cat .zh{font-weight:600;font-size:14px}
+  .spec .cat .en{font-family:var(--mono);font-size:10px;color:var(--sub);letter-spacing:.04em}
+  .spec .words{padding:15px 18px;display:flex;flex-wrap:wrap;gap:6px;border-left:1px solid var(--line)}
+  .spec .words .w{font-size:13px;color:var(--ink);font-family:var(--sans)}
+  .spec .words .w::after{content:"·";color:var(--line-strong);margin-left:6px}
+  .spec .words .w:last-child::after{content:""}
+  .spec .words .w.hot{color:var(--signal);font-weight:600}
+  .spec .count{padding:15px 18px;font-family:var(--mono);font-size:12px;color:var(--sub);text-align:right;border-left:1px solid var(--line);font-feature-settings:"tnum" 1}
+  .spec .count b{color:var(--ink)}
+  @media(max-width:620px){
+    .spec .srow{grid-template-columns:1fr}
+    .spec .srow.head{display:none}
+    .spec .words{border-left:0;border-top:1px solid var(--line);padding-top:10px}
+    .spec .count{border-left:0;border-top:1px solid var(--line);text-align:left}
+  }
+  .dict-foot{margin-top:18px;display:flex;align-items:center;gap:10px;font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink)}
+  .dict-foot .mk{font-family:var(--mono);font-style:normal;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--sub)}
 
-    .feature-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 10px;
-      line-height: 1.3;
-    }
-    .feature-desc {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.65;
-    }
-    .feature-tag {
-      display: inline-block;
-      margin-top: 14px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      color: var(--accent);
-      background: var(--accent-light);
-      padding: 4px 10px;
-      border-radius: var(--radius-pill);
-    }
-    .feature-tag.sage {
-      color: var(--sage);
-      background: var(--sage-light);
-    }
+  /* ================= SPLIT: phone mockup + sharing ================= */
+  .split{display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);gap:clamp(30px,5vw,72px);align-items:center}
+  @media(max-width:920px){.split{grid-template-columns:1fr;gap:44px}}
 
-    /* ─────────────────────────────────────────
-       FLOW SECTION — 3-step check-in
-    ───────────────────────────────────────── */
-    .flow {
-      padding: 100px 0;
-      background: var(--surface-alt);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .flow-header {
-      text-align: center;
-      max-width: 540px;
-      margin: 0 auto 72px;
-    }
-    .flow-headline {
-      font-family: var(--serif);
-      font-size: clamp(26px, 3.2vw, 38px);
-      font-weight: 400;
-      line-height: 1.2;
-      margin-bottom: 14px;
-    }
-    .flow-sub {
-      font-size: 16px;
-      color: var(--text-secondary);
-    }
+  /* iPhone mockup (pure CSS) */
+  .phone-stage{display:flex;justify-content:center;position:relative}
+  .phone-stage::before{content:"";position:absolute;width:300px;height:300px;border-radius:50%;
+    background:radial-gradient(circle,var(--signal-wash),transparent 70%);filter:blur(10px);z-index:0}
+  .phone{
+    position:relative;z-index:1;width:286px;height:586px;border-radius:46px;
+    background:#0E0E0C;padding:11px;
+    box-shadow:0 40px 80px -30px rgba(20,20,16,.5),0 0 0 1px rgba(0,0,0,.06),inset 0 0 0 2px #2a2a26;
+  }
+  .phone .screen{width:100%;height:100%;border-radius:36px;background:var(--paper);overflow:hidden;position:relative;display:flex;flex-direction:column}
+  .phone .notch{position:absolute;top:12px;left:50%;transform:translateX(-50%);width:96px;height:26px;background:#0E0E0C;border-radius:14px;z-index:5}
+  .ph-status{display:flex;justify-content:space-between;align-items:center;padding:14px 22px 0;font-family:var(--mono);font-size:11px;color:var(--ink)}
+  .ph-status .sig-i{display:flex;gap:3px;align-items:flex-end}
+  .ph-status .sig-i i{width:3px;background:var(--ink);border-radius:1px;display:block}
+  .ph-status .sig-i i:nth-child(1){height:5px}.ph-status .sig-i i:nth-child(2){height:7px}.ph-status .sig-i i:nth-child(3){height:9px}.ph-status .sig-i i:nth-child(4){height:11px}
+  .ph-body{flex:1;padding:30px 20px 18px;display:flex;flex-direction:column}
+  .ph-greet{font-size:13px;color:var(--sub)}
+  .ph-q{font-size:22px;font-weight:700;letter-spacing:-.01em;margin-top:4px;line-height:1.2}
+  .ph-card{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px}
+  .ph-card .ch-top{display:flex;justify-content:space-between;align-items:center}
+  .ph-card .ch-top .lab{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+  .ph-card .ch-top .stamp{font-family:var(--mono);font-size:10px;color:var(--sub)}
+  .ph-mini{margin-top:10px}
+  .ph-readout{display:flex;align-items:baseline;gap:8px;margin-top:12px}
+  .ph-readout .big{font-family:var(--mono);font-size:30px;font-weight:600;color:var(--signal);line-height:1}
+  .ph-readout .of{font-family:var(--mono);font-size:12px;color:var(--sub)}
+  .ph-readout .tg{margin-left:auto;font-family:var(--mono);font-size:10px;color:var(--ink);border:1px solid var(--line);border-radius:5px;padding:3px 7px}
+  .ph-tags{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+  .ph-tags .t{font-family:var(--mono);font-size:10px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--ink)}
+  .ph-tags .t.on{color:var(--signal);border-color:rgba(242,112,10,.4);background:var(--signal-wash)}
+  .ph-cta{margin-top:auto;background:var(--signal);color:#fff;text-align:center;font-weight:600;font-size:15px;padding:13px;border-radius:13px;letter-spacing:.01em;display:flex;align-items:center;justify-content:center;gap:8px}
+  .ph-home{height:5px;width:120px;background:#0E0E0C;border-radius:3px;margin:8px auto 12px;opacity:.85}
 
-    .flow-steps {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0;
-      position: relative;
-    }
-    .flow-steps::before {
-      content: '';
-      position: absolute;
-      top: 28px;
-      left: calc(16.66% + 20px);
-      right: calc(16.66% + 20px);
-      height: 1px;
-      background: linear-gradient(90deg, var(--accent) 0%, var(--border) 50%, var(--accent) 100%);
-      opacity: 0.4;
-    }
-    .flow-step {
-      text-align: center;
-      padding: 0 24px;
-    }
-    .flow-step-num {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: var(--bg);
-      border: 1.5px solid var(--accent);
-      color: var(--accent);
-      font-family: var(--mono);
-      font-size: 18px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 24px;
-      position: relative;
-      z-index: 1;
-    }
-    .flow-step-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin-bottom: 10px;
-    }
-    .flow-step-title-zh {
-      font-family: var(--serif);
-      font-size: 13px;
-      color: var(--accent);
-      margin-bottom: 6px;
-    }
-    .flow-step-desc {
-      font-size: 15px;
-      color: var(--text-secondary);
-      line-height: 1.65;
-    }
-    .flow-chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-      margin-top: 14px;
-    }
-    .flow-chip {
-      font-size: 12px;
-      padding: 4px 12px;
-      border-radius: var(--radius-pill);
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 500;
-    }
-    .flow-chip.sage {
-      background: var(--sage-light);
-      color: var(--sage);
-    }
-    .flow-chip.neutral {
-      background: var(--border);
-      color: var(--text-secondary);
-    }
+  /* sharing detail levels */
+  .share-list{display:grid;gap:0;border-top:1px solid var(--line);margin-top:26px}
+  .share-row{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;padding:18px 0;border-bottom:1px solid var(--line);cursor:default}
+  .share-row .lvl{font-family:var(--mono);font-size:11px;color:var(--sub);letter-spacing:.08em}
+  .share-row .lvl b{color:var(--signal)}
+  .share-row .info b{font-weight:600;font-size:15px}
+  .share-row .info span{display:block;color:var(--sub);font-size:13px;margin-top:3px}
+  .share-row .toggle{width:42px;height:24px;border-radius:999px;border:1px solid var(--line-strong);background:var(--paper);position:relative;flex:none}
+  .share-row .toggle::after{content:"";position:absolute;width:18px;height:18px;border-radius:50%;background:var(--sub);top:2px;left:2px;transition:.2s}
+  .share-row.on .toggle{background:var(--signal);border-color:var(--signal)}
+  .share-row.on .toggle::after{background:#fff;left:21px}
+  .opt-note{font-family:var(--mono);font-size:11px;color:var(--sub);margin-top:18px;letter-spacing:.02em}
 
-    /* ─────────────────────────────────────────
-       AI REFLECTION CARD DEMO
-    ───────────────────────────────────────── */
-    .ai-section {
-      padding: 100px 0;
-    }
-    .ai-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-    }
-    .ai-text .section-label { margin-bottom: 16px; }
-    .ai-headline {
-      font-family: var(--serif);
-      font-size: clamp(26px, 3vw, 36px);
-      font-weight: 400;
-      line-height: 1.25;
-      margin-bottom: 20px;
-    }
-    .ai-body {
-      font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 32px;
-    }
-    .ai-body strong { color: var(--text-primary); }
+  /* ================= PLATFORM ================= */
+  .plat{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line-strong);border-radius:14px;overflow:hidden;background:var(--surface)}
+  @media(max-width:760px){.plat{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:380px){.plat{grid-template-columns:1fr}}
+  .plat .p{padding:24px 22px;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .plat .p:nth-child(4n){border-right:0}
+  @media(max-width:760px){.plat .p:nth-child(2n){border-right:0}.plat .p:nth-child(4n){border-right:1px solid var(--line)}}
+  .plat .p .k{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--sub)}
+  .plat .p .v{font-size:17px;font-weight:600;margin-top:10px;letter-spacing:-.01em}
+  .plat .p .v .s{display:block;font-family:var(--mono);font-size:11px;color:var(--sub);font-weight:400;margin-top:4px}
 
-    /* AI Card replica */
-    .ai-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      overflow: hidden;
-      box-shadow: 0 8px 32px rgba(26,22,19,0.08);
-    }
-    .ai-card-header {
-      background: var(--accent-light);
-      padding: 10px 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      border-bottom: 1px solid rgba(242,112,10,0.15);
-    }
-    .ai-card-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--accent);
-    }
-    .ai-card-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--accent);
-    }
-    .ai-card-body {
-      padding: 20px 20px 16px;
-      font-family: var(--serif);
-      font-size: 17px;
-      line-height: 1.65;
-      color: var(--text-primary);
-    }
-    .ai-card-body em { color: var(--accent); font-style: normal; }
-    .ai-card-footer {
-      padding: 12px 20px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 20px;
-    }
-    .ai-card-action {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--accent);
-    }
-    .ai-card-action.muted {
-      color: var(--text-muted);
-    }
+  /* ================= FOOTER CTA ================= */
+  .final{background:var(--ink);color:#EDEDEA;position:relative;overflow:hidden}
+  .final::before{content:"";position:absolute;inset:0;opacity:.16;pointer-events:none;
+    background-image:linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px);
+    background-size:48px 48px;
+    -webkit-mask-image:radial-gradient(120% 100% at 50% 0%,#000,transparent 75%);mask-image:radial-gradient(120% 100% at 50% 0%,#000,transparent 75%);}
+  .final .wrap{position:relative;z-index:1;padding:clamp(60px,9vw,110px) var(--gutter) 0}
+  .final .ftag{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--signal)}
+  .final h2{font-size:clamp(30px,5vw,56px);font-weight:700;letter-spacing:-.02em;line-height:1.04;margin-top:18px;max-width:18ch}
+  .final h2 .zh{display:block;font-size:clamp(22px,3vw,34px);color:#A7A7A1;margin-top:12px;font-weight:600}
+  .final .fsub{color:#A7A7A1;font-size:15px;margin-top:22px;max-width:46ch;line-height:1.6}
+  .final .fsub b{color:#fff;font-weight:600}
+  .final .fcta{display:flex;flex-wrap:wrap;gap:14px;align-items:center;margin-top:34px}
+  .appstore{display:inline-flex;align-items:center;gap:12px;background:#fff;color:#0E0E0C;border-radius:12px;padding:11px 20px;min-height:54px}
+  .appstore:hover{transform:translateY(-1px)}
+  .appstore .logo{width:26px;height:26px}
+  .appstore .tx{display:flex;flex-direction:column;line-height:1.1}
+  .appstore .tx small{font-size:10px;letter-spacing:.04em;color:#55554f}
+  .appstore .tx b{font-size:17px;font-weight:600;letter-spacing:-.01em}
+  .free-note{font-family:var(--mono);font-size:11.5px;color:#A7A7A1;letter-spacing:.02em}
+  .free-note b{color:#fff;font-weight:500}
+  .final .verline{display:flex;gap:10px;margin-top:30px;flex-wrap:wrap}
+  .final .verline b{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:#A7A7A1;border:1px solid rgba(255,255,255,.16);border-radius:5px;padding:4px 9px}
 
-    /* ─────────────────────────────────────────
-       DICTIONARY SECTION
-    ───────────────────────────────────────── */
-    .dict-section {
-      padding: 100px 0;
-      background: var(--surface-alt);
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .dict-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: start;
-    }
-    .dict-headline {
-      font-family: var(--serif);
-      font-size: clamp(26px, 3vw, 36px);
-      font-weight: 400;
-      line-height: 1.25;
-      margin-bottom: 20px;
-    }
-    .dict-body {
-      font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 28px;
-    }
-    .dict-stats {
-      display: flex;
-      gap: 32px;
-    }
-    .dict-stat-num {
-      font-family: var(--mono);
-      font-size: 28px;
-      font-weight: 700;
-      color: var(--accent);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .dict-stat-label {
-      font-size: 13px;
-      color: var(--text-secondary);
-    }
+  .fbar{position:relative;z-index:1;margin-top:clamp(56px,8vw,90px);border-top:1px solid rgba(255,255,255,.14)}
+  .fbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:22px var(--gutter);flex-wrap:wrap}
+  .fbar .left{display:flex;align-items:center;gap:14px}
+  .fbar .left .b{font-weight:600;font-size:14px}
+  .fbar .left .c{font-family:var(--mono);font-size:11px;color:#8a8a84}
+  .fbar .links{display:flex;gap:22px;flex-wrap:wrap}
+  .fbar .links a{font-size:12.5px;color:#A7A7A1;transition:color .15s}
+  .fbar .links a:hover{color:#fff}
 
-    .dict-cloud {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      align-content: flex-start;
-    }
-    .dict-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      padding: 6px 14px;
-      border-radius: var(--radius-pill);
-      font-size: 14px;
-      font-weight: 500;
-      transition: transform 0.15s ease;
-      cursor: default;
-    }
-    .dict-tag:hover { transform: translateY(-2px); }
-    /* category colors */
-    .c-impassioned { background: rgba(255,89,51,0.10); color: #D43A18; }
-    .c-happy        { background: rgba(255,191,0,0.12); color: #996600; }
-    .c-calm         { background: rgba(51,173,230,0.12); color: #1A6E99; }
-    .c-love         { background: rgba(242,114,165,0.12); color: #B3336B; }
-    .c-anger        { background: rgba(245,69,56,0.12); color: #C22218; }
-    .c-fear         { background: rgba(173,82,222,0.12); color: #7B2BAF; }
-    .c-sad          { background: rgba(92,138,191,0.12); color: #2B5F99; }
-    .c-shame        { background: rgba(140,102,71,0.12); color: #66401F; }
-    .c-surprise     { background: rgba(255,148,0,0.12); color: #995500; }
-
-    /* ─────────────────────────────────────────
-       QUOTE BAND
-    ───────────────────────────────────────── */
-    .quote-band {
-      padding: 80px 0;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
-    }
-    .quote-band::before {
-      content: '\201C';
-      font-family: var(--serif);
-      font-size: 240px;
-      color: var(--border);
-      position: absolute;
-      top: -60px; left: 40px;
-      line-height: 1;
-      pointer-events: none;
-      user-select: none;
-    }
-    .quote-text {
-      font-family: var(--serif);
-      font-size: clamp(22px, 2.8vw, 32px);
-      font-style: italic;
-      font-weight: 400;
-      line-height: 1.5;
-      color: var(--text-primary);
-      max-width: 720px;
-      margin: 0 auto 20px;
-      position: relative;
-      z-index: 1;
-    }
-    .quote-source {
-      font-size: 13px;
-      color: var(--text-muted);
-      letter-spacing: 0.04em;
-      position: relative;
-      z-index: 1;
-    }
-
-    /* ─────────────────────────────────────────
-       APP ICON + LANGUAGES
-    ───────────────────────────────────────── */
-    .about-section {
-      padding: 100px 0;
-      border-top: 1px solid var(--border);
-    }
-    .about-inner {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
-    }
-    .about-headline {
-      font-family: var(--serif);
-      font-size: clamp(26px, 3vw, 36px);
-      font-weight: 400;
-      line-height: 1.25;
-      margin-bottom: 20px;
-    }
-    .about-body {
-      font-size: 16px;
-      color: var(--text-secondary);
-      line-height: 1.7;
-      margin-bottom: 32px;
-    }
-    .lang-pills {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 40px;
-    }
-    .lang-pill {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      padding: 8px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-pill);
-      font-size: 14px;
-      font-weight: 500;
-    }
-    .lang-pill .flag { font-size: 18px; }
-
-    .about-icon-side {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 24px;
-    }
-    .app-icon-large {
-      width: 160px; height: 160px;
-      border-radius: 36px;
-      box-shadow:
-        0 24px 60px rgba(26,22,19,0.18),
-        0 6px 16px rgba(26,22,19,0.08);
-    }
-    .app-meta {
-      text-align: center;
-    }
-    .app-meta-name {
-      font-family: var(--serif);
-      font-size: 22px;
-      font-weight: 400;
-      margin-bottom: 4px;
-    }
-    .app-meta-sub {
-      font-size: 13px;
-      color: var(--text-muted);
-    }
-    .app-meta-version {
-      display: inline-block;
-      margin-top: 8px;
-      font-size: 11px;
-      font-family: var(--mono);
-      font-weight: 600;
-      color: var(--text-muted);
-      background: var(--border);
-      padding: 3px 10px;
-      border-radius: var(--radius-pill);
-    }
-
-    /* ─────────────────────────────────────────
-       CTA FOOTER
-    ───────────────────────────────────────── */
-    .cta-footer {
-      padding: 100px 0;
-      text-align: center;
-      background: var(--text-primary);
-      position: relative;
-      overflow: hidden;
-    }
-    .cta-footer::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      opacity: 0.03;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      background-size: 300px;
-    }
-    .cta-footer-orb {
-      position: absolute;
-      width: 400px; height: 400px;
-      border-radius: 50%;
-      background: rgba(242,112,10,0.12);
-      filter: blur(80px);
-      left: 50%; top: 50%;
-      transform: translate(-50%, -50%);
-    }
-    .cta-footer-content { position: relative; z-index: 1; }
-    .cta-footer-headline {
-      font-family: var(--serif);
-      font-size: clamp(30px, 4vw, 48px);
-      font-weight: 400;
-      font-style: italic;
-      color: #F0EDE8;
-      margin-bottom: 16px;
-      line-height: 1.2;
-    }
-    .cta-footer-sub {
-      font-size: 16px;
-      color: #B5AFA9;
-      margin-bottom: 40px;
-    }
-    .btn-large {
-      display: inline-flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--accent);
-      color: #fff;
-      font-size: 17px;
-      font-weight: 600;
-      padding: 16px 36px;
-      border-radius: var(--radius-pill);
-      transition: background 0.2s ease, transform 0.15s ease;
-      box-shadow: 0 8px 32px rgba(242,112,10,0.35);
-    }
-    .btn-large:hover {
-      background: var(--accent-hover);
-      transform: translateY(-2px);
-    }
-
-    /* ─────────────────────────────────────────
-       FOOTER
-    ───────────────────────────────────────── */
-    footer {
-      background: var(--text-primary);
-      border-top: 1px solid #3D3630;
-      padding: 32px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .footer-wordmark {
-      font-family: var(--serif);
-      font-size: 18px;
-      color: #F0EDE8;
-    }
-    .footer-wordmark span { color: var(--accent); }
-    .footer-links {
-      display: flex;
-      gap: 24px;
-    }
-    .footer-links a {
-      font-size: 13px;
-      color: #7A736D;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: #B5AFA9; }
-    .footer-copy {
-      font-size: 12px;
-      color: #7A736D;
-    }
-
-    /* ─────────────────────────────────────────
-       SCROLL ANIMATION
-    ───────────────────────────────────────── */
-    .reveal {
-      opacity: 0;
-      transform: translateY(28px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ─────────────────────────────────────────
-       RESPONSIVE
-    ───────────────────────────────────────── */
-    @media (max-width: 768px) {
-      .hero-inner,
-      .thesis-inner,
-      .ai-inner,
-      .dict-inner,
-      .about-inner {
-        grid-template-columns: 1fr;
-        gap: 48px;
-      }
-      .hero-visual { order: -1; }
-      .hero-phone { width: 220px; }
-      .features-grid { grid-template-columns: 1fr; }
-      .flow-steps { grid-template-columns: 1fr; }
-      .flow-steps::before { display: none; }
-      .flow-step { padding: 0 0 40px; text-align: left; }
-      .flow-step-num { margin: 0 0 16px; }
-      .flow-chips { justify-content: flex-start; }
-      .thesis-inner { grid-template-columns: 1fr; gap: 24px; }
-      .hero { padding: 100px 0 60px; }
-      footer { flex-direction: column; align-items: flex-start; }
-    }
-  </style>
+  /* reveal on scroll */
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}.draw,.fade,.barrow .fill{animation:none!important;stroke-dashoffset:0!important;opacity:1!important;transform:none!important}}
+</style>
 </head>
 <body>
 
-  <!-- ── NAV ──────────────────────────────────── -->
-  <nav>
-    <div class="nav-wordmark">Cathier<span>.</span></div>
-    <a href="#" class="nav-cta">App Store</a>
-  </nav>
+<!-- ============ TOP BAR ============ -->
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Cathier">
+      <span class="glyph"><svg class="pk" viewBox="0 0 13 9" fill="none"><polyline points="0,7 3,4 6,6 9,1 13,3" stroke="#F2700A" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span class="name">Cathier</span>
+      <span class="ver mono">v1.8</span>
+    </a>
+    <nav class="nav">
+      <a href="#flow">流程</a>
+      <a href="#insights">模式洞察</a>
+      <a href="#dict">觉察词典</a>
+      <a href="#platform">平台</a>
+      <a class="btn btn-primary nav-cta" href="#get">下载</a>
+    </nav>
+  </div>
+</header>
 
-  <!-- ── HERO ─────────────────────────────────── -->
-  <section class="hero">
-    <div class="container">
-      <div class="hero-inner">
-        <div class="hero-text">
-          <div class="hero-kicker">
-            <span class="hero-kicker-dot"></span>
-            情绪感知训练
-          </div>
-          <h1 class="hero-headline">
-            The practice of<br/>knowing what<br/><em>you feel.</em>
-          </h1>
-          <p class="hero-sub">
-            Body scans, 80+ emotion words, AI-assisted reflection. For practitioners who want to go deeper — not casual mood loggers.
-          </p>
-          <div class="hero-actions">
-            <a href="#" class="btn-primary">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-              Download on App Store
-            </a>
-          </div>
-          <p class="hero-lang-note" style="margin-top:16px;">Available in Chinese · English · 日本語</p>
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <!-- LEFT: copy -->
+      <div>
+        <div class="eyebrow">
+          <span class="pill">情绪觉察的<b>精密仪器</b></span>
+          <span class="sep">/</span>
+          <span class="tag">NOT A MOOD TRACKER</span>
+        </div>
+        <h1 class="hero-h">
+          Train what you can<br>finally observe.
+          <span class="zh">看得见，<span class="hl">才训练得了。</span></span>
+        </h1>
+        <p class="hero-sub">
+          在身体里<b>定位</b>那个感受，<b>精确命名</b>那种情绪——80+ 个词、9 大类，
+          然后看着<b>模式</b>从强度曲线里自己浮现。你无法训练你观察不到的东西。
+        </p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#get">开始你的练习 →</a>
+          <a class="btn btn-ghost" href="#flow">查看觉察流程</a>
+        </div>
+        <div class="lang-line">
+          <span>可用语言 ·</span>
+          <span><b>中文</b></span><span><b>English</b></span><span><b>日本語</b></span>
         </div>
 
-        <div class="hero-visual">
-          <div class="hero-orb hero-orb-1"></div>
-          <div class="hero-orb hero-orb-2"></div>
-          <div class="hero-phone">
-            <div class="phone-shell">
-              <div class="phone-screen">
-                <div class="phone-notch"></div>
-                <div class="phone-content">
-                  <div class="phone-greeting">晚上好 <span>— 今天感觉如何？</span></div>
-                  <div class="phone-cta-btn">开始觉察</div>
-                  <div style="height:4px;"></div>
-                  <div class="phone-section-label">今日记录</div>
-                  <div class="phone-card">
-                    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
-                      <div class="phone-card-time">14:23</div>
-                      <div class="phone-intensity">强度 7</div>
-                    </div>
-                    <div class="phone-card-emotions">
-                      <span class="phone-chip">焦虑</span>
-                      <span class="phone-chip">疲惫</span>
-                      <span class="phone-chip sage">平静</span>
-                    </div>
-                    <div class="phone-ai-preview">
-                      你提到的胸口紧绷感，和压力的关联很清晰。这是一种…
-                    </div>
-                  </div>
-                  <div class="phone-section-label">觉察词典</div>
-                  <div style="display:flex;gap:5px;flex-wrap:wrap;">
-                    <span class="phone-chip">😤 愤怒</span>
-                    <span class="phone-chip sage">🌿 平静</span>
-                    <span class="phone-chip">😔 悲伤</span>
-                    <span class="phone-chip">⚡ 激情</span>
-                  </div>
+        <div class="metrics">
+          <div class="m"><div class="v">80<small>+ 词</small></div><div class="k">情绪标注词汇</div></div>
+          <div class="m"><div class="v">9</div><div class="k">情绪类别 · 激情→羞愧</div></div>
+          <div class="m"><div class="v">1–10</div><div class="k">身体强度量程</div></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: HERO INSTRUMENT / CHART -->
+      <div class="instrument reveal" aria-label="情绪强度读数图表">
+        <div class="inst-head">
+          <div class="ttl">
+            <span class="led"></span>
+            <span class="t">强度读数 · Intensity</span>
+            <span class="s mono">JUN 02 – JUN 13</span>
+          </div>
+          <div class="range">
+            <b>7D</b><b class="on">14D</b><b>30D</b>
+          </div>
+        </div>
+        <div class="inst-body">
+          <!-- SVG line chart: x = dates, y = intensity 1..10 -->
+          <svg class="chart-svg" viewBox="0 0 560 300" role="img" aria-label="过去 14 天情绪强度折线图，峰值出现在 6 月 9 日强度 7，时间 14:23">
+            <defs>
+              <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#F2700A" stop-opacity="0.14"/>
+                <stop offset="1" stop-color="#F2700A" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <!-- plot frame  x:[56,536] y:[24,250] -->
+            <!-- horizontal grid + y labels (1..10) -->
+            <g>
+              <!-- y ticks at 1,3,5,7,9 mapped: y = 250 - ((val-1)/9)*226 -->
+              <line class="grid-line" x1="56" y1="250" x2="536" y2="250"/>
+              <line class="grid-line" x1="56" y1="199.8" x2="536" y2="199.8"/>
+              <line class="grid-line" x1="56" y1="149.6" x2="536" y2="149.6"/>
+              <line class="grid-line" x1="56" y1="99.3" x2="536" y2="99.3"/>
+              <line class="grid-line" x1="56" y1="49.1" x2="536" y2="49.1"/>
+              <text class="axis-txt" x="48" y="253" text-anchor="end">1</text>
+              <text class="axis-txt" x="48" y="203" text-anchor="end">3</text>
+              <text class="axis-txt" x="48" y="153" text-anchor="end">5</text>
+              <text class="axis-txt" x="48" y="102" text-anchor="end">7</text>
+              <text class="axis-txt" x="48" y="52" text-anchor="end">9</text>
+              <!-- y axis caption -->
+              <text class="axis-cap" x="18" y="150" text-anchor="middle" transform="rotate(-90 18 150)">强度 · INTENSITY</text>
+              <!-- baseline axis -->
+              <line class="grid-line base" x1="56" y1="250" x2="56" y2="24"/>
+            </g>
+
+            <!-- x labels (dates) -->
+            <g>
+              <!-- 8 points across 56..536 step ~68.57 -->
+              <text class="axis-txt" x="56"  y="268" text-anchor="middle">02</text>
+              <text class="axis-txt" x="124" y="268" text-anchor="middle">04</text>
+              <text class="axis-txt" x="193" y="268" text-anchor="middle">06</text>
+              <text class="axis-txt" x="262" y="268" text-anchor="middle">08</text>
+              <text class="axis-txt" x="330" y="268" text-anchor="middle">09</text>
+              <text class="axis-txt" x="399" y="268" text-anchor="middle">11</text>
+              <text class="axis-txt" x="467" y="268" text-anchor="middle">12</text>
+              <text class="axis-txt" x="536" y="268" text-anchor="middle">13</text>
+              <text class="axis-cap" x="296" y="290" text-anchor="middle">日期 · JUN 2026</text>
+            </g>
+
+            <!-- SAGE secondary series (baseline / 平均) -->
+            <polyline class="series-sage fade d1"
+              points="56,175 124,168 193,178 262,160 330,150 399,158 467,150 536,145"/>
+
+            <!-- area under orange -->
+            <path class="area-o fade d2"
+              d="M56,170 L124,150 L193,182 L262,130 L330,99.3 L399,140 L467,120 L536,110 L536,250 L56,250 Z"/>
+
+            <!-- ORANGE primary series: intensity values 4,5,3.5,6,7,5,6.2,6.6 -->
+            <!-- mapped y: val4=170 val5=149.6 val3.4=180 val6=124.5 val7=99.3 val5=149.6 val6.2=120 val6.6=110 -->
+            <polyline id="line-o" class="series-orange draw"
+              points="56,170 124,150 193,182 262,124.5 330,99.3 399,149.6 467,120 536,110"/>
+
+            <!-- data dots -->
+            <g class="fade d1">
+              <circle class="dot-o" cx="56"  cy="170"   r="3.5"/>
+              <circle class="dot-o" cx="124" cy="150"   r="3.5"/>
+              <circle class="dot-o" cx="193" cy="182"   r="3.5"/>
+              <circle class="dot-o" cx="262" cy="124.5" r="3.5"/>
+              <circle class="dot-o" cx="399" cy="149.6" r="3.5"/>
+              <circle class="dot-o" cx="467" cy="120"   r="3.5"/>
+              <circle class="dot-o" cx="536" cy="110"   r="3.5"/>
+            </g>
+
+            <!-- ANNOTATED PEAK POINT: 强度 7 · 14:23 at x=330 y=99.3 -->
+            <g class="fade d2">
+              <line x1="330" y1="99.3" x2="330" y2="250" stroke="#F2700A" stroke-width="1" stroke-dasharray="2 3" opacity=".55"/>
+              <circle cx="330" cy="99.3" r="6" fill="#F2700A"/>
+              <circle cx="330" cy="99.3" r="11" fill="none" stroke="#F2700A" stroke-opacity=".3"/>
+              <!-- callout box -->
+              <g transform="translate(344,40)">
+                <rect x="0" y="0" width="116" height="42" rx="7" fill="#FFFFFF" stroke="#D2D2CE"/>
+                <text class="num" x="11" y="19" font-family="IBM Plex Mono" font-size="14" font-weight="600" fill="#161614">强度 7</text>
+                <text x="58" y="19" font-family="IBM Plex Mono" font-size="11" fill="#6B6B66">/ 10</text>
+                <text x="11" y="33" font-family="IBM Plex Mono" font-size="10.5" fill="#F2700A">14:23 · 焦灼</text>
+              </g>
+              <line x1="330" y1="88" x2="344" y2="61" stroke="#D2D2CE" stroke-width="1"/>
+            </g>
+          </svg>
+        </div>
+        <div class="inst-legend">
+          <span class="lg"><span class="sw"></span>当日峰值强度</span>
+          <span class="lg sage"><span class="sw"></span>7 日均线</span>
+          <span class="meta">采样 14 次 · 标注点 JUN 09</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ CHECK-IN FLOW / PIPELINE ============ -->
+<section class="sec-pad" id="flow">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <div class="sec-title">觉察流程<br>一条带刻度的三段管线。</div>
+        <p class="sec-lead">每次 check-in，三步走完。先定位，再命名，最后看意义——像调试一台仪器，而不是写日记。</p>
+      </div>
+      <span class="flow-meta mono">THE CHECK-IN FLOW · 3–5 MIN / STEP</span>
+    </div>
+
+    <div class="pipe reveal">
+      <!-- STEP 01 -->
+      <div class="step">
+        <div class="arrow"></div>
+        <div class="stp-top">
+          <span class="stp-no">STEP <b>01</b></span>
+          <span class="stp-time mono">~3–5 min</span>
+        </div>
+        <h3>身体扫描<span class="en">Body Scan</span></h3>
+        <div class="q">“你在哪里感觉到它？”<span class="em mono">Where do you feel it?</span></div>
+        <p>先把感受落到身体的具体坐标，再谈情绪。定位先于命名。</p>
+        <div class="chips">
+          <span class="chip">紧绷 tightness</span>
+          <span class="chip">压迫 pressure</span>
+          <span class="chip sig">发热 warmth</span>
+          <span class="chip">刺麻 tingling</span>
+        </div>
+        <div class="iscale">
+          <div class="lab mono"><span>强度 INTENSITY</span><span>1 — 10</span></div>
+          <div class="bar"><span class="mk"></span></div>
+        </div>
+      </div>
+
+      <!-- STEP 02 -->
+      <div class="step">
+        <div class="arrow"></div>
+        <div class="stp-top">
+          <span class="stp-no">STEP <b>02</b></span>
+          <span class="stp-time mono">~3–5 min</span>
+        </div>
+        <h3>情绪标注<span class="en">Emotion Labeling</span></h3>
+        <div class="q">“你感觉到的是什么？”<span class="em mono">What do you feel?</span></div>
+        <p>80+ 个词，9 大类，从「激情」一路排到「羞愧」。长按任意词，读它在此刻语境下的精确释义。</p>
+        <div class="chips">
+          <span class="chip sig">激情</span>
+          <span class="chip">渴望</span>
+          <span class="chip">焦灼</span>
+          <span class="chip">怅然</span>
+          <span class="chip">如释重负</span>
+          <span class="chip">羞愧</span>
+        </div>
+        <p class="mono" style="font-size:11px;margin-top:14px;color:var(--sub)">长按 = 语境内释义 · LONG-PRESS FOR DESCRIPTION</p>
+      </div>
+
+      <!-- STEP 03 -->
+      <div class="step reflect">
+        <div class="stp-top">
+          <span class="stp-no">STEP <b>03</b></span>
+          <span class="stp-time mono">即时</span>
+        </div>
+        <h3>AI 洞察<span class="en">AI Reflection</span></h3>
+        <div class="q">“它意味着什么？”<span class="em mono">What does it mean?</span></div>
+        <div class="reflect-note">
+          <p>“连续三个工作日的傍晚，胸口的紧绷都在会议结束后升到 7。身体先于你知道——这不是疲惫，是没说出口的话。”</p>
+          <span class="by">CATHIER · 洞察笔记</span>
+        </div>
+        <div class="not-chatbot mono"><span class="x">✕</span> 不是聊天机器人。是一段把身体信号、情绪与模式连起来的笔记。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ PATTERN INSIGHTS ============ -->
+<section class="sec-pad" id="insights">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="sec-title">模式，会自己浮现。</span>
+        <p class="sec-lead">完成 7 次 check-in 之后，AI 开始在数据里指认反复出现的模式——用大白话，不用术语。</p>
+      </div>
+      <span class="idx mono">SEC <b>02</b> / PATTERN INSIGHTS</span>
+    </div>
+
+    <div class="panel reveal">
+      <div class="panel-grid">
+        <div class="panel-l">
+          <span class="badge mono">● 7 次 check-in 后解锁</span>
+          <h3>压力触发点、成长边界、<br>身体信号——被一一指认。</h3>
+          <p>不是评分，不是诊断。是把你自己都没注意到的重复，摆到台面上，让下一次觉察更准。</p>
+
+          <div class="insight-list">
+            <div class="insight">
+              <span class="ic mono">触发点</span>
+              <span class="tx"><b>会议后的傍晚</b> <span>反复出现胸口紧绷</span></span>
+              <span class="freq mono">×5 <small>/14</small></span>
+            </div>
+            <div class="insight">
+              <span class="ic mono">成长边界</span>
+              <span class="tx"><b>「焦灼」与「期待」</b> <span>常被同时勾选</span></span>
+              <span class="freq mono">×4 <small>/14</small></span>
+            </div>
+            <div class="insight">
+              <span class="ic mono">身体信号</span>
+              <span class="tx"><b>肩颈紧绷</b> <span>先于情绪被命名出现</span></span>
+              <span class="freq mono">×6 <small>/14</small></span>
+            </div>
+            <div class="insight">
+              <span class="ic mono">时间</span>
+              <span class="tx"><b>强度峰值</b> <span>集中在 14:00–15:00</span></span>
+              <span class="freq mono">×3 <small>/14</small></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-r">
+          <div class="rhead">
+            <span class="t">情绪频次 · 14 日</span>
+            <span class="n mono">n=14</span>
+          </div>
+          <div class="bars">
+            <div class="barrow">
+              <div class="bl"><span class="name"><span class="e">🔥</span>焦灼 Anxious</span><span class="val">38%</span></div>
+              <div class="track"><div class="fill" style="width:38%;animation-delay:.1s"></div></div>
+            </div>
+            <div class="barrow">
+              <div class="bl"><span class="name"><span class="e">✦</span>期待 Anticipation</span><span class="val">29%</span></div>
+              <div class="track"><div class="fill" style="width:29%;animation-delay:.2s"></div></div>
+            </div>
+            <div class="barrow sage">
+              <div class="bl"><span class="name"><span class="e">◇</span>如释重负 Relief</span><span class="val">19%</span></div>
+              <div class="track"><div class="fill" style="width:19%;animation-delay:.3s"></div></div>
+            </div>
+            <div class="barrow sage">
+              <div class="bl"><span class="name"><span class="e">·</span>怅然 Wistful</span><span class="val">14%</span></div>
+              <div class="track"><div class="fill" style="width:14%;animation-delay:.4s"></div></div>
+            </div>
+          </div>
+          <div class="rhead" style="margin-top:28px">
+            <span class="t">身体部位 · 高频</span>
+            <span class="n mono">TOP 3</span>
+          </div>
+          <div class="bars">
+            <div class="barrow">
+              <div class="bl"><span class="name">胸口 Chest</span><span class="val">×9</span></div>
+              <div class="track"><div class="fill" style="width:64%;animation-delay:.2s"></div></div>
+            </div>
+            <div class="barrow">
+              <div class="bl"><span class="name">肩颈 Shoulders</span><span class="val">×6</span></div>
+              <div class="track"><div class="fill" style="width:43%;animation-delay:.3s"></div></div>
+            </div>
+            <div class="barrow">
+              <div class="bl"><span class="name">腹部 Stomach</span><span class="val">×4</span></div>
+              <div class="track"><div class="fill" style="width:29%;animation-delay:.4s"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THESIS ============ -->
+<section class="thesis">
+  <div class="wrap">
+    <div class="thesis-grid reveal">
+      <span class="lab">THE THESIS</span>
+      <div>
+        <p class="quote">为<span class="hl">练习者</span>而造，<span class="mut">不是为需要被修好的人。</span><br>
+        Cathier 假设你已经在场——它只负责把刻度给你，让你练得更细。</p>
+        <div class="sig mono">FOR PRACTITIONERS WHO TRAIN AWARENESS — NOT FRAGILE USERS.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AWARENESS DICTIONARY ============ -->
+<section class="sec-pad" id="dict">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div>
+        <span class="sec-title">觉察词典</span>
+        <p class="sec-lead">一张可索引的规格表：每个词、每种感受、每个部位，都有精确的坐标。Awareness Dictionary.</p>
+      </div>
+      <span class="idx mono">SEC <b>03</b> / SPEC SHEET</span>
+    </div>
+
+    <div class="reveal">
+      <div class="dict-stat">
+        <div class="d"><div class="v num">79<span class="u">情绪</span></div><div class="k">emotions · 跨 9 类索引</div></div>
+        <div class="d"><div class="v num">65<span class="u">感受</span></div><div class="k">sensations · 身体质地</div></div>
+        <div class="d"><div class="v num">24<span class="u">部位</span></div><div class="k">body areas · 定位坐标</div></div>
+      </div>
+
+      <div class="spec">
+        <div class="srow head">
+          <div>类别 CATEGORY</div>
+          <div>样本词 SAMPLE ENTRIES</div>
+          <div style="text-align:right">计数</div>
+        </div>
+        <div class="srow">
+          <div class="cat"><span class="zh">激情</span><span class="en mono">PASSION</span></div>
+          <div class="words"><span class="w hot">激情</span><span class="w">渴望</span><span class="w">心动</span><span class="w">炽热</span><span class="w">迷恋</span></div>
+          <div class="count mono"><b>11</b>/79</div>
+        </div>
+        <div class="srow">
+          <div class="cat"><span class="zh">喜悦</span><span class="en mono">JOY</span></div>
+          <div class="words"><span class="w">雀跃</span><span class="w">满足</span><span class="w">畅快</span><span class="w">感激</span><span class="w">如释重负</span></div>
+          <div class="count mono"><b>10</b>/79</div>
+        </div>
+        <div class="srow">
+          <div class="cat"><span class="zh">愤怒</span><span class="en mono">ANGER</span></div>
+          <div class="words"><span class="w">恼火</span><span class="w hot">焦灼</span><span class="w">不甘</span><span class="w">愤懑</span><span class="w">受挫</span></div>
+          <div class="count mono"><b>9</b>/79</div>
+        </div>
+        <div class="srow">
+          <div class="cat"><span class="zh">恐惧</span><span class="en mono">FEAR</span></div>
+          <div class="words"><span class="w">忐忑</span><span class="w">警觉</span><span class="w">心慌</span><span class="w">退缩</span><span class="w">不安</span></div>
+          <div class="count mono"><b>9</b>/79</div>
+        </div>
+        <div class="srow">
+          <div class="cat"><span class="zh">悲伤</span><span class="en mono">SADNESS</span></div>
+          <div class="words"><span class="w">怅然</span><span class="w">失落</span><span class="w">孤寂</span><span class="w">沉重</span><span class="w">想念</span></div>
+          <div class="count mono"><b>9</b>/79</div>
+        </div>
+        <div class="srow">
+          <div class="cat"><span class="zh">羞愧</span><span class="en mono">SHAME</span></div>
+          <div class="words"><span class="w hot">羞愧</span><span class="w">窘迫</span><span class="w">自责</span><span class="w">渺小</span><span class="w">暴露</span></div>
+          <div class="count mono"><b>8</b>/79</div>
+        </div>
+      </div>
+
+      <div class="dict-foot">
+        <span class="mk">FOOTNOTE</span>
+        不是一本词汇表。是一个陪你练习的工具。
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ PHONE MOCKUP + SHARING ============ -->
+<section class="sec-pad">
+  <div class="wrap">
+    <div class="split">
+      <!-- PHONE -->
+      <div class="phone-stage reveal">
+        <div class="phone">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="ph-status mono">
+              <span>21:08</span>
+              <span class="sig-i"><i></i><i></i><i></i><i></i><span style="margin-left:6px;font-size:10px">5G</span></span>
+            </div>
+            <div class="ph-body">
+              <div class="ph-greet">晚上好 · 王</div>
+              <div class="ph-q">今天感觉如何？</div>
+
+              <div class="ph-card">
+                <div class="ch-top">
+                  <span class="lab mono">本次读数 · INTENSITY</span>
+                  <span class="stamp mono">14:23</span>
+                </div>
+                <!-- mini chart -->
+                <svg class="ph-mini" viewBox="0 0 240 70" aria-hidden="true">
+                  <line x1="0" y1="60" x2="240" y2="60" stroke="#E4E4E1"/>
+                  <line x1="0" y1="35" x2="240" y2="35" stroke="#E4E4E1" stroke-dasharray="2 3"/>
+                  <polyline points="6,48 44,40 82,52 120,30 158,18 196,34 234,24" fill="none" stroke="#F2700A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <circle cx="158" cy="18" r="4.5" fill="#F2700A"/>
+                  <circle cx="158" cy="18" r="8" fill="none" stroke="#F2700A" stroke-opacity=".3"/>
+                </svg>
+                <div class="ph-readout">
+                  <span class="big mono">7</span><span class="of mono">/ 10</span>
+                  <span class="tg mono">胸口 · 紧绷</span>
+                </div>
+                <div class="ph-tags">
+                  <span class="t mono on">焦灼</span>
+                  <span class="t mono">期待</span>
+                  <span class="t mono">+2</span>
                 </div>
               </div>
+
+              <div class="ph-cta">开始觉察 →</div>
             </div>
+            <div class="ph-home"></div>
           </div>
         </div>
+      </div>
+
+      <!-- SHARING -->
+      <div class="reveal">
+        <div class="sec-head" style="margin-bottom:18px">
+          <div>
+            <span class="sec-title">和朋友分享，<br>刻度由你定。</span>
+            <p class="sec-lead">完全可选。要分享多细，你说了算——从只露类别，到完整画面。</p>
+          </div>
+        </div>
+        <div class="share-list">
+          <div class="share-row">
+            <span class="lvl mono">LV <b>1</b></span>
+            <span class="info"><b>仅类别</b><span>对方只看到「愤怒类」，看不到具体词</span></span>
+            <span class="toggle"></span>
+          </div>
+          <div class="share-row on">
+            <span class="lvl mono">LV <b>2</b></span>
+            <span class="info"><b>情绪词</b><span>露出标注的情绪词，隐去身体与强度</span></span>
+            <span class="toggle"></span>
+          </div>
+          <div class="share-row">
+            <span class="lvl mono">LV <b>3</b></span>
+            <span class="info"><b>完整画面</b><span>身体部位、感受、强度、情绪，全部可见</span></span>
+            <span class="toggle"></span>
+          </div>
+        </div>
+        <p class="opt-note mono">OPTIONAL · 默认不分享，随时可关。</p>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── THESIS BAND ───────────────────────────── -->
-  <section class="thesis-band">
-    <div class="container">
-      <div class="thesis-inner">
-        <div class="thesis-label">Design Thesis</div>
-        <div class="thesis-copy">
-          Every wellness app uses pastels and rounded "baby" forms because they assume <strong>fragile users</strong>. Cathier's users are <span class="accent">practitioners</span>. Design for active practice — not reassurance.
-        </div>
-      </div>
+<hr class="rule">
+
+<!-- ============ PLATFORM ============ -->
+<section class="sec-pad" id="platform">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div><span class="sec-title">工程规格。</span></div>
+      <span class="idx mono">SEC <b>04</b> / PLATFORM</span>
     </div>
-  </section>
-
-  <!-- ── FEATURES ──────────────────────────────── -->
-  <section class="features">
-    <div class="container">
-      <div class="features-header reveal">
-        <div class="section-label">Core Practice</div>
-        <h2 class="features-headline">Everything you need to go deeper.</h2>
-        <p class="features-sub">Built for daily practice. Not a mood tracker. Not a journaling app. A training tool for emotional awareness.</p>
-      </div>
-
-      <div class="features-grid">
-        <div class="feature-cell">
-          <div class="feature-icon orange">🫁</div>
-          <div class="feature-title">Body Scan</div>
-          <div class="feature-desc">Select body areas and their sensations — tightness, pressure, warmth, tingling. Ground your emotion in the physical before naming it.</div>
-          <span class="feature-tag">Step 1</span>
-        </div>
-        <div class="feature-cell">
-          <div class="feature-icon orange">🏷️</div>
-          <div class="feature-title">Emotion Labeling</div>
-          <div class="feature-desc">80+ emotion words across 9 categories. From激情 to 羞愧 — a vocabulary that meets the full range of human experience.</div>
-          <span class="feature-tag">Step 2</span>
-        </div>
-        <div class="feature-cell">
-          <div class="feature-icon orange">✦</div>
-          <div class="feature-title">AI Reflection</div>
-          <div class="feature-desc">Not a chatbot. A thoughtful note — set in Instrument Serif — that connects your body signals, emotions, and patterns. Like reading your own journal back.</div>
-          <span class="feature-tag">Step 3</span>
-        </div>
-        <div class="feature-cell">
-          <div class="feature-icon sage">📖</div>
-          <div class="feature-title">覚察词典</div>
-          <div class="feature-desc">A field guide to 79 emotions, 65 sensations, and 24 body areas. Rich descriptions, cultural notes, embodiment guides — not definitions, but invitations.</div>
-          <span class="feature-tag sage">Dictionary</span>
-        </div>
-        <div class="feature-cell">
-          <div class="feature-icon sage">📊</div>
-          <div class="feature-title">Pattern Insights</div>
-          <div class="feature-desc">After 7 check-ins, AI surfaces recurring patterns across your data — stress triggers, growth edges, body signals — narrated in plain language.</div>
-          <span class="feature-tag sage">AI</span>
-        </div>
-        <div class="feature-cell">
-          <div class="feature-icon sage">👤</div>
-          <div class="feature-title">Friend Sharing</div>
-          <div class="feature-desc">Optional. Share a check-in with trusted friends — at the level of detail you choose: category only, emotions, or the full picture.</div>
-          <span class="feature-tag sage">Social</span>
-        </div>
-      </div>
+    <div class="plat reveal">
+      <div class="p"><div class="k">FRAMEWORK</div><div class="v">Native SwiftUI<span class="s mono">原生，非跨端封装</span></div></div>
+      <div class="p"><div class="k">OS TARGET</div><div class="v">iOS 26<span class="s mono">最新系统能力</span></div></div>
+      <div class="p"><div class="k">DATA VIZ</div><div class="v">Swift Charts<span class="s mono">强度曲线渲染引擎</span></div></div>
+      <div class="p"><div class="k">PRIVACY</div><div class="v">本地优先<span class="s mono">默认不外传</span></div></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- ── FLOW STEPS ────────────────────────────── -->
-  <section class="flow">
-    <div class="container">
-      <div class="flow-header reveal">
-        <div class="section-label">The Check-in Flow</div>
-        <h2 class="flow-headline">A quiet ritual. Three focused steps.</h2>
-        <p class="flow-sub">Each check-in takes 3–5 minutes. The flow is designed to feel like turning pages, not tapping a feed.</p>
-      </div>
+</main>
 
-      <div class="flow-steps">
-        <div class="flow-step reveal">
-          <div class="flow-step-num">01</div>
-          <div class="flow-step-title-zh">身体扫描</div>
-          <div class="flow-step-title">Where do you feel it?</div>
-          <div class="flow-step-desc">Choose body areas. Then choose their sensations. Rate intensity 1–10. Before you name the emotion — you locate it.</div>
-          <div class="flow-chips">
-            <span class="flow-chip">头部</span>
-            <span class="flow-chip">胸口</span>
-            <span class="flow-chip">肩膀</span>
-            <span class="flow-chip neutral">紧绷</span>
-            <span class="flow-chip neutral">压迫</span>
-          </div>
-        </div>
-        <div class="flow-step reveal" style="transition-delay:0.15s;">
-          <div class="flow-step-num">02</div>
-          <div class="flow-step-title-zh">情绪标注</div>
-          <div class="flow-step-title">What do you feel?</div>
-          <div class="flow-step-desc">Browse 9 categories, 80+ words. Long-press any word for an in-context description. Pick what fits — or define your own.</div>
-          <div class="flow-chips">
-            <span class="flow-chip">焦虑</span>
-            <span class="flow-chip sage">好奇</span>
-            <span class="flow-chip">疲惫</span>
-            <span class="flow-chip sage">平静</span>
-          </div>
-        </div>
-        <div class="flow-step reveal" style="transition-delay:0.30s;">
-          <div class="flow-step-num">03</div>
-          <div class="flow-step-title-zh">AI 洞察</div>
-          <div class="flow-step-title">What does it mean?</div>
-          <div class="flow-step-desc">Cathier AI reads your body signals, emotions, and recent patterns — then writes a thoughtful reflection. In Instrument Serif, because it should feel like reading.</div>
-          <div class="flow-chips">
-            <span class="flow-chip">Pattern links</span>
-            <span class="flow-chip neutral">Micro-exercise</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── AI CARD DEMO ───────────────────────────── -->
-  <section class="ai-section">
-    <div class="container">
-      <div class="ai-inner">
-        <div class="ai-text reveal">
-          <div class="section-label">AI Reflection</div>
-          <h2 class="ai-headline">Not therapeutic reassurance — something to go deeper with.</h2>
-          <p class="ai-body">The AI reflection card is designed to feel like reading a <strong>thoughtful note from a careful observer</strong>, not a chatbot response. It connects your physical signals to the named emotions, surfaces patterns, and offers a micro-exercise when relevant.</p>
-          <p class="ai-body">Set in Instrument Serif. Because reflection should feel like journal, not interface.</p>
-        </div>
-
-        <div class="ai-card reveal" style="transition-delay:0.15s;">
-          <div class="ai-card-header">
-            <div class="ai-card-dot"></div>
-            <div class="ai-card-label">Cathier AI</div>
-          </div>
-          <div class="ai-card-body">
-            你选择了胸口和肩膀——两个最常承载<em>压力</em>的区域。你感到的紧绷和压迫，往往先于意识到<em>焦虑</em>本身到来。身体知道得更早。<br/><br/>
-            这次你也标注了<em>好奇</em>。这个并置值得注意：焦虑与好奇共存，是一种活跃的、向外探索的状态——不是退缩，而是在边界上。
-          </div>
-          <div class="ai-card-footer">
-            <span class="ai-card-action">保存</span>
-            <span class="ai-card-action muted">分享</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── DICTIONARY ─────────────────────────────── -->
-  <section class="dict-section">
-    <div class="container">
-      <div class="dict-inner">
-        <div class="dict-left reveal">
-          <div class="section-label">觉察词典</div>
-          <h2 class="dict-headline">A field guide to your inner life.</h2>
-          <p class="dict-body">Not a glossary. A companion for practice. Each entry carries description, embodiment, origin, imagery, developmental context, and literary reference — written to be read slowly.</p>
-          <div class="dict-stats">
-            <div>
-              <div class="dict-stat-num">79</div>
-              <div class="dict-stat-label">Emotions</div>
-            </div>
-            <div>
-              <div class="dict-stat-num">65</div>
-              <div class="dict-stat-label">Sensations</div>
-            </div>
-            <div>
-              <div class="dict-stat-num">24</div>
-              <div class="dict-stat-label">Body areas</div>
-            </div>
-          </div>
-        </div>
-        <div class="dict-cloud reveal" style="transition-delay:0.15s;">
-          <span class="dict-tag c-impassioned">⚡ 激情</span>
-          <span class="dict-tag c-sad">💧 悲伤</span>
-          <span class="dict-tag c-happy">☀️ 快乐</span>
-          <span class="dict-tag c-fear">👁 恐惧</span>
-          <span class="dict-tag c-calm">🍃 平静</span>
-          <span class="dict-tag c-anger">🔥 愤怒</span>
-          <span class="dict-tag c-love">🤍 爱与关怀</span>
-          <span class="dict-tag c-surprise">✨ 惊讶</span>
-          <span class="dict-tag c-shame">🌑 羞愧</span>
-          <span class="dict-tag c-sad">🌧 失落</span>
-          <span class="dict-tag c-impassioned">💥 兴奋</span>
-          <span class="dict-tag c-calm">🌊 宁静</span>
-          <span class="dict-tag c-fear">😶 麻木</span>
-          <span class="dict-tag c-happy">🌻 感激</span>
-          <span class="dict-tag c-love">💛 温柔</span>
-          <span class="dict-tag c-anger">😤 烦躁</span>
-          <span class="dict-tag c-shame">😶‍🌫️ 尴尬</span>
-          <span class="dict-tag c-surprise">🎯 好奇</span>
-          <span class="dict-tag c-sad">😔 疲惫</span>
-          <span class="dict-tag c-calm">🌿 满足</span>
-          <span class="dict-tag c-fear">🌀 焦虑</span>
-          <span class="dict-tag c-happy">🌈 雀跃</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── QUOTE ──────────────────────────────────── -->
-  <section class="quote-band">
-    <div class="container">
-      <p class="quote-text reveal">
-        "The name 情绪感知训练 says it clearly. This is training — not comfort. You come back not because it feels good, but because it helps you see."
-      </p>
-      <p class="quote-source reveal" style="transition-delay:0.15s;">Design principle — Cathier v1.8</p>
-    </div>
-  </section>
-
-  <!-- ── ABOUT / LANGUAGES ─────────────────────── -->
-  <section class="about-section">
-    <div class="container">
-      <div class="about-inner">
-        <div class="about-text reveal">
-          <div class="section-label">Platform</div>
-          <h2 class="about-headline">Native iOS. Built for deep focus.</h2>
-          <p class="about-body">Cathier is a native SwiftUI app — crafted for iOS 26. Warm off-white backgrounds (#F7F5F1), orange accents used sparingly, Instrument Serif for every reflection moment. It feels like a quality Japanese notebook, not a wellness product.</p>
-          <div class="lang-pills">
-            <div class="lang-pill"><span class="flag">🇨🇳</span> 中文</div>
-            <div class="lang-pill"><span class="flag">🇺🇸</span> English</div>
-            <div class="lang-pill"><span class="flag">🇯🇵</span> 日本語</div>
-          </div>
-          <a href="#" class="btn-primary" style="display:inline-flex;">
-            <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-            Download on App Store
-          </a>
-        </div>
-
-        <div class="about-icon-side reveal" style="transition-delay:0.15s;">
-          <img src="app-icon.png" alt="Cathier app icon" class="app-icon-large" />
-          <div class="app-meta">
-            <div class="app-meta-name">Cathier</div>
-            <div class="app-meta-sub">情绪感知训练</div>
-            <div class="app-meta-version">v1.8 · iOS 26</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ── CTA FOOTER ─────────────────────────────── -->
-  <section class="cta-footer">
-    <div class="cta-footer-orb"></div>
-    <div class="container cta-footer-content">
-      <h2 class="cta-footer-headline">Start your practice today.</h2>
-      <p class="cta-footer-sub">Free to download. No subscription required to begin.</p>
-      <a href="#" class="btn-large">
-        <svg viewBox="0 0 24 24" fill="currentColor" style="width:20px;height:20px;"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-        Download on the App Store
+<!-- ============ FOOTER CTA ============ -->
+<section class="final" id="get">
+  <div class="wrap">
+    <div class="ftag reveal">START YOUR PRACTICE TODAY</div>
+    <h2 class="reveal">今天，开始你的练习。
+      <span class="zh">看得见，才训练得了。</span></h2>
+    <p class="fsub reveal">免费下载，<b>开始不需要任何订阅</b>。一台为情绪觉察而造的精密仪器，装进口袋。</p>
+    <div class="fcta reveal">
+      <a class="appstore" href="#" aria-label="App Store 下载">
+        <svg class="logo" viewBox="0 0 24 24" fill="#0E0E0C"><path d="M16.5 1.6c.1 1-.3 2-1 2.8-.7.8-1.8 1.4-2.8 1.3-.1-1 .4-2 1-2.7.8-.9 2-1.4 2.8-1.4zM19.9 17c-.5 1.2-.8 1.7-1.4 2.7-.9 1.4-2.2 3.1-3.7 3.1-1.4 0-1.7-.9-3.6-.9s-2.3.9-3.6.9c-1.5 0-2.7-1.6-3.6-3C1.5 16.4 1.2 12 2.7 9.6c1-1.7 2.7-2.7 4.2-2.7 1.6 0 2.6 1 3.9 1 1.3 0 2-1 3.9-1 1.4 0 2.8.8 3.8 2.1-3.3 1.8-2.8 6.6 1.4 8z"/></svg>
+        <span class="tx"><small>Download on the</small><b>App Store</b></span>
       </a>
+      <span class="free-note mono"><b>Free to download.</b> No subscription required to begin.</span>
     </div>
-  </section>
-
-  <!-- ── FOOTER ─────────────────────────────────── -->
-  <footer>
-    <div class="footer-wordmark">Cathier<span>.</span></div>
-    <div class="footer-links">
-      <a href="/privacy">Privacy Policy</a>
-      <a href="/terms">Terms of Service</a>
+    <div class="verline reveal">
+      <b>v1.8</b><b>iOS 26</b><b>SwiftUI</b><b>Swift Charts</b><b>中文 · EN · 日本語</b>
     </div>
-    <div class="footer-copy">© 2026 Cathier. All rights reserved.</div>
-  </footer>
+  </div>
 
-  <script>
-    // Scroll-driven reveal
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  <div class="fbar">
+    <div class="wrap">
+      <div class="left">
+        <span class="b">Cathier</span>
+        <span class="c mono">情绪感知训练 · v1.8 · iOS 26</span>
+      </div>
+      <div class="links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <span class="c mono" style="color:#8a8a84">© 2026 Cathier</span>
+      </div>
+    </div>
+  </div>
+</section>
 
-    document.querySelectorAll('.reveal, .feature-cell').forEach(el => {
-      observer.observe(el);
-    });
+<script>
+  // Reveal on scroll
+  (function(){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+    },{threshold:.12,rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
 
-    // Stagger feature cells already in view on load
-    window.addEventListener('load', () => {
-      document.querySelectorAll('.reveal, .feature-cell').forEach(el => {
-        const rect = el.getBoundingClientRect();
-        if (rect.top < window.innerHeight) {
-          el.classList.add('visible');
-        }
-      });
-    });
-  </script>
-
+    // set draw length for hero line so it animates regardless of length
+    var line = document.getElementById('line-o');
+    if(line){ try{ var len = line.getTotalLength(); line.style.setProperty('--len', len); }catch(e){} }
+  })();
+</script>
 </body>
 </html>
