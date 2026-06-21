@@ -25,7 +25,7 @@ jobs:
         with:
           fetch-depth: 0          # full history so fastlane can read commit log
           fetch-tags: true
-          token: ${{ secrets.FEEDBACK_PAT }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_26.2.app
