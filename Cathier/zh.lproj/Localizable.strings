@@ -177,6 +177,10 @@
 "about.copyright_label" = "版权所有";
 "about.testflight_title" = "加入 TestFlight 测试";
 "about.testflight_subtitle" = "抢先体验新功能";
+"about.export_section" = "数据导出";
+"about.export_title" = "下载我的数据";
+"about.export_subtitle" = "JSON + HTML 格式，打包为 ZIP";
+"about.export_preparing" = "正在生成数据包…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "今日心情与收获";

@@ -175,6 +175,10 @@
 "about.privacy_title" = "La vie privée d'abord";
 "about.privacy_detail" = "Vos données restent sur l'appareil. Le retour IA est traité via votre propre clé API, jamais via des serveurs tiers.";
 "about.copyright_label" = "Copyright";
+"about.export_section" = "Mes données";
+"about.export_title" = "Télécharger mes données";
+"about.export_subtitle" = "JSON + HTML dans un fichier ZIP";
+"about.export_preparing" = "Préparation de vos données…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Journal d'aujourd'hui";

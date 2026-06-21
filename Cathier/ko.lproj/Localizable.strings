@@ -175,6 +175,10 @@
 "about.privacy_title" = "개인 정보 보호 우선";
 "about.privacy_detail" = "데이터는 기기에 저장됩니다. AI 피드백은 자신의 API 키를 통해 처리되며, 제3자 서버를 거치지 않습니다.";
 "about.copyright_label" = "저작권";
+"about.export_section" = "내 데이터";
+"about.export_title" = "내 데이터 다운로드";
+"about.export_subtitle" = "JSON + HTML, ZIP 파일로 묶음";
+"about.export_preparing" = "데이터 준비 중…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "오늘의 일기";

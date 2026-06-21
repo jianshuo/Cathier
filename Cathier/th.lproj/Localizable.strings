@@ -175,6 +175,10 @@
 "about.privacy_title" = "ความเป็นส่วนตัวก่อน";
 "about.privacy_detail" = "ข้อมูลของคุณอยู่ในเครื่อง ข้อเสนอแนะ AI ประมวลผลผ่าน API Key ของคุณเอง ไม่ผ่านเซิร์ฟเวอร์ของบุคคลที่สาม";
 "about.copyright_label" = "ลิขสิทธิ์";
+"about.export_section" = "ข้อมูลของฉัน";
+"about.export_title" = "ดาวน์โหลดข้อมูลของฉัน";
+"about.export_subtitle" = "JSON + HTML ในไฟล์ ZIP";
+"about.export_preparing" = "กำลังเตรียมข้อมูล…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "บันทึกวันนี้";

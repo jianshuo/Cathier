@@ -175,6 +175,10 @@
 "about.privacy_title" = "Quyền riêng tư là trên hết";
 "about.privacy_detail" = "Dữ liệu của bạn ở lại trên thiết bị. Phản hồi AI được xử lý qua API Key của bạn, không qua máy chủ của bên thứ ba.";
 "about.copyright_label" = "Bản quyền";
+"about.export_section" = "Dữ liệu của tôi";
+"about.export_title" = "Tải xuống dữ liệu của tôi";
+"about.export_subtitle" = "JSON + HTML, đóng gói ZIP";
+"about.export_preparing" = "Đang chuẩn bị dữ liệu…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Nhật ký hôm nay";

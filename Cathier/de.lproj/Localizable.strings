@@ -175,6 +175,10 @@
 "about.privacy_title" = "Datenschutz zuerst";
 "about.privacy_detail" = "Deine Daten bleiben auf dem Gerät. KI-Feedback wird über deinen eigenen API-Key verarbeitet, nie über Drittanbieter-Server.";
 "about.copyright_label" = "Copyright";
+"about.export_section" = "Meine Daten";
+"about.export_title" = "Daten herunterladen";
+"about.export_subtitle" = "JSON + HTML als ZIP-Datei";
+"about.export_preparing" = "Daten werden vorbereitet…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Heutiges Tagebuch";

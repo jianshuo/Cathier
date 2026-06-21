@@ -175,6 +175,10 @@
 "about.privacy_title" = "Конфиденциальность прежде всего";
 "about.privacy_detail" = "Ваши данные остаются на устройстве. Обратная связь ИИ обрабатывается через ваш собственный ключ API, никогда через сторонние серверы.";
 "about.copyright_label" = "Авторское право";
+"about.export_section" = "Мои данные";
+"about.export_title" = "Скачать мои данные";
+"about.export_subtitle" = "JSON + HTML в ZIP-архиве";
+"about.export_preparing" = "Подготовка данных…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Дневник сегодня";

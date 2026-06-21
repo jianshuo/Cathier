@@ -177,6 +177,10 @@
 "about.copyright_label" = "著作権";
 "about.testflight_title" = "TestFlight ベータに参加";
 "about.testflight_subtitle" = "新機能をいち早く試す";
+"about.export_section" = "データ";
+"about.export_title" = "データをダウンロード";
+"about.export_subtitle" = "JSON + HTML 形式の ZIP パッケージ";
+"about.export_preparing" = "データを準備中…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "今日の気持ちと収穫";

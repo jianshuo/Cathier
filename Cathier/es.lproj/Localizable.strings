@@ -175,6 +175,10 @@
 "about.privacy_title" = "Privacidad primero";
 "about.privacy_detail" = "Tus datos permanecen en el dispositivo. El feedback de IA se procesa a través de tu propia clave API, nunca a través de servidores de terceros.";
 "about.copyright_label" = "Copyright";
+"about.export_section" = "Mis datos";
+"about.export_title" = "Descargar mis datos";
+"about.export_subtitle" = "JSON + HTML en un archivo ZIP";
+"about.export_preparing" = "Preparando tus datos…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Diario de hoy";

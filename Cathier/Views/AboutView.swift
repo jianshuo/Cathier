@@ -1,11 +1,15 @@
 import SwiftUI
+import SwiftData
 
 struct AboutView: View {
     @Environment(LanguageManager.self) private var lm
+    @Query(sort: \CheckIn.date, order: .forward) private var checkIns: [CheckIn]
+    @Query(sort: \DailyJournal.date, order: .forward) private var journals: [DailyJournal]
 
-    /// Public TestFlight join link. Generate it in App Store Connect →
-    /// TestFlight → External Testing group → "Enable Public Link", then
-    /// paste the URL here. Empty string hides the section.
+    @State private var isExporting = false
+    @State private var exportURL: URL? = nil
+    @State private var exportError: String? = nil
+
     private let testFlightPublicLink = "https://testflight.apple.com/join/TwF61E49"
 
     private var version: String {
@@ -101,6 +105,43 @@ struct AboutView: View {
                 }
             }
 
+            // MARK: - Data Export
+            Section {
+                Button {
+                    startExport()
+                } label: {
+                    HStack(spacing: 12) {
+                        if isExporting {
+                            ProgressView()
+                                .frame(width: 28, height: 28)
+                        } else {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(.cathierAccent)
+                        }
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(isExporting ? lm.aboutExportPreparing : lm.aboutExportTitle)
+                                .foregroundStyle(.primary)
+                            if !isExporting {
+                                Text(lm.aboutExportSubtitle)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                        Spacer()
+                    }
+                }
+                .disabled(isExporting)
+
+                if let err = exportError {
+                    Text(err)
+                        .font(.caption)
+                        .foregroundStyle(.red)
+                }
+            } header: {
+                Text(lm.aboutExportSection)
+            }
+
             // MARK: - Privacy
             Section {
                 Text(lm.aboutPrivacyDetail)
@@ -124,6 +165,39 @@ struct AboutView: View {
         }
         .navigationTitle(lm.settingsAboutRow)
         .navigationBarTitleDisplayMode(.inline)
+        .sheet(item: $exportURL) { url in
+            ActivityView(items: [url])
+        }
     }
 
+    // MARK: - Export
+
+    private func startExport() {
+        isExporting = true
+        exportError = nil
+        let snapCheckIns = checkIns
+        let snapJournals = journals
+        Task.detached(priority: .userInitiated) {
+            do {
+                let url = try DataExportService.exportAllData(
+                    checkIns: snapCheckIns,
+                    journals: snapJournals
+                )
+                await MainActor.run {
+                    isExporting = false
+                    exportURL = url
+                }
+            } catch {
+                await MainActor.run {
+                    isExporting = false
+                    exportError = error.localizedDescription
+                }
+            }
+        }
+    }
+}
+
+// URL needs to be Identifiable to use .sheet(item:)
+extension URL: @retroactive Identifiable {
+    public var id: String { absoluteString }
 }

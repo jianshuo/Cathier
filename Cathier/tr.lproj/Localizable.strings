@@ -175,6 +175,10 @@
 "about.privacy_title" = "Önce Gizlilik";
 "about.privacy_detail" = "Verileriniz cihazda kalır. Yapay Zeka geri bildirimi kendi API Anahtarınız üzerinden işlenir, asla üçüncü taraf sunucular aracılığıyla değil.";
 "about.copyright_label" = "Telif Hakkı";
+"about.export_section" = "Verilerim";
+"about.export_title" = "Verilerimi indir";
+"about.export_subtitle" = "JSON + HTML olarak ZIP dosyası";
+"about.export_preparing" = "Veriler hazırlanıyor…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Bugünkü Günlük";

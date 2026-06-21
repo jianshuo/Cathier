@@ -175,6 +175,10 @@
 "about.privacy_title" = "الخصوصية أولاً";
 "about.privacy_detail" = "تبقى بياناتك على الجهاز. تُعالَج ملاحظات الذكاء الاصطناعي من خلال مفتاح API الخاص بك، وليس عبر خوادم خارجية.";
 "about.copyright_label" = "حقوق النشر";
+"about.export_section" = "بياناتي";
+"about.export_title" = "تنزيل بياناتي";
+"about.export_subtitle" = "JSON + HTML في ملف ZIP";
+"about.export_preparing" = "جارٍ تجهيز بياناتك…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "يوميات اليوم";

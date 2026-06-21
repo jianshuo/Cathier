@@ -192,6 +192,10 @@ extension LanguageManager {
     var aboutCopyrightLabel: String { localized("about.copyright_label") }
     var aboutTestFlightTitle: String    { localized("about.testflight_title") }
     var aboutTestFlightSubtitle: String { localized("about.testflight_subtitle") }
+    var aboutExportSection: String      { localized("about.export_section") }
+    var aboutExportTitle: String        { localized("about.export_title") }
+    var aboutExportSubtitle: String     { localized("about.export_subtitle") }
+    var aboutExportPreparing: String    { localized("about.export_preparing") }
 
     // MARK: DailyJournalEntryView
     var journalEntryNavTitle: String         { localized("journal_entry.nav_title") }

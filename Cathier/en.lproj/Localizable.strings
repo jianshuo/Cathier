@@ -177,6 +177,10 @@
 "about.copyright_label" = "Copyright";
 "about.testflight_title" = "Join the TestFlight beta";
 "about.testflight_subtitle" = "Get early access to new features";
+"about.export_section" = "My Data";
+"about.export_title" = "Download My Data";
+"about.export_subtitle" = "JSON + HTML, packaged as a ZIP file";
+"about.export_preparing" = "Preparing your data…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "Today's Journal";

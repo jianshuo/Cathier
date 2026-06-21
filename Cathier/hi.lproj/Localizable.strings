@@ -175,6 +175,10 @@
 "about.privacy_title" = "गोपनीयता पहले";
 "about.privacy_detail" = "आपका डेटा डिवाइस पर रहता है। AI फीडबैक आपकी खुद की API Key के माध्यम से संसाधित होता है, कभी भी तीसरे पक्ष के सर्वर के माध्यम से नहीं।";
 "about.copyright_label" = "कॉपीराइट";
+"about.export_section" = "मेरा डेटा";
+"about.export_title" = "मेरा डेटा डाउनलोड करें";
+"about.export_subtitle" = "JSON + HTML, ZIP फ़ाइल में";
+"about.export_preparing" = "डेटा तैयार हो रहा है…";
 
 /* DailyJournalEntryView */
 "journal_entry.nav_title" = "आज की डायरी";
