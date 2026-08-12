@@ -1,0 +1,955 @@
+<title>收租结构解剖</title>
+
+<style>
+/* ── tokens: light is the bare :root ─────────────────────────────── */
+:root{
+  --ground:#F7F5F1;
+  --surface:#FFFFFF;
+  --surface-alt:#FAF9F7;
+  --rule:#E0DDD6;
+  --rule-soft:#EDEAE4;
+  --ink:#1A1613;
+  --ink-2:#5C5650;
+  --ink-3:#8A837A;
+  --s-fcn:#D9600A;
+  --s-snow:#1E6FD9;
+  --s-acc:#B5179E;
+  --s-mine:#0F8A57;
+  --s-ref:#9A938A;
+  --wash-mine:rgba(15,138,87,.10);
+  --wash-warn:rgba(217,96,10,.09);
+
+  --sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+  --serif:"Songti SC","STSong","Noto Serif CJK SC","Source Han Serif SC","Times New Roman",serif;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#1C1714;
+    --surface:#241F1B;
+    --surface-alt:#201B18;
+    --rule:#3D3630;
+    --rule-soft:#2E2823;
+    --ink:#F0EDE8;
+    --ink-2:#B5AFA9;
+    --ink-3:#7A736D;
+    --s-fcn:#E06E12;
+    --s-snow:#4288EE;
+    --s-acc:#CB43B2;
+    --s-mine:#159A6D;
+    --s-ref:#7A736D;
+    --wash-mine:rgba(21,154,109,.14);
+    --wash-warn:rgba(224,110,18,.12);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#1C1714;
+  --surface:#241F1B;
+  --surface-alt:#201B18;
+  --rule:#3D3630;
+  --rule-soft:#2E2823;
+  --ink:#F0EDE8;
+  --ink-2:#B5AFA9;
+  --ink-3:#7A736D;
+  --s-fcn:#E06E12;
+  --s-snow:#4288EE;
+  --s-acc:#CB43B2;
+  --s-mine:#159A6D;
+  --s-ref:#7A736D;
+  --wash-mine:rgba(21,154,109,.14);
+  --wash-warn:rgba(224,110,18,.12);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:var(--sans); font-size:16px; line-height:1.72;
+  margin:0; padding:0 24px 96px;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1040px;margin:0 auto}
+.measure{max-width:34em}
+
+/* ── masthead ────────────────────────────────────────────────────── */
+header.mast{
+  border-bottom:1px solid var(--ink); margin:0 0 40px;
+  padding:56px 0 18px;
+}
+.mast h1{
+  font-family:var(--serif); font-weight:400; font-size:clamp(40px,7vw,68px);
+  line-height:1.02; margin:0 0 14px; letter-spacing:.01em; text-wrap:balance;
+}
+.mast .sub{font-size:17px;color:var(--ink-2);margin:0 0 26px;max-width:36em}
+.mast .strip{
+  display:flex;flex-wrap:wrap;gap:8px 28px;
+  font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.mast .strip b{color:var(--ink-2);font-weight:500}
+
+/* ── sections ────────────────────────────────────────────────────── */
+section{padding:52px 0 0;border-top:1px solid var(--rule);margin-top:52px}
+section:first-of-type{border-top:0;margin-top:0;padding-top:0}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 10px;display:flex;gap:10px;align-items:baseline;
+}
+.eyebrow .tick{width:22px;height:1px;background:currentColor;display:inline-block;transform:translateY(-4px)}
+h2{font-size:27px;line-height:1.25;font-weight:600;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance}
+h2 .en{font-family:var(--mono);font-size:14px;font-weight:400;color:var(--ink-3);letter-spacing:.02em;margin-left:10px}
+h3{font-size:17px;font-weight:600;margin:34px 0 8px}
+p{margin:0 0 16px}
+.lede{font-size:17.5px;color:var(--ink-2)}
+strong{font-weight:600;color:var(--ink)}
+code,.num{font-family:var(--mono);font-size:.92em;font-variant-numeric:tabular-nums}
+a{color:inherit}
+
+/* ── term sheet ──────────────────────────────────────────────────── */
+.terms{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);margin:26px 0;
+}
+.terms div{background:var(--surface);padding:12px 14px}
+.terms dt{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 4px;
+}
+.terms dd{margin:0;font-family:var(--mono);font-size:15px;font-variant-numeric:tabular-nums}
+
+/* ── charts ──────────────────────────────────────────────────────── */
+figure{margin:30px 0 0}
+.chart-head{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+.chart-title{font-size:15px;font-weight:600}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;color:var(--ink-2);
+  flex:1 1 300px;min-width:0;justify-content:flex-end}
+.legend span{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11.5px}
+.swatch{width:16px;height:0;border-top-width:2.5px;border-top-style:solid;display:inline-block}
+.plot{position:relative;background:var(--surface);border:1px solid var(--rule);margin-top:10px}
+.plot svg{display:block;width:100%;height:auto;touch-action:none}
+figcaption{font-size:13px;color:var(--ink-3);margin-top:10px;max-width:44em}
+
+.tip{
+  position:absolute;pointer-events:none;opacity:0;transition:opacity .1s ease;
+  background:var(--surface);border:1px solid var(--rule);
+  box-shadow:0 6px 22px rgba(0,0,0,.10);
+  padding:9px 11px;font-family:var(--mono);font-size:11.5px;line-height:1.65;
+  font-variant-numeric:tabular-nums;white-space:nowrap;z-index:5;color:var(--ink);
+}
+.tip .tp-x{color:var(--ink-3);border-bottom:1px solid var(--rule-soft);padding-bottom:5px;margin-bottom:5px}
+.tip .tp-r{display:flex;justify-content:space-between;gap:16px}
+.tip .tp-r i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;vertical-align:1px}
+.tip .tp-r em{font-style:normal;color:var(--ink-2)}
+
+/* ── data table ──────────────────────────────────────────────────── */
+.tablewrap{overflow-x:auto;margin:26px 0;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:right;border-bottom:1px solid var(--rule-soft);white-space:nowrap}
+th{
+  font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);
+  font-weight:500;border-bottom:1px solid var(--rule);position:sticky;top:0;background:var(--surface);
+}
+td:first-child,th:first-child{text-align:left;color:var(--ink-2)}
+tbody tr:last-child td{border-bottom:0}
+tr.hi td{background:var(--wash-mine)}
+.pos{color:var(--s-mine)}
+.neg{color:var(--ink)}
+caption{caption-side:bottom;text-align:left;padding:10px 12px;font-family:var(--sans);font-size:12.5px;color:var(--ink-3);border-top:1px solid var(--rule)}
+
+/* ── callouts & lists ────────────────────────────────────────────── */
+.note{
+  border-left:2px solid var(--s-fcn);background:var(--wash-warn);
+  padding:14px 18px;margin:24px 0;font-size:15px;
+}
+.note.good{border-left-color:var(--s-mine);background:var(--wash-mine)}
+.note p:last-child{margin-bottom:0}
+.note .hd{
+  font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-2);margin-bottom:6px;
+}
+ol.legs{list-style:none;padding:0;margin:24px 0;counter-reset:leg}
+ol.legs>li{
+  counter-increment:leg;border-top:1px solid var(--rule);padding:16px 0 16px 46px;position:relative;
+}
+ol.legs>li:last-child{border-bottom:1px solid var(--rule)}
+ol.legs>li::before{
+  content:counter(leg,upper-alpha);position:absolute;left:0;top:16px;
+  font-family:var(--mono);font-size:12px;color:var(--ink-3);
+  border:1px solid var(--rule);width:26px;height:26px;display:grid;place-items:center;
+}
+ol.legs h4{margin:0 0 4px;font-size:16px;font-weight:600}
+ol.legs p{margin:0 0 6px;font-size:14.5px;color:var(--ink-2)}
+ol.legs .spec{font-family:var(--mono);font-size:12.5px;color:var(--ink-3)}
+ul.plain{padding-left:1.1em;margin:0 0 18px}
+ul.plain li{margin-bottom:9px}
+
+.knobs{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--rule);border:1px solid var(--rule);margin:26px 0}
+.knobs article{background:var(--surface);padding:16px 18px}
+.knobs h4{margin:0 0 6px;font-size:15px;font-weight:600}
+.knobs p{margin:0;font-size:14px;color:var(--ink-2)}
+.knobs .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:8px}
+
+footer{margin-top:64px;padding-top:22px;border-top:1px solid var(--ink);font-size:13px;color:var(--ink-3)}
+footer p{margin:0 0 8px}
+
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* Below ~860px the viewBox would shrink axis text past legibility —
+   scroll the plot instead of scaling it down. */
+@media (max-width:860px){
+  .plot{overflow-x:auto}
+  .plot svg{min-width:860px}
+}
+@media (max-width:640px){
+  body{padding:0 16px 64px}
+  .terms{grid-template-columns:1fr 1fr}
+  .legend{flex:1 1 100%;justify-content:flex-start}
+}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <h1>收租结构解剖</h1>
+  <p class="sub">FCN、雪球、Accumulator 的到期损益图，画在同一套坐标里；然后设计一个把尾部买回来的第四种。</p>
+  <div class="strip">
+    <span><b>横轴</b> 到期股价（期初 = 100）</span>
+    <span><b>纵轴</b> 盈亏（占本金 %）</span>
+    <span><b>期限</b> 1 年</span>
+    <span><b>本金</b> 100</span>
+  </div>
+</header>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>共同的骨架</p>
+  <h2>三个产品是同一件事的三种调法</h2>
+  <div class="measure">
+    <p class="lede">FCN、雪球、Accumulator 都是同一笔交易：<strong>你卖出下跌保险，对方付你保费。</strong>差别只在三个旋钮怎么拧。</p>
+    <p>看懂这三个旋钮，三张图的形状就能凭空画出来，不用背结构：</p>
+    <ul class="plain">
+      <li><strong>保费怎么给你</strong> — FCN 给无条件现金票息；雪球给<em>有条件</em>票息（要没敲入）；Accumulator 一分现金不给，只给"打折买入"的权利。</li>
+      <li><strong>从哪个价位开始亏</strong> — FCN 从 <code>80</code> 起亏（有 20% 缓冲垫）；雪球从 <code>100</code> 起亏（零缓冲）；Accumulator 从 <code>90</code> 起亏。</li>
+      <li><strong>亏损斜率</strong> — FCN 是 <code>1.25×</code>（本金除以八折行权价）；雪球是 <code>1.0×</code>；Accumulator 跌破行权价后<strong>自动双倍加仓</strong>，斜率一路爬到 <code>1.9×</code>。</li>
+    </ul>
+    <div class="note">
+      <div class="hd">先记住这一点</div>
+      <p>三个产品里，<strong>没有一个买了保险</strong>。它们全部是净卖出尾部风险 —— 所以三张图的左端全部朝下，区别只是掉得多快。这就是第四种结构要动手的地方。</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>无条件票息 · 有缓冲垫</p>
+  <h2>FCN<span class="en">Fixed Coupon Note</span></h2>
+  <div class="measure">
+    <p>本质是<strong>打折卖出一个带障碍的 put</strong>：票息无论如何都付，但如果跌破敲入线并且到期低于行权价，你要按行权价（<code>80</code>）接货。</p>
+  </div>
+
+  <div class="terms">
+    <div><dt>票息 p.a.</dt><dd>15%</dd></div>
+    <div><dt>行权价</dt><dd>80（8 折）</dd></div>
+    <div><dt>敲入线</dt><dd>70（每日观察）</dd></div>
+    <div><dt>敲出线</dt><dd>100（每月观察）</dd></div>
+    <div><dt>最大收益</dt><dd>+15</dd></div>
+    <div><dt>最大亏损</dt><dd>−85</dd></div>
+  </div>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">FCN 到期损益</span>
+      <span class="legend" id="lg-fcn"></span>
+    </div>
+    <div class="plot" id="c-fcn"></div>
+    <figcaption>敲入线 70 处有一道 <strong>12.5 点的断崖</strong>：股价停在 70.1 拿满票息 +15，跌到 69.9 立刻变成 +2.5。断崖是所有障碍型结构的共同特征 —— 你的损益对一个价格点极度敏感。</figcaption>
+  </figure>
+
+  <div class="measure">
+    <h3>怎么读这张图</h3>
+    <ul class="plain">
+      <li><strong>上涨全部封顶在 +15。</strong> 涨 5% 和涨 50% 对你完全一样，而且涨过 100 会触发月度敲出、提前结束，票息按持有天数折算 —— <em>涨得越快，你拿到的钱越少</em>。</li>
+      <li><strong>−20% 以内毫发无伤。</strong> 八折行权价就是缓冲垫，这是 FCN 最舒服的地方，也是它好卖的原因。</li>
+      <li><strong>跌破 70 之后是 1.25 倍杠杆的直线下跌。</strong> 股价 50 时亏 22.5，股价归零时亏 85。</li>
+      <li><strong>它永远打败裸持股票。</strong> 折价接货 + 票息，让 FCN 曲线始终在持股参考线上方。所以 FCN 真正的对手不是股票，是"不做这笔交易"。</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>条件票息 · 零缓冲垫</p>
+  <h2>雪球<span class="en">Autocallable Snowball</span></h2>
+  <div class="measure">
+    <p>票息更高，但换掉了两样东西：缓冲垫没了（行权价就是期初价 <code>100</code>），票息变成<strong>有条件的</strong> —— 一旦敲入且没能敲出，票息全部归零，你按 100 全额承担跌幅。</p>
+  </div>
+
+  <div class="terms">
+    <div><dt>票息 p.a.</dt><dd>20%</dd></div>
+    <div><dt>行权价</dt><dd>100（无折价）</dd></div>
+    <div><dt>敲入线</dt><dd>75（每日观察）</dd></div>
+    <div><dt>敲出线</dt><dd>100（每月观察）</dd></div>
+    <div><dt>最大收益</dt><dd>+20</dd></div>
+    <div><dt>最大亏损</dt><dd>−100</dd></div>
+  </div>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">雪球到期损益 · 两条路径分支</span>
+      <span class="legend" id="lg-snow"></span>
+    </div>
+    <div class="plot" id="c-snow"></div>
+    <figcaption>雪球的损益<strong>不是到期价格的函数</strong>，而是路径的函数。同一个到期价 90，走过 75 以下的那条路径亏 10，没走过的那条赚 20 —— 图上必须画成两条线。</figcaption>
+  </figure>
+
+  <div class="measure">
+    <h3>怎么读这张图</h3>
+    <ul class="plain">
+      <li><strong>敲入线上的断崖有 45 点。</strong> 这是三个产品里最陡的一道悬崖：到期价 75 上方拿 +20，一旦盘中破过 75 且没敲出，同样的到期价变成 −25。</li>
+      <li><strong>敲入之后，你就是纯股票多头</strong>，而且从 100 起算 —— 没有票息、没有折价。图上敲入分支和持股参考线在 100 以下完全重合。</li>
+      <li><strong>敲入后又涨回去，票息还能拿回来</strong>（敲入敲出并存时按敲出付息）。所以雪球最怕的不是"跌"，是<em>跌下去起不来</em>。</li>
+      <li><strong>上涨同样是惩罚。</strong> 第一个月就敲出，20% 的年化票息只兑现 1.7%。雪球宣传的高票息，是"横盘一整年"才拿得满的票息。</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>无票息 · 跌破自动加倍</p>
+  <h2>Accumulator<span class="en">累计期权 · "I kill you later"</span></h2>
+  <div class="measure">
+    <p>没有票息。你的全部收益是"每天用 9 折价格买入"这个折扣。代价是：涨到 <code>103</code> 就敲出、折扣戛然而止；跌破 <code>90</code> 则<strong>每天买入的数量翻倍</strong>，越跌买得越多。</p>
+  </div>
+
+  <div class="terms">
+    <div><dt>行权价</dt><dd>90（9 折）</dd></div>
+    <div><dt>敲出线</dt><dd>103</dd></div>
+    <div><dt>跌破行权价</dt><dd>2× 数量</dd></div>
+    <div><dt>累计方式</dt><dd>每日买入</dd></div>
+    <div><dt>最大收益</dt><dd>+14.4</dd></div>
+    <div><dt>最大亏损</dt><dd>−190</dd></div>
+  </div>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">Accumulator 到期损益</span>
+      <span class="legend" id="lg-acc"></span>
+    </div>
+    <div class="plot" id="c-acc"></div>
+    <figcaption>纵轴范围是前两张图的两倍多，因为这条曲线要跌到 −190。这张图是用"线性价格路径"近似算的（从 100 匀速走到到期价，沿途每日累计），只为呈现形状量级 —— 真实损益完全取决于路径。</figcaption>
+  </figure>
+
+  <div class="measure">
+    <h3>怎么读这张图</h3>
+    <ul class="plain">
+      <li><strong>右边那个尖峰是幻觉。</strong> 只有价格贴着 103 磨一整年才拿得到 +14.4。真涨起来会立刻敲出：涨到 110 只赚 4.3，涨到 130 只赚 1.4 —— <em>涨得越猛，赚得越少</em>。</li>
+      <li><strong>左边不是直线，是加速的曲线。</strong> 双倍加仓让持仓数量随跌幅从 1 倍爬到 1.9 倍，亏损斜率一路变陡。</li>
+      <li><strong>亏损可以超过本金。</strong> 到期价 30 时亏 124，归零时亏 190 —— 名义本金 100 的合约亏掉 1.9 倍。FCN 和雪球最多亏光本金，Accumulator 不封顶。</li>
+      <li>这就是"<strong>I kill you later</strong>"这个绰号的由来：小赚很多次，然后一次性把之前所有的赚头连本金一起还回去。</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>叠在一起看</p>
+  <h2>三条曲线，一个形状</h2>
+  <div class="measure">
+    <p class="lede">把三张图放进同一套坐标，共同点就藏不住了：<strong>右边全是平的，左边全是往下的直线或曲线。</strong>没有任何一条在左端翘起来。</p>
+  </div>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">三者叠加 · 到期损益</span>
+      <span class="legend" id="lg-cmp"></span>
+    </div>
+    <div class="plot" id="c-cmp"></div>
+    <figcaption>为了让主区间看得清，纵轴在 −105 处截断，Accumulator 的尾部用箭头标出继续下探到 −190。雪球取"敲入路径"分支作图。</figcaption>
+  </figure>
+
+  <div class="measure">
+    <h3>三条曲线的排序会翻转</h3>
+    <p>没有哪一个永远最好。<strong>横盘</strong>时雪球最好（+20）；<strong>小跌到中跌</strong>时 FCN 最好（缓冲垫生效）；<strong>大跌</strong>时 FCN 仍然最好，因为它的斜率最缓且有票息垫底。Accumulator 在<em>任何</em>下跌区间都是三者中最差的 —— 它换来的只是"折价拿货"这个心理安慰。</p>
+    <p>但请注意一件事：<strong>"最好"只是"亏得最少"。</strong>在整个左半边，三条线全都在水下。这才是要解决的问题。</p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>自创方案</p>
+  <h2>租金反手<span class="en">Rent &amp; Reverse</span></h2>
+  <div class="measure">
+    <p class="lede">目标很明确：<strong>静态收益要高于 FCN，大跌时要比 FCN 亏得少。</strong>做法只有一条路 —— 拿卖 put 收到的租金，去买回<em>超额数量</em>的深度虚值 put，让净敞口在深跌区反号。</p>
+    <p>标的用你本来就敢买的那只高隐波个股或指数（隐波 σ ≈ 40%，也就是 FCN 报得出 15% 票息的那类标的）。名义本金 100，期限 1 年。</p>
+  </div>
+
+  <ol class="legs">
+    <li>
+      <h4>收租腿 — 每月滚动卖出近月 put</h4>
+      <p>每月滚动卖出 1 个月期、行权价 90% 的现金担保 put，名义 <strong>1.2×</strong>。<strong>为什么是近月而不是一年期</strong>：平值期权权利金约 <code>0.4σ√T</code>，滚 12 次近月收 <code>1.39σ</code>，一次性卖一年只收 <code>0.4σ</code> —— 绝对权利金差 3.5 倍。波动率风险溢价在近月最厚，这是这个结构收益的真实来源。</p>
+      <p class="spec">全年净权利金 ≈ +20（已扣行权、展期滑点）</p>
+    </li>
+    <li>
+      <h4>尾部腿 — 买入 2 倍数量的远月深虚 put</h4>
+      <p>用租金的约三分之一，买入 <strong>2× 名义</strong>、12 个月期、行权价 <strong>70%</strong> 的 put。关键在"2 倍"：这是一个 put ratio backspread。跌破 70 之后，你从净空 put 变成<strong>净多 1 张 put</strong> —— 跌得越狠赚得越多。</p>
+      <p class="spec">成本 ≈ −7（2 × 3.5%，含偏斜溢价）</p>
+    </li>
+    <li>
+      <h4>现金腿 — 抵押现金买短债</h4>
+      <p>卖 put 的保证金现金不闲置。</p>
+      <p class="spec">≈ +2.5</p>
+    </li>
+  </ol>
+
+  <div class="measure">
+    <p>到期损益写成一行：</p>
+    <p class="num" style="font-size:15px;background:var(--surface-alt);border:1px solid var(--rule);padding:14px 16px;overflow-x:auto">
+      P&amp;L(S) = 15.5 + 1.333 × min(0, S−90) + 2 × max(0, 70−S)
+    </p>
+  </div>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">租金反手 · 三条腿拆解</span>
+      <span class="legend" id="lg-legs"></span>
+    </div>
+    <div class="plot" id="c-legs"></div>
+    <figcaption>收租腿（向下的直线）与尾部腿（向上的折线）斜率不同：收租腿 <code>−1.333</code>，尾部腿 <code>+2.0</code>。两者相加，在 70 以下净斜率变成 <strong>+0.667</strong> —— 曲线掉头向上。</figcaption>
+  </figure>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">租金反手 vs FCN</span>
+      <span class="legend" id="lg-mine"></span>
+    </div>
+    <div class="plot" id="c-mine"></div>
+    <figcaption>两个目标都达成了，代价写在中间那个坑里。</figcaption>
+  </figure>
+
+  <div class="note good">
+    <div class="hd">三个数字</div>
+    <p><strong>静态收益 +15.5</strong>（涨、横盘、跌 10% 以内全部拿满），高于 FCN 的 +15。<br>
+    <strong>最大亏损 −11.2</strong>，发生在到期价正好 70 的地方 —— 而且这是<em>确定的下限</em>，往下再跌只会变好。FCN 的下限是 −85，雪球 −100，Accumulator −190。<br>
+    <strong>反超点在 62.9</strong>（跌 37.1%）：跌破这里之后，租金反手开始比 FCN 好，而且差距越拉越大。到期价 50 时是 +2.2 对 −22.5，归零时是 +35.5 对 −85。</p>
+  </div>
+
+  <div class="measure">
+    <h3>代价在哪里：中间那个坑</h3>
+    <p>天下没有白拿的凸性。这个结构把 FCN 最舒服的区间卖掉了 —— <strong>到期价 62.9 到 90 之间（跌 10% 到 37%），它比 FCN 差</strong>，最难受的点在 70 附近，输 FCN 约 13.7 个点。</p>
+    <p>换句话说：<strong>你用"温和下跌时的舒适"，买了"崩盘时的凸性"和更高的静态收益。</strong>这是一笔明确的交换，不是免费午餐。如果你认为标的最可能的下跌情形是"阴跌 20%"，这个结构不适合你；如果你担心的是"某天开盘 −40% 然后一路向下"，它正是为此设计的。</p>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>四者同框</p>
+  <h2>四条曲线与全表</h2>
+
+  <figure>
+    <div class="chart-head">
+      <span class="chart-title">四种结构 · 到期损益</span>
+      <span class="legend" id="lg-all"></span>
+    </div>
+    <div class="plot" id="c-all"></div>
+    <figcaption>唯一一条在左端翘起来的线，就是买了超额尾部保护的那条。</figcaption>
+  </figure>
+
+  <div class="tablewrap">
+    <table>
+      <caption>到期损益，单位为本金的百分点。雪球取敲入路径分支。绿色行 = 租金反手优于 FCN 的区间。</caption>
+      <thead>
+        <tr><th>到期价</th><th>涨跌</th><th>持股</th><th>FCN</th><th>雪球</th><th>Accumulator</th><th>租金反手</th></tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>诚实的部分</p>
+  <h2>这张图骗你的六个地方</h2>
+  <div class="measure">
+    <p>到期损益图是所有结构化产品营销材料的通用语言，也是它们共同的谎言：<strong>它假装损益只跟到期价格有关。</strong>下面是租金反手这张图没告诉你的东西 —— 这些是真实的坑，不是免责声明。</p>
+    <ul class="plain">
+      <li><strong>路径风险被抹平了。</strong> 我把"滚 12 次近月 put"简化成了"一次性收 20 点权利金"。真实情况是：如果第 3 个月就暴跌 30%，近月 put 被行权、你接了货，后面 9 个月还得继续滚。滚动结构的损益是路径的函数，实际结果可能比图上差不少。</li>
+      <li><strong>+20 的权利金收入只在高隐波标的上成立。</strong> σ ≈ 40% 的个股才收得到。换成沪深 300（σ ≈ 18%），滚动 90% put 的年化毛收入只有 6–8 个点，根本买不起尾部腿。<strong>这个结构在低波标的上不成立。</strong></li>
+      <li><strong>偏斜（skew）会吃掉净收益。</strong> 70% 的 put 因为偏斜比 BS 理论价贵得多。我用的 3.5% 已经含了偏斜估计，但实盘报价可能是 4–5%，翻倍买就是 8–10 点，直接从 15.5 里扣掉 2–3 点。这是最容易低估的一项。</li>
+      <li><strong>Gamma 和 Vega 不匹配，中间的坑在盘中会更深。</strong> 近月空 put 是短 gamma（快跌时亏得飞快），远月多 put 是长 vega（离行权价还远，只慢慢涨）。跌 15–25% 的过程中，浮亏会明显超过到期图上的数字。到期图是终点，不是过程。</li>
+      <li><strong>保证金会在最差的时候追你。</strong> 1.2 倍杠杆卖 put，暴跌中会被追加保证金。到期损益有下限，不代表你能活到到期 —— 被强平在坑底就是真金白银的 −11 变成更多。</li>
+      <li><strong>+15.5 是估计，FCN 的 +15 是合同。</strong> FCN 一次签约、票息白纸黑字；租金反手需要每月执行纪律，收入是十二次滚动的累加结果。确定性上，你也付了代价。</li>
+    </ul>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>可调的旋钮</p>
+  <h2>如果你想改这个结构</h2>
+  <div class="measure">
+    <p>下面四个方向都是真实可做的调整，每一个都是把"坑的深度""静态收益""崩盘凸性"三者之间重新分配。</p>
+  </div>
+
+  <div class="knobs">
+    <article>
+      <span class="k">填坑</span>
+      <h4>阶梯化尾部腿</h4>
+      <p>不买 2× 的 70% put，改买 0.8× 的 80% put + 1.8× 的 62% put。坑从 −11.2 抬到约 −9，但成本上升，静态收益掉到 13.5 —— <strong>低于 FCN，第一个目标就破了</strong>。填坑和收益直接冲突。</p>
+    </article>
+    <article>
+      <span class="k">降成本</span>
+      <h4>尾部腿改成比率价差</h4>
+      <p>买 2× 70% put 的同时，卖 1× 45% put。尾部腿成本能降三成，代价是跌破 45 之后收益封顶 —— 你放弃了"世界末日"那一段的凸性，换取更高的静态收益。多数人应该接受这笔交易。</p>
+    </article>
+    <article>
+      <span class="k">换保险标的</span>
+      <h4>个股收租，指数买保险</h4>
+      <p>最实用的一条。个股隐波高、偏斜相对平，适合卖；个股深虚 put 流动性差、点差宽，不适合买。改成在指数上买尾部：崩盘时相关性趋近 1，指数 put 一样赔付，而且便宜得多。风险是个股单独暴雷而指数不动（idiosyncratic gap）。</p>
+    </article>
+    <article>
+      <span class="k">换保险工具</span>
+      <h4>用 VIX call spread 做尾部</h4>
+      <p>崩盘时 VIX 的涨幅通常快过指数的跌幅，单位成本的凸性更高。代价是基差风险和期货 roll 成本 —— 平静期 VIX 期限结构是升水，持有成本会持续侵蚀收益，需要择时。</p>
+    </article>
+  </div>
+</section>
+
+<section>
+  <p class="eyebrow"><span class="tick"></span>结论</p>
+  <h2>一句话</h2>
+  <div class="measure">
+    <p class="lede">FCN、雪球、Accumulator 全都是<strong>净卖出尾部风险</strong>换取当期收益，区别只在缓冲垫、票息条件和杠杆。要做到"收益更高、崩盘更抗跌"，唯一的办法是把保费的一部分换成<strong>超额数量的深度虚值保护</strong>，让净敞口在深跌区反号。</p>
+    <p>这么做必然要在某个区间付出代价。租金反手把代价集中放在了<strong>温和下跌区（跌 10% 到 37%）</strong>，因为那正是最不需要被保护的区间 —— 你本来就打算长期持有这个标的。</p>
+    <p>如果你只带走一件事：<strong>看结构化产品的宣传页时，先找那条曲线的左端。</strong>它是往下走的直线，还是掉头向上的折线，决定了这笔交易在你最需要它的时候站在哪一边。</p>
+  </div>
+</section>
+
+<footer>
+  <p>所有数字均为示意性建模，用于说明结构形状，不构成任何投资建议，也不代表任何可交易报价。</p>
+  <p>假设：期初价 100、期限 1 年、名义本金 100。Accumulator 采用线性价格路径近似。租金反手的权利金收入按 σ ≈ 40% 的标的估算。</p>
+</footer>
+
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ── payoff models — points of notional, S0 = 100 ─────────────────── */
+var M = {
+  stock: function(s){ return s - 100; },
+  fcn:   function(s){ return s >= 70 ? 15 : 15 + 1.25*(s-80); },
+  snowNo:function(s){ return s >= 75 ? 20 : null; },
+  snowKi:function(s){ return s >= 100 ? 20 : s - 100; },
+  acc:   function(s){
+    var K = 90, KO = 103;
+    if (s >= KO) { var f = Math.min(1, (KO-100)/(s-100)); return f*100*(KO-K)/K; }
+    if (s >= K)  { return 100*(s-K)/K; }
+    var f1 = (100-K)/(100-s);
+    return (f1 + 2*(1-f1)) * 100*(s-K)/K;
+  },
+  rent:  function(s){ return 20 + (4/3)*Math.min(0, s-90); },
+  tail:  function(s){ return -7 + 2*Math.max(0, 70-s); },
+  mine:  function(s){ return 15.5 + (4/3)*Math.min(0, s-90) + 2*Math.max(0, 70-s); }
+};
+
+var CSS = getComputedStyle(document.documentElement);
+function tok(n){ return CSS.getPropertyValue(n).trim(); }
+function refresh(){ CSS = getComputedStyle(document.documentElement); }
+
+/* ── chart engine ─────────────────────────────────────────────────── */
+var W = 1000, H = 470, P = { t:26, r:120, b:46, l:56 };
+
+function build(mount, spec){
+  var xd = spec.xDomain, yd = spec.yDomain;
+  var iw = W - P.l - P.r, ih = H - P.t - P.b;
+  var X = function(v){ return P.l + (v - xd[0])/(xd[1]-xd[0]) * iw; };
+  var Y = function(v){ return P.t + (yd[1] - v)/(yd[1]-yd[0]) * ih; };
+
+  var ns = "http://www.w3.org/2000/svg";
+  var svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", spec.aria || "损益结构图");
+
+  function el(t, a, txt){
+    var n = document.createElementNS(ns, t);
+    for (var k in a) if (a[k] !== null && a[k] !== undefined) n.setAttribute(k, a[k]);
+    if (txt !== undefined) n.textContent = txt;
+    svg.appendChild(n); return n;
+  }
+
+  var ink = tok("--ink"), ink2 = tok("--ink-2"), ink3 = tok("--ink-3");
+  var rule = tok("--rule"), ruleSoft = tok("--rule-soft"), surf = tok("--surface");
+  var MONO = 'ui-monospace,"SF Mono",Menlo,Consolas,monospace';
+
+  /* grid — solid hairlines, one shade off the surface */
+  spec.yTicks.forEach(function(v){
+    el("line", { x1:P.l, x2:P.l+iw, y1:Y(v), y2:Y(v), stroke:ruleSoft, "stroke-width":1 });
+    el("text", { x:P.l-10, y:Y(v)+4, fill:ink3, "font-size":11.5, "font-family":MONO,
+                 "text-anchor":"end" }, (v>0?"+":"") + v);
+  });
+  spec.xTicks.forEach(function(v){
+    el("line", { x1:X(v), x2:X(v), y1:P.t, y2:P.t+ih, stroke:ruleSoft, "stroke-width":1 });
+    el("text", { x:X(v), y:P.t+ih+20, fill:ink3, "font-size":11.5, "font-family":MONO,
+                 "text-anchor":"middle" }, v);
+  });
+
+  /* zero line + axis */
+  el("line", { x1:P.l, x2:P.l+iw, y1:Y(0), y2:Y(0), stroke:rule, "stroke-width":1.5 });
+  el("line", { x1:P.l, x2:P.l, y1:P.t, y2:P.t+ih, stroke:rule, "stroke-width":1 });
+
+  /* axis titles */
+  el("text", { x:P.l+iw, y:P.t+ih+38, fill:ink3, "font-size":11, "font-family":MONO,
+               "text-anchor":"end", "letter-spacing":".06em" }, "到期股价（期初 = 100）");
+  el("text", { x:P.l-10, y:P.t-10, fill:ink3, "font-size":11, "font-family":MONO,
+               "text-anchor":"start", "letter-spacing":".06em" }, "盈亏 %");
+
+  /* vertical markers (strikes / barriers) */
+  (spec.marks || []).forEach(function(m){
+    el("line", { x1:X(m.x), x2:X(m.x), y1:P.t+6, y2:P.t+ih, stroke:ink3,
+                 "stroke-width":1, "stroke-dasharray":"2 4", opacity:.55 });
+    el("text", { x:X(m.x)+5, y:P.t+16, fill:ink3, "font-size":10.5, "font-family":MONO,
+                 "letter-spacing":".05em" }, m.t);
+  });
+
+  /* shaded zones */
+  (spec.zones || []).forEach(function(z){
+    el("rect", { x:X(z.x0), y:P.t, width:X(z.x1)-X(z.x0), height:ih, fill:z.fill });
+    if (z.t) el("text", { x:(X(z.x0)+X(z.x1))/2, y:P.t+ih-10, fill:ink3, "font-size":10.5,
+                          "font-family":MONO, "text-anchor":"middle" }, z.t);
+  });
+
+  /* cliffs — drawn under the series */
+  (spec.cliffs || []).forEach(function(c){
+    el("line", { x1:X(c.x), x2:X(c.x), y1:Y(c.y0), y2:Y(c.y1), stroke:c.color,
+                 "stroke-width":1.5, "stroke-dasharray":"3 3", opacity:.7 });
+    if (c.t) el("text", { x:X(c.x)-7, y:(Y(c.y0)+Y(c.y1))/2+4, fill:c.color, "font-size":11,
+                          "font-family":MONO, "text-anchor":"end" }, c.t);
+  });
+
+  /* series */
+  var clipped = [];
+  spec.series.forEach(function(s){
+    s.ranges.forEach(function(rg){
+      /* Walk the range, breaking the polyline wherever it leaves the y-window.
+         A clamped point must never be joined to the next in-window point —
+         that would draw a flat line along the axis floor that isn't in the data. */
+      var runs = [], run = [], step = (rg[1]-rg[0]) / 400, prev = null;
+      function edge(a, b){                        // interpolate a→b to the window edge
+        var lim = b[1] < yd[0] ? yd[0] : yd[1];
+        var t = (lim - a[1]) / (b[1] - a[1]);
+        return [a[0] + t*(b[0]-a[0]), lim];
+      }
+      function flush(){ if (run.length > 1) runs.push(run); run = []; }
+      for (var i = 0; i <= 400; i++){
+        var x = rg[0] + i*step, y = s.fn(x);
+        if (y === null || y === undefined){ flush(); prev = null; continue; }
+        var pt = [x, y], inside = y >= yd[0] && y <= yd[1];
+        if (inside){
+          if (prev && !prev.inside){                               // entering
+            var e = edge(pt, prev.pt);
+            run.push(e);
+            if (prev.pt[1] < yd[0]) clipped.push({ s:s, x:e[0] });
+          }
+          run.push(pt);
+        } else {
+          if (prev && prev.inside){                                // leaving
+            run.push(edge(prev.pt, pt));
+            if (y < yd[0]) clipped.push({ s:s, x:run[run.length-1][0] });
+            flush();
+          }
+        }
+        prev = { pt:pt, inside:inside };
+      }
+      flush();
+      runs.forEach(function(pts){
+        var d = pts.map(function(p,i){ return (i?"L":"M") + X(p[0]).toFixed(2) + " " + Y(p[1]).toFixed(2); }).join(" ");
+        el("path", { d:d, fill:"none", stroke:s.color, "stroke-width":s.w || 2.5,
+                     "stroke-dasharray":s.dash || null, "stroke-linecap":"round",
+                     "stroke-linejoin":"round", opacity:s.op || 1 });
+      });
+    });
+    /* direct endpoint label — secondary encoding for the CVD pair */
+    if (s.label){
+      var ly = Y(s.label.y);
+      el("text", { x:X(s.label.x) + (s.label.dx||8), y:ly + (s.label.dy||4), fill:s.color,
+                   "font-size":12, "font-family":MONO, "font-weight":600,
+                   "text-anchor":s.label.anchor || "start" }, s.label.t);
+    }
+  });
+
+  /* clip arrows */
+  clipped.forEach(function(c){
+    var x = X(c.x), y = Y(yd[0]);
+    el("path", { d:"M"+(x-5)+" "+(y-13)+" L"+x+" "+(y-3)+" L"+(x+5)+" "+(y-13),
+                 fill:"none", stroke:c.s.color, "stroke-width":2, "stroke-linecap":"round" });
+    if (c.s.clipNote)
+      el("text", { x:x+10, y:y-6, fill:c.s.color, "font-size":11, "font-family":MONO }, c.s.clipNote);
+  });
+
+  /* annotations */
+  (spec.annos || []).forEach(function(a){
+    if (a.dot) el("circle", { cx:X(a.x), cy:Y(a.y), r:4, fill:a.color || ink,
+                              stroke:surf, "stroke-width":2 });
+    el("text", { x:X(a.x) + (a.dx||0), y:Y(a.y) + (a.dy||-12), fill:a.color || ink2,
+                 "font-size":11.5, "font-family":MONO,
+                 "text-anchor":a.anchor || "middle" }, a.t);
+  });
+
+  /* ── hover layer ────────────────────────────────────────────────── */
+  var cross = el("line", { x1:0, x2:0, y1:P.t, y2:P.t+ih, stroke:ink3,
+                           "stroke-width":1, opacity:0 });
+  var dots = spec.series.filter(function(s){ return s.tip !== false; }).map(function(s){
+    return { s:s, node: el("circle", { cx:0, cy:0, r:4.5, fill:s.color, stroke:surf,
+                                       "stroke-width":2, opacity:0 }) };
+  });
+  var hit = el("rect", { x:P.l, y:P.t, width:iw, height:ih, fill:"transparent",
+                         style:"cursor:crosshair" });
+
+  var tip = document.createElement("div");
+  tip.className = "tip";
+  mount.appendChild(svg);
+  mount.appendChild(tip);
+
+  function inRange(s, x){
+    return s.ranges.some(function(r){ return x >= r[0] - 1e-9 && x <= r[1] + 1e-9; });
+  }
+  function move(ev){
+    var r = svg.getBoundingClientRect();
+    var cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+    var cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+    var sx = (cx - r.left) / r.width * W;
+    var v = xd[0] + (sx - P.l)/iw * (xd[1]-xd[0]);
+    v = Math.max(xd[0], Math.min(xd[1], v));
+    v = Math.round(v * 2) / 2;
+
+    cross.setAttribute("x1", X(v)); cross.setAttribute("x2", X(v));
+    cross.setAttribute("opacity", .45);
+
+    var rows = "";
+    dots.forEach(function(d){
+      var y = inRange(d.s, v) ? d.s.fn(v) : null;
+      if (y === null || y === undefined || y < yd[0] || y > yd[1]){
+        d.node.setAttribute("opacity", 0);
+      } else {
+        d.node.setAttribute("cx", X(v)); d.node.setAttribute("cy", Y(y));
+        d.node.setAttribute("opacity", 1);
+      }
+      var shown = (y === null || y === undefined) ? "—"
+                : ((y>=0?"+":"−") + Math.abs(y).toFixed(1));
+      rows += '<div class="tp-r"><em><i style="background:'+d.s.color+'"></i>'+d.s.name+
+              '</em><span>'+shown+'</span></div>';
+    });
+    var chg = v - 100;
+    tip.innerHTML = '<div class="tp-x">到期价 '+v.toFixed(1)+
+                    '　<span>'+(chg>=0?"+":"−")+Math.abs(chg).toFixed(1)+'%</span></div>' + rows;
+    tip.style.opacity = 1;
+
+    var mr = mount.getBoundingClientRect();
+    var px = cx - mr.left + 16, py = cy - mr.top - 12;
+    if (px + tip.offsetWidth > mr.width - 6) px = cx - mr.left - tip.offsetWidth - 16;
+    py = Math.max(4, Math.min(py, mr.height - tip.offsetHeight - 4));
+    tip.style.left = px + "px"; tip.style.top = py + "px";
+  }
+  function leave(){
+    cross.setAttribute("opacity", 0);
+    dots.forEach(function(d){ d.node.setAttribute("opacity", 0); });
+    tip.style.opacity = 0;
+  }
+  hit.addEventListener("mousemove", move);
+  hit.addEventListener("mouseleave", leave);
+  hit.addEventListener("touchstart", move, { passive:true });
+  hit.addEventListener("touchmove", move, { passive:true });
+  hit.addEventListener("touchend", leave);
+}
+
+/* ── legends ──────────────────────────────────────────────────────── */
+function legend(id, items){
+  var box = document.getElementById(id);
+  box.innerHTML = items.map(function(i){
+    return '<span><span class="swatch" style="border-top-color:'+i.c+
+           (i.d ? ';border-top-style:dashed' : '')+'"></span>'+i.t+'</span>';
+  }).join("");
+}
+
+/* ── render ───────────────────────────────────────────────────────── */
+function renderAll(){
+  refresh();
+  var C = {
+    fcn: tok("--s-fcn"), snow: tok("--s-snow"), acc: tok("--s-acc"),
+    mine: tok("--s-mine"), ref: tok("--s-ref"), ink2: tok("--ink-2"), ink3: tok("--ink-3")
+  };
+  var mineWash = tok("--wash-mine"), warnWash = tok("--wash-warn");
+
+  ["c-fcn","c-snow","c-acc","c-cmp","c-legs","c-mine","c-all"].forEach(function(id){
+    document.getElementById(id).innerHTML = "";
+  });
+
+  /* 持股 reference line — labelled where it exits the top of each window */
+  function ref(exitX, exitY){
+    return { name:"持股", color:C.ref, fn:M.stock, ranges:[[0,150]], w:1.5, dash:"5 4",
+             label:{ x:exitX, y:exitY, t:"持股", dy:-9, anchor:"end", dx:0 } };
+  }
+
+  /* 1 — FCN */
+  legend("lg-fcn", [{c:C.fcn,t:"FCN"},{c:C.ref,t:"持股（参考）",d:1}]);
+  build(document.getElementById("c-fcn"), {
+    aria:"FCN 到期损益：上涨封顶在 +15，敲入线 70 处断崖下跌，之后以 1.25 倍斜率线性下跌至 −85",
+    xDomain:[0,150], yDomain:[-100,45],
+    xTicks:[0,25,50,70,80,100,125,150], yTicks:[-100,-75,-50,-25,0,25],
+    marks:[{x:70,t:"敲入 70"},{x:80,t:"行权 80"},{x:100,t:"敲出 100"}],
+    series:[
+      ref(138, 38),
+      { name:"FCN", color:C.fcn, fn:M.fcn, ranges:[[0,69.99],[70,150]],
+        label:{ x:150, y:15, t:"FCN +15", dy:4 } }
+    ],
+    cliffs:[{ x:70, y0:2.5, y1:15, color:C.fcn, t:"断崖 12.5" }],
+    annos:[
+      { x:50, y:-22.5, t:"−22.5", dot:1, color:C.fcn, dy:-14 },
+      { x:0,  y:-85,   t:"−85",  dot:1, color:C.fcn, dy:-14, anchor:"start", dx:6 }
+    ]
+  });
+
+  /* 2 — Snowball */
+  legend("lg-snow", [{c:C.snow,t:"雪球 · 未敲入"},{c:C.snow,t:"雪球 · 已敲入",d:1},{c:C.ref,t:"持股（参考）",d:1}]);
+  build(document.getElementById("c-snow"), {
+    aria:"雪球到期损益：未敲入路径固定 +20，敲入线 75 处 45 点断崖，敲入路径与持股完全重合",
+    xDomain:[0,150], yDomain:[-105,45],
+    xTicks:[0,25,50,75,100,125,150], yTicks:[-100,-75,-50,-25,0,25],
+    marks:[{x:75,t:"敲入 75"},{x:100,t:"敲出／行权 100"}],
+    series:[
+      ref(138, 38),
+      { name:"雪球 · 已敲入", color:C.snow, fn:M.snowKi, ranges:[[0,99.99],[100,150]],
+        dash:"6 4", w:2.5, op:.9, label:{ x:22, y:-78, t:"敲入路径", dy:18 } },
+      { name:"雪球 · 未敲入", color:C.snow, fn:M.snowNo, ranges:[[75,150]],
+        label:{ x:150, y:20, t:"未敲入 +20", dy:4 } }
+    ],
+    cliffs:[{ x:75, y0:-25, y1:20, color:C.snow, t:"断崖 45" }],
+    annos:[{ x:75, y:-25, t:"−25", dot:1, color:C.snow, dy:16 }]
+  });
+
+  /* 3 — Accumulator */
+  legend("lg-acc", [{c:C.acc,t:"Accumulator"},{c:C.ref,t:"持股（参考）",d:1}]);
+  build(document.getElementById("c-acc"), {
+    aria:"累计期权到期损益：最大收益仅 +14.4，跌破行权价后双倍加仓，亏损加速至 −190",
+    xDomain:[0,150], yDomain:[-200,40],
+    xTicks:[0,25,50,90,103,125,150], yTicks:[-200,-150,-100,-50,0],
+    marks:[{x:90,t:"行权 90"},{x:103,t:"敲出 103"}],
+    zones:[{ x0:0, x1:90, fill:warnWash, t:"跌破行权价 · 每日买入翻倍" }],
+    series:[
+      ref(133, 33),
+      { name:"Accumulator", color:C.acc, fn:M.acc, ranges:[[0.5,150]],
+        label:{ x:150, y:1, t:"累计期权", dy:-9 } }
+    ],
+    annos:[
+      { x:103, y:14.4, t:"峰值 +14.4", dot:1, color:C.acc, dy:-13 },
+      { x:110, y:4.3,  t:"涨到 110 只剩 +4.3", dot:1, color:C.acc, dy:24, anchor:"start", dx:-26 },
+      { x:0,   y:-190, t:"−190", dot:1, color:C.acc, dy:-13, anchor:"start", dx:6 },
+      { x:50,  y:-80,  t:"−80", dot:1, color:C.acc, dy:22 }
+    ]
+  });
+
+  /* 4 — three overlaid */
+  legend("lg-cmp", [{c:C.fcn,t:"FCN"},{c:C.snow,t:"雪球（敲入）"},{c:C.acc,t:"Accumulator"},{c:C.ref,t:"持股",d:1}]);
+  build(document.getElementById("c-cmp"), {
+    aria:"三种收租结构叠加：右侧全部封顶，左侧全部向下",
+    xDomain:[0,150], yDomain:[-105,45],
+    xTicks:[0,25,50,75,100,125,150], yTicks:[-100,-75,-50,-25,0,25],
+    series:[
+      ref(138, 38),
+      { name:"Accumulator", color:C.acc, fn:M.acc, ranges:[[0.5,150]],
+        clipNote:"↓ −190", label:{ x:150, y:1, t:"累计期权", dy:10 } },
+      { name:"雪球（敲入）", color:C.snow, fn:M.snowKi, ranges:[[0,99.99],[100,150]],
+        label:{ x:150, y:20, t:"雪球 +20", dy:-5 } },
+      { name:"FCN", color:C.fcn, fn:M.fcn, ranges:[[0,69.99],[70,150]],
+        label:{ x:150, y:15, t:"FCN +15", dy:16 } }
+    ],
+    cliffs:[{ x:70, y0:2.5, y1:15, color:C.fcn }]
+  });
+
+  /* 5 — legs */
+  legend("lg-legs", [{c:C.mine,t:"合成 · 租金反手"},{c:C.ink3,t:"收租腿（含现金）"},{c:C.ink3,t:"尾部腿",d:1}]);
+  build(document.getElementById("c-legs"), {
+    aria:"租金反手三条腿拆解：收租腿向下，尾部腿向上，合成后在 70 以下掉头向上",
+    xDomain:[0,150], yDomain:[-110,45],
+    xTicks:[0,25,50,70,90,100,125,150], yTicks:[-100,-75,-50,-25,0,25],
+    marks:[{x:70,t:"尾部行权 70"},{x:90,t:"收租行权 90"}],
+    series:[
+      { name:"收租腿 +现金", color:C.ink3, fn:function(s){ return M.rent(s)+2.5; },
+        ranges:[[0,150]], w:1.5, label:{ x:150, y:22.5, t:"收租腿", dy:-4 } },
+      { name:"尾部腿", color:C.ink3, fn:M.tail, ranges:[[0,150]], w:1.5, dash:"5 4",
+        label:{ x:150, y:-7, t:"尾部腿", dy:4 } },
+      { name:"合成", color:C.mine, fn:M.mine, ranges:[[0,150]], w:3,
+        label:{ x:150, y:15.5, t:"合成 +15.5", dy:15 } }
+    ],
+    annos:[
+      { x:70, y:-11.2, t:"坑底 −11.2", dot:1, color:C.mine, dy:22 },
+      { x:0,  y:35.5,  t:"+35.5", dot:1, color:C.mine, dy:-12, anchor:"start", dx:4 }
+    ]
+  });
+
+  /* 6 — mine vs FCN */
+  legend("lg-mine", [{c:C.mine,t:"租金反手"},{c:C.fcn,t:"FCN"},{c:C.ref,t:"持股",d:1}]);
+  build(document.getElementById("c-mine"), {
+    aria:"租金反手对比 FCN：静态收益更高，跌破 62.9 后反超，代价是中度下跌区更差",
+    xDomain:[0,150], yDomain:[-100,45],
+    xTicks:[0,25,50,70,90,100,125,150], yTicks:[-75,-50,-25,0,25],
+    zones:[{ x0:62.9, x1:90, fill:warnWash, t:"代价区 · 输给 FCN" },
+           { x0:0, x1:62.9, fill:mineWash, t:"反超区" }],
+    marks:[{x:62.9,t:"反超点 62.9"}],
+    series:[
+      ref(138, 38),
+      { name:"FCN", color:C.fcn, fn:M.fcn, ranges:[[0,69.99],[70,150]],
+        label:{ x:150, y:15, t:"FCN +15", dy:16 } },
+      { name:"租金反手", color:C.mine, fn:M.mine, ranges:[[0,150]], w:3,
+        label:{ x:150, y:15.5, t:"租金反手 +15.5", dy:-5 } }
+    ],
+    cliffs:[{ x:70, y0:2.5, y1:15, color:C.fcn }],
+    annos:[
+      { x:70,   y:-11.2, t:"坑底 −11.2", dot:1, color:C.mine, dy:20 },
+      { x:62.9, y:-6.4,  t:"反超", dot:1, color:C.ink2, dy:-12 },
+      { x:0,    y:35.5,  t:"+35.5", dot:1, color:C.mine, dy:-12, anchor:"start", dx:4 },
+      { x:0,    y:-85,   t:"−85", dot:1, color:C.fcn, dy:16, anchor:"start", dx:4 }
+    ]
+  });
+
+  /* 7 — all four */
+  legend("lg-all", [{c:C.mine,t:"租金反手"},{c:C.fcn,t:"FCN"},{c:C.snow,t:"雪球（敲入）"},{c:C.acc,t:"Accumulator"},{c:C.ref,t:"持股",d:1}]);
+  build(document.getElementById("c-all"), {
+    aria:"四种结构叠加：只有租金反手在极端下跌区掉头向上",
+    xDomain:[0,150], yDomain:[-105,45],
+    xTicks:[0,25,50,70,90,100,125,150], yTicks:[-100,-75,-50,-25,0,25],
+    series:[
+      ref(138, 38),
+      { name:"Accumulator", color:C.acc, fn:M.acc, ranges:[[0.5,150]],
+        clipNote:"↓ −190", label:{ x:150, y:1, t:"累计期权", dy:14 } },
+      { name:"雪球（敲入）", color:C.snow, fn:M.snowKi, ranges:[[0,99.99],[100,150]],
+        label:{ x:150, y:20, t:"雪球 +20", dy:-6 } },
+      { name:"FCN", color:C.fcn, fn:M.fcn, ranges:[[0,69.99],[70,150]],
+        label:{ x:150, y:15, t:"FCN +15", dy:29 } },
+      { name:"租金反手", color:C.mine, fn:M.mine, ranges:[[0,150]], w:3,
+        label:{ x:150, y:15.5, t:"租金反手 +15.5", dy:12 } }
+    ],
+    cliffs:[{ x:70, y0:2.5, y1:15, color:C.fcn }],
+    annos:[{ x:0, y:35.5, t:"+35.5", dot:1, color:C.mine, dy:-12, anchor:"start", dx:4 }]
+  });
+}
+
+/* ── table ────────────────────────────────────────────────────────── */
+(function(){
+  var rows = [140,130,120,110,103,100,95,90,85,80,75,70,65,60,55,50,40,30,20,10,0];
+  var tb = document.getElementById("tb");
+  tb.innerHTML = rows.map(function(s){
+    var mine = M.mine(s), fcn = M.fcn(s);
+    var f = function(v){ return (v >= 0 ? "+" : "−") + Math.abs(v).toFixed(1); };
+    return '<tr'+(mine > fcn ? ' class="hi"' : '')+'>'+
+      '<td>'+s+'</td>'+
+      '<td>'+(s>=100?"+":"−")+Math.abs(s-100).toFixed(0)+'%</td>'+
+      '<td>'+f(M.stock(s))+'</td>'+
+      '<td>'+f(fcn)+'</td>'+
+      '<td>'+f(M.snowKi(s))+'</td>'+
+      '<td>'+f(M.acc(s))+'</td>'+
+      '<td'+(mine > fcn ? ' class="pos"' : '')+'>'+f(mine)+'</td></tr>';
+  }).join("");
+})();
+
+renderAll();
+if (window.matchMedia){
+  var mq = window.matchMedia("(prefers-color-scheme: dark)");
+  (mq.addEventListener ? mq.addEventListener.bind(mq,"change") : mq.addListener.bind(mq))(renderAll);
+}
+var mo = new MutationObserver(renderAll);
+mo.observe(document.documentElement, { attributes:true, attributeFilter:["data-theme"] });
+var rt; window.addEventListener("resize", function(){ clearTimeout(rt); rt = setTimeout(renderAll, 200); });
+})();
+</script>
